@@ -1,4 +1,7 @@
 import unittest
+
+import numpy
+
 from CoralModel_v3.utils import SpaceTime, DataReshape, Processes, Constants
 
 
@@ -74,12 +77,12 @@ class TestDataReshape(unittest.TestCase):
         DataReshape([1, 1])
 
     def test_variable2array(self):
-        self.assertIsInstance(DataReshape.variable2array(float(1)), list)
-        self.assertIsInstance(DataReshape.variable2array(int(1)), list)
+        self.assertIsInstance(DataReshape.variable2array(float(1)), numpy.ndarray)
+        self.assertIsInstance(DataReshape.variable2array(int(1)), numpy.ndarray)
         with self.assertRaises(NotImplementedError):
             DataReshape.variable2array(str(1))
-        self.assertIsInstance(DataReshape.variable2array((1, 1)), tuple)
-        self.assertIsInstance(DataReshape.variable2array([1, 1]), list)
+        self.assertIsInstance(DataReshape.variable2array((1, 1)), numpy.ndarray)
+        self.assertIsInstance(DataReshape.variable2array([1, 1]), numpy.ndarray)
 
     def test_variable2matrix_shape_space(self):
         reshape = DataReshape((4, 5))
