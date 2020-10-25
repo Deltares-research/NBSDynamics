@@ -1,0 +1,20 @@
+recursive-include docs *
+recursive-include man *
+include MANIFEST.in
+include README.md
+include COPYING
+include Changelog
+include appveyor.yml
+include .travis.yml
+include setup.cfg
+include examples/*py
+include examples/*ipynb
+include examples/README.md
+include test/*py
+include test/*nc
+include netCDF4/__init__.py
+include netCDF4/_netCDF4.pyx
+include netCDF4/utils.py
+include include/netCDF4.pxi
+include include/mpi-compat.h
+include include/membuf.pyx

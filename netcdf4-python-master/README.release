@@ -1,0 +1,22 @@
+* create a release branch ('vX.Y.Zrel').  In the release branch...
+* make sure version number in PKG-INFO, setup.py and netCDF4/_netCDF4.pyx are up to date
+  (in _netCDF4.pyx, change 'Version' in first line of docstring at top of file,
+   and __version__ variable).
+* update Changelog and README.md as needed. 
+* commit and push all of the above changes.
+* install the module (python setup.py install), then run 'sh create_docs.sh'
+  to update html docs.  Commit and push the update to docs/netCDF4/index.html.
+* create a pull request for the release branch.
+* After release branch has been merged, tag a release
+   git tag -a vX.Y.Zrel -m "version X.Y.Z release"
+   git push origin --tags
+* push an empty commit to the netcdf4-python-wheels repo to trigger new builds.
+  (e.g. git commit --allow-empty -m "Trigger build")
+  You will likely want to edit the .travis.yml file at 
+  https://github.com/MacPython/netcdf4-python-wheels to specify the BUILD_COMMIT before triggering a build.
+* update the pypi entry, upload the wheels from wheels.scipy.org.
+  Lastly, create a source tarball using
+  'python setup.py sdist' and upload to pypi.
+* update web docs by copying docs/netCDF4/index.html somewhere, switch
+  to the gh-pages branch, copy the index.html file back, commit and push
+  the updated index.html file (see README.gh-pages).

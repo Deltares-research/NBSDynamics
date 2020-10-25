@@ -1,0 +1,15 @@
+To update web docs at http://github.unidata.io/netcdf4-python:
+
+First install fork of pdoc from https://github.com/jswhit/pdoc (requires mako, 
+markdown, pygments and future).
+
+Then in netcdf4-python github clone directory (after building and 
+installing github master),
+
+* generate docs (sh create_docs.sh)
+* copy docs/netCDF4/index.html up one level (cp docs/netCDF4/index.html ..)
+* git checkout gh-pages
+* cp ../index.html .
+* git commit index.html
+* git push origin gh-pages
+* git checkout master
