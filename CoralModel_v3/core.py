@@ -765,7 +765,7 @@ class Morphology:
         """
         Morphological development.
 
-        :param calc_sum: accumulation of calcification of :param dtyear: years [kg m-2 yr-1]
+        :param calc_sum: accumulation of calcification of :param dt_year: years [kg m-2 yr-1]
         :param light_in: incoming light-intensity at water-air interface [umol photons m-2 s-1]
         :param dt_year: update interval [yr], defaults to 1
 
@@ -773,8 +773,12 @@ class Morphology:
         :type light_in: float, int, list, tuple, numpy.ndarray
         :type dt_year: float
         """
-        # TODO: take calcification as full matrix as input and use DataReshape.matrix2array() to convert to annual sum
-        self.calc_sum = calc_sum
+        try:
+            _ = len(calc_sum[0])
+        except TypeError:
+            self.calc_sum = calc_sum
+        else:
+            self.calc_sum = RESHAPE.matrix2array(calc_sum, 'space', 'sum')
         self.dt_year = dt_year
 
         self.I0 = RESHAPE.variable2matrix(light_in, 'time')
