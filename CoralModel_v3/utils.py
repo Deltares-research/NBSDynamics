@@ -179,6 +179,7 @@ class DataReshape(SpaceTime):
             'mean'  :   take the mean value
             'max'   :   take the maximum value
             'min'   :   take the minimum value
+            'sum'   :   take the summation
 
         :type matrix: numpy.ndarray
         :type dimension: str
@@ -202,7 +203,7 @@ class DataReshape(SpaceTime):
                 raise ValueError(msg)
 
         # conversion-strategy
-        conversions = (None, 'mean', 'max', 'min')
+        conversions = (None, 'mean', 'max', 'min', 'sum')
         if conversion not in conversions:
             msg = f'{conversion} not in {conversions}.'
             raise ValueError(msg)

@@ -1,4 +1,7 @@
 import unittest
+
+import numpy
+
 from CoralModel_v3.utils import SpaceTime, DataReshape, Processes, Constants
 
 
@@ -74,12 +77,12 @@ class TestDataReshape(unittest.TestCase):
         DataReshape([1, 1])
 
     def test_variable2array(self):
-        self.assertIsInstance(DataReshape.variable2array(float(1)), list)
-        self.assertIsInstance(DataReshape.variable2array(int(1)), list)
+        self.assertIsInstance(DataReshape.variable2array(float(1)), numpy.ndarray)
+        self.assertIsInstance(DataReshape.variable2array(int(1)), numpy.ndarray)
         with self.assertRaises(NotImplementedError):
             DataReshape.variable2array(str(1))
-        self.assertIsInstance(DataReshape.variable2array((1, 1)), tuple)
-        self.assertIsInstance(DataReshape.variable2array([1, 1]), list)
+        self.assertIsInstance(DataReshape.variable2array((1, 1)), numpy.ndarray)
+        self.assertIsInstance(DataReshape.variable2array([1, 1]), numpy.ndarray)
 
     def test_variable2matrix_shape_space(self):
         reshape = DataReshape((4, 5))
@@ -120,6 +123,136 @@ class TestDataReshape(unittest.TestCase):
         var = [0, 1, 2, 4]
         with self.assertRaises(ValueError):
             reshape.variable2matrix(var, 'time')
+
+    def test_matrix2array_space_last(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', None)
+        answer = [8, 8, 8, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_mean(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'mean')
+        answer = [3, 3, 3, 3]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_max(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'max')
+        answer = [8, 8, 8, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_min(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'min')
+        answer = [0, 0, 0, 0]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_sum(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'sum')
+        answer = [15, 15, 15, 15]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_last(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', None)
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_mean(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'mean')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_max(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'max')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_min(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'min')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_sum(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'sum')
+        answer = [0, 4, 8, 16, 32]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
 
 
 class TestProcesses(unittest.TestCase):
