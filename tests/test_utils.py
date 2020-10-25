@@ -124,6 +124,136 @@ class TestDataReshape(unittest.TestCase):
         with self.assertRaises(ValueError):
             reshape.variable2matrix(var, 'time')
 
+    def test_matrix2array_space_last(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', None)
+        answer = [8, 8, 8, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_mean(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'mean')
+        answer = [3, 3, 3, 3]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_max(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'max')
+        answer = [8, 8, 8, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_min(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'min')
+        answer = [0, 0, 0, 0]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_space_sum(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'space', 'sum')
+        answer = [15, 15, 15, 15]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_last(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', None)
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_mean(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'mean')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_max(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'max')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_min(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'min')
+        answer = [0, 1, 2, 4, 8]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
+    def test_matrix2array_time_sum(self):
+        reshape = DataReshape((4, 5))
+        var = numpy.array([
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+            [0, 1, 2, 4, 8],
+        ])
+        result = reshape.matrix2array(var, 'time', 'sum')
+        answer = [0, 4, 8, 16, 32]
+        for i, val in enumerate(answer):
+            self.assertEqual(result[i], val)
+
 
 class TestProcesses(unittest.TestCase):
 
