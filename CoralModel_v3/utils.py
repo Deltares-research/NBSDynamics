@@ -195,6 +195,9 @@ class DataReshape(SpaceTime):
             msg = f'{dimension} not in {dimensions}.'
             raise ValueError(msg)
 
+        # input as numpy.array
+        matrix = np.array(matrix)
+
         # dimension-value
         if not matrix.shape == self.spacetime:
             if not len(matrix) == getattr(self, dimension):
