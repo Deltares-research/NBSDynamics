@@ -7,6 +7,7 @@ CoralModel v3 - hydrodynamics
 import numpy as np
 import os
 from scipy.optimize import fsolve
+# TODO: Check if the BMI-package can be removed from this project; i.e. check if once installed, it is no longer needed.
 import bmi.wrapper
 import faulthandler
 faulthandler.enable()
@@ -220,6 +221,7 @@ class Delft3D:
         
 class Reef1D:
     """Simplified one-dimensional hydrodynamic model over a (coral) reef."""
+    # TODO: Complete the one-dimensional hydrodynamic model
     
     def __init__(self, bathymetry, wave_height, wave_period, dx=1):
         """

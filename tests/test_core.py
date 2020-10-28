@@ -2,10 +2,13 @@ import unittest
 
 import numpy as np
 
-from CoralModel_v3 import core
 from CoralModel_v3.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
     Calcification, Morphology, Dislodgement, Recruitment
 from CoralModel_v3.utils import DataReshape
+
+# TODO: Rewrite tests core for "spacetime = (2, 2)". Modulating RESHAPE.spacetime in this file results in problems,
+#  as for every test the spacetime has to be redefined. Therefore, group them to test the core for non-floats
+#  (i.e. matrices) as well.
 
 
 class TestCoral(unittest.TestCase):

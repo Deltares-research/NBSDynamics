@@ -225,9 +225,13 @@ class DataReshape(SpaceTime):
         elif dimension == 'time':
             return getattr(matrix, conversion)(axis=0)
     
+# TODO: Move both Processes as well as Constants to "environment.py"; seems more intuitive than here.
+
 
 class Processes:
     """Processes included in CoralModel simulations."""
+    # TODO: Include the on/off-switch for more processes:
+    #  (1) hydrodynamic coupling; (2) acidity; (3) light; (4) temperature; (5) dislodgement; (6) recruitment; (7) etc.
     
     def __init__(self, fme=True, tme=True, pfd=True):
         """
@@ -541,3 +545,7 @@ def coral_only_function(coral, function, args, no_cover_value=0):
         arg[coral.cover > 0] for arg in args
     ])
     return output
+
+# TODO: Include methods on writing the output files here in "utils.py".
+# TODO: Check if the netCDF4-package can be removed from this project;
+#  i.e. check if once installed, it is no longer needed.

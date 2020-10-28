@@ -381,6 +381,9 @@ class Flow:
     @staticmethod
     def wave_attenuation(diameter, height, distance, velocity, period, depth, wac_type):
         """Wave-attenuation coefficient."""
+        # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
+        #  and one implementing this method to dynamically determine the drag coefficient.
+        #  Thus, reformat this method as in CoralModel_v1.
         # # input check
         types = ('current', 'wave')
         if wac_type not in types:
