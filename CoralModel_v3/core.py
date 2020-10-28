@@ -208,6 +208,8 @@ class Coral:
 
         self._cover = carrying_capacity
 
+    # TODO: Add morphology initiation function that takes one morphology (as in the __init__) and places them everywhere
+    #  where the coral cover is set to be more than one; i.e. initiate by defining a default morphology and its cover
 
 # # biophysical processes
 
@@ -815,9 +817,9 @@ class Morphology:
         self.__coral_object_checker(coral)
 
         rf = CONSTANTS.prop_form * (coral.light.mean(axis=1) / self.I0.mean(axis=1)) * (CONSTANTS.u0 / 1e-6)
-        rf[coral.ucm > 0.] = CONSTANTS.prop_form * (
-                coral.light.mean(axis=1)[coral.ucm > 0.] / self.I0.mean(axis=1)[coral.ucm > 0.]
-        ) * (CONSTANTS.u0 / coral.ucm[coral.ucm > 0.])
+        rf[coral.ucm > 0] = CONSTANTS.prop_form * (
+                coral.light.mean(axis=1)[coral.ucm > 0] / self.I0.mean(axis=1)[coral.ucm > 0]
+        ) * (CONSTANTS.u0 / coral.ucm[coral.ucm > 0])
         self.__rf_optimal = rf
 
     @property
@@ -900,7 +902,6 @@ class Morphology:
 
 
 class Dislodgement:
-    # TODO: Check this class; incl. writing tests.
 
     def __init__(self):
         """
@@ -908,7 +909,7 @@ class Dislodgement:
         """
         self.dmt = None
         self.csf = None
-        self.partial_dislodgement = None
+        self.survival = None
 
     def update(self, coral, survival_coefficient=1):
         """Update morphology due to storm damage."""
@@ -917,61 +918,67 @@ class Dislodgement:
         # # update
         # population states
         for s in range(4):
-            coral.p0[:, s] *= self.partial_dislodgement
+            coral.p0[:, s] *= self.survival
         # morphology
-        coral.volume *= self.partial_dislodgement
+        coral.volume *= self.survival
 
     def partial_dislodgement(self, coral, survival_coefficient=1.):
         """Percentage surviving storm event."""
         try:
-            self.partial_dislodgement = np.ones(coral.dc.shape)
+            self.survival = np.ones(coral.dc.shape)
             dislodged = Dislodgement.dislodgement_criterion(self, coral)
-            self.partial_dislodgement[dislodged] = survival_coefficient * (
+            self.survival[dislodged] = survival_coefficient * (
                     self.dmt[dislodged] / self.csf[dislodged])
         except TypeError:
             if Dislodgement.dislodgement_criterion(self, coral):
-                self.partial_dislodgement = survival_coefficient * self.dmt / self.csf
+                self.survival = survival_coefficient * self.dmt / self.csf
             else:
-                self.partial_dislodgement = 1.
+                self.survival = 1.
 
     def dislodgement_criterion(self, coral):
         """Dislodgement criterion. Returns boolean (array)."""
-        Dislodgement.dislodgement_mechanical_threshold(self, coral)
-        Dislodgement.colony_shape_factor(self, coral)
+        self.dislodgement_mechanical_threshold(coral)
+        self.colony_shape_factor(coral)
         return self.dmt <= self.csf
 
     def dislodgement_mechanical_threshold(self, coral):
         """Dislodgement Mechanical Threshold."""
-        try:
-            self.dmt = 1e20 * np.ones(coral.um.shape)
-            self.dmt[coral.um > 0] = CONSTANTS.sigma_t / (
-                    CONSTANTS.rho_w * CONSTANTS.Cd * coral.um[coral.um > 0] ** 2)
-        except TypeError:
-            if coral.um > 0:
-                self.dmt = CONSTANTS.sigma_t / (
-                        CONSTANTS.rho_w * CONSTANTS.Cd * coral.um ** 2)
-            else:
-                self.dmt = 1e20
+        # # check input
+        if not hasattr(coral.um, '__iter__'):
+            coral.um = np.array([coral.um])
+        if isinstance(coral.um, (list, tuple)):
+            coral.um = np.array(coral.um)
+
+        # # calculations
+        self.dmt = 1e20 * np.ones(coral.um.shape)
+        self.dmt[coral.um > 0] = self.dmt_formula(coral.um[coral.um > 0])
+
+    @staticmethod
+    def dmt_formula(flow_velocity):
+        """Determine the Dislodgement Mechanical Threshold."""
+        return CONSTANTS.sigma_t / (CONSTANTS.rho_w * CONSTANTS.Cd * flow_velocity ** 2)
 
     def colony_shape_factor(self, coral):
         """Colony Shape Factor."""
+        self.csf = coral_only_function(
+            coral=coral,
+            function=self.csf_formula,
+            args=(coral.dc, coral.hc, coral.bc, coral.tc)
+        )
+
+    @staticmethod
+    def csf_formula(dc, hc, bc, tc):
+        """Determine the Colony Shape Factor."""
         # arms of moment
-        arm_top = coral.hc - .5 * coral.tc
-        arm_bottom = .5 * (coral.hc - coral.tc)
+        arm_top = hc - .5 * tc
+        arm_bottom = .5 * (hc - tc)
         # area of moment
-        area_top = coral.dc * coral.tc
-        area_bottom = coral.bc * (coral.hc - coral.tc)
+        area_top = dc * tc
+        area_bottom = bc * (hc - tc)
         # integral
         integral = arm_top * area_top + arm_bottom * area_bottom
         # colony shape factor
-        try:
-            self.csf = np.zeros(coral.dc.shape)
-            self.csf[coral.bc > 0] = 16. / (np.pi * coral.bc ** 3) * integral
-        except TypeError:
-            if coral.bc > 0:
-                self.csf = 16. / (np.pi * coral.bc ** 3) * integral
-            else:
-                self.csf = 0.
+        return 16. / (np.pi * bc ** 3) * integral
 
 
 class Recruitment:

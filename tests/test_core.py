@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from CoralModel_v3.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
-    Calcification, Morphology
+    Calcification, Morphology, Dislodgement
 from CoralModel_v3.utils import DataReshape
 
 
@@ -296,6 +296,52 @@ class TestMorphology(unittest.TestCase):
         self.assertAlmostEqual(float(coral.rp), .499964271)
         self.assertAlmostEqual(float(coral.rs), .666145658)
         self.assertAlmostEqual(float(coral.volume), .005898924)
+
+
+class TestDislodgement(unittest.TestCase):
+
+    def test_initiation(self):
+        dislodgement = Dislodgement()
+        self.assertIsNone(dislodgement.dmt)
+        self.assertIsNone(dislodgement.csf)
+        self.assertIsNone(dislodgement.survival)
+
+    def test_dmt1(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.um = 0
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        self.assertEqual(dislodgement.dmt, 1e20)
+
+    def test_dmt2(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.um = .5
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        self.assertAlmostEqual(float(dislodgement.dmt), 780.487805, delta=1e-6)
+
+    def test_dmt3(self):
+        dislodgement = Dislodgement()
+        coral = Coral([.2, .2], [.3, .3], [.1, .1], [.15, .15], [.3, .3])
+        coral.um = [0, .5]
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        answers = [1e20, 780.487805]
+        for i, ans in enumerate(answers):
+            self.assertAlmostEqual(float(dislodgement.dmt[i]), ans, delta=1e-6)
+
+    def test_csf1(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        dislodgement.colony_shape_factor(coral)
+        self.assertAlmostEqual(float(dislodgement.csf), 40.1070456591576246)
+
+    def test_csf2(self):
+        dislodgement = Dislodgement()
+        coral = Coral([.2, 0], [.3, 0], [.1, 0], [.15, 0], [.3, 0])
+        dislodgement.colony_shape_factor(coral)
+        answers = [40.1070456591576246, 0]
+        for i, ans in enumerate(answers):
+            self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
 
 
 if __name__ == '__main__':
