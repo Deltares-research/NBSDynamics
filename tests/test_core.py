@@ -2,8 +2,9 @@ import unittest
 
 import numpy as np
 
+from CoralModel_v3 import core
 from CoralModel_v3.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
-    Calcification, Morphology, Dislodgement
+    Calcification, Morphology, Dislodgement, Recruitment
 from CoralModel_v3.utils import DataReshape
 
 
@@ -205,6 +206,7 @@ class TestPhotosynthesis(unittest.TestCase):
 
 
 class TestPopulationStates(unittest.TestCase):
+    # TODO: Write tests for the determination of the population states
     pass
 
 
@@ -249,14 +251,6 @@ class TestMorphology(unittest.TestCase):
         answer = [1, 1]
         for i, val in enumerate(answer):
             self.assertEqual(morphology.calc_sum[i], val)
-
-    def test_calc_sum_init2(self):
-        morphology = Morphology(np.array([[1, 1]]), 600)
-        self.assertEqual(morphology.calc_sum, 2)
-
-    def test_calc_sum_init3(self):
-        morphology = Morphology([[1, 1]], 600)
-        self.assertEqual(morphology.calc_sum, 2)
 
     def test_optimal_ratios(self):
         morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'))
@@ -342,6 +336,35 @@ class TestDislodgement(unittest.TestCase):
         answers = [40.1070456591576246, 0]
         for i, ans in enumerate(answers):
             self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
+
+
+class TestRecruitment(unittest.TestCase):
+
+    def test_spawning_cover1(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.pop_states = np.array(
+            [
+                [
+                    [1, 0, 0, 0]
+                ]
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        self.assertEqual(float(result), 0)
+
+    def test_spawning_cover2(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.pop_states = np.array(
+            [
+                [
+                    [.5, 0, 0, 0]
+                ]
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        self.assertAlmostEqual(float(result), 2.5e-5)
 
 
 if __name__ == '__main__':

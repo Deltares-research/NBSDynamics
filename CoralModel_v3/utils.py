@@ -200,7 +200,7 @@ class DataReshape(SpaceTime):
 
         # dimension-value
         if not matrix.shape == self.spacetime:
-            if not len(matrix) == getattr(self, dimension):
+            if not matrix.shape[:2] == self.spacetime:
                 msg = f'Matrix-shape does not correspond with spacetime-dimensions:' \
                       f'\n{matrix.shape} =/= {self.spacetime}'
                 raise ValueError(msg)

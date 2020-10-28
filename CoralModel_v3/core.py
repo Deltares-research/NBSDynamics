@@ -208,6 +208,12 @@ class Coral:
 
         self._cover = carrying_capacity
 
+    @property
+    def living_cover(self):
+        """Living coral cover based on population states."""
+        if self.pop_states is not None:
+            return self.pop_states.sum(axis=2)
+
     # TODO: Add morphology initiation function that takes one morphology (as in the __init__) and places them everywhere
     #  where the coral cover is set to be more than one; i.e. initiate by defining a default morphology and its cover
 
@@ -669,18 +675,21 @@ class Photosynthesis:
 
 class PopulationStates:
     """Bleaching response following the population dynamics."""
-    
+    # TODO: Check this class; incl. writing tests
+
     def __init__(self):
         """Population dynamics."""
 
     def pop_states_t(self, coral, dt=1):
         """Population dynamics over time."""
         coral.pop_states = np.zeros((RESHAPE.space, RESHAPE.time, 4))
+        # coral.living_cover = np.zeros(RESHAPE.spacetime)
         photosynthesis = np.zeros(RESHAPE.space)
         for n in range(RESHAPE.time):
             photosynthesis[coral.cover > 0] = coral.photo_rate[coral.cover > 0, n]
             coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis, dt)
             coral.p0[coral.cover > 0, :] = coral.pop_states[coral.cover > 0, n, :]
+            # coral.living_cover[:, n] = coral.pop_states[:, n, :].sum(axis=1)
 
     @staticmethod
     def pop_states_xy(coral, ps, dt):
@@ -982,13 +991,9 @@ class Dislodgement:
 
 
 class Recruitment:
-    # TODO: Check this class; incl. writing tests.
-
-    def __init__(self):
-        """
-        Recruitment dynamics.
-        """
-        self.averaged_healthy_pop = None
+    """
+    Recruitment dynamics.
+    """
 
     def update(self, coral):
         """Update coral cover / volume after spawning event."""
@@ -1008,14 +1013,23 @@ class Recruitment:
         power = 2 if param == 'P' else 3
         potential = CONSTANTS.prob_settle * CONSTANTS.no_larvae * CONSTANTS.d_larvae ** power
         # recruitment
-        self.averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
-        recruited = np.zeros(coral.cover.shape)
-        recruited[coral.cover > 0] = potential * self.averaged_healthy_pop * (
-                1 - coral.pop_states[coral.cover > 0, -1, :].sum(axis=1) / coral.cover[coral.cover > 0]
+        averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
+        # living cover
+        living_cover = RESHAPE.matrix2array(coral.living_cover, 'space')
+
+        recruited = coral_only_function(
+            coral=coral,
+            function=self.recruited,
+            args=(potential, averaged_healthy_pop, living_cover, coral.cover)
         )
 
         # # output
         return recruited
+
+    @staticmethod
+    def recruited(potential, averaged_healthy_pop, cover_real, cover_potential):
+        """Determination of recruitment."""
+        return potential * averaged_healthy_pop * (1 - cover_real / cover_potential)
 
 
 if __name__ == '__main__':
