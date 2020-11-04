@@ -214,8 +214,28 @@ class Coral:
         if self.pop_states is not None:
             return self.pop_states.sum(axis=2)
 
-    # TODO: Add morphology initiation function that takes one morphology (as in the __init__) and places them everywhere
-    #  where the coral cover is set to be more than one; i.e. initiate by defining a default morphology and its cover
+    def initiate_spatial_morphology(self, cover=None):
+        """Initiate the morphology based on the on set of morphological dimensions and the coral cover. This method
+        contains a catch that it can only be used to initiate the morphology, and cannot overwrite existing spatial
+        heterogeneous morphology definitions.
+
+        :param cover: custom coral cover definition, defaults to None
+        :type cover: None, numpy.ndarray
+        """
+        if cover is not None:
+            cover = RESHAPE.variable2array(cover)
+            if not cover.shape[0] == RESHAPE.space:
+                msg = f'Spatial dimension of cover does not match: {cover.shape} =/= {RESHAPE.space}.'
+                raise ValueError(msg)
+        else:
+            cover = np.ones(RESHAPE.space)
+
+        self.dc = cover * self.dc
+        self.hc = cover * self.hc
+        self.bc = cover * self.bc
+        self.tc = cover * self.tc
+        self.ac = cover * self.ac
+
 
 # # biophysical processes
 
