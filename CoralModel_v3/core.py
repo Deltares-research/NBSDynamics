@@ -25,6 +25,21 @@ class Coral:
     """Coral object, representing one coral type."""
 
     def __init__(self, dc, hc, bc, tc, ac, species_constant=1):
+        """
+        :param dc: diameter coral plate [m]
+        :param hc: coral height [m]
+        :param bc: diameter coral base [m]
+        :param tc: thickness coral plate [m]
+        :param ac: axial distance corals [m]
+        :param species_constant: species constant [-]
+
+        :type dc: float, list, tuple, numpy.ndarray
+        :type hc: float, list, tuple, numpy.ndarray
+        :type bc: float, list, tuple, numpy.ndarray
+        :type tc: float, list, tuple, numpy.ndarray
+        :type ac: float, list, tuple, numpy.ndarray
+        :type species_constant: float
+        """
         self.dc = RESHAPE.variable2array(dc)
         self.hc = RESHAPE.variable2array(hc)
         self.bc = RESHAPE.variable2array(bc)
@@ -194,7 +209,11 @@ class Coral:
 
     @cover.setter
     def cover(self, carrying_capacity):
-        carrying_capacity = np.array(carrying_capacity)
+        """
+        :param carrying_capacity: carrying capacity [m2 m-2]
+        :type carrying_capacity: float, list, tuple, numpy.ndarray
+        """
+        carrying_capacity = RESHAPE.variable2array(carrying_capacity)
         if not self.volume.shape == carrying_capacity.shape:
             raise ValueError(
                 f'Shapes do not match: '
@@ -241,6 +260,8 @@ class Coral:
 
 
 class Light:
+    """Light micro-environment."""
+
     def __init__(self, light_in, lac, depth):
         """Light micro-environment.
 
@@ -248,18 +269,9 @@ class Light:
         :param lac: light-attenuation coefficient [m-1]
         :param depth: water depth [m]
 
-        :type light_in: numeric
-        :type lac: list, tuple, numpy.ndarray
-
-        Parameters
-        ----------
-        light_in : numeric
-            Incoming light-intensity at the water-air interface
-            [u mol photons m-2 s-1]
-        lac : numeric
-            Light-attenuation coefficient [m-1]
-        depth : numeric
-            Water depth [m]
+        :type light_in: float, list, tuple, numpy.ndarray
+        :type lac: float, list, tuple, numpy.ndarray
+        :type depth: float, list, tuple, numpy.ndarray
         """
         self.I0 = RESHAPE.variable2matrix(light_in, 'time')
         self.Kd = RESHAPE.variable2matrix(lac, 'time')
@@ -268,8 +280,8 @@ class Light:
     def rep_light(self, coral):
         """Representative light-intensity.
         
-        :param coral: coral object
-        :type coral: :class:`Coral`
+        :param coral: coral animal
+        :type coral: Coral
         """
         base_section = self.base_light(coral)
         # # light catchment per coral section
@@ -294,6 +306,7 @@ class Light:
         self.biomass(coral)
 
         def averaged_light(total_light, biomass):
+            """Averaged light-intensity."""
             return total_light / biomass
 
         coral.light = coral_only_function(
@@ -306,8 +319,8 @@ class Light:
     def biomass(self, coral):
         """Coral biomass; as surface.
         
-        :param coral: coral object
-        :type coral: :class:`Coral`
+        :param coral: coral animal
+        :type coral: Coral
         """
         base_section = self.base_light(coral)
         coral.Bc = np.pi * (
@@ -317,7 +330,11 @@ class Light:
         )
 
     def base_light(self, coral):
-        """Section of coral base receiving light."""
+        """Section of coral base receiving light.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         # # spreading of light
         theta = self.light_spreading(coral)
 
@@ -331,13 +348,21 @@ class Light:
         return base_section
 
     def light_spreading(self, coral):
-        """Spreading of light as function of depth."""
+        """Spreading of light as function of depth.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         return CONSTANTS.theta_max * np.exp(
             -self.Kd * (self.h - coral.hc_matrix + coral.tc_matrix)
         )
 
     def side_correction(self, coral):
-        """Correction of the light-intensity on the sides of the coral object."""
+        """Correction of the light-intensity on the sides of the coral object.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         # # spreading of light
         theta = self.light_spreading(coral)
 
@@ -346,7 +371,20 @@ class Light:
 
 
 class Flow:
+    """Flow micro-environment."""
+
     def __init__(self, u_current, u_wave, h, peak_period):
+        """
+        :param u_current: current flow velocity [m s-1]
+        :param u_wave: wave flow velocity [m s-1]
+        :param h: water depth [m]
+        :param peak_period: peak wave period [s]
+
+        :type u_current: float, list, tuple, numpy.ndarray
+        :type u_wave: float, list, tuple, numpy.ndarray
+        :type h: float, list, tuple, numpy.ndarray
+        :type peak_period: float, list, tuple, numpy.ndarray
+        """
         self.uc = RESHAPE.variable2array(u_current)
         self.uw = RESHAPE.variable2array(u_wave)
         self.h = RESHAPE.variable2matrix(h, 'space')
@@ -363,7 +401,14 @@ class Flow:
         return RESHAPE.variable2matrix(self.uw, 'space')
 
     def velocities(self, coral, in_canopy=True):
-        """In-canopy flow velocities, and depth-averaged flow velocities."""
+        """In-canopy flow velocities, and depth-averaged flow velocities.
+
+        :param coral: coral animal
+        :param in_canopy: determine in-canopy flow (or depth-averaged), defaults to True
+
+        :type coral: Coral
+        :type in_canopy: bool, optional
+        """
         alpha_w = np.ones(self.uw.shape)
         alpha_c = np.ones(self.uc.shape)
         if in_canopy:
@@ -380,14 +425,14 @@ class Flow:
         coral.ucm = self.wave_current(alpha_w, alpha_c)
         coral.um = self.wave_current()
 
-    def wave_current(self, alpha_w=1., alpha_c=1.):
+    def wave_current(self, alpha_w=1, alpha_c=1):
         """Wave-current interaction.
 
-        :param alpha_w: wave-attenuation coefficient
-        :param alpha_c: current-attenuation coefficient
+        :param alpha_w: wave-attenuation coefficient, defaults to 1
+        :param alpha_c: current-attenuation coefficient, defaults to 1
 
-        :type alpha_w: float, list, tuple, numpy.ndarray
-        :type alpha_c: float, list, tuple, numpy.ndarray
+        :type alpha_w: float, list, tuple, numpy.ndarray, optional
+        :type alpha_c: float, list, tuple, numpy.ndarray, optional
 
         :return: wave-current interaction
         :rtype: float, numpy.ndarray
@@ -400,7 +445,24 @@ class Flow:
 
     @staticmethod
     def wave_attenuation(diameter, height, distance, velocity, period, depth, wac_type):
-        """Wave-attenuation coefficient."""
+        """Wave-attenuation coefficient.
+
+        :param diameter: representative coral diameter [m]
+        :param height: coral height [m]
+        :param distance: axial distance [m]
+        :param velocity: flow velocity [m s-1]
+        :param period: wave period [s]
+        :param depth: water depth [m]
+        :param wac_type: type of wave-attenuation coefficient [-]
+
+        :type diameter: float
+        :type height: float
+        :type distance: float
+        :type velocity: float
+        :type depth: float
+        :type depth: float
+        :type wac_type: str
+        """
         # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
         #  and one implementing this method to dynamically determine the drag coefficient.
         #  Thus, reformat this method as in CoralModel_v1.
@@ -493,14 +555,23 @@ class Flow:
         return wac
 
     def thermal_boundary_layer(self, coral):
-        """Thermal boundary layer."""
+        """Thermal boundary layer.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         delta = self.velocity_boundary_layer(coral)
         coral.delta_t = delta * ((CONSTANTS.alpha / CONSTANTS.nu) ** (1 / 3))
 
     @staticmethod
     def velocity_boundary_layer(coral):
-        """Velocity boundary layer."""
+        """Velocity boundary layer.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         def boundary_layer(rd, nu, cf, ucm):
+            """Thickness velocity boundary layer."""
             return (rd * nu) / (np.sqrt(cf) * ucm)
 
         return coral_only_function(
@@ -523,7 +594,11 @@ class Temperature:
         self.T = RESHAPE.variable2matrix(temperature, 'time')
 
     def coral_temperature(self, coral):
-        """Coral temperature."""
+        """Coral temperature.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         delta_t = RESHAPE.variable2matrix(coral.delta_t, 'space')
         if PROCESSES.tme:
             coral.dTc = (
@@ -536,17 +611,17 @@ class Temperature:
 
 
 class Photosynthesis:
+    """Photosynthesis."""
+
     def __init__(self, light_in, first_year):
         """
         Photosynthetic efficiency based on photosynthetic dependencies.
 
-        Parameters
-        ----------
-        light_in : numeric
-            Incoming light-intensity at the water-air interface
-            [u mol photons m-2 s-1].
-        first_year : bool
-            First year of the model simulation.
+        :param light_in: incoming light-intensity at the water-air interface [umol photons m-2 s-1]
+        :param first_year: first year of the model simulation
+
+        :type light_in: float, list, tuple, numpy.ndarray
+        :type first_year: bool
         """
         self.I0 = RESHAPE.variable2matrix(light_in, 'time')
         self.first_year = first_year
@@ -556,7 +631,16 @@ class Photosynthesis:
         self.pfd = 1
 
     def photo_rate(self, coral, environment, year):
-        """Photosynthetic efficiency."""
+        """Photosynthetic efficiency.
+
+        :param coral: coral animal
+        :param environment: environmental conditions
+        :param year: year of simulation
+
+        :type coral: Coral
+        :type environment: Environment
+        :type year: int
+        """
         # components
         self.light_dependency(coral, 'qss')
         self.thermal_dependency(coral, environment, year)
@@ -566,7 +650,14 @@ class Photosynthesis:
         coral.photo_rate = self.pld * self.ptd * self.pfd
 
     def light_dependency(self, coral, output):
-        """Photosynthetic light dependency."""
+        """Photosynthetic light dependency.
+
+        :param coral: coral animal
+        :param output: type of output
+
+        :type coral: Coral
+        :type output: str
+        """
 
         def photo_acclimation(x_old, param):
             """Photo-acclimation."""
@@ -599,7 +690,16 @@ class Photosynthesis:
         self.pld = p_max * (np.tanh(coral.light / ik) - np.tanh(0.01 * self.I0 / ik))
 
     def thermal_dependency(self, coral, env, year):
-        """Photosynthetic thermal dependency."""
+        """Photosynthetic thermal dependency.
+
+        :param coral: coral animal
+        :param env: environmental conditions
+        :param year: year of simulation
+
+        :type coral: Coral
+        :type env: Environment
+        :type year: int
+        """
 
         def thermal_acc():
             """Thermal-acclimation."""
@@ -672,7 +772,7 @@ class Photosynthesis:
             return response * spec()
 
         def thermal_env():
-            """Thermal enveloppe."""
+            """Thermal envelope."""
             return np.exp(CONSTANTS.Ea / CONSTANTS.R) * (1 / 300 - 1 / temp_opt)
 
         # # parameter definitions
@@ -686,7 +786,11 @@ class Photosynthesis:
         self.ptd = f1 * f2
 
     def flow_dependency(self, coral):
-        """Photosynthetic flow dependency."""
+        """Photosynthetic flow dependency.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         if PROCESSES.pfd:
             pfd = CONSTANTS.pfd_min + (1 - CONSTANTS.pfd_min) * np.tanh(
                 2 * coral.ucm / CONSTANTS.ucr
@@ -714,9 +818,9 @@ class PopulationStates:
         :param coral: coral animal
         :type coral: Coral
         """
-        coral.pop_states = np.zeros((RESHAPE.space, RESHAPE.time, 4))
-        photosynthesis = np.zeros(RESHAPE.space)
+        coral.pop_states = np.zeros((*RESHAPE.spacetime, 4))
         for n in range(RESHAPE.time):
+            photosynthesis = np.zeros(RESHAPE.space)
             photosynthesis[coral.cover > 0] = coral.photo_rate[coral.cover > 0, n]
             coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis)
             coral.p0[coral.cover > 0, :] = coral.pop_states[coral.cover > 0, n, :]
@@ -788,7 +892,14 @@ class Calcification:
         self.ad = 1
 
     def calcification_rate(self, coral, omega):
-        """Calcification rate."""
+        """Calcification rate.
+
+        :param coral: coral animal
+        :param omega: aragonite saturation state
+
+        :type coral: Coral
+        :type omega: float, list, tuple, numpy.ndarray
+        """
 
         def aragonite_dependency(calcification_object):
             """Aragonite dependency."""
@@ -817,7 +928,7 @@ class Morphology:
 
         :type calc_sum: float, int, list, tuple, numpy.ndarray
         :type light_in: float, int, list, tuple, numpy.ndarray
-        :type dt_year: float
+        :type dt_year: float, int
         """
         try:
             _ = len(calc_sum[0])
@@ -832,7 +943,11 @@ class Morphology:
 
     @staticmethod
     def __coral_object_checker(coral):
-        """Check the suitability of the coral-object for the morphological development."""
+        """Check the suitability of the coral-object for the morphological development.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         # coral must be of type Coral
         if not isinstance(coral, Coral):
             msg = f'The optimal ratios are set using the Coral-object, {type(coral)} is given.'
@@ -855,7 +970,7 @@ class Morphology:
     @rf_optimal.setter
     def rf_optimal(self, coral):
         """
-        :param coral: coral object
+        :param coral: coral animal
         :type coral: Coral
         """
         self.__coral_object_checker(coral)
@@ -868,12 +983,16 @@ class Morphology:
 
     @property
     def rp_optimal(self):
+        """Optimal plate ratio; base diameter-to-plate diameter.
+
+        :rtype: float, numpy.ndarray
+        """
         return self.__rp_optimal
 
     @rp_optimal.setter
     def rp_optimal(self, coral):
         """
-        :param coral: coral object
+        :param coral: coral animal
         :type coral: Coral
         """
         self.__coral_object_checker(coral)
@@ -884,12 +1003,16 @@ class Morphology:
 
     @property
     def rs_optimal(self):
+        """Optimal spacing ratio; plate diameter-to-axial distance.
+
+        :rtype: float, numpy.ndarray
+        """
         return self.__rs_optimal
 
     @rs_optimal.setter
     def rs_optimal(self, coral):
         """
-        :param coral: coral object
+        :param coral: coral animal
         :type coral: Coral
         """
         self.__coral_object_checker(coral)
@@ -933,7 +1056,11 @@ class Morphology:
             return mass_balance(getattr(coral, ratio), getattr(self, f'{ratio}_optimal'))
 
     def update(self, coral):
-        """Update morphology."""
+        """Update morphology.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         # # calculations
         # updated ratios
         ratios = [self.ratio_update(coral, ratio) for ratio in ('rf', 'rp', 'rs')]
@@ -946,17 +1073,23 @@ class Morphology:
 
 
 class Dislodgement:
+    """Dislodgement due to storm conditions."""
 
     def __init__(self):
-        """
-        Dislodgement check.
-        """
+        """Dislodgement check."""
         self.dmt = None
         self.csf = None
         self.survival = None
 
     def update(self, coral, survival_coefficient=1):
-        """Update morphology due to storm damage."""
+        """Update morphology due to storm damage.
+
+        :param coral: coral animal
+        :param survival_coefficient: percentage of partial survival, defualts to 1
+
+        :type coral: Coral
+        :type survival_coefficient: float, optional
+        """
         # # partial dislodgement
         Dislodgement.partial_dislodgement(self, coral, survival_coefficient)
         # # update
@@ -967,7 +1100,14 @@ class Dislodgement:
         coral.volume *= self.survival
 
     def partial_dislodgement(self, coral, survival_coefficient=1.):
-        """Percentage surviving storm event."""
+        """Percentage surviving storm event.
+
+        :param coral: coral animal
+        :param survival_coefficient: percentage of partial survival, defualts to 1
+
+        :type coral: Coral
+        :type survival_coefficient: float, optional
+        """
         try:
             self.survival = np.ones(coral.dc.shape)
             dislodged = Dislodgement.dislodgement_criterion(self, coral)
@@ -980,13 +1120,21 @@ class Dislodgement:
                 self.survival = 1.
 
     def dislodgement_criterion(self, coral):
-        """Dislodgement criterion. Returns boolean (array)."""
+        """Dislodgement criterion. Returns boolean (array).
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         self.dislodgement_mechanical_threshold(coral)
         self.colony_shape_factor(coral)
         return self.dmt <= self.csf
 
     def dislodgement_mechanical_threshold(self, coral):
-        """Dislodgement Mechanical Threshold."""
+        """Dislodgement Mechanical Threshold.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         # # check input
         if not hasattr(coral.um, '__iter__'):
             coral.um = np.array([coral.um])
@@ -999,11 +1147,19 @@ class Dislodgement:
 
     @staticmethod
     def dmt_formula(flow_velocity):
-        """Determine the Dislodgement Mechanical Threshold."""
+        """Determine the Dislodgement Mechanical Threshold.
+
+        :param flow_velocity: depth-averaged flow velocity
+        :type flow_velocity: float, numpy.ndarray
+        """
         return CONSTANTS.sigma_t / (CONSTANTS.rho_w * CONSTANTS.Cd * flow_velocity ** 2)
 
     def colony_shape_factor(self, coral):
-        """Colony Shape Factor."""
+        """Colony Shape Factor.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         self.csf = coral_only_function(
             coral=coral,
             function=self.csf_formula,
@@ -1012,7 +1168,21 @@ class Dislodgement:
 
     @staticmethod
     def csf_formula(dc, hc, bc, tc):
-        """Determine the Colony Shape Factor."""
+        """Determine the Colony Shape Factor.
+
+        :param dc: diameter coral plate [m]
+        :param hc: coral height [m]
+        :param bc: diameter coral base [m]
+        :param tc: thickness coral plate [m]
+
+        :type dc: float, numpy.ndarray
+        :type hc: float, numpy.ndarray
+        :type bc: float, numpy.ndarray
+        :type tc: float, numpy.ndarray
+
+        :return: colony shape factor
+        :rtype: float, numpy.ndarray
+        """
         # arms of moment
         arm_top = hc - .5 * tc
         arm_bottom = .5 * (hc - tc)
@@ -1026,19 +1196,28 @@ class Dislodgement:
 
 
 class Recruitment:
-    """
-    Recruitment dynamics.
-    """
+    """Recruitment dynamics."""
 
     def update(self, coral):
-        """Update coral cover / volume after spawning event."""
+        """Update coral cover / volume after spawning event.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         coral.p0[:, 0] += Recruitment.spawning(self, coral, 'P')
         coral.volume += Recruitment.spawning(self, coral, 'V')
 
     def spawning(self, coral, param):
-        """Contribution due to mass coral spawning."""
+        """Contribution due to mass coral spawning.
+
+        :param coral: coral animal
+        :param param: parameter type to which the spawning is added
+
+        :type coral: Coral
+        :type param: str
+        """
         # # input check
-        params = ['P', 'V']
+        params = ('P', 'V')
         if param not in params:
             msg = f'{param} not in {params}.'
             raise ValueError(msg)
@@ -1063,7 +1242,18 @@ class Recruitment:
 
     @staticmethod
     def recruited(potential, averaged_healthy_pop, cover_real, cover_potential):
-        """Determination of recruitment."""
+        """Determination of recruitment.
+
+        :param potential: recruitment potential
+        :param averaged_healthy_pop: model domain averaged healthy population
+        :param cover_real: real coral cover
+        :param cover_potential: potential coral cover
+
+        :type potential: float
+        :type averaged_healthy_pop: float
+        :type cover_real: float
+        :type cover_potential: float
+        """
         return potential * averaged_healthy_pop * (1 - cover_real / cover_potential)
 
 
