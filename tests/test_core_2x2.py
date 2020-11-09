@@ -1,5 +1,7 @@
 import unittest
 
+import numpy as np
+
 from CoralModel_v3 import core
 from CoralModel_v3.core import Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
     Calcification, Morphology, Dislodgement, Recruitment
@@ -382,34 +384,47 @@ class TestDislodgement(unittest.TestCase):
             self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
 
 
-# TODO: Recruitment 2x2 tests
-# class TestRecruitment(unittest.TestCase):
-#
-#     def test_spawning_cover1(self):
-#         recruitment = Recruitment()
-#         coral = Coral(.2, .3, .1, .15, .3)
-#         coral.pop_states = np.array(
-#             [
-#                 [
-#                     [1, 0, 0, 0]
-#                 ]
-#             ]
-#         )
-#         result = recruitment.spawning(coral, 'P')
-#         self.assertEqual(float(result), 0)
-#
-#     def test_spawning_cover2(self):
-#         recruitment = Recruitment()
-#         coral = Coral(.2, .3, .1, .15, .3)
-#         coral.pop_states = np.array(
-#             [
-#                 [
-#                     [.5, 0, 0, 0]
-#                 ]
-#             ]
-#         )
-#         result = recruitment.spawning(coral, 'P')
-#         self.assertAlmostEqual(float(result), 2.5e-5)
+class TestRecruitment(unittest.TestCase):
+
+    def test_spawning_cover1(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.initiate_spatial_morphology()
+        coral.pop_states = np.array(
+            [
+                [
+                    [1, 0, 0, 0],
+                    [1, 0, 0, 0],
+                ],
+                [
+                    [1, 0, 0, 0],
+                    [1, 0, 0, 0],
+                ],
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        for i in range(core.RESHAPE.space):
+            self.assertEqual(float(result[i]), 0)
+
+    def test_spawning_cover2(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.initiate_spatial_morphology()
+        coral.pop_states = np.array(
+            [
+                [
+                    [.5, 0, 0, 0],
+                    [.5, 0, 0, 0],
+                ],
+                [
+                    [.5, 0, 0, 0],
+                    [.5, 0, 0, 0],
+                ],
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        for i in range(core.RESHAPE.space):
+            self.assertAlmostEqual(float(result[i]), 2.5e-5)
 
 
 if __name__ == '__main__':
