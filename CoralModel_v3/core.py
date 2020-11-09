@@ -700,57 +700,70 @@ class PopulationStates:
     """Bleaching response following the population dynamics."""
     # TODO: Check this class; incl. writing tests
 
-    def __init__(self):
-        """Population dynamics."""
+    def __init__(self, dt=1):
+        """Population dynamics.
 
-    def pop_states_t(self, coral, dt=1):
-        """Population dynamics over time."""
+        :param dt: time step [yrs], defaults to one
+        :type dt: float, optional
+        """
+        self.dt = dt
+
+    def pop_states_t(self, coral):
+        """Population dynamics over time.
+
+        :param coral: coral animal
+        :type coral: Coral
+        """
         coral.pop_states = np.zeros((RESHAPE.space, RESHAPE.time, 4))
-        # coral.living_cover = np.zeros(RESHAPE.spacetime)
         photosynthesis = np.zeros(RESHAPE.space)
         for n in range(RESHAPE.time):
             photosynthesis[coral.cover > 0] = coral.photo_rate[coral.cover > 0, n]
-            coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis, dt)
+            coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis)
             coral.p0[coral.cover > 0, :] = coral.pop_states[coral.cover > 0, n, :]
-            # coral.living_cover[:, n] = coral.pop_states[:, n, :].sum(axis=1)
 
-    @staticmethod
-    def pop_states_xy(coral, ps, dt):
-        """Population dynamics over space."""
+    def pop_states_xy(self, coral, ps):
+        """Population dynamics over space.
+
+        :param coral: coral animal
+        :param ps: photosynthetic rate
+
+        :type coral: Coral
+        :type ps: numpy.ndarray
+        """
         p = np.zeros((RESHAPE.space, 4))
         # # calculations
         # growing conditions
         # > bleached pop.
         p[ps > 0, 3] = coral.p0[ps > 0, 3] / (
-                1 + dt * (8 * CONSTANTS.r_recovery * ps[ps > 0] / coral.Csp + CONSTANTS.r_mortality * coral.Csp)
+                1 + self.dt * (8 * CONSTANTS.r_recovery * ps[ps > 0] / coral.Csp + CONSTANTS.r_mortality * coral.Csp)
         )
         # > pale pop.
         p[ps > 0, 2] = (coral.p0[ps > 0, 2] + (
-                8 * dt * CONSTANTS.r_recovery * ps[ps > 0] / coral.Csp
-        ) * p[ps > 0, 3]) / (1 + dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp)
+                8 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] / coral.Csp
+        ) * p[ps > 0, 3]) / (1 + self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp)
         # > recovering pop.
-        p[ps > 0, 1] = (coral.p0[ps > 0, 1] + dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 2]) / (
-                1 + .5 * dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp
+        p[ps > 0, 1] = (coral.p0[ps > 0, 1] + self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 2]) / (
+                1 + .5 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp
         )
         # > healthy pop.
-        a = dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp / coral.cover[ps > 0]
-        b = 1 - dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp * (1 - p[ps > 0, 1:].sum(axis=1) / coral.cover[ps > 0])
-        c = - (coral.p0[ps > 0, 0] + .5 * dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 1])
+        a = self.dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp / coral.cover[ps > 0]
+        b = 1 - self.dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp * (1 - p[ps > 0, 1:].sum(axis=1) / coral.cover[ps > 0])
+        c = - (coral.p0[ps > 0, 0] + .5 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 1])
         p[ps > 0, 0] = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
 
         # bleaching conditions
         # > healthy pop.
-        p[ps <= 0, 0] = coral.p0[ps <= 0, 0] / (1 - dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
+        p[ps <= 0, 0] = coral.p0[ps <= 0, 0] / (1 - self.dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
         # > recovering pop.
-        p[ps <= 0, 1] = coral.p0[ps <= 0, 1] / (1 - dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
+        p[ps <= 0, 1] = coral.p0[ps <= 0, 1] / (1 - self.dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
         # > pale pop.
-        p[ps <= 0, 2] = (coral.p0[ps <= 0, 2] - dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp * (
+        p[ps <= 0, 2] = (coral.p0[ps <= 0, 2] - self.dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp * (
                 p[ps <= 0, 0] + p[ps <= 0, 1]
-        )) / (1 - .5 * dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
+        )) / (1 - .5 * self.dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp)
         # > bleached pop.
         p[ps <= 0, 3] = (coral.p0[ps <= 0, 3] -
-                         .5 * dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp * p[ps <= 0, 2]) / (
-                1 - .25 * dt * CONSTANTS.r_bleaching * ps[ps <= 0.] * coral.Csp
+                         .5 * self.dt * CONSTANTS.r_bleaching * ps[ps <= 0] * coral.Csp * p[ps <= 0, 2]) / (
+                1 - .25 * self.dt * CONSTANTS.r_bleaching * ps[ps <= 0.] * coral.Csp
         )
 
         # # check on carrying capacity
@@ -768,11 +781,10 @@ class PopulationStates:
 
 
 class Calcification:
+    """Calcification rate."""
 
     def __init__(self):
-        """
-        Calcification rate.
-        """
+        """Calcification rate."""
         self.ad = 1
 
     def calcification_rate(self, coral, omega):
