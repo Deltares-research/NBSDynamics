@@ -255,5 +255,8 @@ class TestDataReshape(unittest.TestCase):
             self.assertEqual(result[i], val)
 
 
+# TODO: test for "coral_only_function"-method
+
+
 if __name__ == '__main__':
     unittest.main()
