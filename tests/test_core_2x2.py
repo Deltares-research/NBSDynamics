@@ -1,3 +1,4 @@
+import inspect
 import unittest
 
 import numpy as np
@@ -5,12 +6,28 @@ import numpy as np
 from CoralModel_v3 import core
 from CoralModel_v3.core import Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
     Calcification, Morphology, Dislodgement, Recruitment
+from CoralModel_v3.environment import Constants, Processes
 from CoralModel_v3.utils import DataReshape
 
 
-core.RESHAPE = DataReshape((2, 2))
+def decorator(test):
+    def wrapper(self):
+        core.RESHAPE = DataReshape((2, 2))
+        core.PROCESSES = Processes()
+        core.CONSTANTS = Constants(Processes())
+        test(self)
+    wrapper.__name__ = test.__name__
+    return wrapper
 
 
+def set_shape_2x2(cls):
+    for name, method in inspect.getmembers(cls):
+        if name.startswith('test_'):
+            setattr(cls, name, decorator(method))
+    return cls
+
+
+@set_shape_2x2
 class TestCoral(unittest.TestCase):
 
     # TODO: Set all tested variables as floats; hard-coded.
@@ -103,6 +120,7 @@ class TestCoral(unittest.TestCase):
             self.assertEqual(coral.cover[i], 1)
 
 
+@set_shape_2x2
 class TestLight(unittest.TestCase):
 
     def test_initiation(self):
@@ -171,6 +189,7 @@ class TestLight(unittest.TestCase):
                 self.assertAlmostEqual(float(result[i, j]), answer)
 
 
+@set_shape_2x2
 class TestFlow(unittest.TestCase):
 
     def test_initiation(self):
@@ -183,6 +202,7 @@ class TestFlow(unittest.TestCase):
             self.assertEqual(float(flow.Tp[i]), 4)
 
 
+@set_shape_2x2
 class TestTemperature(unittest.TestCase):
 
     def test_initiation(self):
@@ -203,7 +223,7 @@ class TestTemperature(unittest.TestCase):
                 self.assertAlmostEqual(float(coral.temp[i, j]), 300.00492692)
 
     def test_no_tme(self):
-        PROCESSES.tme = False
+        core.PROCESSES.tme = False
         temperature = Temperature([300, 300])
         coral = Coral(.2, .3, .1, .15, .3)
         coral.initiate_spatial_morphology()
@@ -213,9 +233,9 @@ class TestTemperature(unittest.TestCase):
         for i in range(core.RESHAPE.space):
             for j in range(core.RESHAPE.time):
                 self.assertAlmostEqual(float(coral.temp[i, j]), 300)
-        PROCESSES.tme = True
 
 
+@set_shape_2x2
 class TestPhotosynthesis(unittest.TestCase):
 
     def test_initiation(self):
@@ -247,17 +267,18 @@ class TestPhotosynthesis(unittest.TestCase):
         for i in range(core.RESHAPE.space):
             for j in range(core.RESHAPE.time):
                 self.assertAlmostEqual(float(photosynthesis.pfd[i, j]), .94485915)
-        PROCESSES.pfd = False
+        core.PROCESSES.pfd = False
         photosynthesis.flow_dependency(coral)
         self.assertEqual(float(photosynthesis.pfd), 1)
-        PROCESSES.pfd = True
 
 
+@set_shape_2x2
 class TestPopulationStates(unittest.TestCase):
     # TODO: Write tests for the determination of the population states
     pass
 
 
+@set_shape_2x2
 class TestCalcification(unittest.TestCase):
 
     def test_initiation(self):
@@ -265,6 +286,7 @@ class TestCalcification(unittest.TestCase):
         self.assertEqual(float(calcification.ad), 1)
 
 
+@set_shape_2x2
 class TestMorphology(unittest.TestCase):
 
     def test_initiation(self):
@@ -331,6 +353,7 @@ class TestMorphology(unittest.TestCase):
             self.assertAlmostEqual(float(coral.volume[i]), .005898924)
 
 
+@set_shape_2x2
 class TestDislodgement(unittest.TestCase):
 
     def test_initiation(self):
@@ -384,6 +407,7 @@ class TestDislodgement(unittest.TestCase):
             self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
 
 
+@set_shape_2x2
 class TestRecruitment(unittest.TestCase):
 
     def test_spawning_cover1(self):
@@ -428,4 +452,5 @@ class TestRecruitment(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    core.RESHAPE = DataReshape((2, 2))
     unittest.main()
