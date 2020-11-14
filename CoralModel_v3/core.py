@@ -208,6 +208,14 @@ class Coral:
 
         self._cover = carrying_capacity
 
+    @property
+    def living_cover(self):
+        """Living coral cover based on population states."""
+        if self.pop_states is not None:
+            return self.pop_states.sum(axis=2)
+
+    # TODO: Add morphology initiation function that takes one morphology (as in the __init__) and places them everywhere
+    #  where the coral cover is set to be more than one; i.e. initiate by defining a default morphology and its cover
 
 # # biophysical processes
 
@@ -373,6 +381,9 @@ class Flow:
     @staticmethod
     def wave_attenuation(diameter, height, distance, velocity, period, depth, wac_type):
         """Wave-attenuation coefficient."""
+        # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
+        #  and one implementing this method to dynamically determine the drag coefficient.
+        #  Thus, reformat this method as in CoralModel_v1.
         # # input check
         types = ('current', 'wave')
         if wac_type not in types:
@@ -667,18 +678,21 @@ class Photosynthesis:
 
 class PopulationStates:
     """Bleaching response following the population dynamics."""
-    
+    # TODO: Check this class; incl. writing tests
+
     def __init__(self):
         """Population dynamics."""
 
     def pop_states_t(self, coral, dt=1):
         """Population dynamics over time."""
         coral.pop_states = np.zeros((RESHAPE.space, RESHAPE.time, 4))
+        # coral.living_cover = np.zeros(RESHAPE.spacetime)
         photosynthesis = np.zeros(RESHAPE.space)
         for n in range(RESHAPE.time):
             photosynthesis[coral.cover > 0] = coral.photo_rate[coral.cover > 0, n]
             coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis, dt)
             coral.p0[coral.cover > 0, :] = coral.pop_states[coral.cover > 0, n, :]
+            # coral.living_cover[:, n] = coral.pop_states[:, n, :].sum(axis=1)
 
     @staticmethod
     def pop_states_xy(coral, ps, dt):
@@ -765,7 +779,7 @@ class Morphology:
         """
         Morphological development.
 
-        :param calc_sum: accumulation of calcification of :param dtyear: years [kg m-2 yr-1]
+        :param calc_sum: accumulation of calcification of :param dt_year: years [kg m-2 yr-1]
         :param light_in: incoming light-intensity at water-air interface [umol photons m-2 s-1]
         :param dt_year: update interval [yr], defaults to 1
 
@@ -773,8 +787,12 @@ class Morphology:
         :type light_in: float, int, list, tuple, numpy.ndarray
         :type dt_year: float
         """
-        # TODO: take calcification as full matrix as input and use DataReshape.matrix2array() to convert to annual sum
-        self.calc_sum = calc_sum
+        try:
+            _ = len(calc_sum[0])
+        except TypeError:
+            self.calc_sum = calc_sum
+        else:
+            self.calc_sum = RESHAPE.matrix2array(calc_sum, 'space', 'sum')
         self.dt_year = dt_year
 
         self.I0 = RESHAPE.variable2matrix(light_in, 'time')
@@ -811,9 +829,9 @@ class Morphology:
         self.__coral_object_checker(coral)
 
         rf = CONSTANTS.prop_form * (coral.light.mean(axis=1) / self.I0.mean(axis=1)) * (CONSTANTS.u0 / 1e-6)
-        rf[coral.ucm > 0.] = CONSTANTS.prop_form * (
-                coral.light.mean(axis=1)[coral.ucm > 0.] / self.I0.mean(axis=1)[coral.ucm > 0.]
-        ) * (CONSTANTS.u0 / coral.ucm[coral.ucm > 0.])
+        rf[coral.ucm > 0] = CONSTANTS.prop_form * (
+                coral.light.mean(axis=1)[coral.ucm > 0] / self.I0.mean(axis=1)[coral.ucm > 0]
+        ) * (CONSTANTS.u0 / coral.ucm[coral.ucm > 0])
         self.__rf_optimal = rf
 
     @property
@@ -896,7 +914,6 @@ class Morphology:
 
 
 class Dislodgement:
-    # TODO: Check this class; incl. writing tests.
 
     def __init__(self):
         """
@@ -904,7 +921,7 @@ class Dislodgement:
         """
         self.dmt = None
         self.csf = None
-        self.partial_dislodgement = None
+        self.survival = None
 
     def update(self, coral, survival_coefficient=1):
         """Update morphology due to storm damage."""
@@ -913,71 +930,73 @@ class Dislodgement:
         # # update
         # population states
         for s in range(4):
-            coral.p0[:, s] *= self.partial_dislodgement
+            coral.p0[:, s] *= self.survival
         # morphology
-        coral.volume *= self.partial_dislodgement
+        coral.volume *= self.survival
 
     def partial_dislodgement(self, coral, survival_coefficient=1.):
         """Percentage surviving storm event."""
         try:
-            self.partial_dislodgement = np.ones(coral.dc.shape)
+            self.survival = np.ones(coral.dc.shape)
             dislodged = Dislodgement.dislodgement_criterion(self, coral)
-            self.partial_dislodgement[dislodged] = survival_coefficient * (
+            self.survival[dislodged] = survival_coefficient * (
                     self.dmt[dislodged] / self.csf[dislodged])
         except TypeError:
             if Dislodgement.dislodgement_criterion(self, coral):
-                self.partial_dislodgement = survival_coefficient * self.dmt / self.csf
+                self.survival = survival_coefficient * self.dmt / self.csf
             else:
-                self.partial_dislodgement = 1.
+                self.survival = 1.
 
     def dislodgement_criterion(self, coral):
         """Dislodgement criterion. Returns boolean (array)."""
-        Dislodgement.dislodgement_mechanical_threshold(self, coral)
-        Dislodgement.colony_shape_factor(self, coral)
+        self.dislodgement_mechanical_threshold(coral)
+        self.colony_shape_factor(coral)
         return self.dmt <= self.csf
 
     def dislodgement_mechanical_threshold(self, coral):
         """Dislodgement Mechanical Threshold."""
-        try:
-            self.dmt = 1e20 * np.ones(coral.um.shape)
-            self.dmt[coral.um > 0] = CONSTANTS.sigma_t / (
-                    CONSTANTS.rho_w * CONSTANTS.Cd * coral.um[coral.um > 0] ** 2)
-        except TypeError:
-            if coral.um > 0:
-                self.dmt = CONSTANTS.sigma_t / (
-                        CONSTANTS.rho_w * CONSTANTS.Cd * coral.um ** 2)
-            else:
-                self.dmt = 1e20
+        # # check input
+        if not hasattr(coral.um, '__iter__'):
+            coral.um = np.array([coral.um])
+        if isinstance(coral.um, (list, tuple)):
+            coral.um = np.array(coral.um)
+
+        # # calculations
+        self.dmt = 1e20 * np.ones(coral.um.shape)
+        self.dmt[coral.um > 0] = self.dmt_formula(coral.um[coral.um > 0])
+
+    @staticmethod
+    def dmt_formula(flow_velocity):
+        """Determine the Dislodgement Mechanical Threshold."""
+        return CONSTANTS.sigma_t / (CONSTANTS.rho_w * CONSTANTS.Cd * flow_velocity ** 2)
 
     def colony_shape_factor(self, coral):
         """Colony Shape Factor."""
+        self.csf = coral_only_function(
+            coral=coral,
+            function=self.csf_formula,
+            args=(coral.dc, coral.hc, coral.bc, coral.tc)
+        )
+
+    @staticmethod
+    def csf_formula(dc, hc, bc, tc):
+        """Determine the Colony Shape Factor."""
         # arms of moment
-        arm_top = coral.hc - .5 * coral.tc
-        arm_bottom = .5 * (coral.hc - coral.tc)
+        arm_top = hc - .5 * tc
+        arm_bottom = .5 * (hc - tc)
         # area of moment
-        area_top = coral.dc * coral.tc
-        area_bottom = coral.bc * (coral.hc - coral.tc)
+        area_top = dc * tc
+        area_bottom = bc * (hc - tc)
         # integral
         integral = arm_top * area_top + arm_bottom * area_bottom
         # colony shape factor
-        try:
-            self.csf = np.zeros(coral.dc.shape)
-            self.csf[coral.bc > 0] = 16. / (np.pi * coral.bc ** 3) * integral
-        except TypeError:
-            if coral.bc > 0:
-                self.csf = 16. / (np.pi * coral.bc ** 3) * integral
-            else:
-                self.csf = 0.
+        return 16. / (np.pi * bc ** 3) * integral
 
 
 class Recruitment:
-    # TODO: Check this class; incl. writing tests.
-
-    def __init__(self):
-        """
-        Recruitment dynamics.
-        """
-        self.averaged_healthy_pop = None
+    """
+    Recruitment dynamics.
+    """
 
     def update(self, coral):
         """Update coral cover / volume after spawning event."""
@@ -997,14 +1016,23 @@ class Recruitment:
         power = 2 if param == 'P' else 3
         potential = CONSTANTS.prob_settle * CONSTANTS.no_larvae * CONSTANTS.d_larvae ** power
         # recruitment
-        self.averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
-        recruited = np.zeros(coral.cover.shape)
-        recruited[coral.cover > 0] = potential * self.averaged_healthy_pop * (
-                1 - coral.pop_states[coral.cover > 0, -1, :].sum(axis=1) / coral.cover[coral.cover > 0]
+        averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
+        # living cover
+        living_cover = RESHAPE.matrix2array(coral.living_cover, 'space')
+
+        recruited = coral_only_function(
+            coral=coral,
+            function=self.recruited,
+            args=(potential, averaged_healthy_pop, living_cover, coral.cover)
         )
 
         # # output
         return recruited
+
+    @staticmethod
+    def recruited(potential, averaged_healthy_pop, cover_real, cover_potential):
+        """Determination of recruitment."""
+        return potential * averaged_healthy_pop * (1 - cover_real / cover_potential)
 
 
 if __name__ == '__main__':

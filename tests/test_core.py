@@ -3,8 +3,12 @@ import unittest
 import numpy as np
 
 from CoralModel_v3.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
-    Calcification, Morphology
+    Calcification, Morphology, Dislodgement, Recruitment
 from CoralModel_v3.utils import DataReshape
+
+# TODO: Rewrite tests core for "spacetime = (2, 2)". Modulating RESHAPE.spacetime in this file results in problems,
+#  as for every test the spacetime has to be redefined. Therefore, group them to test the core for non-floats
+#  (i.e. matrices) as well.
 
 
 class TestCoral(unittest.TestCase):
@@ -205,6 +209,7 @@ class TestPhotosynthesis(unittest.TestCase):
 
 
 class TestPopulationStates(unittest.TestCase):
+    # TODO: Write tests for the determination of the population states
     pass
 
 
@@ -234,20 +239,24 @@ class TestCalcification(unittest.TestCase):
 class TestMorphology(unittest.TestCase):
 
     def test_initiation(self):
-        morphology = Morphology(1, 600, 5, .1)
+        morphology = Morphology(1, 600)
         self.assertEqual(morphology.calc_sum, 1)
-        # self.assertEqual(morphology.h, 5)
-        # self.assertEqual(morphology.Kd, .1)
-        self.assertEqual(morphology.dt_year, 1)
         self.assertEqual(morphology.I0, 600)
+        self.assertEqual(morphology.dt_year, 1)
         self.assertEqual(morphology.vol_increase, 0)
 
         self.assertIsNone(morphology.rf_optimal)
         self.assertIsNone(morphology.rp_optimal)
         self.assertIsNone(morphology.rs_optimal)
 
+    def test_calc_sum_init1(self):
+        morphology = Morphology([1, 1], 600)
+        answer = [1, 1]
+        for i, val in enumerate(answer):
+            self.assertEqual(morphology.calc_sum[i], val)
+
     def test_optimal_ratios(self):
-        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'), 5, .1)
+        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'))
         coral = Coral(.2, .3, .1, .15, .3)
         coral.light = DataReshape().variable2matrix(600, 'time')
         coral.ucm = DataReshape().variable2array(.1)
@@ -264,14 +273,14 @@ class TestMorphology(unittest.TestCase):
             self.assertAlmostEqual(float(getattr(morphology, f'{ratio}_optimal')), answers[i])
 
     def test_volume_increase(self):
-        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'), 5, .1)
+        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'))
         coral = Coral(.2, .3, .1, .15, .3)
         coral.Bc = DataReshape().variable2matrix(.3, 'time')
         morphology.delta_volume(coral)
         self.assertAlmostEqual(float(morphology.vol_increase), 8.4375e-6)
 
     def test_morphology_update(self):
-        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'), 5, .1)
+        morphology = Morphology(1, DataReshape().variable2matrix(600, 'time'))
         coral = Coral(.2, .3, .1, .15, .3)
         coral.light = DataReshape().variable2matrix(600, 'time')
         coral.ucm = DataReshape().variable2array(.1)
@@ -284,6 +293,81 @@ class TestMorphology(unittest.TestCase):
         self.assertAlmostEqual(float(coral.rp), .499964271)
         self.assertAlmostEqual(float(coral.rs), .666145658)
         self.assertAlmostEqual(float(coral.volume), .005898924)
+
+
+class TestDislodgement(unittest.TestCase):
+
+    def test_initiation(self):
+        dislodgement = Dislodgement()
+        self.assertIsNone(dislodgement.dmt)
+        self.assertIsNone(dislodgement.csf)
+        self.assertIsNone(dislodgement.survival)
+
+    def test_dmt1(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.um = 0
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        self.assertEqual(dislodgement.dmt, 1e20)
+
+    def test_dmt2(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.um = .5
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        self.assertAlmostEqual(float(dislodgement.dmt), 780.487805, delta=1e-6)
+
+    def test_dmt3(self):
+        dislodgement = Dislodgement()
+        coral = Coral([.2, .2], [.3, .3], [.1, .1], [.15, .15], [.3, .3])
+        coral.um = [0, .5]
+        dislodgement.dislodgement_mechanical_threshold(coral)
+        answers = [1e20, 780.487805]
+        for i, ans in enumerate(answers):
+            self.assertAlmostEqual(float(dislodgement.dmt[i]), ans, delta=1e-6)
+
+    def test_csf1(self):
+        dislodgement = Dislodgement()
+        coral = Coral(.2, .3, .1, .15, .3)
+        dislodgement.colony_shape_factor(coral)
+        self.assertAlmostEqual(float(dislodgement.csf), 40.1070456591576246)
+
+    def test_csf2(self):
+        dislodgement = Dislodgement()
+        coral = Coral([.2, 0], [.3, 0], [.1, 0], [.15, 0], [.3, 0])
+        dislodgement.colony_shape_factor(coral)
+        answers = [40.1070456591576246, 0]
+        for i, ans in enumerate(answers):
+            self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
+
+
+class TestRecruitment(unittest.TestCase):
+
+    def test_spawning_cover1(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.pop_states = np.array(
+            [
+                [
+                    [1, 0, 0, 0]
+                ]
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        self.assertEqual(float(result), 0)
+
+    def test_spawning_cover2(self):
+        recruitment = Recruitment()
+        coral = Coral(.2, .3, .1, .15, .3)
+        coral.pop_states = np.array(
+            [
+                [
+                    [.5, 0, 0, 0]
+                ]
+            ]
+        )
+        result = recruitment.spawning(coral, 'P')
+        self.assertAlmostEqual(float(result), 2.5e-5)
 
 
 if __name__ == '__main__':
