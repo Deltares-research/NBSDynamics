@@ -6,7 +6,7 @@ CoralModel v3 - loop
 
 import numpy as np
 
-from CoralModel_v3 import core, utils
+from CoralModel_v3 import core, utils, environment, hydrodynamics
 
 
 # TODO: Write the model execution as a function to be called in "interface.py".

@@ -257,6 +257,4 @@ def coral_only_function(coral, function, args, no_cover_value=0):
     ])
     return output
 
-# TODO: Include methods on writing the output files here in "utils.py".
-# TODO: Check if the netCDF4-package can be removed from this project;
-#  i.e. check if once installed, it is no longer needed.
+# TODO: Include methods on writing the output files here in "utils.py"
