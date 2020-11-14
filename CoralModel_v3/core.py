@@ -518,6 +518,7 @@ class Flow:
                 drag_length = (2 * height * (1 - lambda_planar)) / (drag_coefficient * lambda_frontal)
                 above_motion = (above_flow * period) / (2 * np.pi)
                 if wac_type == 'wave':
+                    # noinspection PyTypeChecker
                     wac = abs(newton(
                         function, x0=complex(.1, .1), fprime=derivative,
                         maxiter=CONSTANTS.maxiter_aw
@@ -846,12 +847,15 @@ class PopulationStates:
                 8 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] / coral.Csp
         ) * p[ps > 0, 3]) / (1 + self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp)
         # > recovering pop.
-        p[ps > 0, 1] = (coral.p0[ps > 0, 1] + self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 2]) / (
+        p[ps > 0, 1] = (coral.p0[ps > 0, 1] +
+                        self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 2]) / (
                 1 + .5 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp
         )
         # > healthy pop.
         a = self.dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp / coral.cover[ps > 0]
-        b = 1 - self.dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp * (1 - p[ps > 0, 1:].sum(axis=1) / coral.cover[ps > 0])
+        b = 1 - self.dt * CONSTANTS.r_growth * ps[ps > 0] * coral.Csp * (
+                1 - p[ps > 0, 1:].sum(axis=1) / coral.cover[ps > 0]
+        )
         c = - (coral.p0[ps > 0, 0] + .5 * self.dt * CONSTANTS.r_recovery * ps[ps > 0] * coral.Csp * p[ps > 0, 1])
         p[ps > 0, 0] = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
 
@@ -1108,16 +1112,19 @@ class Dislodgement:
         :type coral: Coral
         :type survival_coefficient: float, optional
         """
+        # TODO: Rewrite such that the distinction between an array or a float is well build in.
         try:
             self.survival = np.ones(coral.dc.shape)
-            dislodged = Dislodgement.dislodgement_criterion(self, coral)
-            self.survival[dislodged] = survival_coefficient * (
-                    self.dmt[dislodged] / self.csf[dislodged])
         except TypeError:
             if Dislodgement.dislodgement_criterion(self, coral):
                 self.survival = survival_coefficient * self.dmt / self.csf
             else:
                 self.survival = 1.
+        else:
+            dislodged = Dislodgement.dislodgement_criterion(self, coral)
+            self.survival[dislodged] = survival_coefficient * (
+                    self.dmt[dislodged] / self.csf[dislodged]
+            )
 
     def dislodgement_criterion(self, coral):
         """Dislodgement criterion. Returns boolean (array).
