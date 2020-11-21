@@ -3,11 +3,11 @@ import unittest
 
 import numpy as np
 
-from CoralModel_v3 import core
-from CoralModel_v3.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
+from coral_model import core
+from coral_model.core import CONSTANTS, Coral, Light, Flow, Temperature, PROCESSES, Photosynthesis, \
     Calcification, Morphology, Dislodgement, Recruitment
-from CoralModel_v3.environment import Processes, Constants
-from CoralModel_v3.utils import DataReshape
+from coral_model.environment import Processes, Constants
+from coral_model.utils import DataReshape
 
 
 def decorator(test):

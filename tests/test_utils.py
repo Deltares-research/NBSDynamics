@@ -2,7 +2,7 @@ import unittest
 
 import numpy
 
-from CoralModel_v3.utils import SpaceTime, DataReshape
+from coral_model.utils import SpaceTime, DataReshape
 
 
 class TestSpaceTime(unittest.TestCase):

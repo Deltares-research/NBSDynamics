@@ -1,6 +1,6 @@
 import unittest
 
-from CoralModel_v3.environment import Processes, Constants
+from coral_model.environment import Processes, Constants
 
 
 class TestProcesses(unittest.TestCase):
