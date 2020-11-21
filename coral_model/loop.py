@@ -1,12 +1,12 @@
 """
-CoralModel v3 - loop
+coral_model v3 - loop
 
 @author: Gijs G. Hendrickx
 """
 
 import numpy as np
 
-from CoralModel_v3 import core, utils, environment, hydrodynamics
+from coral_model import core, utils, environment, hydrodynamics
 
 
 # TODO: Write the model execution as a function to be called in "interface.py".

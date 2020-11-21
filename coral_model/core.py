@@ -1,5 +1,5 @@
 """
-CoralModel v3 - core
+coral_model v3 - core
 
 @author: Gijs G. Hendrickx
 """
@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import newton
 
-from CoralModel_v3.environment import Processes, Constants
-from CoralModel_v3.utils import DataReshape, coral_only_function
+from coral_model.environment import Processes, Constants
+from coral_model.utils import DataReshape, coral_only_function
 
 # # data formatting -- to be reformatted in the model simulation
 RESHAPE = DataReshape()
@@ -466,7 +466,7 @@ class Flow:
         """
         # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
         #  and one implementing this method to dynamically determine the drag coefficient.
-        #  Thus, reformat this method as in CoralModel_v1.
+        #  Thus, reformat this method as in coral_model_v0.
         # # input check
         types = ('current', 'wave')
         if wac_type not in types:

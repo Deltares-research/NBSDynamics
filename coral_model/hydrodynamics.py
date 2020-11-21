@@ -1,5 +1,5 @@
 """
-CoralModel v3 - hydrodynamics
+coral_model v3 - hydrodynamics
 
 @author: Gijs G. Hendrickx
 """
@@ -14,7 +14,7 @@ faulthandler.enable()
 
 
 class Delft3D:
-    """Coupling of CoralModel to Delft3D using the BMI wrapper."""
+    """Coupling of coral_model to Delft3D using the BMI wrapper."""
     
     def __init__(self, home_dir, mdu_file, config_file=None):
         self.home = home_dir

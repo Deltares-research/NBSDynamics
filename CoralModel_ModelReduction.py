@@ -2585,7 +2585,7 @@ with tqdm(range(int(Y))) as pbar:
         if any(files):
             if i == 0:
                 mset = Dataset(mapfilef, 'w', format='NETCDF4')
-                mset.description = 'Mapped simulation data of the CoralModel'
+                mset.description = 'Mapped simulation data of the coral_model'
 
                 # dimensions
                 mset.createDimension('time', None)
@@ -2760,7 +2760,7 @@ with tqdm(range(int(Y))) as pbar:
             date0 = datetime.datetime(2000, 1, 1)
             if i == 0:
                 hset = Dataset(hisfilef, 'w', format='NETCDF4')
-                hset.description = 'Historic simulation data of the CoralModel'
+                hset.description = 'Historic simulation data of the coral_model'
 
                 # dimensions
                 hset.createDimension('time', None)

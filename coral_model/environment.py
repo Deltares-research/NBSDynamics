@@ -1,5 +1,5 @@
 """
-CoralModel v3 - environment
+coral_model v3 - environment
 
 @author: Gijs G. Hendrickx
 """
@@ -11,7 +11,7 @@ import numpy as np
 
 
 class Processes:
-    """Processes included in CoralModel simulations."""
+    """Processes included in coral_model simulations."""
     # TODO: Include the on/off-switch for more processes:
     #  (1) hydrodynamic coupling; (2) acidity; (3) light; (4) temperature; (5) dislodgement; (6) recruitment; (7) etc.
 
@@ -57,7 +57,7 @@ class Processes:
 
 
 class Constants:
-    """Object containing all constants used in CoralModel simulations."""
+    """Object containing all constants used in coral_model simulations."""
 
     def __init__(self, processes, lac_default=None, light_spreading_max=None,
                  turbulence_coef=None, inertia_coef=None,

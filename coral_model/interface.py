@@ -1,5 +1,5 @@
 """
-CoralModel v3 - interface
+coral_model v3 - interface
 
 @author: Gijs G. Hendrickx
 """
