@@ -26,7 +26,7 @@ Hence, the corals are modelled such that they can adapt to changing environmenta
 
 For more details on the biophysics, reference is made to the 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
-*and the [paper]()* (**note:** paper is still in development, 29-09-2020).
+*and the [paper]()* (**note:** paper is submitted, 21-11-2020).
 
 ## Python code <a name="python-code"></a>
 The Python code is written in Python 3 and makes use of various packages. 
