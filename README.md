@@ -16,7 +16,8 @@ More information on this version control [here](#version-control).
 ## Biophysics <a name="biophsics"></a>
 This biophysical model framework is part of the result of a 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
-of which the key findings are to be published in *Journal (TBD)* (**note:** paper is submitted, 21-11-2020).
+of which the key findings are published in *Environmental Modelling and Software*
+(the paper can be found [here](https://www.sciencedirect.com/science/article/pii/S1364815221001468?via%3Dihub)).
 
 The biophysical relations used in the biophysical model framework are mainly process-based, 
 where for the acidity the proxy of the aragonite saturation state is used. 
@@ -26,7 +27,8 @@ Hence, the corals are modelled such that they can adapt to changing environmenta
 
 For more details on the biophysics, reference is made to the 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
-*and the [paper]()* (**note:** paper is submitted, 21-11-2020).
+and the [paper](https://www.sciencedirect.com/science/article/pii/S1364815221001468?via%3Dihub) that substitute this
+repository.
 
 ## Python code <a name="python-code"></a>
 The Python code is written in Python 3 and makes use of various packages. 
@@ -51,7 +53,7 @@ with Delft3D Flexible Mesh.
 There are two versions of the CoralModel: ``coral_model_v0`` and ``coral_model``.
 The first (``coral_model_v0``) is the original code as used in the study (i.e. 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
-and [paper]()).
+and [paper](https://www.sciencedirect.com/science/article/pii/S1364815221001468?via%3Dihub)).
 The latter (``coral_model``) is an updated version, which is rewritten such that it enhances collaboration.
 This collaboration was one of the goals to further develop this model, 
 and the biophysical modelling of coral development.
