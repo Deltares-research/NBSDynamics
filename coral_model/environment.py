@@ -1,34 +1,187 @@
 """
-coral_model v3 - environment
+coral_mostoel - environment
 
 @author: Gijs G. Hendrickx
+@contributor: Peter M.J. Herman
 """
-
-import os
 
 import pandas as pd
 import numpy as np
+import distutils.util as du
+import os
 
+class Constants:
+    """Object containing all constants used in coral_model simulations."""
 
-class Processes:
-    """Processes included in coral_model simulations."""
-    # TODO: Include the on/off-switch for more processes:
-    #  (1) hydrodynamic coupling; (2) acidity; (3) light; (4) temperature; (5) dislodgement; (6) recruitment; (7) etc.
-
-    def __init__(self, fme=True, tme=True, pfd=True):
+    def __init__(self):
+        
         """
-        :param fme: flow micro-environment, defaults to True
-        :param tme: thermal micro-environment, defaults to True
-        :param pfd: photosynthetic flow dependency, defaults to True
+                
+        
+        # Key = value           ! Default   ! Definition [units]
+        #--------------------------------------------------------------------------------------------------------------------
+        # processes
+        fme = False             # False     ! flow micro-environment
+        tme = False             # False     ! thermal micro-environment
+        pfd = False             # False     ! ??
+        warn_proc = True        # True      ! print warning for incompatible processes
+        
+        # light attenuation
+        Kd0 = 0.1               #  .1       ! constant light-attenuation coefficient [m-1]; used when no time-series provided
+        theta_max = 0.5         #  0.5      ! maximum spreading of light [rad]; defined at water-air interface
+        
+        # flow mirco-environment
+        Cs = 0.17               #  .17      ! Smagorinsky coefficient [-]
+        Cm = 1.7                #  1.7      ! inertia coefficient [-]
+        Cf = 0.01               #  .01      ! friction coefficient [-]
+        nu = 1e-6               #  1e-6     ! kinematic viscosity of water [m2 s-1]
+        alpha = 1e-7            #  1e-7     ! thermal diffusivity of water [m2 s-1]
+        psi = 2                 #  2        ! ratio of lateral over longitudinal spacing of corals [-]
+        wcAngle = 0.            #  0.       ! angle between current- and wave-induced flows [rad]
+        rd = 500                #  500      ! velocity boundary layer wall-coordinate [-]
+        numericTheta = 0.5      #  .5       ! update ratio for above-canopy flow [-]
+        err = 1e-3              #  1e-3     ! maximum allowed relative error for drag coefficient estimation [-]
+        maxiter_k = 1e5         #  1e5      ! maximum number of iterations taken over canopy layers
+        maxiter_aw = 1e5        #  1e5      ! maximum number of iterations to solve complex-valued wave-attenuation coefficient
+        
+        # thermal micro-environment
+        K0 = 80.                #  80.      ! morphological thermal coefficient [-]
+        ap = 0.4                #  .4       ! absorptivity of coral [-]
+        k = 0.6089              #  .6089    ! thermal conductivity [K m-1 s-1 K-1]
+        
+        # photosynthetic light dependency
+        iota = .6               # .6        ! photo-acclimation rate [d-1]
+        ik_max = 372.32         # 372.32    ! maximum quasi steady-state saturation light-intensity [umol photons m-2 s-1]
+        pm_max = 1.             #  1.       ! maximum quasi steady-state maximum photosynthetic efficiency [-]
+        betaI = .34             # .34       ! exponent of the quasi steady-state saturation light-intensity [-]
+        betaP = .09             # .09       ! exponent of the quasi steady-state maximum photosynthetic efficiency [-]
+        
+        # photosynthetic thermal dependency
+        Ea = 6e4                # 6e4       ! activation energy [J mol-1]
+        R = 8.31446261815324    # 8.31446261815324 ! gas constant [J K-1 mol-1]
+        k_var = 2.45            # 2.45      ! thermal-acclimation coefficient [-]
+        nn = 60                 # 60        ! thermal-acclimation period [y]
+        
+        # photosynthetic flow dependency
+        pfd_min = .68886964     # .68886964 ! minimum photosynthetic flow dependency [-]
+        ucr = .5173             #.17162374 if processes.fme else .5173) ! minimum flow velocity at which photosynthesis is not limited by flow [m s-1]
+        
+        
+        # population dynamics
+        r_growth = .002         # 0.002     ! growth rate [d-1]
+        r_recovery = .2         # .2        ! recovery rate [d-1]
+        r_mortality = .04       # .04       ! mortality rate [d-1]
+        r_bleaching =  8.       # 8.        ! bleaching rate [d-1]
+        
+        # calcification
+        gC = .5                 # .5        ! calcification constant [kg m-2 d-1]
+        omegaA0 = 5.            # 5         ! aragonite saturation state used in absence of time-series [-]
+        omega0 = .14587415      # .14587415 ! aragonite dissolution state [-]
+        kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
+        #
+        # morphological development
+        prop_form = .1          # .1        ! overall form proportionality constant [-]
+        prop_plate = .5         # .5        ! overall plate proportionality constant [-
+        prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
+        prop_space = .5         # .5/np.sqrt(2.) ! overall space proportionality constant [-]
+        prop_space_light = .1   # .1      ! light space proportionality constant [-]
+        prop_space_flow = .1    # .1        ! flow space proportionality constant [-]
+        u0 = .2                 # .2        ! base-line flow velocity [m s-1]
+        rho_c = 1600.           # 1600.     ! density of coral [kg m-3]
+        #
+        # dislodgement criterion
+        sigma_t = 2e5           # 2e5       ! tensile strength of substratum [N m-2]
+        Cd = 1.                 # 1.        ! drag coefficient [-]
+        rho_w = 1025.           # 1025.     ! density of water [kg m-3]
+        #
+        # coral recruitment
+        no_larvae = 1e6         # 1e6       ! number of larvae released during mass spawning event [-]
+        prob_settle = 1e-4      # 1e-4      ! probability of settlement [-]
+        d_larvae = 1e-3         # 1e-3      ! larval diameter [m]
 
-        :type fme: bool, optional
-        :type tme: bool, optional
-        :type pfd: bool, optional
         """
-        self.pfd = pfd
+                # Processes
+        self.fme = None
+        self.tme = None
+        self.pfd = None
+        self.warn_proc = None
+        
+        # light micro-environment
+        self.Kd0 = None
+        self.theta_max = None
 
-        if not pfd:
-            if fme:
+        # flow micro-environment
+        self.Cs =  None
+        self.Cm =  None
+        self.Cf = None
+        self.nu =  None
+        self.alpha =  None
+        self.psi =  None
+        self.wcAngle =  None
+        self.rd =  None
+        self.numericTheta =  None
+        self.err =  None
+        self.maxiter_k =  None
+        self.maxiter_aw =  None
+
+        # thermal micro-environment
+        self.K0 =  None
+        self.ap =  None
+        self.k =  None
+
+        # photosynthetic light dependency
+        self.iota =  None
+        self.ik_max =  None
+        self.pm_max =  None
+        self.betaI = None
+        self.betaP =  None
+
+        # photosynthetic thermal dependency
+        self.Ea = None
+        self.R = None
+        self.k_var =  None
+        self.nn =  None
+
+        # photosynthetic flow dependency
+        self.pfd_min =  None
+        self.ucr = None
+
+        # population dynamics
+        self.r_growth =  None
+        self.r_recovery =  None
+        self.r_mortality = None
+        self.r_bleaching = None
+
+        # calcification
+        self.gC =  None
+        self.omegaA0 =  None
+        self.omega0 = None
+        self.kappaA = None
+
+        # morphological development
+        self.prop_form =  None
+        self.prop_plate =  None
+        self.prop_plate_flow =  None
+        self.prop_space =  None
+        self.prop_space_light = None
+        self.prop_space_flow =  None
+        self.u0 = None
+        self.rho_c = None
+
+        # dislodgement criterion
+        self.sigma_t = None
+        self.Cd = None
+        self.rho_w = None
+
+        # coral recruitment
+        self.no_larvae =  None
+        self.prob_settle = None
+        self.d_larvae =  None
+    
+
+    def check_processes(self):
+        if not self.pfd:
+            if self.fme and self.warn_proc:
                 print(
                     f'WARNING: Flow micro-environment (FME) not possible '
                     f'when photosynthetic flow dependency (PFD) is disabled.'
@@ -37,9 +190,8 @@ class Processes:
             self.tme = False
 
         else:
-            self.fme = fme
-            if not fme:
-                if tme:
+            if not self.fme:
+                if self.tme and self.warn_proc:
                     print(
                         f'WARNING: Thermal micro-environment (TME) not possible '
                         f'when flow micro-environment is disabled.'
@@ -47,280 +199,171 @@ class Processes:
                 self.tme = False
 
             else:
-                self.tme = tme
+                self.tme = self.tme
 
-        if tme:
+        if self.tme and self.warn_proc:
             print('WARNING: Thermal micro-environment not fully implemented yet.')
 
-        if not pfd:
+        if not self.pfd and self.warn_proc:
             print('WARNING: Exclusion of photosynthetic flow dependency not fully implemented yet.')
 
 
-class Constants:
-    """Object containing all constants used in coral_model simulations."""
+    def read_it(self,inp_file):        
+        self.inpfile=inp_file
+            
+        keyvals={}
+        with open(self.inpfile) as f:
+            for line in f:
+                if(len(line)>1):
+                    linee = line
+                    if (line.count("#")>0):
+                        linee,dum = line.split ("#")
+                    if(len(linee)>0):
+                        name, value = linee.split("=")
+                        value=value.lower().strip()
+                        try:
+                            keyvals[name.strip()] = float(value)
+                        except (ValueError):
+                            keyvals[name.strip()]=bool(du.strtobool(value))
 
-    def __init__(self, processes, lac_default=None, light_spreading_max=None,
-                 turbulence_coef=None, inertia_coef=None,
-                 friction_coef=None, kin_viscosity=None, therm_diff=None, spacing_ratio=None, wc_angle=None, rd=None,
-                 theta=None, err=None, maxiter_k=None, maxiter_aw=None, thermal_coef=None, absorptivity=None,
-                 therm_cond=None, pa_rate=None, sat_intensity_max=None, photo_max=None,
-                 beta_sat_intensity=None, beta_photo=None, act_energy=None, gas_constant=None, thermal_variability=None,
-                 nn=None, pfd_min=None, ucr=None, r_growth=None, r_recovery=None, r_mortality=None, r_bleaching=None,
-                 calcification_const=None, arg_sat_default=None, omega0=None, kappa0=None, prop_form=None,
-                 prop_plate=None, prop_plate_flow=None, prop_space=None, prop_space_light=None, prop_space_flow=None,
-                 u0=None, rho_c=None, sigma_tensile=None, drag_coef=None, rho_w=None, no_larvae=None,
-                 prob_settle=None, d_larvae=None):
-        """
-        Parameters
-        ----------
-        processes : Processes
-            Definition of the processes that are included, specified by means
-            of the Processes-object.
-
-        > light micro-environment
-        lac_default : numeric, optional
-            Constant light-attenuation coefficient; is used when no time-series
-            is available [m-1]. The default is 0.1.
-        light_spreading_max : numeric, optional
-            Maximum spreading of light as measured at the water-air interface
-            [rad]. The default is 0.5*pi.
-
-        > flow micro-environment
-        turbulence_coef : float, optional
-            Smagorinsky coefficient [-]. The default is 0.17.
-        inertia_coef : float, optional
-            Inertia coefficient [-]. The default is 1.7.
-        friction_coef : float, optional
-            Friction coefficient [-]. The default is 0.01.
-        kin_viscosity : float, optional
-            Kinematic viscosity of water [m2 s-1]. The default is 1e6.
-        therm_diff : float, optional
-            Thermal diffusivity of water [m2 s-1]. The default is 1e-7.
-        spacing_ratio : float, optional
-            Ratio of lateral over streamwise spacing of corals [-]. The default
-            is 2.
-        wc_angle : float, optional
-            Angle between current- and wave-induced flows [rad]. The default
-            is 0.
-        rd : float, optional
-            Velocity boundary layer wall-coordinate [-]. The default is 500.
-        theta :  float, optional
-            Update ratio for above-canopy flow [-]. The default is 0.5.
-        err :  float, optional
-            Maximum allowed relative error [-]. The default is 1e-6.
-        maxiter_k :  float, optional
-            Maximum number of iterations taken over the canopy layers. The
-            default is 1e5.
-        maxiter_aw :  float, optional
-            Maximum number of iterations to solve the complex-valued wave-
-            attenuation coefficient. The default is 1e5.
-
-        > thermal micro-environment
-        thermal_coef : float, optional
-            Morphological thermal coefficient [-]. The default is 80.
-        absorptivity : float, optional
-            Absorptivity of coral [-]. The default is 0.4.
-        therm_cond : float, optional
-            Thermal conductivity [J m-1 s-1 K-1]. The default is 0.6089.
-
-        > photosynthetic light dependency
-        pa_rate : float, optional
-            Photo-acclimation rate [d-1]. The default is 0.6.
-        sat_intensity_max : float, optional
-            Maximum value of the quasi steady-state for the saturation light-
-            intensity [umol photons m-2 s-1]. The default is 372.32.
-        photo_max : float, optional
-            Maximum value of the quasi steady-state for the maximum
-            photosynthetic efficiency [-]. The default is 1.
-        beta_sat_intensity : float, optional
-            Exponent of the quasi steady-state for the saturation light-
-            intensity [-]. The default is 0.34.
-        beta_photo : float, optional
-            Exponent of the quasi steady-state for the maximum photosynthetic
-            efficiency [-]. The default is 0.09.
-
-        > photosynthetic thermal dependency
-        act_energy : float, optional
-            Activation energy [J mol-1]. The default is 6e4.
-        gas_constant : float, optional
-            Gas constant [J K-1 mol-1]. The default is 8.31446261815324.
-        thermal_variability : float, optional
-            Thermal-acclimation coefficient [-]. The default is 2.45.
-        nn : float, optional
-            Thermal-acclimation period [yrs]. The default is 60.
-
-        > photosynthetic flow dependency
-        pfd_min : float, optional
-            Minimum photosynthetic flow dependency [-]. The default is
-            0.68886964.
-        ucr : float, optional
-            Minimum flow velocity at which photosynthesis is not limited by
-            flow [m s-1]. The default is (1) 0.17162374 if flow micro-
-            environment is enabled; and (2) 0.5173... if flow micro-environment
-            is disabled.
-
-        > population states
-        r_growth : float, optional
-            Growth rate [d-1]. The default is 0.002.
-        r_recovery : float, optional
-            Recovering rate [d-1]. The default is 0.2.
-        r_mortality : float, optional
-            Mortality rate [d-1]. The default is 0.04.
-        r_bleaching : float, optional
-            Bleaching rate [d-1]. The default is 8.
-
-        > calcification
-        calcification_const : float, optional
-            Calcification constant [kg m-2 d-1].. The default is 0.5.
-        arg_sat_default : float, optional
-            Constant aragonite saturation state (is used when no time-series of
-            the parameter is available) [-]. The default is 5.
-        omega0 : float, optional
-            Aragonite dissolution state [-]. The default is 0.14587415.
-        kappa0 : float, optional
-            Modified Michaelis-Menten half-rate coefficient [-]. The default
-            is 0.66236107.
-
-        > morphological development
-        prop_form : float, optional
-            Overall form proportionality constant [-]. The default is 0.1.
-        prop_plate : float, optional
-            Overall plate proportionality constant [-]. The default is 0.5.
-        prop_plate_flow : float, optional
-            Flow plate proportionality constant [-]. The default is 0.1.
-        prop_space : float, optional
-            Overall spacing proportionality constant [-]. The default is
-            0.5 / sqrt(2).
-        prop_space_light : float, optional
-            Light spacing proportionality constant [-]. The default is 0.1.
-        prop_space_flow : float, optional
-            Flow spacing proportionality constant [-]. The default is 0.1.
-        u0 : float, optional
-            Base-line flow velocity [m s-1]. The default is 0.2.
-        rho_c : float, optional
-            Density of coral [kg m-3]. The default is 1600.
-
-        > dislodgement criterion
-        sigma_tensile : float, optional
-            Tensile strength of substratum [N m-2]. The default is 2e5.
-        drag_coef : float, optional
-            Drag coefficient [-]. The default is 1.
-        rho_w : float, optional
-            Density of water [kg m-3]. The default is 1025.
-
-        > coral recruitment
-        no_larvae : float, optional
-            Number of larvae released during mass spawning event [-]. The
-            default is 1e6.
-        prob_settle : float, optional
-            Probability of settlement [-]. The default is 1e-4.
-        d_larvae : float, optional
-            Larval diameter [m]. The default is 1e-3.
-
-        """
         def default(x, default_value):
             """Set default value if no custom value is provided."""
-            if x is None:
-                return default_value
-            return x
+            xx = keyvals.get(x)
+            if (xx is None):
+                xx = default_value
+            return xx
 
+        # Processes
+        self.fme = default ("fme",False) 
+        self.tme = default ("tme",False)
+        self.pfd = default ("pfd",False)
+        self.warn_proc = default("warn_proc",True)
+        
         # light micro-environment
-        self.Kd0 = default(lac_default, .1)
-        self.theta_max = default(light_spreading_max, .5 * np.pi)
+        self.Kd0 = default("Kd0", .1)
+        self.theta_max = default("theta_max", .5) * np.pi
 
-        # flow mirco-environment
-        self.Cs = default(turbulence_coef, .17)
-        self.Cm = default(inertia_coef, 1.7)
-        self.Cf = default(friction_coef, .01)
-        self.nu = default(kin_viscosity, 1e-6)
-        self.alpha = default(therm_diff, 1e-7)
-        self.psi = default(spacing_ratio, 2)
-        self.wcAngle = default(wc_angle, 0.)
-        self.rd = default(rd, 500)
-        self.numericTheta = default(theta, .5)
-        self.err = default(err, 1e-3)
-        self.maxiter_k = int(default(maxiter_k, 1e5))
-        self.maxiter_aw = int(default(maxiter_aw, 1e5))
+        # flow micro-environment
+        self.Cs = default("Cs", .17)
+        self.Cm = default("Cm", 1.7)
+        self.Cf = default("Cf", .01)
+        self.nu = default("nu", 1e-6)
+        self.alpha = default("alpha", 1e-7)
+        self.psi = default("psi", 2)
+        self.wcAngle = default("wcAngle", 0.)
+        self.rd = default("rd", 500)
+        self.numericTheta = default("numericTheta", .5)
+        self.err = default("err", 1e-3)
+        self.maxiter_k = int(default("maxiter_k", 1e5))
+        self.maxiter_aw = int(default("maxiter_aw", 1e5))
 
         # thermal micro-environment
-        self.K0 = default(thermal_coef, 80.)
-        self.ap = default(absorptivity, .4)
-        self.k = default(therm_cond, .6089)
+        self.K0 = default("K0", 80.)
+        self.ap = default("ap", .4)
+        self.k = default("k", .6089)
 
         # photosynthetic light dependency
-        self.iota = default(pa_rate, .6)
-        self.ik_max = default(sat_intensity_max, 372.32)
-        self.pm_max = default(photo_max, 1.)
-        self.betaI = default(beta_sat_intensity, .34)
-        self.betaP = default(beta_photo, .09)
+        self.iota = default("iota", .6)
+        self.ik_max = default("ik_max", 372.32)
+        self.pm_max = default("pm_max", 1.)
+        self.betaI = default("betaI", .34)
+        self.betaP = default("beta_P", .09)
 
         # photosynthetic thermal dependency
-        self.Ea = default(act_energy, 6e4)
-        self.R = default(gas_constant, 8.31446261815324)
-        self.k_var = default(thermal_variability, 2.45)
-        self.nn = default(nn, 60)
+        self.Ea = default("Ea", 6e4)
+        self.R = default("R", 8.31446261815324)
+        self.k_var = default("k_var", 2.45)
+        self.nn = default("nn", 60)
 
         # photosynthetic flow dependency
-        self.pfd_min = default(pfd_min, .68886964)
-        self.ucr = default(ucr, .17162374 if processes.fme else .5173)
+        self.pfd_min = default("pfd_min", .68886964)
+        self.ucr = default("ucr", .5173)
 
         # population dynamics
-        self.r_growth = default(r_growth, .002)
-        self.r_recovery = default(r_recovery, .2)
-        self.r_mortality = default(r_mortality, .04)
-        self.r_bleaching = default(r_bleaching, 8.)
+        self.r_growth = default("r_growth", .002)
+        self.r_recovery = default("r_recovery", .2)
+        self.r_mortality = default("r_mortality", .04)
+        self.r_bleaching = default("r_bleaching", 8.)
 
         # calcification
-        self.gC = default(calcification_const, .5)
-        self.omegaA0 = default(arg_sat_default, 5.)
-        self.omega0 = default(omega0, .14587415)
-        self.kappaA = default(kappa0, .66236107)
+        self.gC = default("gC", .5)
+        self.omegaA0 = default("omegaA0", 5.)
+        self.omega0 = default("omega0", .14587415)
+        self.kappaA = default("kappaA", .66236107)
 
         # morphological development
-        self.prop_form = default(prop_form, .1)
-        self.prop_plate = default(prop_plate, .5)
-        self.prop_plate_flow = default(prop_plate_flow, .1)
-        self.prop_space = default(prop_space, .5 / np.sqrt(2.))
-        self.prop_space_light = default(prop_space_light, .1)
-        self.prop_space_flow = default(prop_space_flow, .1)
-        self.u0 = default(u0, .2)
-        self.rho_c = default(rho_c, 1600.)
+        self.prop_form = default("prop_form", .1)
+        self.prop_plate = default("prop_plate", .5)
+        self.prop_plate_flow = default("prop_plate_flow", .1)
+        self.prop_space = default("prop_space", .5) / np.sqrt(2.)
+        self.prop_space_light = default("prop_space_light", .1)
+        self.prop_space_flow = default("prop_space_flow", .1)
+        self.u0 = default("u0", .2)
+        self.rho_c = default("rho_c", 1600.)
 
         # dislodgement criterion
-        self.sigma_t = default(sigma_tensile, 2e5)
-        self.Cd = default(drag_coef, 1.)
-        self.rho_w = default(rho_w, 1025.)
+        self.sigma_t = default("sigma_t", 2e5)
+        self.Cd = default("Cd", 1.)
+        self.rho_w = default("rho_w", 1025.)
 
         # coral recruitment
-        self.no_larvae = default(no_larvae, 1e6)
-        self.prob_settle = default(prob_settle, 1e-4)
-        self.d_larvae = default(d_larvae, 1e-3)
+        self.no_larvae = default("no_larvae", 1e6)
+        self.prob_settle = default("prob_settle", 1e-4)
+        self.d_larvae = default("d_larvae", 1e-3)
+        
+        # check processes for consistency
+        self.check_processes
+
 
 
 class Environment:
+    # TODO: Make this class robust
 
-    def __init__(self, light=None, light_attenuation=None, temperature=None, acidity=None, storm_category=None):
-        self.light = light
-        self.light_attenuation = light_attenuation
-        self.temp = temperature
-        self.acid = acidity
-        self.storm_category = storm_category
+    _dates = None
+    _light = None
+    _light_attenuation = None
+    _temperature = None
+    _aragonite = None
+    _storm_category = None
+
+    @property
+    def light(self):
+        """Light-intensity in micro-mol photons per square metre-second."""
+        return self._light
+
+    @property
+    def light_attenuation(self):
+        """Light-attenuation coefficient in per metre."""
+        return self._light_attenuation
+
+    @property
+    def temperature(self):
+        """Temperature time-series in either Celsius or Kelvin."""
+        return self._temperature
+
+    @property
+    def aragonite(self):
+        """Aragonite saturation state."""
+        return self._aragonite
+
+    @property
+    def storm_category(self):
+        """Storm category time-series."""
+        return self._storm_category
 
     @property
     def temp_kelvin(self):
         """Temperature in Kelvin."""
-        if all(self.temp) < 100.:
-            return self.temp + 273.15
-        else:
-            return self.temp
+        if all(self.temperature.values < 100) and self.temperature is not None:
+            return self.temperature + 273.15
+        return self.temperature
 
     @property
     def temp_celsius(self):
         """Temperature in Celsius."""
-        if all(self.temp) > 100.:
-            return self.temp - 273.15
-        else:
-            return self.temp
+        if all(self.temperature.values > 100) and self.temperature is not None:
+            return self.temperature - 273.15
+        return self.temperature
 
     @property
     def temp_mmm(self):
@@ -333,33 +376,120 @@ class Environment:
 
     @property
     def dates(self):
-        d = self.temp.reset_index().drop('sst', axis=1)
+        """Dates of time-series."""
+        if self._dates is not None:
+            d = self._dates
+        elif self.light is not None:
+            # TODO: Check column name of light-file
+            d = self.light.reset_index().drop('light', axis=1)
+            self._dates=d
+        elif self.temperature is not None:
+            d = self.temperature.reset_index().drop('sst', axis=1)
+            self._dates=d
+        else:
+            msg = f'No initial data on dates provided.'
+            raise ValueError(msg)
         return pd.to_datetime(d['date'])
 
-    def from_file(self, param, file, file_dir=None):
+    def set_dates(self, start_date, end_date):
+        """Set dates manually, ignoring possible dates in environmental time-series.
 
-        def date2index(parameter):
-            """Function applicable to time-series in Pandas."""
-            parameter['date'] = pd.to_datetime(parameter['date'])
-            parameter.set_index('date', inplace=True)
+        :param start_date: first date of time-series
+        :param end_date: last date of time-series
 
-        if file_dir is None:
-            f = file
+        :type start_date: str, datetime.date
+        :type end_date: str, datetime.date
+        """
+        dates = pd.date_range(start_date, end_date, freq='D')
+        self._dates = pd.DataFrame({'date': dates})
+
+    def set_parameter_values(self, parameter, value, pre_date=None):
+        """Set the time-series data to a time-series, or a default value. In case :param value: is not iterable, the
+        :param parameter: is assumed to be constant over time. In case :param value: is iterable, make sure its length
+        complies with the simulation length.
+
+        Included parameters:
+            light                       :   incoming light-intensity [umol photons m-2 s-1]
+            LAC / light_attenuation     :   light attenuation coefficient [m-1]
+            temperature                 :   sea surface temperature [K]
+            aragonite                   :   aragonite saturation state [-]
+            storm                       :   storm category, annually [-]
+
+        :param parameter: parameter to be set
+        :param value: default value
+        :param pre_date: time-series start before simulation dates [yrs]
+
+        :type parameter: str
+        :type value: float, list, tuple, numpy.ndarray, pandas.DataFrame
+        :type pre_date: None, int, optional
+        """
+
+        def set_value(val):
+            """Function to set default value."""
+            if pre_date is None:
+                return pd.DataFrame({parameter: val}, index=self.dates)
+
+            dates = pd.date_range(self.dates.iloc[0] - pd.DateOffset(years=pre_date), self.dates.iloc[-1], freq='D')
+            return pd.DataFrame({parameter: val}, index=dates)
+
+        if self._dates is None:
+            msg = f'No dates are defined. ' \
+                f'Please, first specify the dates before setting the time-series of {parameter}; ' \
+                f'or make use of the \"from_file\"-method.'
+            raise TypeError(msg)
+
+        if parameter == 'LAC':
+            parameter = 'light_attenuation'
+
+        daily_params = ('light', 'light_attenuation', 'temperature', 'aragonite')
+        if parameter in daily_params:
+            setattr(self, f'_{parameter}', set_value(value))
+        elif parameter == 'storm':
+            years = set(self.dates.dt.year)
+            self._storm_category = pd.DataFrame(data=value, index=years)
         else:
-            f = os.path.join(file_dir, file)
+            msg = f'Entered parameter ({parameter}) not included. See documentation.'
+            raise ValueError(msg)
 
-        if param == 'light':
-            self.light = pd.read_csv(f, sep='\t')
-            date2index(self.light)
-        elif param == 'LAC':
-            self.light_attenuation = pd.read_csv(f, sep='\t')
-            date2index(self.light_attenuation)
-        elif param == 'temperature':
-            self.temp = pd.read_csv(f, sep='\t')
-            date2index(self.temp)
-        elif param == 'acidity':
-            self.acid = pd.read_csv(f, sep='\t')
-            date2index(self.acid)
-        elif param == 'storm':
-            self.storm_category = pd.read_csv(f, sep='\t')
-            self.storm_category.set_index('year', inplace=True)
+    def from_file(self, parameter, file, folder):
+        """Read the time-series data from a file.
+
+        Included parameters:
+            light                       :   incoming light-intensity [umol photons m-2 s-1]
+            LAC / light_attenuation     :   light attenuation coefficient [m-1]
+            temperature                 :   sea surface temperature [K]
+            aragonite                   :   aragonite saturation state [-]
+            storm                       :   storm category, annually [-]
+
+        :param parameter: parameter to be read from file
+        :param file: file name, incl. file extension
+        :param folder: folder directory, defaults to None
+
+        :type parameter: str
+        :type file: str
+        :type folder: str
+        """
+        # TODO: Include functionality to check file's existence
+        #  > certain files are necessary: light, temperature
+
+        def read_index(fil):
+            """Function applicable to time-series in Pandas."""
+            time_series = pd.read_csv(f,sep = '\t')
+            time_series['date'] = pd.to_datetime(time_series['date'])
+            time_series.set_index('date', inplace=True)
+            return time_series
+
+        f = os.path.join(folder,file)
+
+        if parameter == 'LAC':
+            parameter = 'light_attenuation'
+
+        daily_params = ('light', 'light_attenuation', 'temperature', 'aragonite')
+        if parameter in daily_params:
+            setattr(self, f'_{parameter}', read_index(f))
+        elif parameter == 'storm':
+            self._storm_category = pd.read_csv(f, sep='\t')
+            self._storm_category.set_index('year', inplace=True)
+        else:
+            msg = f'Entered parameter ({parameter}) not included. See documentation.'
+            raise ValueError(msg)
