@@ -475,6 +475,9 @@ class Environment:
         def read_index(fil):
             """Function applicable to time-series in Pandas."""
             time_series = pd.read_csv(f,sep = '\t')
+            if time_series.isnull().values.any() :
+                msg = f'NaNs detected in time series {f}'
+                raise ValueError(msg)
             time_series['date'] = pd.to_datetime(time_series['date'])
             time_series.set_index('date', inplace=True)
             return time_series

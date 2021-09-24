@@ -2,16 +2,17 @@
 coral_model - loop
 
 @author: Gijs G. Hendrickx
-@contributor: Peter M.J. Herman
+
 """
 
 import numpy as np
 from tqdm import tqdm
 import os
 
-from coral_model import core21_09
-from coral_model.core21_09 import Light, Flow, Temperature, Photosynthesis, PopulationStates, Calcification, Morphology, \
-   Dislodgement, Recruitment
+from coral_model import core
+from coral_model.core import Light, Flow, Temperature, Photosynthesis, \
+    PopulationStates, Calcification, Morphology, \
+    Dislodgement, Recruitment
 from coral_model.environment import Constants, Environment
 from coral_model.hydrodynamics import Delft3D,Transect #,Reef0D,Reef1D
 from coral_model.utils import Output, time_series_year
@@ -211,7 +212,7 @@ class Simulation:
         self.input_check()
 
 #        self.hydrodynamics.initiate()
-        core21_09.RESHAPE.space = self.hydrodynamics.space
+        core.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
             self.output.initiate_his()
@@ -225,7 +226,7 @@ class Simulation:
         if value is None:
             value = 1
 
-        cover = value * np.ones(core21_09.RESHAPE.space)
+        cover = value * np.ones(core.RESHAPE.space)
 
         if x_range is not None:
             x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -261,7 +262,7 @@ class Simulation:
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
-                core21_09.RESHAPE.time = len(self.environment.dates.dt.year[self.environment.dates.dt.year == years[i]])
+                core.RESHAPE.time = len(self.environment.dates.dt.year[self.environment.dates.dt.year == years[i]])
 
                 # if-statement that encompasses all for which the hydrodynamic should be used
                 progress.set_postfix(inner_loop=f'update {self.hydrodynamics}')
@@ -409,8 +410,3 @@ class Simulation:
 #  > write his-file
 
 # TODO: Model finalisation
-
-
-if __name__ == '__main__':
-    run = Simulation(mode='Transect')
-    run.read_constants()
