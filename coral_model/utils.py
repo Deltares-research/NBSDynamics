@@ -257,18 +257,23 @@ class Output:
     _xy_stations = None
     _idx_stations = None
 
-    def __init__(self, outdir, xy_coordinates, first_date):
+    def __init__(self, outdir, xy_coordinates, outpoint, first_date):
         """Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
 
         :param outdir: directory to write the output to        
         :param xy_coordinates: (x,y)-coordinates
+        :param outpoint: boolean indicating per (x,y) point if his output is desired
         :param first_date: first date of simulation
 
         :type outdir: str
         :type xy_coordinates: numpy.ndarray
+        :type outpoint: numpy.ndarray
         :type first_date: pandas
         """
         self.xy_coordinates = xy_coordinates
+        self.outpoint = outpoint
+        self.nout_his = len(xy_coordinates[outpoint,0])
+        self.set_xy_stations
         self.space = len(xy_coordinates)
 
         self.first_date = first_date
@@ -571,38 +576,36 @@ class Output:
 
         :rtype: numpy.ndarray
         """
+        if self._xy_stations is None:
+            x = self.xy_coordinates[:,0]
+            y = self.xy_coordinates[:,1]
+        
+            x_station = self.xy_coordinates[self.outpoint,0]
+            y_station = self.xy_coordinates[self.outpoint,1]
+            
+            idx = np.zeros(self.nout_his)
+
+            for s in range(len(idx)):
+                idx[s] = np.argmin((x - x_station[s]) ** 2 + (y - y_station[s]) ** 2)
+
+            self._idx_stations = idx.astype(int)
+            self._xy_stations = self.xy_coordinates[self._idx_stations,:]
+
         return self._xy_stations
 
     @property
     def idx_stations(self):
-        """Space indeces of stations.
+        """Space indices of stations.
 
         :rtype: numpy.ndarray
         """
         return self._idx_stations
 
     @xy_stations.setter
-    def xy_stations(self, station_coordinates):
+    def set_xy_stations(self):
         """Determine space indices based on the (x,y)-coordinates of the stations.
-
-        :param station_coordinates: (x,y)-coordinates stations
-        :type station_coordinates: tuple
         """
-        x = self.xy_coordinates[:, 0]
-        y = self.xy_coordinates[:, 1]
-        x_station, y_station = station_coordinates
-        try:
-            idx = np.zeros(len(station_coordinates[0]))
-        except TypeError:
-            idx = np.array([0])
-            x_station = [x_station]
-            y_station = [y_station]
-
-        for s in range(len(idx)):
-            idx[s] = np.argmin((x - x_station[s]) ** 2 + (y - y_station[s]) ** 2)
-
-        self._idx_stations = idx.astype(int)
-        self._xy_stations = self.xy_coordinates[self._idx_stations]
+        return self.xy_stations
 
     def initiate_his(self):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""

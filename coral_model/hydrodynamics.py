@@ -824,6 +824,11 @@ class Transect:
     def water_depth(self):
         """Water depth."""
         return self._water_depth
+    
+    @property
+    def outpoint(self):
+        """coordinates where his output is desired"""
+        return self._outpoint
 
     def reset_counters(self):
         """Reset properties for next model update."""
@@ -844,6 +849,7 @@ class Transect:
         self._x_coordinates = csv[:,0]
         self._y_coordinates = csv[:,1]
         self._water_depth = csv[:,2]
+        self._outpoint = (csv[:,3] == 1)
 
         self.forcings = np.genfromtxt(self.mdu,delimiter=',',skip_header=1)
         self.stormcat = self.forcings[:,0]

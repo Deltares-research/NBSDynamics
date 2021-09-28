@@ -39,7 +39,6 @@ print(runTrans.hydrodynamics.settings)
 # define output
 runTrans.define_output('map', fme=False)
 runTrans.define_output('his', fme=False)
-runTrans.output.xy_stations = (0, 0)
 # initiate coral
 coral = Coral(runTrans.constants,.1, .1, .05, .05, .2, 1.)
 coral = runTrans.initiate(coral)

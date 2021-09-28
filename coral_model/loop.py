@@ -164,7 +164,8 @@ class Simulation:
             raise ValueError(msg)
 
         if not isinstance(self.output, Output):
-            self.output = Output(self.output_dir, self.hydrodynamics.xy_coordinates, self.environment.dates[0])
+            self.output = Output(self.output_dir, self.hydrodynamics.xy_coordinates, 
+                                 self.hydrodynamics.outpoint,self.environment.dates[0])
 
         self.output.define_output(
             output_type=output_type, lme=lme, fme=fme, tme=tme, pd=pd, ps=ps, calc=calc, md=md
