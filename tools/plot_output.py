@@ -19,6 +19,26 @@ out_dir = os.path.join('C:\\','Users','herman', 'OneDrive - Stichting Deltares',
 url=os.path.join(out_dir,'CoralModel_map.nc')
 nc = netCDF4.Dataset(url)
 nc.variables.keys()
+limdict = {
+    'Iz'  : [0,9999],
+    'Tc'  : [300,304],
+    'Tlo' : [295,297],
+    'Thi' : [302,304],
+    'PD'  : [0,9999],
+    'PT'  : [0,1.05],
+    'PH'  : [0,1.05],
+    'PR'  : [0,1.05],
+    'PP'  : [0,1.05],
+    'PB'  : [0,1.05],
+    'calc': [9999,9999],
+    'dc'  : [9999,9999],
+    'hc'  : [9999,9999],
+    'bc'  : [9999,9999],
+    'tc'  : [9999,9999],
+    'ac'  : [9999,9999],
+    'Vc'  : [9999,9999],
+    'G'   : [9999,9999]
+    }
 
 teller = 0
 for vv in nc.variables.keys():
@@ -31,7 +51,10 @@ for vv in nc.variables.keys():
         fig = plt.figure()
         ax = plt.axes()
         plt.xlim(0, 100)
-        plt.ylim(0, 1.05*np.max(VarT))
+        ylims = limdict[vv]
+        if ylims[0] == 9999: ylims[0]= 0.95 * np.min(VarT)
+        if ylims[1] == 9999: ylims[1]= 1.05 * np.max(VarT)
+        plt.ylim(ylims)
         plt.title(VT.long_name)
         plt.xlabel("Time (years)")
         plt.ylabel(VT.units)
@@ -61,7 +84,9 @@ for vv in nc.variables.keys():
         fig = plt.figure()
         ax = plt.axes()
         plt.xlim(0, 100)
-        plt.ylim(0, 1.05*np.max(VarT))
+        ylims = limdict[vv]
+        if ylims[0] == 9999: ylims[0]= 0.95 * np.min(VarT)
+        if ylims[1] == 9999: ylims[1]= 1.05 * np.max(VarT)
         plt.title(VT.long_name)
         plt.xlabel("Time (years)")
         plt.ylabel(VT.units)
