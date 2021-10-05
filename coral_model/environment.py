@@ -80,6 +80,10 @@ class Constants:
         kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
         #
         # morphological development
+        
+        rf = 0.8                # 0.8       ! form ratio height to diameter [-]
+        rp = 1.0                # 1.0       ! plate ratio base to top diameter [-] 
+
         prop_form = .1          # .1        ! overall form proportionality constant [-]
         prop_plate = .5         # .5        ! overall plate proportionality constant [-
         prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
@@ -159,6 +163,8 @@ class Constants:
         self.kappaA = None
 
         # morphological development
+        self.rf = None
+        self.rp = None
         self.prop_form =  None
         self.prop_plate =  None
         self.prop_plate_flow =  None
@@ -292,6 +298,8 @@ class Constants:
         self.kappaA = default("kappaA", .66236107)
 
         # morphological development
+        self.rf = default("rf", 1.0)
+        self.rp = default("rp", 1.0)
         self.prop_form = default("prop_form", .1)
         self.prop_plate = default("prop_plate", .5)
         self.prop_plate_flow = default("prop_plate_flow", .1)
