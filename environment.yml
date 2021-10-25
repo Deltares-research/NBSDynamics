@@ -1,0 +1,10 @@
+name: nbsdynamics_env
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - pytest==5.0.1
+    - pytest-cov
+    - teamcity-messages
