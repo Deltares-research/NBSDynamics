@@ -1,0 +1,32 @@
+site_name: NBSDynamics documentation
+theme: readthedocs
+plugins:
+  - search
+  # - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_root_toc_entry: false
+            show_source: true
+            show_signature_annotations: true
+            heading_level: 3
+            show_category_heading: false
+            group_by_category: false
+          selection:
+            inherited_members: false
+
+      custom_templates: templates
+      watch:
+        - src
+repo_url: https://github.com/Deltares/NBSDynamics
+repo_name: deltares/nbsdynamics
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Deltares/NBSDynamics
+      name: Source code
+copyright: Copyright &copy; 2021 Deltares
+extra_css:
+  - stylesheets/extra.css
