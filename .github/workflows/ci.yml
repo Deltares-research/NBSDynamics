@@ -63,7 +63,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
-          
       - name: SonarQube Quality Gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
