@@ -62,7 +62,8 @@ jobs:
         if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}         
+          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
+            
       - name: SonarQube Quality Gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         # Force to fail step after specific time
