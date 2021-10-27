@@ -62,12 +62,15 @@ jobs:
         if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
-      - name: SonarQube Quality Gate check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
-        # Force to fail step after specific time
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
+          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=nbsdynamics
+      # - name: SonarQube Quality Gate check
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
+      #   if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+      #   # Force to fail step after specific time
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
