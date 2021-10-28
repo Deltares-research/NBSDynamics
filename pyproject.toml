@@ -36,7 +36,7 @@ commitizen = "^2.20.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-changelog_file = "docs\changelog.md"
+changelog_file = "docs/changelog.md"
 changelog_start_rev = "1.0.0"
 tag_format = "$version"
 version_files = [
