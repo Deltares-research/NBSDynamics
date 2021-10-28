@@ -37,8 +37,9 @@ commitizen = "^2.20.0"
 [tool.commitizen]
 name = "cz_conventional_commits"
 changelog_file = "docs/changelog.md"
+update_changelog_on_bump = true
 version = "1.0.0"
-tag_format = "$version"
+tag_format = "v$major.$minor.$patch$prerelease"
 version_files = [
     "src/coral_model/__init__.py",
     "pyproject.toml:version"

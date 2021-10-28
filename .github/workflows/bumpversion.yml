@@ -38,4 +38,7 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
       
-      - run: poetry run cz bump --changelog
+      - name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
