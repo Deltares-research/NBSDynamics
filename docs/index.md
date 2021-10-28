@@ -1,4 +1,4 @@
-# Welcome to NBSDynamics documentation
+# NBSDynamics documentation
 
 On this pages diverse information can be found related to this project.
 
@@ -16,7 +16,7 @@ The project is currently being structured as follows:
 ## Version control
 t.b.d.
 
-# CoralModel
+## CoralModel
 A biophysical model framework written in Python to make simulations 
 on coral development based on four environmental factors: 
 (1) light; (2) flow; (3) temperature; and (4) acidity. 
@@ -31,7 +31,7 @@ To enable this online coupling, certain configurations of Python are required
 (The original version has not been written efficiently and is hard to follow for outsiders.)
 More information on this version control [here](#version-control).
 
-## Biophysics <a name="biophsics"></a>
+### Biophysics <a name="biophsics"></a>
 This biophysical model framework is part of the result of a 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
 of which the key findings are published in *Environmental Modelling and Software*
@@ -48,7 +48,7 @@ For more details on the biophysics, reference is made to the
 and the [paper](https://www.sciencedirect.com/science/article/pii/S1364815221001468?via%3Dihub) that substitute this
 repository.
 
-## Python code <a name="python-code"></a>
+### Python code <a name="python-code"></a>
 The Python code is written in Python 3 and makes use of various packages. 
 Not all of these packages are automatically included in the standard library of Python, 
 such as ``NetCDF4`` ([download](http://www.ldf.uci.edu/~gohlke/pythonlibs/#netcdf4)). 
@@ -56,6 +56,7 @@ In case the biophysical model framework is to be coupled to Delft3d Flexible Mes
 the ``bmi.wrapper`` package is also required  ([download](https://github.com/openearth/bmi-python)).
 
 The settings of Python and other packages for the online coupling to work properly are the following:
+
 * Python version 3.6.5
 * NumPy version 1.14.3
 * SciPy version 1.1.0
@@ -67,7 +68,7 @@ The settings of Python and other packages for the online coupling to work proper
 with Delft3D Flexible Mesh.
 
 
-# Version control <a name="version-control"></a>
+### Version control <a name="version-control"></a>
 There are two versions of the CoralModel: ``coral_model_v0`` and ``coral_model``.
 The first (``coral_model_v0``) is the original code as used in the study (i.e. 
 [master thesis](https://repository.tudelft.nl/islandora/object/uuid%3Ae211380e-3f92-4afe-b371-f1e87b0c3bbd?collection=education) 
