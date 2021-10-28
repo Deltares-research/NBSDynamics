@@ -57,15 +57,6 @@ jobs:
       #     git checkout $GITHUB_HEAD_REF
       #     git commit -am "autoformat: isort & black" && git push || true
 
-      - name: SonarQube Scan
-        uses: kitabisa/sonarqube-action@v1.1.1
-        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
-        with:
-          host: https://sonarqube.deltares.nl/
-          login: ${{ secrets.SONARQUBE_TOKEN }}
-          projectKey: "nbsdynamics"
-          projectName: "NBSDynamics"
-
       # - name: Official SonarQube Scan
       #   uses: SonarSource/sonarqube-scan-action@v1.0.0
       #   if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
@@ -75,11 +66,3 @@ jobs:
       #   with:
       #     args: >
       #       -Dsonar.projectKey=nbsdynamics
-      # - name: SonarQube Quality Gate check
-      #   uses: sonarsource/sonarqube-quality-gate-action@master
-      #   if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
-      #   # Force to fail step after specific time
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}   
