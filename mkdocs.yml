@@ -40,7 +40,7 @@ plugins:
 
       custom_templates: templates
       watch:
-        - src/coral_mode
+        - src/coral_model
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
