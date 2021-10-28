@@ -56,13 +56,9 @@ jobs:
       #     git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
       #     git checkout $GITHUB_HEAD_REF
       #     git commit -am "autoformat: isort & black" && git push || true
-
-      # - name: Official SonarQube Scan
-      #   uses: SonarSource/sonarqube-scan-action@v1.0.0
-      #   if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
-      #   with:
-      #     args: >
-      #       -Dsonar.projectKey=nbsdynamics
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
