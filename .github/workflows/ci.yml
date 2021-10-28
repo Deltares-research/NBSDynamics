@@ -59,8 +59,9 @@ jobs:
 
       - name: SonarQube Scan
         uses: kitabisa/sonarqube-action@v1.1.1
+        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
         with:
-          host: ${{ secrets.SONARQUBE_HOST }}
+          host: https://sonarqube.deltares.nl/
           login: ${{ secrets.SONARQUBE_TOKEN }}
           projectKey: "nbsdynamics"
           projectName: "NBSDynamics"
