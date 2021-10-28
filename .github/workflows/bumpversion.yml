@@ -38,4 +38,4 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
       
-      - run: poetry run cz changelog
+      - run: poetry run cz bump --changelog
