@@ -460,7 +460,8 @@ class Flow:
             if in_canopy:
                 idx = coral.volume > 0
                 for i in idx:
-                    alpha_w[i] = self.wave_attenuation(
+                    alpha_w[i] = Flow.wave_attenuation(
+                        self.constants,
                         coral.dc_rep[i],
                         coral.hc[i],
                         coral.ac[i],
@@ -469,7 +470,8 @@ class Flow:
                         self.h[i],
                         "wave",
                     )
-                    alpha_c[i] = self.wave_attenuation(
+                    alpha_c[i] = Flow.wave_attenuation(
+                        self.constants,
                         coral.dc_rep[i],
                         coral.hc[i],
                         coral.ac[i],
