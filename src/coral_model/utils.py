@@ -215,7 +215,10 @@ class DataReshape(SpaceTime):
         matrix = np.array(matrix)
 
         # dimension-value
-        if not matrix.shape == self.spacetime and not matrix.shape[:2] == self.spacetime:
+        if (
+            not matrix.shape == self.spacetime
+            and not matrix.shape[:2] == self.spacetime
+        ):
             msg = (
                 f"Matrix-shape does not correspond with spacetime-dimensions:"
                 f"\n{matrix.shape} =/= {self.spacetime}"
@@ -493,33 +496,47 @@ class Output:
                 high_temp_set[:, :] = 0
 
             def init_pd():
-                pd_set = self._map_data.createVariable("PD", "f8", ("time", "nmesh2d_face"))
+                pd_set = self._map_data.createVariable(
+                    "PD", "f8", ("time", "nmesh2d_face")
+                )
                 pd_set.long_name = "annual sum photosynthetic rate"
                 pd_set.units = "-"
                 pd_set[:, :] = 0
 
             def init_ps():
-                pt_set = self._map_data.createVariable("PT", "f8", ("time", "nmesh2d_face"))
-                pt_set.long_name = "total living coral population at the end of the year"
+                pt_set = self._map_data.createVariable(
+                    "PT", "f8", ("time", "nmesh2d_face")
+                )
+                pt_set.long_name = (
+                    "total living coral population at the end of the year"
+                )
                 pt_set.units = "-"
                 pt_set[:, :] = coral.living_cover
 
-                ph_set = self._map_data.createVariable("PH", "f8", ("time", "nmesh2d_face"))
+                ph_set = self._map_data.createVariable(
+                    "PH", "f8", ("time", "nmesh2d_face")
+                )
                 ph_set.long_name = "healthy coral population at the end of the year"
                 ph_set.units = "-"
                 ph_set[:, :] = coral.living_cover
 
-                pr_set = self._map_data.createVariable("PR", "f8", ("time", "nmesh2d_face"))
+                pr_set = self._map_data.createVariable(
+                    "PR", "f8", ("time", "nmesh2d_face")
+                )
                 pr_set.long_name = "recovering coral population at the end of the year"
                 pr_set.units = "-"
                 pr_set[:, :] = 0
 
-                pp_set = self._map_data.createVariable("PP", "f8", ("time", "nmesh2d_face"))
+                pp_set = self._map_data.createVariable(
+                    "PP", "f8", ("time", "nmesh2d_face")
+                )
                 pp_set.long_name = "pale coral population at the end of the year"
                 pp_set.units = "-"
                 pp_set[:, :] = 0
 
-                pb_set = self._map_data.createVariable("PB", "f8", ("time", "nmesh2d_face"))
+                pb_set = self._map_data.createVariable(
+                    "PB", "f8", ("time", "nmesh2d_face")
+                )
                 pb_set.long_name = "bleached coral population at the end of the year"
                 pb_set.units = "-"
                 pb_set[:, :] = 0
@@ -533,36 +550,48 @@ class Output:
                 calc_set[:, :] = 0
 
             def init_md():
-                dc_set = self._map_data.createVariable("dc", "f8", ("time", "nmesh2d_face"))
+                dc_set = self._map_data.createVariable(
+                    "dc", "f8", ("time", "nmesh2d_face")
+                )
                 dc_set.long_name = "coral plate diameter"
                 dc_set.units = "m"
                 dc_set[0, :] = coral.dc
 
-                hc_set = self._map_data.createVariable("hc", "f8", ("time", "nmesh2d_face"))
+                hc_set = self._map_data.createVariable(
+                    "hc", "f8", ("time", "nmesh2d_face")
+                )
                 hc_set.long_name = "coral height"
                 hc_set.units = "m"
                 hc_set[0, :] = coral.hc
 
-                bc_set = self._map_data.createVariable("bc", "f8", ("time", "nmesh2d_face"))
+                bc_set = self._map_data.createVariable(
+                    "bc", "f8", ("time", "nmesh2d_face")
+                )
                 bc_set.long_name = "coral base diameter"
                 bc_set.units = "m"
                 bc_set[0, :] = coral.bc
 
-                tc_set = self._map_data.createVariable("tc", "f8", ("time", "nmesh2d_face"))
+                tc_set = self._map_data.createVariable(
+                    "tc", "f8", ("time", "nmesh2d_face")
+                )
                 tc_set.long_name = "coral plate thickness"
                 tc_set.units = "m"
                 tc_set[0, :] = coral.tc
 
-                ac_set = self._map_data.createVariable("ac", "f8", ("time", "nmesh2d_face"))
+                ac_set = self._map_data.createVariable(
+                    "ac", "f8", ("time", "nmesh2d_face")
+                )
                 ac_set.long_name = "coral axial distance"
                 ac_set.units = "m"
                 ac_set[0, :] = coral.ac
 
-                vc_set = self._map_data.createVariable("Vc", "f8", ("time", "nmesh2d_face"))
+                vc_set = self._map_data.createVariable(
+                    "Vc", "f8", ("time", "nmesh2d_face")
+                )
                 vc_set.long_name = "coral volume"
                 vc_set.units = "m3"
                 vc_set[0, :] = coral.volume
-            
+
             conditions_funct = dict(
                 lme=init_lme,
                 fme=init_fme,
@@ -592,10 +621,13 @@ class Output:
 
             i = int(year - self.first_year)
             self._map_data["time"][i] = year
+
             def update_lme():
                 self._map_data["Iz"][-1, :] = coral.light[:, -1]
+
             def update_fme():
                 self._map_data["ucm"][-1, :] = coral.ucm
+
             def update_tme():
                 self._map_data["Tc"][-1, :] = coral.temp[:, -1]
                 self._map_data["Tlo"][-1, :] = (
@@ -608,16 +640,20 @@ class Output:
                     if len(DataReshape.variable2array(coral.Thi)) > 1
                     else coral.Thi * np.ones(self.space)
                 )
+
             def update_pd():
                 self._map_data["PD"][-1, :] = coral.photo_rate.mean(axis=1)
+
             def update_ps():
                 self._map_data["PT"][-1, :] = coral.pop_states[:, -1, :].sum(axis=1)
                 self._map_data["PH"][-1, :] = coral.pop_states[:, -1, 0]
                 self._map_data["PR"][-1, :] = coral.pop_states[:, -1, 1]
                 self._map_data["PP"][-1, :] = coral.pop_states[:, -1, 2]
                 self._map_data["PB"][-1, :] = coral.pop_states[:, -1, 3]
+
             def update_calc():
                 self._map_data["calc"][-1, :] = coral.calc.sum(axis=1)
+
             def update_md():
                 self._map_data["dc"][-1, :] = coral.dc
                 self._map_data["hc"][-1, :] = coral.hc
@@ -706,12 +742,14 @@ class Output:
                 )
                 light_set.long_name = "representative light-intensity"
                 light_set.units = "micro-mol photons m-2 s-1"
+
             def init_fme():
                 flow_set = self._his_data.createVariable(
                     "ucm", "f8", ("time", "stations")
                 )
                 flow_set.long_name = "in-canopy flow"
-                flow_set.units = "m s-1"          
+                flow_set.units = "m s-1"
+
             def init_tme():
                 temp_set = self._his_data.createVariable(
                     "Tc", "f8", ("time", "stations")
@@ -730,12 +768,12 @@ class Output:
                 )
                 high_temp_set.long_name = "upper thermal limit"
                 high_temp_set.units = "K"
-            
+
             def init_pd():
                 pd_set = self._his_data.createVariable("PD", "f8", ("time", "stations"))
                 pd_set.long_name = "photosynthetic rate"
                 pd_set.units = "-"
-            
+
             def init_ps():
                 pt_set = self._his_data.createVariable("PT", "f8", ("time", "stations"))
                 pt_set.long_name = "total coral population"
@@ -756,14 +794,14 @@ class Output:
                 pb_set = self._his_data.createVariable("PB", "f8", ("time", "stations"))
                 pb_set.long_name = "bleached coral population"
                 pb_set.units = "-"
-            
+
             def init_calc():
                 calc_set = self._his_data.createVariable(
                     "G", "f8", ("time", "stations")
                 )
                 calc_set.long_name = "calcification"
                 calc_set.units = "kg m-2 d-1"
-            
+
             def init_md():
                 dc_set = self._his_data.createVariable("dc", "f8", ("time", "stations"))
                 dc_set.long_name = "coral plate diameter"
@@ -788,7 +826,7 @@ class Output:
                 vc_set = self._his_data.createVariable("Vc", "f8", ("time", "stations"))
                 vc_set.long_name = "coral volume"
                 vc_set.units = "m3"
-            
+
             # initial conditions
             conditions_funct = dict(
                 lme=init_lme,
@@ -819,14 +857,17 @@ class Output:
             y_dates = dates.reset_index(drop=True)
             ti = (y_dates - self.first_date).dt.days.values
             self._his_data["time"][ti] = y_dates.values
+
             def update_lme():
                 self._his_data["Iz"][ti, :] = coral.light[
                     self.idx_stations, :
                 ].transpose()
+
             def update_fme():
                 self._his_data["ucm"][ti, :] = np.tile(coral.ucm, (len(y_dates), 1))[
                     :, self.idx_stations
                 ]
+
             def update_tme():
                 self._his_data["Tc"][ti, :] = coral.temp[
                     self.idx_stations, :
@@ -870,10 +911,12 @@ class Output:
                 self._his_data["PB"][ti, :] = coral.pop_states[
                     self.idx_stations, :, 3
                 ].transpose()
+
             def update_calc():
                 self._his_data["G"][ti, :] = coral.calc[
                     self.idx_stations, :
                 ].transpose()
+
             def update_md():
                 self._his_data["dc"][ti, :] = np.tile(coral.dc, (len(y_dates), 1))[
                     :, self.idx_stations
