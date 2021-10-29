@@ -49,7 +49,7 @@ class Coral:
         # initiate environmental working objects
         # > light micro-environment
         self.light = None
-        self.light_bc = None # Former self.Bc (code smell duplicated property name)
+        self.light_bc = None  # Former self.Bc (code smell duplicated property name)
         # > flow micro-environment
         self.ucm = None
         self.um = None
@@ -503,7 +503,14 @@ class Flow:
 
     @staticmethod
     def wave_attenuation(
-        constants, diameter: float, height: float, distance: float, velocity: float, period: float, depth: float, wac_type: str
+        constants,
+        diameter: float,
+        height: float,
+        distance: float,
+        velocity: float,
+        period: float,
+        depth: float,
+        wac_type: str,
     ):
         """Wave-attenuation coefficient.
 
@@ -565,15 +572,21 @@ class Flow:
 
         # # Functions for available wac types.
         def get_wave_wac() -> float:
-            return abs(newton(function,x0=complex(0.1, 0.1),fprime=derivative,maxiter=constants.maxiter_aw,))
+            return abs(
+                newton(
+                    function,
+                    x0=complex(0.1, 0.1),
+                    fprime=derivative,
+                    maxiter=constants.maxiter_aw,
+                )
+            )
 
         def get_current_wac() -> float:
             x = drag_length / shear_length * (height / (depth - height) + 1)
             return (x - np.sqrt(x)) / (x - 1)
 
         # # input check
-        types = dict(
-            current=get_current_wac, wave=get_wave_wac)
+        types = dict(current=get_current_wac, wave=get_wave_wac)
         if wac_type not in types.keys():
             msg = f"WAC-type {wac_type} not in {types}."
             raise ValueError(msg)
@@ -587,12 +600,12 @@ class Flow:
         lambda_planar = planar_area / total_area
         lambda_frontal = frontal_area / total_area
         shear_length = height / (constants.Cs ** 2)
-        
+
         # # calculations
         wac = 1.0
         if depth <= height:
             return wac
-        
+
         # Calculation methods
         def get_new_drag() -> float:
             constricted_flow = (
@@ -634,7 +647,6 @@ class Flow:
                     * (depth * velocity - height * porous_flow)
                     / (depth - height)
                 )
-
 
     def thermal_boundary_layer(self, coral):
         """Thermal boundary layer.
