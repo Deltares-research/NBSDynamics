@@ -276,7 +276,7 @@ class Output:
         self.xy_coordinates = xy_coordinates
         self.outpoint = outpoint
         self.nout_his = len(xy_coordinates[outpoint, 0])
-        self.set_xy_stations
+        self.set_xy_stations()
         self.space = len(xy_coordinates)
 
         self.first_date = first_date
@@ -639,6 +639,10 @@ class Output:
 
         :rtype: numpy.ndarray
         """
+        return self._xy_stations
+
+    def set_xy_stations(self):
+        """Determine space indices based on the (x,y)-coordinates of the stations."""
         if self._xy_stations is None:
             x = self.xy_coordinates[:, 0]
             y = self.xy_coordinates[:, 1]
@@ -654,8 +658,6 @@ class Output:
             self._idx_stations = idx.astype(int)
             self._xy_stations = self.xy_coordinates[self._idx_stations, :]
 
-        return self._xy_stations
-
     @property
     def idx_stations(self):
         """Space indices of stations.
@@ -663,11 +665,6 @@ class Output:
         :rtype: numpy.ndarray
         """
         return self._idx_stations
-
-    @xy_stations.setter
-    def set_xy_stations(self):
-        """Determine space indices based on the (x,y)-coordinates of the stations."""
-        return self.xy_stations
 
     def initiate_his(self):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""

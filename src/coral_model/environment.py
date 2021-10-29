@@ -201,8 +201,9 @@ class Constants:
                     )
                 self.tme = False
 
-            else:
-                self.tme = self.tme
+            # else:
+            # This is not needed. Left commented out in case the else was meant for something else.
+            #     self.tme = self.tme
 
         if self.tme and self.warn_proc:
             print("WARNING: Thermal micro-environment not fully implemented yet.")
@@ -317,7 +318,7 @@ class Constants:
         self.d_larvae = default("d_larvae", 1e-3)
 
         # check processes for consistency
-        self.check_processes
+        self.check_processes()
 
 
 class Environment:
