@@ -427,6 +427,143 @@ class Output:
         :param coral: coral animal
         :type coral: Coral
         """
+        # Definition of methods to initialize the netcdf variables.
+        def init_lme():
+            light_set = self._map_data.createVariable(
+                "Iz", "f8", ("time", "nmesh2d_face")
+            )
+            light_set.long_name = "annual mean representative light-intensity"
+            light_set.units = "micro-mol photons m-2 s-1"
+            light_set[:, :] = 0
+
+        def init_fme():
+            flow_set = self._map_data.createVariable(
+                "ucm", "f8", ("time", "nmesh2d_face")
+            )
+            flow_set.long_name = "annual mean in-canopy flow"
+            flow_set.units = "m s-1"
+            flow_set[:, :] = 0
+
+        def init_tme():
+            temp_set = self._map_data.createVariable(
+                "Tc", "f8", ("time", "nmesh2d_face")
+            )
+            temp_set.long_name = "annual mean coral temperature"
+            temp_set.units = "K"
+            temp_set[:, :] = 0
+
+            low_temp_set = self._map_data.createVariable(
+                "Tlo", "f8", ("time", "nmesh2d_face")
+            )
+            low_temp_set.long_name = "annual mean lower thermal limit"
+            low_temp_set.units = "K"
+            low_temp_set[:, :] = 0
+
+            high_temp_set = self._map_data.createVariable(
+                "Thi", "f8", ("time", "nmesh2d_face")
+            )
+            high_temp_set.long_name = "annual mean upper thermal limit"
+            high_temp_set.units = "K"
+            high_temp_set[:, :] = 0
+
+        def init_pd():
+            pd_set = self._map_data.createVariable(
+                "PD", "f8", ("time", "nmesh2d_face")
+            )
+            pd_set.long_name = "annual sum photosynthetic rate"
+            pd_set.units = "-"
+            pd_set[:, :] = 0
+
+        def init_ps():
+            pt_set = self._map_data.createVariable(
+                "PT", "f8", ("time", "nmesh2d_face")
+            )
+            pt_set.long_name = (
+                "total living coral population at the end of the year"
+            )
+            pt_set.units = "-"
+            pt_set[:, :] = coral.living_cover
+
+            ph_set = self._map_data.createVariable(
+                "PH", "f8", ("time", "nmesh2d_face")
+            )
+            ph_set.long_name = "healthy coral population at the end of the year"
+            ph_set.units = "-"
+            ph_set[:, :] = coral.living_cover
+
+            pr_set = self._map_data.createVariable(
+                "PR", "f8", ("time", "nmesh2d_face")
+            )
+            pr_set.long_name = "recovering coral population at the end of the year"
+            pr_set.units = "-"
+            pr_set[:, :] = 0
+
+            pp_set = self._map_data.createVariable(
+                "PP", "f8", ("time", "nmesh2d_face")
+            )
+            pp_set.long_name = "pale coral population at the end of the year"
+            pp_set.units = "-"
+            pp_set[:, :] = 0
+
+            pb_set = self._map_data.createVariable(
+                "PB", "f8", ("time", "nmesh2d_face")
+            )
+            pb_set.long_name = "bleached coral population at the end of the year"
+            pb_set.units = "-"
+            pb_set[:, :] = 0
+
+        def init_calc():
+            calc_set = self._map_data.createVariable(
+                "calc", "f8", ("time", "nmesh2d_face")
+            )
+            calc_set.long_name = "annual sum calcification rate"
+            calc_set.units = "kg m-2 yr-1"
+            calc_set[:, :] = 0
+        
+        def init_md():
+            dc_set = self._map_data.createVariable(
+                "dc", "f8", ("time", "nmesh2d_face")
+            )
+            dc_set.long_name = "coral plate diameter"
+            dc_set.units = "m"
+            dc_set[0, :] = coral.dc
+
+            hc_set = self._map_data.createVariable(
+                "hc", "f8", ("time", "nmesh2d_face")
+            )
+            hc_set.long_name = "coral height"
+            hc_set.units = "m"
+            hc_set[0, :] = coral.hc
+
+            bc_set = self._map_data.createVariable(
+                "bc", "f8", ("time", "nmesh2d_face")
+            )
+            bc_set.long_name = "coral base diameter"
+            bc_set.units = "m"
+            bc_set[0, :] = coral.bc
+
+            tc_set = self._map_data.createVariable(
+                "tc", "f8", ("time", "nmesh2d_face")
+            )
+            tc_set.long_name = "coral plate thickness"
+            tc_set.units = "m"
+            tc_set[0, :] = coral.tc
+
+            ac_set = self._map_data.createVariable(
+                "ac", "f8", ("time", "nmesh2d_face")
+            )
+            ac_set.long_name = "coral axial distance"
+            ac_set.units = "m"
+            ac_set[0, :] = coral.ac
+
+            vc_set = self._map_data.createVariable(
+                "Vc", "f8", ("time", "nmesh2d_face")
+            )
+            vc_set.long_name = "coral volume"
+            vc_set.units = "m3"
+            vc_set[0, :] = coral.volume
+
+        # Open netcdf data and initialize needed variables.
         if self._map_output is not None and any(self._map_output.values()):
             self._map_data = Dataset(self.file_name_map, "w", format="NETCDF4")
             self._map_data.description = "Mapped simulation data of the CoralModel."
@@ -453,134 +590,19 @@ class Output:
             y[:] = self.xy_coordinates[:, 1]
 
             # initial conditions
-            if self._map_output["lme"]:
-                light_set = self._map_data.createVariable(
-                    "Iz", "f8", ("time", "nmesh2d_face")
-                )
-                light_set.long_name = "annual mean representative light-intensity"
-                light_set.units = "micro-mol photons m-2 s-1"
-                light_set[:, :] = 0
-            if self._map_output["fme"]:
-                flow_set = self._map_data.createVariable(
-                    "ucm", "f8", ("time", "nmesh2d_face")
-                )
-                flow_set.long_name = "annual mean in-canopy flow"
-                flow_set.units = "m s-1"
-                flow_set[:, :] = 0
-            if self._map_output["tme"]:
-                temp_set = self._map_data.createVariable(
-                    "Tc", "f8", ("time", "nmesh2d_face")
-                )
-                temp_set.long_name = "annual mean coral temperature"
-                temp_set.units = "K"
-                temp_set[:, :] = 0
-
-                low_temp_set = self._map_data.createVariable(
-                    "Tlo", "f8", ("time", "nmesh2d_face")
-                )
-                low_temp_set.long_name = "annual mean lower thermal limit"
-                low_temp_set.units = "K"
-                low_temp_set[:, :] = 0
-
-                high_temp_set = self._map_data.createVariable(
-                    "Thi", "f8", ("time", "nmesh2d_face")
-                )
-                high_temp_set.long_name = "annual mean upper thermal limit"
-                high_temp_set.units = "K"
-                high_temp_set[:, :] = 0
-            if self._map_output["pd"]:
-                pd_set = self._map_data.createVariable(
-                    "PD", "f8", ("time", "nmesh2d_face")
-                )
-                pd_set.long_name = "annual sum photosynthetic rate"
-                pd_set.units = "-"
-                pd_set[:, :] = 0
-            if self._map_output["ps"]:
-                pt_set = self._map_data.createVariable(
-                    "PT", "f8", ("time", "nmesh2d_face")
-                )
-                pt_set.long_name = (
-                    "total living coral population at the end of the year"
-                )
-                pt_set.units = "-"
-                pt_set[:, :] = coral.living_cover
-
-                ph_set = self._map_data.createVariable(
-                    "PH", "f8", ("time", "nmesh2d_face")
-                )
-                ph_set.long_name = "healthy coral population at the end of the year"
-                ph_set.units = "-"
-                ph_set[:, :] = coral.living_cover
-
-                pr_set = self._map_data.createVariable(
-                    "PR", "f8", ("time", "nmesh2d_face")
-                )
-                pr_set.long_name = "recovering coral population at the end of the year"
-                pr_set.units = "-"
-                pr_set[:, :] = 0
-
-                pp_set = self._map_data.createVariable(
-                    "PP", "f8", ("time", "nmesh2d_face")
-                )
-                pp_set.long_name = "pale coral population at the end of the year"
-                pp_set.units = "-"
-                pp_set[:, :] = 0
-
-                pb_set = self._map_data.createVariable(
-                    "PB", "f8", ("time", "nmesh2d_face")
-                )
-                pb_set.long_name = "bleached coral population at the end of the year"
-                pb_set.units = "-"
-                pb_set[:, :] = 0
-            if self._map_output["calc"]:
-                calc_set = self._map_data.createVariable(
-                    "calc", "f8", ("time", "nmesh2d_face")
-                )
-                calc_set.long_name = "annual sum calcification rate"
-                calc_set.units = "kg m-2 yr-1"
-                calc_set[:, :] = 0
-            if self._map_output["md"]:
-                dc_set = self._map_data.createVariable(
-                    "dc", "f8", ("time", "nmesh2d_face")
-                )
-                dc_set.long_name = "coral plate diameter"
-                dc_set.units = "m"
-                dc_set[0, :] = coral.dc
-
-                hc_set = self._map_data.createVariable(
-                    "hc", "f8", ("time", "nmesh2d_face")
-                )
-                hc_set.long_name = "coral height"
-                hc_set.units = "m"
-                hc_set[0, :] = coral.hc
-
-                bc_set = self._map_data.createVariable(
-                    "bc", "f8", ("time", "nmesh2d_face")
-                )
-                bc_set.long_name = "coral base diameter"
-                bc_set.units = "m"
-                bc_set[0, :] = coral.bc
-
-                tc_set = self._map_data.createVariable(
-                    "tc", "f8", ("time", "nmesh2d_face")
-                )
-                tc_set.long_name = "coral plate thickness"
-                tc_set.units = "m"
-                tc_set[0, :] = coral.tc
-
-                ac_set = self._map_data.createVariable(
-                    "ac", "f8", ("time", "nmesh2d_face")
-                )
-                ac_set.long_name = "coral axial distance"
-                ac_set.units = "m"
-                ac_set[0, :] = coral.ac
-
-                vc_set = self._map_data.createVariable(
-                    "Vc", "f8", ("time", "nmesh2d_face")
-                )
-                vc_set.long_name = "coral volume"
-                vc_set.units = "m3"
-                vc_set[0, :] = coral.volume
+            conditions_funct = dict(
+                lme=init_lme,
+                fme=init_fme,
+                tme=init_tme,
+                pd=init_pd,
+                ps=init_ps,
+                calc=init_calc,
+                md=init_md
+            )
+            for key, v_func in conditions_funct.items():
+                if self._map_output[key]:
+                    v_func()
+            
             self._map_data.close()
 
     def update_map(self, coral, year):
