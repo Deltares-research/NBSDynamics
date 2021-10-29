@@ -14,6 +14,7 @@ import numpy as np
 
 plt.style.use("seaborn-whitegrid")
 
+
 def subplot_mapfile(var_t, ylims, plot_axes):
     x = np.linspace(1, 100, 100)
     plt.ylim(ylims)
@@ -22,12 +23,14 @@ def subplot_mapfile(var_t, ylims, plot_axes):
     plot_axes.plot(x, var_t[:, 300], "-c", label="Cell 300")
     plt.legend()
 
+
 def subplot_hisfile(var_t, ylims, plot_axes):
     x = np.linspace(0, 100, 36525)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, var_t.shape[1])))
     for i in range(var_t.shape[1]):
         plot_axes.plot(x, var_t[:, i], color=next(colors), label=f"Point {i}")
     plt.legend()
+
 
 def plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
@@ -50,6 +53,7 @@ def plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.xlabel("Time (years)")
             plt.ylabel(VT.units)
             subplot_call(VarT, VT, ax)
+
 
 # NetCDF4-Python can read a remote OPeNDAP dataset or a local NetCDF file:
 out_dir = os.path.join(
