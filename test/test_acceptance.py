@@ -1,9 +1,10 @@
-import pytest
 from pathlib import Path
+from test.utils import TestUtils
+
+import pytest
+
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
-
-from test.utils import TestUtils
 
 
 class TestAcceptance:

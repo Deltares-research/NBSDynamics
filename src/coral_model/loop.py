@@ -7,10 +7,11 @@ coral_model - loop
 
 import os
 from typing import List, Optional
+from pathlib import Path
 
 import numpy as np
 from tqdm import tqdm
-from pathlib import Path
+
 from src.coral_model import core
 from src.coral_model.core import (
     Calcification,
