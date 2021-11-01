@@ -10,8 +10,8 @@ import os
 import numpy as np
 from tqdm import tqdm
 from pathlib import Path
-from coral_model import core
-from coral_model.core import (
+from src.coral_model import core
+from src.coral_model.core import (
     Calcification,
     Dislodgement,
     Flow,
@@ -22,9 +22,9 @@ from coral_model.core import (
     Recruitment,
     Temperature,
 )
-from coral_model.environment import Constants, Environment
-from coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
-from coral_model.utils import Output, time_series_year
+from src.coral_model.environment import Constants, Environment
+from src.coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
+from src.coral_model.utils import Output, time_series_year
 
 
 class Simulation:
