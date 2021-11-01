@@ -56,64 +56,38 @@ class TestAcceptance:
         # finalizing
         sim_run.finalise()
 
-    @pytest.mark.skip(reason="Not yet supported.")
-    def test_given_interface_transect_case_runs(self):
-        model_dir = TestUtils.get_local_test_data_dir("Mariya_model")
-        # define the basic Simulation object, indicating already here the type of hydrodynamics
-        run_trans = Simulation(mode="Transect")
-        # set the working directory and its subdirectories (input, output, figures)
-        run_trans.set_directories(model_dir / "Run_Transect")
-        # read the input file with parameters (processes, parameters,constants, now all in "constants")
-        run_trans.read_parameters(file="coral_input.txt", folder=run_trans.input_dir)
-        # environment definition
-        run_trans.environment.from_file(
-            "light", "TS_PAR.txt", folder=run_trans.input_dir
-        )
-        run_trans.environment.from_file(
-            "temperature", "TS_SST.txt", folder=run_trans.input_dir
-        )
-        run_trans.environment.from_file(
-            "storm", "TS_stormcat2.txt", folder=run_trans.input_dir
-        )
-
-        # time definition
-        run_trans.environment.set_dates(start_date="2000-01-01", end_date="2100-01-01")
-
-        # hydrodynamic model
-        # settings for a 1D idealized transect using fixed currents and Soulsby
-        # orbital velocities depending on stormcat and depth
-        run_trans.hydrodynamics.working_dir = run_trans.working_dir
-        run_trans.hydrodynamics.mdu = Path("input") / "TS_waves.txt"
-        run_trans.hydrodynamics.config = Path("input") / "config.csv"
-        run_trans.hydrodynamics.initiate()
-        # check
-        print(run_trans.hydrodynamics.settings)
-        # define output
-        run_trans.define_output("map", fme=False)
-        run_trans.define_output("his", fme=False)
-        # initiate coral
-        coral = Coral(run_trans.constants, 0.1, 0.1, 0.05, 0.05, 0.2, 1.0)
-        coral = run_trans.initiate(coral)
-        # simulation
-        run_trans.exec(coral)
-        # finalizing
-        run_trans.finalise()
-        # done
-
-    def test_given_interface_transect_new_case_runs(self):
-        """
-        coral_model - interface
-
-        @author: Gijs G. Hendrickx
-
-        """
+    @pytest.mark.parametrize(
+        "coral_values",
+        [
+            pytest.param(
+                dict(dc=0.1, hc=0.1, bc=0.05, tc=0.05, ac=0.2, species_constant=1.0),
+                id="Species constant 1.0",
+            ),
+            pytest.param(
+                dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
+                id="Species constant 0.6",
+            ),
+        ],
+    )
+    def test_given_interface_transect_runs(self, coral_values: dict):
+        # 1. Define test data.
         test_dir = TestUtils.get_local_test_data_dir("transect_case")
         assert test_dir.is_dir()
+        working_dir = test_dir / "Run_26_10_massive"
 
-        # define the basic Simulation object, indicating already here the type of hydrodynamics
+        # 1.b. Remove all output data in case it exists from previous runs.
+        output_dir = working_dir / "output"
+        his_output_file = output_dir / "CoralModel_his.nc"
+        map_output_file = output_dir / "CoralModel_map.nc"
+        if his_output_file.exists():
+            his_output_file.unlink()
+        if map_output_file.exists():
+            map_output_file.unlink()
+
+        # 2. Prepare model.
+        # Define the basic Simulation object, indicating already here the type of hydrodynamics
         run_trans = Simulation(mode="Transect")
-        # set the working directory and its subdirectories (input, output, figures)
-        run_trans.set_directories(test_dir / "Run_26_10_massive")
+        run_trans.set_directories(working_dir)
         # read the input file with parameters (processes, parameters,constants, now all in "constants")
         run_trans.read_parameters(file="coral_input.txt", folder=run_trans.input_dir)
         # environment definition
@@ -143,14 +117,14 @@ class TestAcceptance:
         run_trans.define_output("map", fme=False)
         run_trans.define_output("his", fme=False)
         # initiate coral
-        coral = Coral(run_trans.constants, 0.125, 0.125, 0.1, 0.1, 0.2, 0.6)
-
+        coral_dict = {**dict(constants=run_trans.constants), **coral_values}
+        coral = Coral(**coral_dict)
         coral = run_trans.initiate(coral)
-        # simulation
-        run_trans.exec(coral)
-        # finalizing
-        run_trans.finalise()
-        # done
 
-        assert (run_trans.output_dir / "CoralModel_his.nc").is_file()
-        assert (run_trans.output_dir / "CoralModel_map.nc").is_file()
+        # 3. Run simulation
+        run_trans.exec(coral)
+        run_trans.finalise()
+
+        # 4. Verify expectations.
+        assert (run_trans.output_dir / "CoralModel_his.nc").exists()
+        assert (run_trans.output_dir / "CoralModel_map.nc").exists()

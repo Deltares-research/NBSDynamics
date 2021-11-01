@@ -83,7 +83,7 @@ class Simulation:
         return self._hydrodynamics
 
     @property
-    def figures_dir(self):
+    def figures_dir(self) -> Path:
         """Figures directory.
 
         :rtype: str
@@ -91,7 +91,7 @@ class Simulation:
         return self.working_dir / "figures"
 
     @property
-    def output_dir(self):
+    def output_dir(self) -> Path:
         """Output directory.
 
         :rtype: str
@@ -99,7 +99,7 @@ class Simulation:
         return self.working_dir / "output"
 
     @property
-    def input_dir(self):
+    def input_dir(self) -> Path:
         """Input directory.
 
         :rtype: str
@@ -107,14 +107,13 @@ class Simulation:
         return self.working_dir / "input"
 
     def set_directories(self, workdir: Path):
-        """Set directories based on working directory.
-
-        :param working_dir: working directory
-        :param input_dir: input directory
-
-        :type working_dir: str
-        :type input_dir: str
         """
+        Sets the input, output, figures and working directories based on working directory.
+
+        Args:
+            workdir (Path): Working directory path.
+        """
+
         self.working_dir = workdir
         self._make_directories()
 
