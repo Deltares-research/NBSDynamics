@@ -1,13 +1,12 @@
 from pathlib import Path
-
-import netCDF4
 from test.utils import TestUtils
 
+import netCDF4
 import pytest
+from netCDF4 import Dataset
 
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
-from netCDF4 import Dataset
 
 
 class TestAcceptance:
