@@ -25,9 +25,10 @@ import contextlib
 import os
 import shutil
 import sys
-import pytest
 from pathlib import Path
 from typing import List
+
+import pytest
 
 try:
     from pip import main as pipmain
@@ -108,7 +109,10 @@ class TestUtils:
         return test_dir / TestUtils._name_external / dir_name
 
     @staticmethod
-    def copy_test_dir_into_artifacts_dir(test_name: str, *results_dirs,) -> Path:
+    def copy_test_dir_into_artifacts_dir(
+        test_name: str,
+        *results_dirs,
+    ) -> Path:
         """Copies all the result directories that need to be moved
         into the artifacts directory for later analysis
 
