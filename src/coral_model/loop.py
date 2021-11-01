@@ -9,7 +9,7 @@ import os
 
 import numpy as np
 from tqdm import tqdm
-
+from pathlib import Path
 from coral_model import core
 from coral_model.core import (
     Calcification,
@@ -79,11 +79,13 @@ class Simulation:
         return self._hydrodynamics
 
     @property
-    def working_dir(self):
+    def working_dir(self) -> Path:
         """Working directory.
 
         :rtype: str
         """
+        if not (isinstance(self.__working_dir), Path) and self.__working_dir:
+            self.__working_dir = Path(self.__working_dir)
         return self.__working_dir
 
     @property
@@ -92,7 +94,7 @@ class Simulation:
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "figures", "")
+        return self.working_dir / "figures" / ""
 
     @property
     def output_dir(self):
@@ -100,7 +102,7 @@ class Simulation:
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "output", "")
+        return self.working_dir / "output" / ""
 
     @property
     def input_dir(self):
@@ -108,7 +110,7 @@ class Simulation:
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "input", "")
+        return self.working_dir / "input" / ""
 
     def set_directories(self, workdir):
         """Set directories based on working directory.
@@ -128,14 +130,14 @@ class Simulation:
 
     def make_directories(self):
         """Create directories if not existing."""
-        if not os.path.exists(self.__working_dir):
-            os.mkdir(self.__working_dir)
-        if not os.path.exists(self.output_dir):
-            os.mkdir(self.output_dir)
-        if not os.path.exists(self.input_dir):
-            os.mkdir(self.input_dir)
-        if not os.path.exists(self.figures_dir):
-            os.mkdir(self.figures_dir)
+        if not self.__working_dir.is_dir():
+            self.__working_dir.mkdir(parents=True)
+        if not self.output_dir.is_dir():
+            self.output_dir.mkdir(parents=True)
+        if not self.input_dir.is_dir():
+            self.input_dir.mkdir(parents=True)
+        if not self.figures_dir.is_dir():
+            self.figures_dir.mkdir(parents=True)
 
     def read_parameters(self, file="coral_input.txt", folder=None):
         ddir = self.input_dir if folder is None else folder

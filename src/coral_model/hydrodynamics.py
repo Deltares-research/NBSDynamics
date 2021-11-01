@@ -922,3 +922,4 @@ class Transect:
 
     def finalise(self):
         """Finalize the working model."""
+        pass
