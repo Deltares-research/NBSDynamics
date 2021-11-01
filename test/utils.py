@@ -32,7 +32,7 @@ import pytest
 
 try:
     from pip import main as pipmain
-except:
+except Exception as e_info:
     from pip._internal import main as pipmain
 
 
