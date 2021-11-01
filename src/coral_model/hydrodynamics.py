@@ -8,7 +8,7 @@ import faulthandler
 import os
 import sys
 
-import bmi.wrapper
+# import bmi.wrapper
 import numpy as np
 from scipy.optimize import fsolve
 
@@ -399,7 +399,7 @@ faulthandler.enable()
 class Delft3D:
     """Coupling of coral_model to Delft3D using the BMI wrapper."""
 
-    import bmi.wrapper
+    # import bmi.wrapper
 
     _home = None
     _dflow_dir = None
