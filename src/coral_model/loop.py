@@ -6,6 +6,7 @@ coral_model - loop
 """
 
 import os
+from typing import List, Optional
 
 import numpy as np
 from tqdm import tqdm
@@ -30,6 +31,8 @@ from src.coral_model.utils import Output, time_series_year
 class Simulation:
     """CoralModel simulation."""
 
+    working_dir: Optional[Path]
+
     def __init__(self, mode=None):
 
         """Simulation loop of a coral model.
@@ -38,7 +41,7 @@ class Simulation:
         """
         self._environment = Environment()
         self._constants = Constants()
-        self.__working_dir = os.getcwd()
+        self.working_dir = Path.cwd()
         self.output = None
 
         modes = {
@@ -79,22 +82,12 @@ class Simulation:
         return self._hydrodynamics
 
     @property
-    def working_dir(self) -> Path:
-        """Working directory.
-
-        :rtype: str
-        """
-        if not (isinstance(self.__working_dir), Path) and self.__working_dir:
-            self.__working_dir = Path(self.__working_dir)
-        return self.__working_dir
-
-    @property
     def figures_dir(self):
         """Figures directory.
 
         :rtype: str
         """
-        return self.working_dir / "figures" / ""
+        return self.working_dir / "figures"
 
     @property
     def output_dir(self):
@@ -102,7 +95,7 @@ class Simulation:
 
         :rtype: str
         """
-        return self.working_dir / "output" / ""
+        return self.working_dir / "output"
 
     @property
     def input_dir(self):
@@ -110,9 +103,9 @@ class Simulation:
 
         :rtype: str
         """
-        return self.working_dir / "input" / ""
+        return self.working_dir / "input"
 
-    def set_directories(self, workdir):
+    def set_directories(self, workdir: Path):
         """Set directories based on working directory.
 
         :param working_dir: working directory
@@ -121,23 +114,20 @@ class Simulation:
         :type working_dir: str
         :type input_dir: str
         """
-        self.__working_dir = workdir
+        self.working_dir = workdir
+        self._make_directories()
 
-        self.input_folder = self.input_dir
-        self.output_folder = self.output_dir
-        self.figures_folder = self.figures_dir
-        self.make_directories()
-
-    def make_directories(self):
+    def _make_directories(self):
         """Create directories if not existing."""
-        if not self.__working_dir.is_dir():
-            self.__working_dir.mkdir(parents=True)
-        if not self.output_dir.is_dir():
-            self.output_dir.mkdir(parents=True)
-        if not self.input_dir.is_dir():
-            self.input_dir.mkdir(parents=True)
-        if not self.figures_dir.is_dir():
-            self.figures_dir.mkdir(parents=True)
+        loop_dirs: List[Path] = [
+            self.working_dir,
+            self.output_dir,
+            self.input_dir,
+            self.figures_dir,
+        ]
+        for loop_dir in loop_dirs:
+            if not loop_dir.is_dir():
+                loop_dir.mkdir(parents=True)
 
     def read_parameters(self, file="coral_input.txt", folder=None):
         ddir = self.input_dir if folder is None else folder

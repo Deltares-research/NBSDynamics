@@ -896,7 +896,7 @@ class Transect:
         # just in case we better make it point to the lower one
         # to avoid code duplication. Either way, the coral parameter
         # was not being used.
-        self.update_orbital(stormcat)
+        return self.update_orbital(stormcat)
 
     def update_orbital(self, stormcat=0):
         """Update the model, which is just knowing the waves"""
