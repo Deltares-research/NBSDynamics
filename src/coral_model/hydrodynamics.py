@@ -886,11 +886,26 @@ class Transect:
 
     def update(self, coral, stormcat=0):
         """Update the model, which is just knowing the waves"""
-        # Not sure if this method is currently being used, but
-        # just in case we better make it point to the lower one
-        # to avoid code duplication. Either way, the coral parameter
-        # was not being used.
-        return self.update_orbital(stormcat)
+        """Update the model, which is just knowing the waves"""
+        mean_current_vel = 0
+        if stormcat in [0, 1, 2, 3]:
+            Hs = self.wave_height[stormcat]
+            T = self.wave_period[stormcat]
+            max_current_vel = self.max_curr_vel[stormcat]
+            h = self._water_depth
+            wave_vel = (
+                Hs
+                / 4
+                * np.sqrt(9.81 / h)
+                * np.exp(-np.power((3.65 / T * np.sqrt(h / 9.81)), 2.1))
+            )
+        else:
+            msg = f"stormcat = {stormcat}, must be either 0,1,2,3"
+            raise ValueError(msg)
+        if stormcat == 0:
+            return mean_current_vel, wave_vel, T
+        else:
+            return max_current_vel, wave_vel, T
 
     def update_orbital(self, stormcat=0):
         """Update the model, which is just knowing the waves"""
