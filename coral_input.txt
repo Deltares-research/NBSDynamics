@@ -62,6 +62,9 @@ omega0 = .14587415      # .14587415 ! aragonite dissolution state [-]
 kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
 #
 # morphological development
+rf = 1.0                # 1.0       ! form ratio height to diameter [-]
+rp = 1.0                # 1.0       ! plate ratio base to top diameter [-] 
+
 prop_form = .1          # .1        ! overall form proportionality constant [-]
 prop_plate = .5         # .5        ! overall plate proportionality constant [-
 prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
