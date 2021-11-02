@@ -86,7 +86,7 @@ class TestUtils:
         try:
             shutil.copytree(dir_name, copy_dir)
         except Exception as e_info:
-            raise Exception(f"Error copying tree {str(e_info)}")
+            raise Exception(f"Error copying tree {str(e_info)}") from e_info
 
         return copy_dir
 
@@ -159,12 +159,7 @@ class TestUtils:
         Returns the desired directory relative to the test external data.
         Avoiding extra code on the tests.
         """
-        test_dir = Path(__file__).parent
-        try:
-            test_dir = test_dir / test_data_name / dir_name
-        except:
-            print("An error occurred trying to find {}".format(dir_name))
-        return test_dir
+        return Path(__file__).parent / test_data_name / dir_name
 
     @staticmethod
     def get_test_dir(dir_name: str) -> Path:
