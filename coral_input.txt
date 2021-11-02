@@ -1,0 +1,85 @@
+# Key = value           ! Default   ! Definition [units]
+#--------------------------------------------------------------------------------------------------------------------
+#
+# Processes
+fme = False             # False     ! Flow micro-environment formulations
+tme = False             # False     ! Thermal micro-environment formulations
+pfd = False             # False     ! Photosynthetic flow dependency formulations
+warn_proc = True        # True      ! Print warning for incompatible processes
+#
+# Light attenuation
+Kd0 = 0.1              #  .1       ! constant light-attenuation coefficient [m-1]; used when no time-series provided
+theta_max = 0.5         #  0.5      ! maximum spreading of light [rad]; defined at water-air interface
+
+# flow mirco-environment
+Cs = 0.17               #  .17      ! Smagorinsky coefficient [-]
+Cm = 1.7                #  1.7      ! inertia coefficient [-]
+Cf = 0.01               #  .01      ! friction coefficient [-]
+nu = 1e-6               #  1e-6     ! kinematic viscosity of water [m2 s-1]
+alpha = 1e-7            #  1e-7     ! thermal diffusivity of water [m2 s-1]
+psi = 2                 #  2        ! ratio of lateral over longitudinal spacing of corals [-]
+wcAngle = 0.            #  0.       ! angle between current- and wave-induced flows [rad]
+rd = 500                #  500      ! velocity boundary layer wall-coordinate [-]
+numericTheta = 0.5      #  .5       ! update ratio for above-canopy flow [-]
+err = 1e-3              #  1e-3     ! maximum allowed relative error for drag coefficient estimation [-]
+maxiter_k = 1e5         #  1e5      ! maximum number of iterations taken over canopy layers
+maxiter_aw = 1e5        #  1e5      ! maximum number of iterations to solve complex-valued wave-attenuation coefficient
+
+# thermal micro-environment
+K0 = 80.                #  80.      ! morphological thermal coefficient [-]
+ap = 0.4                #  .4       ! absorptivity of coral [-]
+k = 0.6089              #  .6089    ! thermal conductivity [K m-1 s-1 K-1]
+
+# photosynthetic light dependency
+iota = .6               # .6        ! photo-acclimation rate [d-1]
+ik_max = 372.32         # 372.32    ! maximum quasi steady-state saturation light-intensity [umol photons m-2 s-1]
+pm_max = 1.             #  1.       ! maximum quasi steady-state maximum photosynthetic efficiency [-]
+betaI = .34             # .34       ! exponent of the quasi steady-state saturation light-intensity [-]
+betaP = .09             # .09       ! exponent of the quasi steady-state maximum photosynthetic efficiency [-]
+Icomp = .05             # .01       ! fraction of I0 at compensation point [-]
+
+# photosynthetic thermal dependency
+Ea = 6e4                # 6e4       ! activation energy [J mol-1]
+R = 8.31446261815324    # 8.31446261815324 ! gas constant [J K-1 mol-1]
+k_var = 2.45            # 2.45      ! thermal-acclimation coefficient [-]
+nn = 60                 # 60        ! thermal-acclimation period [y]
+
+# photosynthetic flow dependency
+pfd_min = .68886964     # .68886964 ! minimum photosynthetic flow dependency [-]
+ucr = .5173             #.17162374 if processes.fme else .5173) ! minimum flow velocity at which photosynthesis is not limited by flow [m s-1]
+
+
+# population dynamics
+r_growth = .002         # 0.002     ! growth rate [d-1]
+r_recovery = .2         # .2        ! recovery rate [d-1]
+r_mortality = .04       # .04       ! mortality rate [d-1]
+r_bleaching =  8.       # 8.        ! bleaching rate [d-1]
+
+# calcification
+gC = .5                 # .5        ! calcification constant [kg m-2 d-1]
+omegaA0 = 5.            # 5         ! aragonite saturation state used in absence of time-series [-]
+omega0 = .14587415      # .14587415 ! aragonite dissolution state [-]
+kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
+#
+# morphological development
+rf = 1.0                # 1.0       ! form ratio height to diameter [-]
+rp = 1.0                # 1.0       ! plate ratio base to top diameter [-] 
+
+prop_form = .1          # .1        ! overall form proportionality constant [-]
+prop_plate = .5         # .5        ! overall plate proportionality constant [-
+prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
+prop_space = .5         # .5/np.sqrt(2.) ! overall space proportionality constant [-]
+prop_space_light = .1   # .1      ! light space proportionality constant [-]
+prop_space_flow = .1    # .1        ! flow space proportionality constant [-]
+u0 = .2                 # .2        ! base-line flow velocity [m s-1]
+rho_c = 1600.           # 1600.     ! density of coral [kg m-3]
+#
+# dislodgement criterion
+sigma_t = 2e5           # 2e5       ! tensile strength of substratum [N m-2]
+Cd = 1.                 # 1.        ! drag coefficient [-]
+rho_w = 1025.           # 1025.     ! density of water [kg m-3]
+#
+# coral recruitment
+no_larvae = 1e6         # 1e6       ! number of larvae released during mass spawning event [-]
+prob_settle = 1e-4      # 1e-4      ! probability of settlement [-]
+d_larvae = 1e-3         # 1e-3      ! larval diameter [m]

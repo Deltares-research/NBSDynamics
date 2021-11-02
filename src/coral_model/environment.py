@@ -58,7 +58,7 @@ class Constants:
         betaI = .34             # .34       ! exponent of the quasi steady-state saturation light-intensity [-]
         betaP = .09             # .09       ! exponent of the quasi steady-state maximum photosynthetic efficiency [-]
         Icomp = .01             # .01       ! fraction of I0 at compensation point [-]
-
+        
         # photosynthetic thermal dependency
         Ea = 6e4                # 6e4       ! activation energy [J mol-1]
         R = 8.31446261815324    # 8.31446261815324 ! gas constant [J K-1 mol-1]
@@ -83,6 +83,10 @@ class Constants:
         kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
         #
         # morphological development
+        
+        rf = 0.8                # 0.8       ! form ratio height to diameter [-]
+        rp = 1.0                # 1.0       ! plate ratio base to top diameter [-] 
+
         prop_form = .1          # .1        ! overall form proportionality constant [-]
         prop_plate = .5         # .5        ! overall plate proportionality constant [-
         prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
@@ -137,7 +141,7 @@ class Constants:
         self.ik_max = None
         self.pm_max = None
         self.betaI = None
-        self.betaP = None
+        self.betaP =  None
         self.Icomp = None
 
         # photosynthetic thermal dependency
@@ -163,10 +167,12 @@ class Constants:
         self.kappaA = None
 
         # morphological development
-        self.prop_form = None
-        self.prop_plate = None
-        self.prop_plate_flow = None
-        self.prop_space = None
+        self.rf = None
+        self.rp = None
+        self.prop_form =  None
+        self.prop_plate =  None
+        self.prop_plate_flow =  None
+        self.prop_space =  None
         self.prop_space_light = None
         self.prop_space_flow = None
         self.u0 = None
@@ -270,10 +276,10 @@ class Constants:
         # photosynthetic light dependency
         self.iota = default("iota", 0.6)
         self.ik_max = default("ik_max", 372.32)
-        self.pm_max = default("pm_max", 1.0)
-        self.betaI = default("betaI", 0.34)
-        self.betaP = default("beta_P", 0.09)
-        self.Icomp = default("Icomp", 0.01)
+        self.pm_max = default("pm_max", 1.)
+        self.betaI = default("betaI", .34)
+        self.betaP = default("beta_P", .09)
+        self.Icomp = default("Icomp", .01)
 
         # photosynthetic thermal dependency
         self.Ea = default("Ea", 6e4)
@@ -298,14 +304,16 @@ class Constants:
         self.kappaA = default("kappaA", 0.66236107)
 
         # morphological development
-        self.prop_form = default("prop_form", 0.1)
-        self.prop_plate = default("prop_plate", 0.5)
-        self.prop_plate_flow = default("prop_plate_flow", 0.1)
-        self.prop_space = default("prop_space", 0.5) / np.sqrt(2.0)
-        self.prop_space_light = default("prop_space_light", 0.1)
-        self.prop_space_flow = default("prop_space_flow", 0.1)
-        self.u0 = default("u0", 0.2)
-        self.rho_c = default("rho_c", 1600.0)
+        self.rf = default("rf", 1.0)
+        self.rp = default("rp", 1.0)
+        self.prop_form = default("prop_form", .1)
+        self.prop_plate = default("prop_plate", .5)
+        self.prop_plate_flow = default("prop_plate_flow", .1)
+        self.prop_space = default("prop_space", .5) / np.sqrt(2.)
+        self.prop_space_light = default("prop_space_light", .1)
+        self.prop_space_flow = default("prop_space_flow", .1)
+        self.u0 = default("u0", .2)
+        self.rho_c = default("rho_c", 1600.)
 
         # dislodgement criterion
         self.sigma_t = default("sigma_t", 2e5)

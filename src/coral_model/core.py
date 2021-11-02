@@ -1160,19 +1160,21 @@ class Morphology:
         """
         self.__coral_object_checker(coral)
 
-        rf = (
-            self.constants.prop_form
-            * (coral.light.mean(axis=1) / self.I0.mean(axis=1))
-            * (self.constants.u0 / 1e-6)
-        )
-        rf[coral.ucm > 0] = (
-            self.constants.prop_form
-            * (
-                coral.light.mean(axis=1)[coral.ucm > 0]
-                / self.I0.mean(axis=1)[coral.ucm > 0]
-            )
-            * (self.constants.u0 / coral.ucm[coral.ucm > 0])
-        )
+        rf = self.constants.rf
+
+        # rf = (
+        #     self.constants.prop_form
+        #     * (coral.light.mean(axis=1) / self.I0.mean(axis=1))
+        #     * (self.constants.u0 / 1e-6)
+        # )
+        # rf[coral.ucm > 0] = (
+        #     self.constants.prop_form
+        #     * (
+        #         coral.light.mean(axis=1)[coral.ucm > 0]
+        #         / self.I0.mean(axis=1)[coral.ucm > 0]
+        #     )
+        #     * (self.constants.u0 / coral.ucm[coral.ucm > 0])
+        # )
         self.__rf_optimal = rf
 
     @property
@@ -1190,15 +1192,16 @@ class Morphology:
         :type coral: Coral
         """
         self.__coral_object_checker(coral)
+        self.__rp_optimal = self.constants.rp
 
-        self.__rp_optimal = self.constants.prop_plate * (
-            1.0
-            + np.tanh(
-                self.constants.prop_plate_flow
-                * (coral.ucm - self.constants.u0)
-                / self.constants.u0
-            )
-        )
+        # self.__rp_optimal = self.constants.prop_plate * (
+        #     1.0
+        #     + np.tanh(
+        #         self.constants.prop_plate_flow
+        #         * (coral.ucm - self.constants.u0)
+        #         / self.constants.u0
+        #     )
+        # )
 
     @property
     def rs_optimal(self):
@@ -1216,25 +1219,27 @@ class Morphology:
         """
         self.__coral_object_checker(coral)
 
-        self.__rs_optimal = (
-            self.constants.prop_space
-            * (
-                1.0
-                - np.tanh(
-                    self.constants.prop_space_light
-                    * coral.light.mean(axis=1)
-                    / self.I0.mean(axis=1)
-                )
-            )
-            * (
-                1.0
-                + np.tanh(
-                    self.constants.prop_space_flow
-                    * (coral.ucm - self.constants.u0)
-                    / self.constants.u0
-                )
-            )
-        )
+        self.__rs_optimal = 0.5 / np.sqrt(2.0) * 0.25
+
+        # self.__rs_optimal = (
+        #     self.constants.prop_space
+        #     * (
+        #         1.0
+        #         - np.tanh(
+        #             self.constants.prop_space_light
+        #             * coral.light.mean(axis=1)
+        #             / self.I0.mean(axis=1)
+        #         )
+        #     )
+        #     * (
+        #         1.0
+        #         + np.tanh(
+        #             self.constants.prop_space_flow
+        #             * (coral.ucm - self.constants.u0)
+        #             / self.constants.u0
+        #         )
+        #     )
+        # )
 
     def delta_volume(self, coral):
         """
