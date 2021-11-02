@@ -1,9 +1,8 @@
 from pathlib import Path
-
-import numpy
 from test.utils import TestUtils
 from typing import List
 
+import numpy
 import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt

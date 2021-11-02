@@ -8,8 +8,8 @@ import faulthandler
 import os
 import sys
 
-from bmi.wrapper import BMIWrapper
 import numpy as np
+from bmi.wrapper import BMIWrapper
 from scipy.optimize import fsolve
 
 faulthandler.enable()
