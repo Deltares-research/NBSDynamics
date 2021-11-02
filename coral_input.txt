@@ -36,6 +36,7 @@ ik_max = 372.32         # 372.32    ! maximum quasi steady-state saturation ligh
 pm_max = 1.             #  1.       ! maximum quasi steady-state maximum photosynthetic efficiency [-]
 betaI = .34             # .34       ! exponent of the quasi steady-state saturation light-intensity [-]
 betaP = .09             # .09       ! exponent of the quasi steady-state maximum photosynthetic efficiency [-]
+Icomp = .05             # .01       ! fraction of I0 at compensation point [-]
 
 # photosynthetic thermal dependency
 Ea = 6e4                # 6e4       ! activation energy [J mol-1]

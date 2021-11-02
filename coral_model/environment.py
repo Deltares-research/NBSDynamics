@@ -55,6 +55,7 @@ class Constants:
         pm_max = 1.             #  1.       ! maximum quasi steady-state maximum photosynthetic efficiency [-]
         betaI = .34             # .34       ! exponent of the quasi steady-state saturation light-intensity [-]
         betaP = .09             # .09       ! exponent of the quasi steady-state maximum photosynthetic efficiency [-]
+        Icomp = .01             # .01       ! fraction of I0 at compensation point [-]
         
         # photosynthetic thermal dependency
         Ea = 6e4                # 6e4       ! activation energy [J mol-1]
@@ -139,6 +140,7 @@ class Constants:
         self.pm_max =  None
         self.betaI = None
         self.betaP =  None
+        self.Icomp = None
 
         # photosynthetic thermal dependency
         self.Ea = None
@@ -274,6 +276,7 @@ class Constants:
         self.pm_max = default("pm_max", 1.)
         self.betaI = default("betaI", .34)
         self.betaP = default("beta_P", .09)
+        self.Icomp = default("Icomp", .01)
 
         # photosynthetic thermal dependency
         self.Ea = default("Ea", 6e4)

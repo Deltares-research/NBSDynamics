@@ -720,7 +720,7 @@ class Photosynthesis:
             raise NotImplementedError(msg)
 
         # # calculations
-        self.pld = np.clip(p_max * (np.tanh(coral.light / ik) - np.tanh(0.01 * self.I0 / ik)),0.,1.)
+        self.pld = p_max * (np.tanh(coral.light / ik) - np.tanh(self.constants.Icomp * self.I0 / ik))
     
 
     def thermal_dependency(self, coral, env, year):
