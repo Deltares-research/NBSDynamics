@@ -8,7 +8,7 @@ import faulthandler
 import os
 import sys
 
-# import bmi.wrapper
+from bmi.wrapper import BMIWrapper
 import numpy as np
 from scipy.optimize import fsolve
 
@@ -399,8 +399,6 @@ faulthandler.enable()
 class Delft3D:
     """Coupling of coral_model to Delft3D using the BMI wrapper."""
 
-    # import bmi.wrapper
-
     _home = None
     _dflow_dir = None
     _dimr_dir = None
@@ -699,13 +697,9 @@ class Delft3D:
     def initiate(self):
         """Initialize the working model."""
         self.environment()
-        self._model_fm = bmi.wrapper.BMIWrapper(
-            engine=self.dflow_dir, configfile=self.mdu
-        )
+        self._model_fm = BMIWrapper(engine=self.dflow_dir, configfile=self.mdu)
         if self.config:
-            self._model_dimr = bmi.wrapper.BMIWrapper(
-                engine=self.dimr_dir, configfile=self.config
-            )
+            self._model_dimr = BMIWrapper(engine=self.dimr_dir, configfile=self.config)
         self.model.initialize()  # if self.model_dimr is None else self.model_dimr.initialize()
 
     def update(self, coral, stormcat=0):
