@@ -1,6 +1,6 @@
 from pathlib import Path
+from typing import List
 
-import netCDF4
 from test.utils import TestUtils
 
 import pytest
@@ -8,6 +8,7 @@ import pytest
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
 from netCDF4 import Dataset
+from numpy import savetxt, loadtxt
 
 
 class TestAcceptance:
@@ -129,40 +130,27 @@ class TestAcceptance:
         run_trans.finalise()
 
         # 4. Verify expectations.
-        output_his_file = run_trans.output_dir / "CoralModel_his.nc"
-        assert output_his_file.exists()
-        output_map_file = run_trans.output_dir / "CoralModel_map.nc"
-        assert output_map_file.exists()
-
-    @pytest.mark.skip(reason="Only to run locally.")
-    def test_compare_netcdf_manually(self):
-        output_dir = (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "Run_26_10_massive"
-            / "output"
+        self._compare_netcdfs(
+            run_trans.output_dir / "CoralModel_his.nc",
+            ["time", "station_x_coordinate", "station_y_coordinate"],
         )
+        self._compare_netcdfs(
+            run_trans.output_dir / "CoralModel_map.nc",
+            ["time", "nmesh2d_x", "nmesh2d_y"],
+        )
+
+    def _compare_netcdfs(self, netcdf_file: Path, variables_to_check: List[str]):
         expected_dir = (
             TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
 
-        def get_output_netcdf(output_dir: Path, filename: str) -> Dataset:
-            nc_filepath = output_dir / filename
-            assert nc_filepath.is_file()
-            return Dataset(nc_filepath, "r", format="NETCDF4")
 
-        def compare_map_netcdf(map_file: str):
-            expected_map = get_output_netcdf(expected_dir, map_file)
-            output_map = get_output_netcdf(output_dir, map_file)
-            assert expected_map == output_map
-            expected_map.close()
-            output_map.close()
-
-        def compare_his_netcdf(his_file: str):
-            expected_his = get_output_netcdf(expected_dir, his_file)
-            output_his = get_output_netcdf(output_dir, his_file)
-            assert expected_his == output_his
-            expected_his.close()
-            output_his.close()
-
-        compare_map_netcdf("CoralModel_map.nc")
-        compare_his_netcdf("CoralModel_his.nc")
+        assert netcdf_file.is_file()
+        with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
+            # Check variables
+            for variable in variables_to_check:
+                ref_file = expected_dir / f"ref_{variable}.txt"
+                ref_values = loadtxt(ref_file)
+                # savetxt(out_file, netcdf_right[variable][:])
+                assert ref_values == out_netcdf[variable][:]
+            out_netcdf.close()
