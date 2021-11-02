@@ -1,14 +1,13 @@
 from pathlib import Path
+from test.utils import TestUtils
 from typing import List
 
-from test.utils import TestUtils
-
 import pytest
+from netCDF4 import Dataset
+from numpy import loadtxt
 
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
-from netCDF4 import Dataset
-from numpy import savetxt, loadtxt
 
 
 class TestAcceptance:
@@ -143,7 +142,6 @@ class TestAcceptance:
         expected_dir = (
             TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
-
 
         assert netcdf_file.is_file()
         with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
