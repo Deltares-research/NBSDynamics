@@ -1,10 +1,13 @@
 from pathlib import Path
+
+import numpy
 from test.utils import TestUtils
 from typing import List
 
 import pytest
 from netCDF4 import Dataset
-from numpy import loadtxt
+from numpy import loadtxt, savetxt
+from numpy.ma import getdata
 
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
@@ -147,8 +150,7 @@ class TestAcceptance:
         with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
             # Check variables
             for variable in variables_to_check:
-                ref_file = expected_dir / f"ref_{variable}.txt"
+                ref_file = expected_dir / f"ref_{variable}_{netcdf_file.name}.txt"
+                # savetxt(ref_file, getdata(out_netcdf[variable][:]))
                 ref_values = loadtxt(ref_file)
-                # savetxt(out_file, netcdf_right[variable][:])
-                assert ref_values == out_netcdf[variable][:]
-            out_netcdf.close()
+                assert (ref_values == out_netcdf[variable][:]).all()
