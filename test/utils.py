@@ -85,7 +85,7 @@ class TestUtils:
         copy_dir: Path = TestUtils.get_temporary_folder()
         try:
             shutil.copytree(dir_name, copy_dir)
-        except Exception as e_info:
+        except shutil.Error as e_info:
             raise Exception(f"Error copying tree {str(e_info)}") from e_info
 
         return copy_dir
