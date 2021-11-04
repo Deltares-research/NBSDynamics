@@ -75,23 +75,22 @@ class TestAcceptance:
         # 1. Define test data.
         test_dir = TestUtils.get_local_test_data_dir("transect_case")
         assert test_dir.is_dir()
-        working_dir = test_dir / "Run_26_10_massive"
 
         # 1.b. Remove all output data in case it exists from previous runs.
         his_filename = "CoralModel_his.nc"
         map_filename = "CoralModel_map.nc"
-        output_dir = working_dir / "output"
+        output_dir = test_dir / "output"
+
         his_output_file = output_dir / his_filename
+        his_output_file.unlink(missing_ok=True)
+
         map_output_file = output_dir / map_filename
-        if his_output_file.exists():
-            his_output_file.unlink()
-        if map_output_file.exists():
-            map_output_file.unlink()
+        map_output_file.unlink(missing_ok=True)
 
         # 2. Prepare model.
         # Define the basic Simulation object, indicating already here the type of hydrodynamics
         run_trans = Simulation(mode="Transect")
-        run_trans.set_directories(working_dir)
+        run_trans.set_directories(test_dir)
         # read the input file with parameters (processes, parameters,constants, now all in "constants")
         run_trans.read_parameters(file="coral_input.txt", folder=run_trans.input_dir)
         # environment definition
@@ -131,7 +130,7 @@ class TestAcceptance:
 
         # 4. Verify expectations.
         expected_dir = (
-            TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
+            TestUtils.get_local_test_data_dir("transect_case") / "expected_output"
         )
 
         def compare_files(created_file: Path):
@@ -171,7 +170,7 @@ class TestAcceptance:
         This test is only meant to be run locally, it helps generating the expected data as .txt files.
         """
         expected_dir = (
-            TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
+            TestUtils.get_local_test_data_dir("transect_case") / "expected_output"
         )
 
         def normalize_name_with_capitals(name: str) -> str:
