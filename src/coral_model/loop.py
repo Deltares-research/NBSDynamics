@@ -13,17 +13,15 @@ import numpy as np
 from tqdm import tqdm
 
 from src.coral_model import core
-from src.coral_model.core import (
-    Calcification,
-    Dislodgement,
-    Flow,
-    Light,
-    Morphology,
-    Photosynthesis,
-    PopulationStates,
-    Recruitment,
-    Temperature,
-)
+from src.coral_model.bio_process.calcification import Calcification
+from src.coral_model.bio_process.dislodgment import Dislodgement
+from src.coral_model.bio_process.flow import Flow
+from src.coral_model.bio_process.light import Light
+from src.coral_model.bio_process.morphology import Morphology
+from src.coral_model.bio_process.photosynthesis import Photosynthesis
+from src.coral_model.bio_process.population_states import PopulationStates
+from src.coral_model.bio_process.recruitment import Recruitment
+from src.coral_model.bio_process.temperature import Temperature
 from src.coral_model.environment import Constants, Environment
 from src.coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
 from src.coral_model.utils import Output, time_series_year
