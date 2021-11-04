@@ -1,5 +1,6 @@
-from src.core.coral_model import RESHAPE
 import numpy as np
+
+from src.core.coral_model import RESHAPE
 
 
 class PopulationStates:

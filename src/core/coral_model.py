@@ -6,6 +6,7 @@ coral_model - core
 """
 
 import numpy as np
+
 from src.core.utils import CoralOnly, DataReshape
 
 # # data formatting -- to be reformatted in the model simulation

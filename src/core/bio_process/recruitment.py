@@ -1,5 +1,5 @@
-from src.core.utils import CoralOnly
 from src.core.coral_model import RESHAPE
+from src.core.utils import CoralOnly
 
 
 class Recruitment:
