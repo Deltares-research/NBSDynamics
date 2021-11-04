@@ -1,6 +1,4 @@
 from pathlib import Path
-
-from numpy.ma.core import var
 from test.utils import TestUtils
 from typing import List
 
@@ -9,6 +7,7 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 from numpy.ma import getdata
+from numpy.ma.core import var
 
 from src.coral_model.core import Coral
 from src.coral_model.loop import Simulation
