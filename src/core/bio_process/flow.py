@@ -1,11 +1,9 @@
 import numpy as np
-import pandas as pd
 from scipy.optimize import newton
 
-from src.core.utils import CoralOnly, DataReshape
+from src.core.utils import CoralOnly
 
-# # data formatting -- to be reformatted in the model simulation
-RESHAPE = DataReshape()
+from src.core.coral_model import RESHAPE
 
 
 class Flow:

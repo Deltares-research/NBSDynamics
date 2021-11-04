@@ -1,9 +1,7 @@
 import numpy as np
+from src.core.utils import CoralOnly
 
-from src.core.utils import CoralOnly, DataReshape
-
-# # data formatting -- to be reformatted in the model simulation
-RESHAPE = DataReshape()
+from src.core.coral_model import RESHAPE
 
 
 class Light:
