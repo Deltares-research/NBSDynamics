@@ -42,7 +42,7 @@ update_changelog_on_bump = true
 version = "0.0.3"
 tag_format = "v$major.$minor.$patch$prerelease"
 version_files = [
-    "src/coral_model/__init__.py",
+    "src/core/__init__.py",
     "pyproject.toml:version"
 ]
 
