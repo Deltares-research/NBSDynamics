@@ -47,8 +47,8 @@ version_files = [
 ]
 
 [tool.commitizen.custommize]
-bump_pattern = "^(break|new|fix|hotfix|merge)"
-bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH", "merge"="MINOR"}
+bump_pattern = "^(break|new|fix|hotfix|refactor|docs)"
+bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH", "refactor"="PATCH", "docs" = "PATCH"}
 
 [tool.black]
 line-length = 88
