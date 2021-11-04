@@ -79,9 +79,11 @@ class TestAcceptance:
         working_dir = test_dir / "Run_26_10_massive"
 
         # 1.b. Remove all output data in case it exists from previous runs.
+        his_filename = "CoralModel_his.nc"
+        map_filename = "CoralModel_map.nc"
         output_dir = working_dir / "output"
-        his_output_file = output_dir / "CoralModel_his.nc"
-        map_output_file = output_dir / "CoralModel_map.nc"
+        his_output_file = output_dir / his_filename
+        map_output_file = output_dir / map_filename
         if his_output_file.exists():
             his_output_file.unlink()
         if map_output_file.exists():
@@ -157,19 +159,24 @@ class TestAcceptance:
                     #     exp_netcdf[variable], out_netcdf[variable]
                     # )
 
-        compare_files(run_trans.output_dir / "CoralModel_his.nc")
-        compare_files(run_trans.output_dir / "CoralModel_map.nc")
+        compare_files(run_trans.output_dir / his_filename)
+        compare_files(run_trans.output_dir / map_filename)
 
     @pytest.mark.skip(reason="Only to be run locally.")
-    def test_util_output_variables_netcdf(self):
+    @pytest.mark.parametrize(
+        "nc_filename",
+        [
+            pytest.param("CoralModel_his.nc", id="His variables"),
+            pytest.param("CoralModel_map.nc", id="Map variables"),
+        ],
+    )
+    def test_util_output_variables_netcdf(self, nc_filename: str):
         """
         This test is only meant to be run locally, it helps generating the expected data as .txt files.
         """
         expected_dir = (
             TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
-        his_file = "CoralModel_his.nc"
-        map_file = "CoralModel_map.nc"
 
         def normalize_name_with_capitals(name: str) -> str:
             if any(x.isupper() for x in name):
@@ -185,5 +192,4 @@ class TestAcceptance:
                     ref_file = out_dir / f"ref_{variable_name}_{netcdf_file.stem}.txt"
                     savetxt(ref_file, ref_netcdf[variable])
 
-        output_file(expected_dir / his_file)
-        output_file(expected_dir / map_file)
+        output_file(expected_dir / nc_filename)
