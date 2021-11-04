@@ -6,12 +6,14 @@ coral_model - loop
 """
 
 import os
+from pathlib import Path
+from typing import List, Optional
 
 import numpy as np
 from tqdm import tqdm
 
-from coral_model import core
-from coral_model.core import (
+from src.coral_model import core
+from src.coral_model.core import (
     Calcification,
     Dislodgement,
     Flow,
@@ -22,13 +24,15 @@ from coral_model.core import (
     Recruitment,
     Temperature,
 )
-from coral_model.environment import Constants, Environment
-from coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
-from coral_model.utils import Output, time_series_year
+from src.coral_model.environment import Constants, Environment
+from src.coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
+from src.coral_model.utils import Output, time_series_year
 
 
 class Simulation:
     """CoralModel simulation."""
+
+    working_dir: Optional[Path]
 
     def __init__(self, mode=None):
 
@@ -38,7 +42,7 @@ class Simulation:
         """
         self._environment = Environment()
         self._constants = Constants()
-        self.__working_dir = os.getcwd()
+        self.working_dir = Path.cwd()
         self.output = None
 
         modes = {
@@ -79,63 +83,51 @@ class Simulation:
         return self._hydrodynamics
 
     @property
-    def working_dir(self):
-        """Working directory.
-
-        :rtype: str
-        """
-        return self.__working_dir
-
-    @property
-    def figures_dir(self):
+    def figures_dir(self) -> Path:
         """Figures directory.
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "figures", "")
+        return self.working_dir / "figures"
 
     @property
-    def output_dir(self):
+    def output_dir(self) -> Path:
         """Output directory.
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "output", "")
+        return self.working_dir / "output"
 
     @property
-    def input_dir(self):
+    def input_dir(self) -> Path:
         """Input directory.
 
         :rtype: str
         """
-        return os.path.join(self.working_dir, "input", "")
+        return self.working_dir / "input"
 
-    def set_directories(self, workdir):
-        """Set directories based on working directory.
-
-        :param working_dir: working directory
-        :param input_dir: input directory
-
-        :type working_dir: str
-        :type input_dir: str
+    def set_directories(self, workdir: Path):
         """
-        self.__working_dir = workdir
+        Sets the input, output, figures and working directories based on working directory.
 
-        self.input_folder = self.input_dir
-        self.output_folder = self.output_dir
-        self.figures_folder = self.figures_dir
-        self.make_directories()
+        Args:
+            workdir (Path): Working directory path.
+        """
 
-    def make_directories(self):
+        self.working_dir = workdir
+        self._make_directories()
+
+    def _make_directories(self):
         """Create directories if not existing."""
-        if not os.path.exists(self.__working_dir):
-            os.mkdir(self.__working_dir)
-        if not os.path.exists(self.output_dir):
-            os.mkdir(self.output_dir)
-        if not os.path.exists(self.input_dir):
-            os.mkdir(self.input_dir)
-        if not os.path.exists(self.figures_dir):
-            os.mkdir(self.figures_dir)
+        loop_dirs: List[Path] = [
+            self.working_dir,
+            self.output_dir,
+            self.input_dir,
+            self.figures_dir,
+        ]
+        for loop_dir in loop_dirs:
+            if not loop_dir.is_dir():
+                loop_dir.mkdir(parents=True)
 
     def read_parameters(self, file="coral_input.txt", folder=None):
         ddir = self.input_dir if folder is None else folder

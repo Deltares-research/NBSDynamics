@@ -8,8 +8,8 @@ import faulthandler
 import os
 import sys
 
-import bmi.wrapper
 import numpy as np
+from bmi.wrapper import BMIWrapper
 from scipy.optimize import fsolve
 
 faulthandler.enable()
@@ -399,8 +399,6 @@ faulthandler.enable()
 class Delft3D:
     """Coupling of coral_model to Delft3D using the BMI wrapper."""
 
-    import bmi.wrapper
-
     _home = None
     _dflow_dir = None
     _dimr_dir = None
@@ -699,13 +697,9 @@ class Delft3D:
     def initiate(self):
         """Initialize the working model."""
         self.environment()
-        self._model_fm = bmi.wrapper.BMIWrapper(
-            engine=self.dflow_dir, configfile=self.mdu
-        )
+        self._model_fm = BMIWrapper(engine=self.dflow_dir, configfile=self.mdu)
         if self.config:
-            self._model_dimr = bmi.wrapper.BMIWrapper(
-                engine=self.dimr_dir, configfile=self.config
-            )
+            self._model_dimr = BMIWrapper(engine=self.dimr_dir, configfile=self.config)
         self.model.initialize()  # if self.model_dimr is None else self.model_dimr.initialize()
 
     def update(self, coral, stormcat=0):
@@ -892,11 +886,26 @@ class Transect:
 
     def update(self, coral, stormcat=0):
         """Update the model, which is just knowing the waves"""
-        # Not sure if this method is currently being used, but
-        # just in case we better make it point to the lower one
-        # to avoid code duplication. Either way, the coral parameter
-        # was not being used.
-        self.update_orbital(stormcat)
+        """Update the model, which is just knowing the waves"""
+        mean_current_vel = 0
+        if stormcat in [0, 1, 2, 3]:
+            Hs = self.wave_height[stormcat]
+            T = self.wave_period[stormcat]
+            max_current_vel = self.max_curr_vel[stormcat]
+            h = self._water_depth
+            wave_vel = (
+                Hs
+                / 4
+                * np.sqrt(9.81 / h)
+                * np.exp(-np.power((3.65 / T * np.sqrt(h / 9.81)), 2.1))
+            )
+        else:
+            msg = f"stormcat = {stormcat}, must be either 0,1,2,3"
+            raise ValueError(msg)
+        if stormcat == 0:
+            return mean_current_vel, wave_vel, T
+        else:
+            return max_current_vel, wave_vel, T
 
     def update_orbital(self, stormcat=0):
         """Update the model, which is just knowing the waves"""
@@ -922,3 +931,4 @@ class Transect:
 
     def finalise(self):
         """Finalize the working model."""
+        pass

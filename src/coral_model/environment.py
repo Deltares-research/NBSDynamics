@@ -83,6 +83,10 @@ class Constants:
         kappaA = .66236107      # .66236107 ! modified Michaelis-Menten half-rate coefficient [-]
         #
         # morphological development
+
+        rf = 1.0                # 0.8       ! form ratio height to diameter [-]
+        rp = 1.0                # 1.0       ! plate ratio base to top diameter [-]
+
         prop_form = .1          # .1        ! overall form proportionality constant [-]
         prop_plate = .5         # .5        ! overall plate proportionality constant [-
         prop_plate_flow = .1    # .1        !  flow plate proportionality constant [-]
@@ -163,6 +167,8 @@ class Constants:
         self.kappaA = None
 
         # morphological development
+        self.rf = None
+        self.rp = None
         self.prop_form = None
         self.prop_plate = None
         self.prop_plate_flow = None
@@ -298,6 +304,8 @@ class Constants:
         self.kappaA = default("kappaA", 0.66236107)
 
         # morphological development
+        self.rf = default("rf", 1.0)
+        self.rp = default("rp", 1.0)
         self.prop_form = default("prop_form", 0.1)
         self.prop_plate = default("prop_plate", 0.5)
         self.prop_plate_flow = default("prop_plate_flow", 0.1)
@@ -485,9 +493,9 @@ class Environment:
 
         def read_index(fil):
             """Function applicable to time-series in Pandas."""
-            time_series = pd.read_csv(f, sep="\t")
+            time_series = pd.read_csv(fil, sep="\t")
             if time_series.isnull().values.any():
-                msg = f"NaNs detected in time series {f}"
+                msg = f"NaNs detected in time series {fil}"
                 raise ValueError(msg)
             time_series["date"] = pd.to_datetime(time_series["date"])
             time_series.set_index("date", inplace=True)

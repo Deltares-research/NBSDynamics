@@ -70,6 +70,22 @@ python2 = ["typed-ast (>=1.4.2)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "bmi-python"
+version = "0.3.0"
+description = "Python wrapper for BMI libraries"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+docopts = "*"
+numpy = "*"
+six = "*"
+
+[package.extras]
+test = ["nose", "mock", "coverage"]
+
+[[package]]
 name = "cftime"
 version = "1.5.1"
 description = "Time-handling functionality from netcdf4-python"
@@ -158,6 +174,25 @@ python-versions = ">=3.6"
 
 [package.extras]
 pygments = ["Pygments (>=2.2.0)"]
+
+[[package]]
+name = "docopt"
+version = "0.6.1"
+description = "Pythonic argument parser, that will make you smile"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "docopts"
+version = "0.6.1-fix2"
+description = "Shell interface for docopt, the command-line interface description language."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+docopt = "0.6.1"
 
 [[package]]
 name = "flake8"
@@ -767,7 +802,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "43f103848dcdd5193115bc2887569a7ba1af626a7fb40dc0f846a9242b87c58e"
+content-hash = "c611b2d9308251bf7010816f7e0ee739ab9e2c204d3d8b28679b1bed8ef19121"
 
 [metadata.files]
 argcomplete = [
@@ -789,6 +824,10 @@ attrs = [
 black = [
     {file = "black-21.9b0-py3-none-any.whl", hash = "sha256:380f1b5da05e5a1429225676655dddb96f5ae8c75bdf91e53d798871b902a115"},
     {file = "black-21.9b0.tar.gz", hash = "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"},
+]
+bmi-python = [
+    {file = "bmi-python-0.3.0.tar.gz", hash = "sha256:f29e808f5cee3b8279510e10b45400489f8b5b1df3923c317cfdd72d564e9076"},
+    {file = "bmi_python-0.3.0-py2.py3-none-any.whl", hash = "sha256:d7207f522f69d260780bcc0e124725e2043cc2e537576d846633c164d915acc9"},
 ]
 cftime = [
     {file = "cftime-1.5.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:fb6ca774d08cde9b5739b14e45a59ed3b831dc512562bca88b71bda978ea1074"},
@@ -879,6 +918,12 @@ decli = [
 devtools = [
     {file = "devtools-0.6.1-py3-none-any.whl", hash = "sha256:7334183972a8d04e81d08b7f62126abca9b6f4de51d825c5fdcb9c88f252601a"},
     {file = "devtools-0.6.1.tar.gz", hash = "sha256:a054307594d35d28fae8df7629967363e851ae0ac7b2152640a8a401c39d42d7"},
+]
+docopt = [
+    {file = "docopt-0.6.1.tar.gz", hash = "sha256:71ad940a773fbc23be6093e9476ad57b2ecec446946a28d30127501f3b29aa35"},
+]
+docopts = [
+    {file = "docopts-0.6.1-fix2.tar.gz", hash = "sha256:cca74adc7a1c4cb0f8f4274729dea0f60af9464bcdc6cf47c8bb8405c38021f0"},
 ]
 flake8 = [
     {file = "flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:bf8fd333346d844f616e8d47905ef3a3384edae6b4e9beb0c5101e25e3110907"},
