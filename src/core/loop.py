@@ -23,7 +23,8 @@ from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
-from src.core.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
+from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.transect import Transect
 from src.core.utils import Output, time_series_year
 
 
