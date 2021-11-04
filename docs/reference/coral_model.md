@@ -1,16 +1,13 @@
-## Coral mode classes.
+## Core classes for the NBSDynamics package.
 
-### Core
-<!-- ::: src.coral_model.core -->
+### Coral model
+::: src.core.coral_model
 
 ### Environment
-::: src.coral_model.environment
-
-### Hydrodynamics
-<!-- ::: src.coral_model.hydrodynamics -->
+::: src.core.environment
 
 ### Loop
-<!-- ::: src.coral_model.loop -->
+::: src.core.loop
 
 ### Utils
-::: src.coral_model.utils
+::: src.core.utils

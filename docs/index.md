@@ -9,7 +9,7 @@ The project is currently being structured as follows:
         guides/         # Contains the documentation related to installation, usage and contribution to this project.
         reference/      # Contains references to the modules. Docstrings will be used to generate automatically documentation.        
     src/
-        coral_model/    # Module containing all the classes and methods of NBSDynamics.
+        core/    # Module containing all the classes and methods of NBSDynamics.
         tools/          # Module containing tools used by the coral_model module.
     test/               # Module based on pytest to mirror and test all the classes from src/
 

@@ -46,6 +46,10 @@ version_files = [
     "pyproject.toml:version"
 ]
 
+[tool.commitizen.custommize]
+bump_pattern = "^(break|new|fix|hotfix|merge)"
+bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH", "merge"="MINOR"}
+
 [tool.black]
 line-length = 88
 target-version = ['py38', 'py39']

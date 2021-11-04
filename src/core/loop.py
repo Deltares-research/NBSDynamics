@@ -12,21 +12,20 @@ from typing import List, Optional
 import numpy as np
 from tqdm import tqdm
 
-from src.coral_model import core
-from src.coral_model.core import (
-    Calcification,
-    Dislodgement,
-    Flow,
-    Light,
-    Morphology,
-    Photosynthesis,
-    PopulationStates,
-    Recruitment,
-    Temperature,
-)
-from src.coral_model.environment import Constants, Environment
-from src.coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
-from src.coral_model.utils import Output, time_series_year
+from src.core import coral_model
+from src.core.bio_process.calcification import Calcification
+from src.core.bio_process.dislodgment import Dislodgement
+from src.core.bio_process.flow import Flow
+from src.core.bio_process.light import Light
+from src.core.bio_process.morphology import Morphology
+from src.core.bio_process.photosynthesis import Photosynthesis
+from src.core.bio_process.population_states import PopulationStates
+from src.core.bio_process.recruitment import Recruitment
+from src.core.bio_process.temperature import Temperature
+from src.core.environment import Constants, Environment
+from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.transect import Transect
+from src.core.utils import Output, time_series_year
 
 
 class Simulation:
@@ -240,7 +239,7 @@ class Simulation:
         self.input_check()
 
         #        self.hydrodynamics.initiate()
-        core.RESHAPE.space = self.hydrodynamics.space
+        coral_model.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
             self.output.initiate_his()
@@ -254,7 +253,7 @@ class Simulation:
         if value is None:
             value = 1
 
-        cover = value * np.ones(core.RESHAPE.space)
+        cover = value * np.ones(coral_model.RESHAPE.space)
 
         if x_range is not None:
             x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -296,7 +295,7 @@ class Simulation:
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
-                core.RESHAPE.time = len(
+                coral_model.RESHAPE.time = len(
                     self.environment.dates.dt.year[
                         self.environment.dates.dt.year == years[i]
                     ]
