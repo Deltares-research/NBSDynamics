@@ -66,10 +66,10 @@ class TestAcceptance:
     @pytest.mark.parametrize(
         "coral_values",
         [
-            pytest.param(
-                dict(dc=0.1, hc=0.1, bc=0.05, tc=0.05, ac=0.2, species_constant=1.0),
-                id="Species constant 1.0",
-            ),
+            # pytest.param(
+            #     dict(dc=0.1, hc=0.1, bc=0.05, tc=0.05, ac=0.2, species_constant=1.0),
+            #     id="Species constant 1.0",
+            # ),
             pytest.param(
                 dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
                 id="Species constant 0.6",
@@ -137,53 +137,57 @@ class TestAcceptance:
             TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
 
-        def compare_netcdfs(netcdf_file: Path, variables_to_check: List[str]):
-            assert netcdf_file.is_file()
-            with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
-                # Check variables
-                for variable in variables_to_check:
-                    ref_file = expected_dir / f"ref_{variable}_{netcdf_file.name}.txt"
-                    # savetxt(ref_file, getdata(out_netcdf[variable][:]))
-                    ref_values = loadtxt(ref_file)
-                    assert (ref_values == out_netcdf[variable][:]).all()
+        def compare_files(created_file: Path):
+            def normalize_name_with_capitals(name: str) -> str:
+                if any(x.isupper() for x in name):
+                    return name + name
+                return name
 
-        def compare_files(
-            expected_file: Path, created_file: Path, one_dimension_vars: List[str]
-        ):
-            with Dataset(expected_file, "r", format="NETCDF4") as exp_netcdf:
-                with Dataset(created_file, "r", format="NETCDF4") as out_netcdf:
-                    assert exp_netcdf.variables.keys() == out_netcdf.variables.keys()
-                    for variable in exp_netcdf.variables:
-                        assert numpy.array_equal(
-                            exp_netcdf[variable], out_netcdf[variable]
-                        )
-                        # if variable in one_dimension_vars:
-                        #     assert (
-                        #         exp_netcdf[variable][:] == out_netcdf[variable][:]
-                        #     ).all()
-                        # else:
-                        #     assert (
-                        #         exp_netcdf[variable][:, :] == out_netcdf[variable][:, :]
-                        #     ).all()
+            ref_dir = expected_dir / created_file.stem.split("_")[-1]
+            with Dataset(created_file, "r", format="NETCDF4") as out_netcdf:
+                for variable in out_netcdf.variables:
+                    variable_filename = normalize_name_with_capitals(variable)
+                    expected_file = (
+                        ref_dir / f"ref_{variable_filename}_{created_file.stem}.txt"
+                    )
+                    assert (
+                        expected_file.is_file()
+                    ), f"Expected file for variable {variable} not found at {expected_file}"
+                    ref_variable = loadtxt(expected_file)
+                    assert numpy.allclose(
+                        ref_variable, out_netcdf[variable]
+                    ), f"{variable} not close to reference data."
+                    # assert numpy.array_equal(
+                    #     exp_netcdf[variable], out_netcdf[variable]
+                    # )
 
-        his_file = run_trans.output_dir / "CoralModel_his.nc"
-        map_file = run_trans.output_dir / "CoralModel_map.nc"
-        compare_files(
-            expected_dir / "ref_CoralModel_his.nc",
-            his_file,
-            ["time", "station_x_coordinate", "station_y_coordinate"],
-        )
-        compare_files(
-            expected_dir / "ref_CoralModel_map.nc",
-            map_file,
-            ["time", "nmesh2d_x", "nmesh2d_y"],
-        )
+        compare_files(run_trans.output_dir / "CoralModel_his.nc")
+        compare_files(run_trans.output_dir / "CoralModel_map.nc")
 
-        compare_netcdfs(
-            his_file,
-            ["time", "station_x_coordinate", "station_y_coordinate"],
+    # @pytest.mark.skip(reason="Only to be run locally.")
+    def test_util_output_variables_netcdf(self):
+        """
+        This test is only meant to be run locally, it helps generating the expected data as .txt files.
+        """
+        expected_dir = (
+            TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
-        compare_netcdfs(
-            map_file,
-            ["time", "nmesh2d_x", "nmesh2d_y"],
-        )
+        his_file = "CoralModel_his.nc"
+        map_file = "CoralModel_map.nc"
+
+        def normalize_name_with_capitals(name: str) -> str:
+            if any(x.isupper() for x in name):
+                return name + name
+            return name
+
+        def output_file(netcdf_file: Path):
+            out_dir = netcdf_file.parent / netcdf_file.stem.split("_")[-1]
+            out_dir.mkdir(parents=True, exist_ok=True)
+            with Dataset(netcdf_file, "r", format="NETCDF4") as ref_netcdf:
+                for variable in ref_netcdf.variables:
+                    variable_name = normalize_name_with_capitals(variable)
+                    ref_file = out_dir / f"ref_{variable_name}_{netcdf_file.stem}.txt"
+                    savetxt(ref_file, ref_netcdf[variable])
+
+        output_file(expected_dir / his_file)
+        output_file(expected_dir / map_file)
