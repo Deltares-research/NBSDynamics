@@ -34,13 +34,14 @@ flake8 = "^3.9.2"
 mypy = "^0.910"
 devtools = "^0.6.1"
 commitizen = "^2.20.0"
+pre-commit = "^2.15.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
 changelog_file = "docs/changelog.md"
 update_changelog_on_bump = true
 version = "0.0.4"
-tag_format = "v$major.$minor.$patch$prerelease"
+tag_format = "v$version"
 version_files = [
     "src/core/__init__.py",
     "pyproject.toml:version"
