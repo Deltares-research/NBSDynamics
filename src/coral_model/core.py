@@ -460,7 +460,7 @@ class Flow:
             if in_canopy:
                 idx = coral.volume > 0
                 for i in idx:
-                    alpha_w[i] = Flow.wave_attenuation(
+                    alpha_w[i] = self.wave_attenuation(
                         self.constants,
                         coral.dc_rep[i],
                         coral.hc[i],
@@ -468,9 +468,9 @@ class Flow:
                         self.uw[i],
                         self.Tp[i],
                         self.h[i],
-                        "wave",
+                        wac_type="wave",
                     )
-                    alpha_c[i] = Flow.wave_attenuation(
+                    alpha_c[i] = self.wave_attenuation(
                         self.constants,
                         coral.dc_rep[i],
                         coral.hc[i],
@@ -478,7 +478,7 @@ class Flow:
                         self.uc[i],
                         1e3,
                         self.h[i],
-                        "current",
+                        wac_type="current",
                     )
             coral.ucm = self.wave_current(alpha_w, alpha_c)
             coral.um = self.wave_current()
@@ -505,14 +505,7 @@ class Flow:
 
     @staticmethod
     def wave_attenuation(
-        constants,
-        diameter: float,
-        height: float,
-        distance: float,
-        velocity: float,
-        period: float,
-        depth: float,
-        wac_type: str,
+        constants, diameter, height, distance, velocity, period, depth, wac_type
     ):
         """Wave-attenuation coefficient.
 
@@ -535,6 +528,12 @@ class Flow:
         # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
         #  and one implementing this method to dynamically determine the drag coefficient.
         #  Thus, reformat this method as in coral_model_v0.
+        # # input check
+        types = ("current", "wave")
+        if wac_type not in types:
+            msg = f"WAC-type {wac_type} not in {types}."
+            raise ValueError(msg)
+
         # # function and derivative definitions
         def function(beta):
             """Complex-valued function to be solved, where beta is the complex representation of the wave-attenuation
@@ -572,28 +571,6 @@ class Flow:
             # output
             return df
 
-        # # Functions for available wac types.
-        def get_wave_wac() -> float:
-            return abs(
-                newton(
-                    function,
-                    x0=complex(0.1, 0.1),
-                    fprime=derivative,
-                    maxiter=constants.maxiter_aw,
-                )
-            )
-
-        def get_current_wac() -> float:
-            x = drag_length / shear_length * (height / (depth - height) + 1)
-            return (x - np.sqrt(x)) / (x - 1)
-
-        # # input check
-        types = dict(current=get_current_wac, wave=get_wave_wac)
-        if wac_type not in types.keys():
-            msg = f"WAC-type {wac_type} not in {types}."
-            raise ValueError(msg)
-        wac_calculation_method = types[wac_type]
-
         # # parameter definitions
         # geometric parameters
         planar_area = 0.25 * np.pi * diameter ** 2
@@ -602,53 +579,59 @@ class Flow:
         lambda_planar = planar_area / total_area
         lambda_frontal = frontal_area / total_area
         shear_length = height / (constants.Cs ** 2)
-
         # # calculations
         wac = 1.0
-        if depth <= height:
-            return wac
-
-        # Calculation methods
-        def get_new_drag() -> float:
-            constricted_flow = (
-                (1 - lambda_planar)
-                / (1 - np.sqrt((4 * lambda_planar) / (constants.psi * np.pi)))
-                * porous_flow
-            )
-            reynolds = (constricted_flow * diameter) / constants.nu
-            return 1 + 10 * reynolds ** (-2.0 / 3)
-
-        def get_porous_flow() -> float:
-            # Use the defined wac calculation method.
-            wac = wac_calculation_method()
-            return wac * above_flow
-
-        # initial iteration values
-        above_flow = velocity
-        drag_coefficient = 1.0
-        # iteration
-        for k in range(int(constants.maxiter_k)):
-            if k == constants.maxiter_k:
-                print(
-                    f"WARNING: maximum number of iterations reached "
-                    f"({constants.maxiter_k})"
+        if depth > height:
+            # initial iteration values
+            above_flow = velocity
+            drag_coefficient = 1.0
+            # iteration
+            for k in range(int(constants.maxiter_k)):
+                drag_length = (2 * height * (1 - lambda_planar)) / (
+                    drag_coefficient * lambda_frontal
                 )
-            # Define these variables so they can be reused by the method-defined functions.
-            drag_length = (2 * height * (1 - lambda_planar)) / (
-                drag_coefficient * lambda_frontal
-            )
-            above_motion = (above_flow * period) / (2 * np.pi)
-            # do rest of calculations.
-            porous_flow = get_porous_flow()
-            new_drag = get_new_drag()
-            if abs((new_drag - drag_coefficient) / new_drag) > constants.err:
-                drag_coefficient = float(new_drag)
-                above_flow = abs(
-                    (1 - constants.numericTheta) * above_flow
-                    + constants.numericTheta
-                    * (depth * velocity - height * porous_flow)
-                    / (depth - height)
+                above_motion = (above_flow * period) / (2 * np.pi)
+                if wac_type == "wave":
+                    # noinspection PyTypeChecker
+                    wac = abs(
+                        newton(
+                            function,
+                            x0=complex(0.1, 0.1),
+                            fprime=derivative,
+                            maxiter=constants.maxiter_aw,
+                        )
+                    )
+                elif wac_type == "current":
+                    x = drag_length / shear_length * (height / (depth - height) + 1)
+                    wac = (x - np.sqrt(x)) / (x - 1)
+                else:
+                    raise ValueError(f"WAC-type ({wac_type}) not in {types}.")
+                porous_flow = wac * above_flow
+                constricted_flow = (
+                    (1 - lambda_planar)
+                    / (1 - np.sqrt((4 * lambda_planar) / (constants.psi * np.pi)))
+                    * porous_flow
                 )
+                reynolds = (constricted_flow * diameter) / constants.nu
+                new_drag = 1 + 10 * reynolds ** (-2.0 / 3)
+                if abs((new_drag - drag_coefficient) / new_drag) <= constants.err:
+                    break
+                else:
+                    drag_coefficient = float(new_drag)
+                    above_flow = abs(
+                        (1 - constants.numericTheta) * above_flow
+                        + constants.numericTheta
+                        * (depth * velocity - height * porous_flow)
+                        / (depth - height)
+                    )
+
+                if k == constants.maxiter_k:
+                    print(
+                        f"WARNING: maximum number of iterations reached "
+                        f"({constants.maxiter_k})"
+                    )
+
+        return wac
 
     def thermal_boundary_layer(self, coral):
         """Thermal boundary layer.
@@ -1219,27 +1202,27 @@ class Morphology:
         """
         self.__coral_object_checker(coral)
 
-        self.__rs_optimal = 0.5 / np.sqrt(2.0) * 0.25
+        # self.__rs_optimal = 0.5 / np.sqrt(2.0) * 0.25
 
-        # self.__rs_optimal = (
-        #     self.constants.prop_space
-        #     * (
-        #         1.0
-        #         - np.tanh(
-        #             self.constants.prop_space_light
-        #             * coral.light.mean(axis=1)
-        #             / self.I0.mean(axis=1)
-        #         )
-        #     )
-        #     * (
-        #         1.0
-        #         + np.tanh(
-        #             self.constants.prop_space_flow
-        #             * (coral.ucm - self.constants.u0)
-        #             / self.constants.u0
-        #         )
-        #     )
-        # )
+        self.__rs_optimal = (
+            self.constants.prop_space
+            * (
+                1.0
+                - np.tanh(
+                    self.constants.prop_space_light
+                    * coral.light.mean(axis=1)
+                    / self.I0.mean(axis=1)
+                )
+            )
+            * (
+                1.0
+                + np.tanh(
+                    self.constants.prop_space_flow
+                    * (coral.ucm - self.constants.u0)
+                    / self.constants.u0
+                )
+            )
+        )
 
     def delta_volume(self, coral):
         """

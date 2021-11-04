@@ -1,4 +1,6 @@
 from pathlib import Path
+
+from numpy.ma.core import var
 from test.utils import TestUtils
 from typing import List
 
@@ -131,25 +133,57 @@ class TestAcceptance:
         run_trans.finalise()
 
         # 4. Verify expectations.
-        self._compare_netcdfs(
-            run_trans.output_dir / "CoralModel_his.nc",
-            ["time", "station_x_coordinate", "station_y_coordinate"],
-        )
-        self._compare_netcdfs(
-            run_trans.output_dir / "CoralModel_map.nc",
-            ["time", "nmesh2d_x", "nmesh2d_y"],
-        )
-
-    def _compare_netcdfs(self, netcdf_file: Path, variables_to_check: List[str]):
         expected_dir = (
             TestUtils.get_local_test_data_dir("transect_case") / "expected" / "output"
         )
 
-        assert netcdf_file.is_file()
-        with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
-            # Check variables
-            for variable in variables_to_check:
-                ref_file = expected_dir / f"ref_{variable}_{netcdf_file.name}.txt"
-                # savetxt(ref_file, getdata(out_netcdf[variable][:]))
-                ref_values = loadtxt(ref_file)
-                assert (ref_values == out_netcdf[variable][:]).all()
+        def compare_netcdfs(netcdf_file: Path, variables_to_check: List[str]):
+            assert netcdf_file.is_file()
+            with Dataset(netcdf_file, "r", format="NETCDF4") as out_netcdf:
+                # Check variables
+                for variable in variables_to_check:
+                    ref_file = expected_dir / f"ref_{variable}_{netcdf_file.name}.txt"
+                    # savetxt(ref_file, getdata(out_netcdf[variable][:]))
+                    ref_values = loadtxt(ref_file)
+                    assert (ref_values == out_netcdf[variable][:]).all()
+
+        def compare_files(
+            expected_file: Path, created_file: Path, one_dimension_vars: List[str]
+        ):
+            with Dataset(expected_file, "r", format="NETCDF4") as exp_netcdf:
+                with Dataset(created_file, "r", format="NETCDF4") as out_netcdf:
+                    assert exp_netcdf.variables.keys() == out_netcdf.variables.keys()
+                    for variable in exp_netcdf.variables:
+                        assert numpy.array_equal(
+                            exp_netcdf[variable], out_netcdf[variable]
+                        )
+                        # if variable in one_dimension_vars:
+                        #     assert (
+                        #         exp_netcdf[variable][:] == out_netcdf[variable][:]
+                        #     ).all()
+                        # else:
+                        #     assert (
+                        #         exp_netcdf[variable][:, :] == out_netcdf[variable][:, :]
+                        #     ).all()
+
+        his_file = run_trans.output_dir / "CoralModel_his.nc"
+        map_file = run_trans.output_dir / "CoralModel_map.nc"
+        compare_files(
+            expected_dir / "ref_CoralModel_his.nc",
+            his_file,
+            ["time", "station_x_coordinate", "station_y_coordinate"],
+        )
+        compare_files(
+            expected_dir / "ref_CoralModel_map.nc",
+            map_file,
+            ["time", "nmesh2d_x", "nmesh2d_y"],
+        )
+
+        compare_netcdfs(
+            his_file,
+            ["time", "station_x_coordinate", "station_y_coordinate"],
+        )
+        compare_netcdfs(
+            map_file,
+            ["time", "nmesh2d_x", "nmesh2d_y"],
+        )
