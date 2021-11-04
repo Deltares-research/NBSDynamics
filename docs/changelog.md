@@ -7,7 +7,7 @@
 
 ### Feat
 
-- #31 normalize versioning (#42)
+- Pull-request 31 normalize versioning (#42)
 
 ## v0.0.4 (2021-11-04)
 
