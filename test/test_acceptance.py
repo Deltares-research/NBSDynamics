@@ -15,7 +15,7 @@ from src.coral_model.loop import Simulation
 
 
 class TestAcceptance:
-    # @pytest.mark.skip(reason="Not yet supported.")
+    @pytest.mark.skip(reason="Not yet supported.")
     def test_given_interface_d3d_case_runs(self):
         # Test based on interface_D3D.py
         model_dir = TestUtils.get_local_test_data_dir("CoralModel")
