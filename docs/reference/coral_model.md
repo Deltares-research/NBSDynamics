@@ -6,9 +6,6 @@
 ### Environment
 ::: src.core.environment
 
-### Hydrodynamics
-::: src.core.hydrodynamics
-
 ### Loop
 ::: src.core.loop
 
