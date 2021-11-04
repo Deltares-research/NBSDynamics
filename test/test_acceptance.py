@@ -66,10 +66,6 @@ class TestAcceptance:
     @pytest.mark.parametrize(
         "coral_values",
         [
-            # pytest.param(
-            #     dict(dc=0.1, hc=0.1, bc=0.05, tc=0.05, ac=0.2, species_constant=1.0),
-            #     id="Species constant 1.0",
-            # ),
             pytest.param(
                 dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
                 id="Species constant 0.6",
@@ -164,7 +160,7 @@ class TestAcceptance:
         compare_files(run_trans.output_dir / "CoralModel_his.nc")
         compare_files(run_trans.output_dir / "CoralModel_map.nc")
 
-    # @pytest.mark.skip(reason="Only to be run locally.")
+    @pytest.mark.skip(reason="Only to be run locally.")
     def test_util_output_variables_netcdf(self):
         """
         This test is only meant to be run locally, it helps generating the expected data as .txt files.
