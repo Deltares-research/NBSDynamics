@@ -154,9 +154,6 @@ class TestAcceptance:
                     assert numpy.allclose(
                         ref_variable, out_netcdf[variable]
                     ), f"{variable} not close to reference data."
-                    # assert numpy.array_equal(
-                    #     exp_netcdf[variable], out_netcdf[variable]
-                    # )
 
         compare_files(run_trans.output_dir / his_filename)
         compare_files(run_trans.output_dir / map_filename)
