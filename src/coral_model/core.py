@@ -528,12 +528,6 @@ class Flow:
         # TODO: Split this method in one solely focusing on the wave attenuation coefficient;
         #  and one implementing this method to dynamically determine the drag coefficient.
         #  Thus, reformat this method as in coral_model_v0.
-        # # input check
-        types = ("current", "wave")
-        if wac_type not in types:
-            msg = f"WAC-type {wac_type} not in {types}."
-            raise ValueError(msg)
-
         # # function and derivative definitions
         def function(beta):
             """Complex-valued function to be solved, where beta is the complex representation of the wave-attenuation
@@ -571,6 +565,26 @@ class Flow:
             # output
             return df
 
+        # # Input check
+        def wave_wac():
+            return abs(
+                newton(
+                    function,
+                    x0=complex(0.1, 0.1),
+                    fprime=derivative,
+                    maxiter=constants.maxiter_aw,
+                )
+            )
+
+        def current_wac():
+            x = drag_length / shear_length * (height / (depth - height) + 1)
+            return (x - np.sqrt(x)) / (x - 1)
+
+        wac_type_funcs = dict(current=current_wac, wave=wave_wac)
+        wac_function = wac_type_funcs.get(wac_type, None)
+        if wac_function is None:
+            raise ValueError(f"WAC-type ({wac_type}) not in {wac_type_funcs.keys()}.")
+
         # # parameter definitions
         # geometric parameters
         planar_area = 0.25 * np.pi * diameter ** 2
@@ -581,55 +595,45 @@ class Flow:
         shear_length = height / (constants.Cs ** 2)
         # # calculations
         wac = 1.0
-        if depth > height:
-            # initial iteration values
-            above_flow = velocity
-            drag_coefficient = 1.0
-            # iteration
-            for k in range(int(constants.maxiter_k)):
-                drag_length = (2 * height * (1 - lambda_planar)) / (
-                    drag_coefficient * lambda_frontal
-                )
-                above_motion = (above_flow * period) / (2 * np.pi)
-                if wac_type == "wave":
-                    # noinspection PyTypeChecker
-                    wac = abs(
-                        newton(
-                            function,
-                            x0=complex(0.1, 0.1),
-                            fprime=derivative,
-                            maxiter=constants.maxiter_aw,
-                        )
-                    )
-                elif wac_type == "current":
-                    x = drag_length / shear_length * (height / (depth - height) + 1)
-                    wac = (x - np.sqrt(x)) / (x - 1)
-                else:
-                    raise ValueError(f"WAC-type ({wac_type}) not in {types}.")
-                porous_flow = wac * above_flow
-                constricted_flow = (
-                    (1 - lambda_planar)
-                    / (1 - np.sqrt((4 * lambda_planar) / (constants.psi * np.pi)))
-                    * porous_flow
-                )
-                reynolds = (constricted_flow * diameter) / constants.nu
-                new_drag = 1 + 10 * reynolds ** (-2.0 / 3)
-                if abs((new_drag - drag_coefficient) / new_drag) <= constants.err:
-                    break
-                else:
-                    drag_coefficient = float(new_drag)
-                    above_flow = abs(
-                        (1 - constants.numericTheta) * above_flow
-                        + constants.numericTheta
-                        * (depth * velocity - height * porous_flow)
-                        / (depth - height)
-                    )
+        if depth <= height:
+            return wac
 
-                if k == constants.maxiter_k:
-                    print(
-                        f"WARNING: maximum number of iterations reached "
-                        f"({constants.maxiter_k})"
-                    )
+        # If depth > height
+        # initial iteration values
+        above_flow = velocity
+        drag_coefficient = 1.0
+        # iteration
+        for k in range(int(constants.maxiter_k)):
+            drag_length = (2 * height * (1 - lambda_planar)) / (
+                drag_coefficient * lambda_frontal
+            )
+            above_motion = (above_flow * period) / (2 * np.pi)
+            wac = wac_function()
+
+            porous_flow = wac * above_flow
+            constricted_flow = (
+                (1 - lambda_planar)
+                / (1 - np.sqrt((4 * lambda_planar) / (constants.psi * np.pi)))
+                * porous_flow
+            )
+            reynolds = (constricted_flow * diameter) / constants.nu
+            new_drag = 1 + 10 * reynolds ** (-2.0 / 3)
+            if abs((new_drag - drag_coefficient) / new_drag) <= constants.err:
+                break
+            else:
+                drag_coefficient = float(new_drag)
+                above_flow = abs(
+                    (1 - constants.numericTheta) * above_flow
+                    + constants.numericTheta
+                    * (depth * velocity - height * porous_flow)
+                    / (depth - height)
+                )
+
+            if k == constants.maxiter_k:
+                print(
+                    f"WARNING: maximum number of iterations reached "
+                    f"({constants.maxiter_k})"
+                )
 
         return wac
 
