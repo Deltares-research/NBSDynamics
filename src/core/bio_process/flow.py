@@ -1,9 +1,8 @@
 import numpy as np
 from scipy.optimize import newton
 
-from src.core.utils import CoralOnly
-
 from src.core.coral_model import RESHAPE
+from src.core.utils import CoralOnly
 
 
 class Flow:
