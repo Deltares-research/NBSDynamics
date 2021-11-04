@@ -1,29 +1,29 @@
 ## Biophysical processes
 
 ### Calcification
-::: src.coral_model.bio_process.calcification
+::: src.core.bio_process.calcification
 
 ### Dislodgement
-::: src.coral_model.bio_process.dislodgment
+::: src.core.bio_process.dislodgment
 
 ### Flow
-::: src.coral_model.bio_process.flow
+::: src.core.bio_process.flow
 
 ### Light
-::: src.coral_model.bio_process.light
+::: src.core.bio_process.light
 
 ### Morphology
-::: src.coral_model.bio_process.morphology
+::: src.core.bio_process.morphology
 
 ### Photosynthesis
-::: src.coral_model.bio_process.photosynthesis
+::: src.core.bio_process.photosynthesis
 
 ### Population states
-::: src.coral_model.bio_process.population_states
+::: src.core.bio_process.population_states
 
 ### Recruitment
-::: src.coral_model.bio_process.recruitment
+::: src.core.bio_process.recruitment
 
 ### Temperature
-::: src.coral_model.bio_process.temperature
+::: src.core.bio_process.temperature
 

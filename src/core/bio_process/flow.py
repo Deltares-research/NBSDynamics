@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import newton
 
-from src.coral_model.utils import CoralOnly, DataReshape
+from src.core.utils import CoralOnly, DataReshape
 
 # # data formatting -- to be reformatted in the model simulation
 RESHAPE = DataReshape()

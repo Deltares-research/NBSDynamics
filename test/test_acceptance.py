@@ -9,8 +9,8 @@ from numpy import loadtxt, savetxt
 from numpy.ma import getdata
 from numpy.ma.core import var
 
-from src.coral_model.core import Coral
-from src.coral_model.loop import Simulation
+from src.core.coral_model import Coral
+from src.core.loop import Simulation
 
 
 class TestAcceptance:

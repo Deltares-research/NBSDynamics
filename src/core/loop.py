@@ -12,19 +12,19 @@ from typing import List, Optional
 import numpy as np
 from tqdm import tqdm
 
-from src.coral_model import core
-from src.coral_model.bio_process.calcification import Calcification
-from src.coral_model.bio_process.dislodgment import Dislodgement
-from src.coral_model.bio_process.flow import Flow
-from src.coral_model.bio_process.light import Light
-from src.coral_model.bio_process.morphology import Morphology
-from src.coral_model.bio_process.photosynthesis import Photosynthesis
-from src.coral_model.bio_process.population_states import PopulationStates
-from src.coral_model.bio_process.recruitment import Recruitment
-from src.coral_model.bio_process.temperature import Temperature
-from src.coral_model.environment import Constants, Environment
-from src.coral_model.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
-from src.coral_model.utils import Output, time_series_year
+from src.core import core
+from src.core.bio_process.calcification import Calcification
+from src.core.bio_process.dislodgment import Dislodgement
+from src.core.bio_process.flow import Flow
+from src.core.bio_process.light import Light
+from src.core.bio_process.morphology import Morphology
+from src.core.bio_process.photosynthesis import Photosynthesis
+from src.core.bio_process.population_states import PopulationStates
+from src.core.bio_process.recruitment import Recruitment
+from src.core.bio_process.temperature import Temperature
+from src.core.environment import Constants, Environment
+from src.core.hydrodynamics import Delft3D, Transect  # ,Reef0D,Reef1D
+from src.core.utils import Output, time_series_year
 
 
 class Simulation:

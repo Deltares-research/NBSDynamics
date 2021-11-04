@@ -1,4 +1,4 @@
-from src.coral_model.utils import DataReshape
+from src.core.utils import DataReshape
 
 # # data formatting -- to be reformatted in the model simulation
 RESHAPE = DataReshape()

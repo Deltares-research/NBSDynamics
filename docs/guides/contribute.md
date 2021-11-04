@@ -59,9 +59,9 @@ We use `mkdocs` to automatically generate documentation. We define documentation
 * /reference: where the technical documentation is linked. When creating a new module a new markdown file should be created. To refer to a module, it can be done as follows:
     ```markdown
     ### core
-    ::: src.coral_model.core
+    ::: src.core.core
     ```
-    This will generate documentation based on the docstrings of each class and method in src.coral_model.core.py
+    This will generate documentation based on the docstrings of each class and method in src.core.core.py
 * changelog.md: file automatically generated and updated with the commits to master (see [Version Control](#version_control))
 
 ## 2. Development.
