@@ -7,32 +7,36 @@ Created on Fri Sep 24 11:36:48 2021
 
 import os
 from typing import Callable
-
+from pathlib import Path
 import matplotlib.pyplot as plt
-import netCDF4
+from netCDF4 import Dataset
 import numpy as np
 
 plt.style.use("seaborn-whitegrid")
 
+limdict = {
+    "Iz": [0, 9999],
+    "Tc": [300, 304],
+    "Tlo": [295, 297],
+    "Thi": [302, 304],
+    "PD": [0, 9999],
+    "PT": [0, 1.05],
+    "PH": [0, 1.05],
+    "PR": [0, 1.05],
+    "PP": [0, 1.05],
+    "PB": [0, 1.05],
+    "calc": [9999, 9999],
+    "dc": [9999, 9999],
+    "hc": [9999, 9999],
+    "bc": [9999, 9999],
+    "tc": [9999, 9999],
+    "ac": [9999, 9999],
+    "Vc": [9999, 9999],
+    "G": [9999, 9999],
+}
 
-def subplot_mapfile(var_t, ylims, plot_axes):
-    x = np.linspace(1, 100, 100)
-    plt.ylim(ylims)
-    plot_axes.plot(x, var_t[:, 1], "-g", label="Cell 1")
-    plot_axes.plot(x, var_t[:, 100], "-r", label="Cell 100")
-    plot_axes.plot(x, var_t[:, 300], "-c", label="Cell 300")
-    plt.legend()
 
-
-def subplot_hisfile(var_t, ylims, plot_axes):
-    x = np.linspace(0, 100, 36525)
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, var_t.shape[1])))
-    for i in range(var_t.shape[1]):
-        plot_axes.plot(x, var_t[:, i], color=next(colors), label=f"Point {i}")
-    plt.legend()
-
-
-def plot_nc_variables(nc_variables, subplot_call: Callable):
+def _plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
     for vv in nc_variables.keys():
         teller = teller + 1
@@ -55,52 +59,42 @@ def plot_nc_variables(nc_variables, subplot_call: Callable):
             subplot_call(VarT, VT, ax)
 
 
-# NetCDF4-Python can read a remote OPeNDAP dataset or a local NetCDF file:
-out_dir = os.path.join(
-    "C:\\",
-    "Users",
-    "herman",
-    "OneDrive - Stichting Deltares",
-    "Documents",
-    "PyProjects",
-    "Mariya_model",
-    "Run_Transect",
-    "output",
-)
-
 # read map file and plot
-url = os.path.join(out_dir, "CoralModel_map.nc")
-nc = netCDF4.Dataset(url)
-nc.variables.keys()
-limdict = {
-    "Iz": [0, 9999],
-    "Tc": [300, 304],
-    "Tlo": [295, 297],
-    "Thi": [302, 304],
-    "PD": [0, 9999],
-    "PT": [0, 1.05],
-    "PH": [0, 1.05],
-    "PR": [0, 1.05],
-    "PP": [0, 1.05],
-    "PB": [0, 1.05],
-    "calc": [9999, 9999],
-    "dc": [9999, 9999],
-    "hc": [9999, 9999],
-    "bc": [9999, 9999],
-    "tc": [9999, 9999],
-    "ac": [9999, 9999],
-    "Vc": [9999, 9999],
-    "G": [9999, 9999],
-}
+def plot_map(map_path: Path):
+    """
+    Plots the map file according to the coral model.
 
-plot_nc_variables(nc.variables, subplot_mapfile)
+    Args:
+        map_path (Path): Path to the netcdf file representing the map.
+    """
 
-nc.close()
+    def _subplot_mapfile(var_t, ylims, plot_axes):
+        x = np.linspace(1, 100, 100)
+        plt.ylim(ylims)
+        plot_axes.plot(x, var_t[:, 1], "-g", label="Cell 1")
+        plot_axes.plot(x, var_t[:, 100], "-r", label="Cell 100")
+        plot_axes.plot(x, var_t[:, 300], "-c", label="Cell 300")
+        plt.legend()
+
+    with Dataset(map_path) as nc:
+        _plot_nc_variables(nc.variables, _subplot_mapfile)
+
 
 # read his file and plot
-url = os.path.join(out_dir, "CoralModel_his.nc")
-nc = netCDF4.Dataset(url)
-nc.variables.keys()
-plot_nc_variables(nc.variables, subplot_hisfile)
+def plot_his(his_path: Path):
+    """
+    Plots the his file according to the coral model.
 
-nc.close()
+    Args:
+        his_path (Path): Path to the netcdf file representing the his.
+    """
+
+    def _subplot_hisfile(var_t, ylims, plot_axes):
+        x = np.linspace(0, 100, 36525)
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, var_t.shape[1])))
+        for i in range(var_t.shape[1]):
+            plot_axes.plot(x, var_t[:, i], color=next(colors), label=f"Point {i}")
+        plt.legend()
+
+    with Dataset(his_path) as nc:
+        _plot_nc_variables(nc.variables, _subplot_hisfile)
