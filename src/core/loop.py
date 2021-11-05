@@ -136,17 +136,18 @@ class Simulation:
     def set_delft3d_environment(self):
         """Set directories and files of hydrodynamic mode 'Delft3D'."""
         # TODO: Set D3D-files and -directories
+        pass
 
     def define_output(
         self,
-        output_type,
-        lme=True,
-        fme=True,
-        tme=True,
-        pd=True,
-        ps=True,
-        calc=True,
-        md=True,
+        output_type: str,
+        lme: bool = True,
+        fme: bool = True,
+        tme: bool = True,
+        pd: bool = True,
+        ps: bool = True,
+        calc: bool = True,
+        md: bool = True,
     ):
         """Initiate output files based on requested output data.
 
