@@ -5,11 +5,11 @@ Created on Fri Sep 24 11:36:48 2021
 @author: herman
 """
 
-from typing import Callable
+import platform
 from pathlib import Path
+from typing import Callable
 from netCDF4 import Dataset
 import numpy as np
-import platform
 
 limdict = {
     "Iz": [0, 9999],
@@ -58,7 +58,6 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.ylabel(VT.units)
             subplot_call(VarT, ylims, ax)
             plt.close()
-
 
 # read map file and plot
 def plot_map(map_path: Path):

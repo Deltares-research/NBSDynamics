@@ -1,3 +1,4 @@
+import platform
 from pathlib import Path
 from test.utils import TestUtils
 from typing import List
@@ -8,7 +9,6 @@ from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 from numpy.ma import getdata
 from numpy.ma.core import var
-import platform
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
