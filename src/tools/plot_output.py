@@ -6,11 +6,15 @@ Created on Fri Sep 24 11:36:48 2021
 """
 
 import platform
+
 from pathlib import Path
 from typing import Callable
-import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
+
+if "windows" in platform.system().lower():
+    import matplotlib.pyplot as plt
+
 
 limdict = {
     "Iz": [0, 9999],
