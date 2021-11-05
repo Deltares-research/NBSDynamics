@@ -7,16 +7,10 @@ Created on Fri Sep 24 11:36:48 2021
 
 from typing import Callable
 from pathlib import Path
-import matplotlib
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 import platform
-
-if "win" in platform.system().lower():
-    plt.style.use("seaborn-whitegrid")
-else:
-    matplotlib.use("Agg")
 
 limdict = {
     "Iz": [0, 9999],
@@ -64,6 +58,9 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.close()
 
 
+def init_matplotlib():
+    plt.style.use("seaborn-whitegrid")
+
 # read map file and plot
 def plot_map(map_path: Path):
     """
@@ -72,6 +69,9 @@ def plot_map(map_path: Path):
     Args:
         map_path (Path): Path to the netcdf file representing the map.
     """
+    if "win" not in platform.system().lower():
+        return
+    init_matplotlib()
 
     def _subplot_mapfile(var_t, ylims, plot_axes):
         x = np.linspace(1, 100, 100)
@@ -93,6 +93,9 @@ def plot_his(his_path: Path):
     Args:
         his_path (Path): Path to the netcdf file representing the his.
     """
+    if "win" not in platform.system().lower():
+        return
+    init_matplotlib()
 
     def _subplot_hisfile(var_t, ylims, plot_axes):
         x = np.linspace(0, 100, 36525)

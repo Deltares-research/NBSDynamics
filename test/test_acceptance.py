@@ -8,6 +8,7 @@ from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 from numpy.ma import getdata
 from numpy.ma.core import var
+import platform
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
@@ -153,6 +154,8 @@ class TestAcceptance:
         compare_files(run_trans.output_dir / map_filename)
 
         # 5. Verify plotting can be done.
+        if "win" not in platform.system().lower():
+            return
         plot_his(run_trans.output_dir / his_filename)
         plot_map(run_trans.output_dir / map_filename)
 
