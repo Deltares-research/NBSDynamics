@@ -71,6 +71,7 @@ class TestAcceptance:
             ),
         ],
     )
+    @pytest.mark.skip(reason="Not yet supported.")
     def test_given_interface_transect_runs(self, coral_values: dict):
         # 1. Define test data.
         test_dir = TestUtils.get_local_test_data_dir("transect_case")
