@@ -8,8 +8,9 @@ Created on Fri Sep 24 11:36:48 2021
 import platform
 from pathlib import Path
 from typing import Callable
-from netCDF4 import Dataset
+
 import numpy as np
+from netCDF4 import Dataset
 
 limdict = {
     "Iz": [0, 9999],
@@ -32,9 +33,12 @@ limdict = {
     "G": [9999, 9999],
 }
 
+
 def init_matplotlib():
     import matplotlib.pyplot as plt
+
     plt.style.use("seaborn-whitegrid")
+
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
@@ -58,6 +62,7 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.ylabel(VT.units)
             subplot_call(VarT, ylims, ax)
             plt.close()
+
 
 # read map file and plot
 def plot_map(map_path: Path):
