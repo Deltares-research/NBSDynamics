@@ -8,6 +8,7 @@ Created on Fri Sep 24 11:36:48 2021
 import platform
 from pathlib import Path
 from typing import Callable
+import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 
@@ -33,7 +34,6 @@ limdict = {
 }
 
 def init_matplotlib():
-    import matplotlib.pyplot as plt
     plt.style.use("seaborn-whitegrid")
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
