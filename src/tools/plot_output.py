@@ -33,8 +33,10 @@ limdict = {
     "G": [9999, 9999],
 }
 
+
 def init_matplotlib():
     plt.style.use("seaborn-whitegrid")
+
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
@@ -58,6 +60,7 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.ylabel(VT.units)
             subplot_call(VarT, ylims, ax)
             plt.close()
+
 
 # read map file and plot
 def plot_map(map_path: Path):
