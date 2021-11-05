@@ -1,4 +1,10 @@
 
+## v0.1.1 (2021-11-05)
+
+### Fix
+
+- **.github/workflows/ci.yml**: improve code coverage (#44)
+
 ## v0.1.0 (2021-11-04)
 
 ### Fix
