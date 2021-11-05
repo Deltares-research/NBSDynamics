@@ -1,5 +1,6 @@
+from typing import Any, Tuple
+
 import pytest
-from typing import Tuple, Any
 
 from src.core.utils import DataReshape, SpaceTime
 

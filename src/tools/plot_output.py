@@ -5,12 +5,13 @@ Created on Fri Sep 24 11:36:48 2021
 @author: herman
 """
 
-from typing import Callable
-from pathlib import Path
-import matplotlib.pyplot as plt
-from netCDF4 import Dataset
-import numpy as np
 import platform
+from pathlib import Path
+from typing import Callable
+
+import matplotlib.pyplot as plt
+import numpy as np
+from netCDF4 import Dataset
 
 limdict = {
     "Iz": [0, 9999],
@@ -60,6 +61,7 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
 
 def init_matplotlib():
     plt.style.use("seaborn-whitegrid")
+
 
 # read map file and plot
 def plot_map(map_path: Path):
