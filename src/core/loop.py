@@ -50,12 +50,12 @@ class Simulation:
             "Delft3D": Delft3D(),
             "Transect": Transect(),
         }
-        modeset = modes.get(mode, "error")
-        if not modeset == "error":
-            self._hydrodynamics = modeset
-        else:
-            msg = f"{mode} not in {modes}."
+        modeset = modes.get(mode, None)
+        if modeset is None:
+            keys_names = ", ".join(modes.keys())
+            msg = f"{mode} not in [{keys_names}]."
             raise ValueError(msg)
+        self._hydrodynamics = modeset
 
     @property
     def environment(self):
