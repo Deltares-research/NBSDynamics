@@ -9,8 +9,8 @@ import platform
 
 from pathlib import Path
 from typing import Callable
-from netCDF4 import Dataset
 import numpy as np
+from netCDF4 import Dataset
 
 if "windows" in platform.system().lower():
     import matplotlib.pyplot as plt
