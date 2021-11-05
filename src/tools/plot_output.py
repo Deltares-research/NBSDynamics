@@ -44,7 +44,7 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             VT = nc_variables[vv]
             VarT = VT[:]
 
-            fig = plt.figure()
+            plt.figure()
             ax = plt.axes()
             plt.xlim(0, 100)
             ylims = limdict[vv]
@@ -55,7 +55,8 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             plt.title(VT.long_name)
             plt.xlabel("Time (years)")
             plt.ylabel(VT.units)
-            subplot_call(VarT, VT, ax)
+            subplot_call(VarT, ylims, ax)
+            plt.close()
 
 
 # read map file and plot
