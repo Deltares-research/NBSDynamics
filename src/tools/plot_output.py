@@ -7,7 +7,6 @@ Created on Fri Sep 24 11:36:48 2021
 
 from typing import Callable
 from pathlib import Path
-import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
 import platform
@@ -33,6 +32,9 @@ limdict = {
     "G": [9999, 9999],
 }
 
+def init_matplotlib():
+    import matplotlib.pyplot as plt
+    plt.style.use("seaborn-whitegrid")
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
@@ -57,9 +59,6 @@ def _plot_nc_variables(nc_variables, subplot_call: Callable):
             subplot_call(VarT, ylims, ax)
             plt.close()
 
-
-def init_matplotlib():
-    plt.style.use("seaborn-whitegrid")
 
 # read map file and plot
 def plot_map(map_path: Path):
