@@ -6,9 +6,9 @@ Created on Fri Sep 24 11:36:48 2021
 """
 
 import platform
-
 from pathlib import Path
 from typing import Callable
+
 import numpy as np
 from netCDF4 import Dataset
 
