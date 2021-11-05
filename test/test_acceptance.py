@@ -11,6 +11,7 @@ from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
+from src.tools.plot_output import plot_his, plot_map
 
 
 class TestAcceptance:
@@ -156,6 +157,10 @@ class TestAcceptance:
 
         compare_files(run_trans.output_dir / his_filename)
         compare_files(run_trans.output_dir / map_filename)
+
+        # 5. Verify plotting can be done.
+        plot_his(run_trans.output_dir / his_filename)
+        plot_map(run_trans.output_dir / map_filename)
 
     @pytest.mark.skip(reason="Only to be run locally.")
     @pytest.mark.parametrize(

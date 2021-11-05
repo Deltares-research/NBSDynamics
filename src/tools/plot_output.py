@@ -5,7 +5,6 @@ Created on Fri Sep 24 11:36:48 2021
 @author: herman
 """
 
-import os
 from typing import Callable
 from pathlib import Path
 import matplotlib.pyplot as plt
