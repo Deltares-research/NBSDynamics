@@ -7,11 +7,16 @@ Created on Fri Sep 24 11:36:48 2021
 
 from typing import Callable
 from pathlib import Path
+import matplotlib
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import numpy as np
+import platform
 
-plt.style.use("seaborn-whitegrid")
+if "win" in platform.system().lower():
+    plt.style.use("seaborn-whitegrid")
+else:
+    matplotlib.use("Agg")
 
 limdict = {
     "Iz": [0, 9999],
