@@ -177,7 +177,6 @@ class Transect:
 
     def update(self, coral, stormcat=0):
         """Update the model, which is just knowing the waves"""
-        """Update the model, which is just knowing the waves"""
         mean_current_vel = 0
         if stormcat in [0, 1, 2, 3]:
             Hs = self.wave_height[stormcat]
