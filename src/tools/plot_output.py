@@ -12,7 +12,13 @@ from typing import Callable
 import numpy as np
 from netCDF4 import Dataset
 
-if platform.system().lower() in ["windows", "linux"]:
+platform_sys = platform.system().lower()
+
+if platform_sys in ["windows", "linux"]:
+    import matplotlib
+
+    if "linux" in platform_sys:
+        matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
 
@@ -39,7 +45,10 @@ limdict = {
 
 
 def init_matplotlib():
-    plt.style.use("seaborn-whitegrid")
+    if platform.system().lower() in "linux":
+        plt.style.use("Agg")
+    else:
+        plt.style.use("seaborn-whitegrid")
 
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
