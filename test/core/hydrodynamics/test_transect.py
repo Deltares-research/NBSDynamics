@@ -21,21 +21,21 @@ class TestTransect:
         assert repr(test_transect) == "Transect()"
 
     def test_set_workdir_as_str_returns_path(self):
-        test_Transect = Transect()
-        test_Transect.working_dir = "thisPath"
-        assert isinstance(test_Transect.working_dir, Path)
+        test_trans = Transect()
+        test_trans.working_dir = "thisPath"
+        assert isinstance(test_trans.working_dir, Path)
 
     def test_set_mdu_relative_to_work_dir(self):
-        test_Transect = Transect()
-        test_Transect.working_dir = "thisPath"
-        test_Transect.mdu = "anMdu"
-        assert test_Transect.mdu == Path("thisPath") / "anMdu"
+        test_trans = Transect()
+        test_trans.working_dir = "thisPath"
+        test_trans.mdu = "anMdu"
+        assert test_trans.mdu == Path("thisPath") / "anMdu"
 
     def test_set_config_relative_to_work_dir(self):
-        test_Transect = Transect()
-        test_Transect.working_dir = "thisPath"
-        test_Transect.config = "config"
-        assert test_Transect.config == Path("thisPath") / "config"
+        test_trans = Transect()
+        test_trans.working_dir = "thisPath"
+        test_trans.config = "config"
+        assert test_trans.config == Path("thisPath") / "config"
 
     def test_update_with_stormcat_4_raises_valueerror(self):
         test_trans = Transect()
