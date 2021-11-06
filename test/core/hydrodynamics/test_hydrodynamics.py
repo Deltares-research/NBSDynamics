@@ -156,6 +156,23 @@ class TestReef1D:
         assert test_reef.vel_curr_mx == 0
         assert test_reef.per_wav == None
         assert test_reef.water_level == 0
+        assert repr(test_reef) == (
+            "Reef1D(bathymetry=None, wave_height=None, wave_period=None)"
+        )
+
+    def test_settings(self):
+        test_reef = Reef1D()
+        test_reef.bath = [4]
+        test_reef.dx = 1
+        assert test_reef.settings == (
+            "One-dimensional simple hydrodynamic model to simulate the "
+            "hydrodynamics on a (coral) reef with the following settings:"
+            "\n\tBathymetric cross-shore data : list"
+            "\n\t\trange [m]  : 4-4"
+            "\n\t\tlength [m] : 1"
+            "\n\tSignificant wave height [m]  : None"
+            "\n\tPeak wave period [s]         : None"
+        )
 
     @pytest.fixture(autouse=True)
     def reef_1d(self) -> Reef1D:
