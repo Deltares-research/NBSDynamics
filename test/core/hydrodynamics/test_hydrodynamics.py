@@ -2,6 +2,7 @@ from typing import Type
 import pytest
 
 from src.core.hydrodynamics.hydrodynamics import (
+    BaseHydro,
     Hydrodynamics,
     Reef0D,
     Reef1D,
@@ -103,3 +104,53 @@ class TestHydrodynamics:
 
         # 3. Verify final expectation
         assert str(e_info.value) == expected_mssg
+
+
+class TestReef0D:
+    def test_init_reef0d(self):
+        test_reef = Reef0D()
+        assert isinstance(test_reef, BaseHydro)
+        assert test_reef.settings == "Not yet implemented."
+
+
+class TestReef1D:
+    def test_init_reef1d(self):
+        test_reef = Reef1D()
+        assert isinstance(test_reef, BaseHydro)
+        assert test_reef.bath == None
+        assert test_reef.Hs == None
+        assert test_reef.Tp == None
+        assert test_reef.dx == None
+        # Some of the defined properties with fix values.
+        assert test_reef.y == 0
+        assert test_reef.vel_wave == 0
+        assert test_reef.vel_curr_mn == 0
+        assert test_reef.vel_curr_mx == 0
+        assert test_reef.per_wav == None
+        assert test_reef.water_level == 0
+
+    @pytest.fixture(autouse=True)
+    def reef_1d(self) -> Reef1D:
+        """
+        Initializes a valid Reef1D to be used in the tests.
+
+        Returns:
+            Reef1D: Valid Reef1D for testing.
+        """
+        return Reef1D()
+
+    def test_set_can_dia(self, reef_1d: Reef1D):
+        reef_1d.can_dia = 4.2
+        assert reef_1d.can_dia == 4.2
+
+    def test_set_can_height(self, reef_1d: Reef1D):
+        reef_1d.can_height = 4.2
+        assert reef_1d.can_height == 4.2
+
+    def test_set_can_den(self, reef_1d: Reef1D):
+        reef_1d.can_den = 4.2
+        assert reef_1d.can_den == 4.2
+
+    def test_dispersion(self):
+        val = Reef1D.dispersion(4, 2, 2, 4)
+        assert val == pytest.approx(1.463013990480674)

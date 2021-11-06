@@ -213,6 +213,7 @@ class BaseHydro:
 
     def initiate(self):
         """Initiate hydrodynamic model."""
+        pass
 
     def update(self, coral, storm=False):
         """Update hydrodynamic model.
@@ -231,6 +232,7 @@ class BaseHydro:
 
     def finalise(self):
         """Finalise hydrodynamic model."""
+        pass
 
 
 class Reef0D(BaseHydro):
@@ -244,15 +246,6 @@ class Reef0D(BaseHydro):
         """Print settings of Reef0D-model."""
         msg = f"Not yet implemented."
         return msg
-
-    def initiate(self):
-        pass
-
-    def update(self, coral, storm=False):
-        pass
-
-    def finalise(self):
-        pass
 
 
 class Reef1D(BaseHydro):
@@ -400,12 +393,3 @@ class Reef1D(BaseHydro):
             / (np.sinh(self.wave_number * self.depth))
         )
         return n * self.wave_celerity
-
-    def initiate(self):
-        pass
-
-    def update(self, coral, storm=False):
-        pass
-
-    def finalise(self):
-        pass
