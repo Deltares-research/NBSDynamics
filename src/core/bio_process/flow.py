@@ -1,14 +1,14 @@
 import numpy as np
 from scipy.optimize import newton
-
-from src.core.coral_model import RESHAPE
-from src.core.utils import CoralOnly
+from src.core.utils import CoralOnly, DataReshape
 
 
 class Flow:
     """Flow micro-environment."""
 
-    def __init__(self, constants, u_current, u_wave, h, peak_period):
+    def __init__(
+        self, constants, u_current, u_wave, h, peak_period, datareshape: DataReshape
+    ):
         """
         :param u_current: current flow velocity [m s-1]
         :param u_wave: wave flow velocity [m s-1]
@@ -20,22 +20,23 @@ class Flow:
         :type h: float, list, tuple, numpy.ndarray
         :type peak_period: float, list, tuple, numpy.ndarray
         """
-        self.uc = RESHAPE.variable2array(u_current)
-        self.uw = RESHAPE.variable2array(u_wave)
-        self.h = RESHAPE.variable2matrix(h, "space")
-        self.Tp = RESHAPE.variable2array(peak_period)
+        self.RESHAPE = datareshape
+        self.uc = self.RESHAPE.variable2array(u_current)
+        self.uw = self.RESHAPE.variable2array(u_wave)
+        self.h = self.RESHAPE.variable2matrix(h, "space")
+        self.Tp = self.RESHAPE.variable2array(peak_period)
         self.active = False if u_current is None and u_wave is None else True
         self.constants = constants
 
     @property
     def uc_matrix(self):
         """Reshaped current flow velocity."""
-        return RESHAPE.variable2matrix(self.uc, "space")
+        return self.RESHAPE.variable2matrix(self.uc, "space")
 
     @property
     def uw_matrix(self):
         """Reshaped wave flow velocity."""
-        return RESHAPE.variable2matrix(self.uw, "space")
+        return self.RESHAPE.variable2matrix(self.uw, "space")
 
     def velocities(self, coral, in_canopy=True):
         """In-canopy flow velocities, and depth-averaged flow velocities.
@@ -75,7 +76,7 @@ class Flow:
             coral.ucm = self.wave_current(alpha_w, alpha_c)
             coral.um = self.wave_current()
         else:
-            coral.ucm = 9999 * np.ones(RESHAPE.space)
+            coral.ucm = 9999 * np.ones(self.RESHAPE.space)
 
     def wave_current(self, alpha_w=1, alpha_c=1):
         """Wave-current interaction.

@@ -1,6 +1,3 @@
-from src.core.coral_model import RESHAPE
-
-
 class Calcification:
     """Calcification rate."""
 
@@ -24,7 +21,7 @@ class Calcification:
             calcification_object.ad = (omega - self.constants.omega0) / (
                 self.constants.kappaA + omega - self.constants.omega0
             )
-            calcification_object.ad = RESHAPE.variable2matrix(
+            calcification_object.ad = coral.RESHAPE.variable2matrix(
                 calcification_object.ad, "time"
             )
 

@@ -1,13 +1,12 @@
 import numpy as np
 
-from src.core.coral_model import RESHAPE
-from src.core.utils import CoralOnly
+from src.core.utils import CoralOnly, DataReshape
 
 
 class Light:
     """Light micro-environment."""
 
-    def __init__(self, constants, light_in, lac, depth):
+    def __init__(self, constants, light_in, lac, depth, datareshape: DataReshape):
         """Light micro-environment.
 
         :param light_in: incoming light-intensity at the water-air interface [u mol photons m-2 s-1]
@@ -18,9 +17,9 @@ class Light:
         :type lac: float, list, tuple, numpy.ndarray
         :type depth: float, list, tuple, numpy.ndarray
         """
-        self.I0 = RESHAPE.variable2matrix(light_in, "time")
-        self.Kd = RESHAPE.variable2matrix(lac, "time")
-        self.h = RESHAPE.variable2matrix(depth, "space")
+        self.I0 = datareshape.variable2matrix(light_in, "time")
+        self.Kd = datareshape.variable2matrix(lac, "time")
+        self.h = datareshape.variable2matrix(depth, "space")
         self.constants = constants
 
     def rep_light(self, coral):

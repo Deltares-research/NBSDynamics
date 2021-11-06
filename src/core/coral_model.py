@@ -9,10 +9,7 @@ import numpy as np
 
 from src.core.utils import CoralOnly, DataReshape
 
-# # data formatting -- to be reformatted in the model simulation
-RESHAPE = DataReshape()
 
-# coral object
 class Coral:
     """Coral object, representing one coral type."""
 
@@ -33,12 +30,12 @@ class Coral:
         :type species_constant: float
         """
         self.constants = constants
-
-        self.dc = RESHAPE.variable2array(dc)
-        self.hc = RESHAPE.variable2array(hc)
-        self.bc = RESHAPE.variable2array(bc)
-        self.tc = RESHAPE.variable2array(tc)
-        self.ac = RESHAPE.variable2array(ac)
+        self.RESHAPE = DataReshape()
+        self.dc = self.RESHAPE.variable2array(dc)
+        self.hc = self.RESHAPE.variable2array(hc)
+        self.bc = self.RESHAPE.variable2array(bc)
+        self.tc = self.RESHAPE.variable2array(tc)
+        self.ac = self.RESHAPE.variable2array(ac)
 
         self.Csp = species_constant  # make into the constants list
 
@@ -176,33 +173,33 @@ class Coral:
 
     @property
     def dc_matrix(self):
-        """Reshaped coral plate diameter."""
-        return RESHAPE.variable2matrix(self.dc, "space")
+        """self.RESHAPEd coral plate diameter."""
+        return self.RESHAPE.variable2matrix(self.dc, "space")
 
     @property
     def hc_matrix(self):
-        """Reshaped coral height."""
-        return RESHAPE.variable2matrix(self.hc, "space")
+        """self.RESHAPEd coral height."""
+        return self.RESHAPE.variable2matrix(self.hc, "space")
 
     @property
     def bc_matrix(self):
-        """Reshaped coral base diameter."""
-        return RESHAPE.variable2matrix(self.bc, "space")
+        """self.RESHAPEd coral base diameter."""
+        return self.RESHAPE.variable2matrix(self.bc, "space")
 
     @property
     def tc_matrix(self):
-        """Reshaped coral plate thickness."""
-        return RESHAPE.variable2matrix(self.tc, "space")
+        """self.RESHAPEd coral plate thickness."""
+        return self.RESHAPE.variable2matrix(self.tc, "space")
 
     @property
     def ac_matrix(self):
-        """Reshaped axial distance."""
-        return RESHAPE.variable2matrix(self.ac, "space")
+        """self.RESHAPEd axial distance."""
+        return self.RESHAPE.variable2matrix(self.ac, "space")
 
     @property
     def dc_rep_matrix(self):
-        """Reshaped representative coral diameter."""
-        return RESHAPE.variable2matrix(self.dc_rep, "space")
+        """self.RESHAPEd representative coral diameter."""
+        return self.RESHAPE.variable2matrix(self.dc_rep, "space")
 
     @property
     def as_vegetation_density(self):
@@ -231,7 +228,7 @@ class Coral:
         :param carrying_capacity: carrying capacity [m2 m-2]
         :type carrying_capacity: float, list, tuple, numpy.ndarray
         """
-        carrying_capacity = RESHAPE.variable2array(carrying_capacity)
+        carrying_capacity = self.RESHAPE.variable2array(carrying_capacity)
         if not self.volume.shape == carrying_capacity.shape:
             raise ValueError(
                 f"Shapes do not match: "
@@ -260,12 +257,12 @@ class Coral:
         :type cover: None, numpy.ndarray
         """
         if cover is not None:
-            cover = RESHAPE.variable2array(cover)
-            if not cover.shape[0] == RESHAPE.space:
-                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {RESHAPE.space}."
+            cover = self.RESHAPE.variable2array(cover)
+            if not cover.shape[0] == self.RESHAPE.space:
+                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {self.RESHAPE.space}."
                 raise ValueError(msg)
         else:
-            cover = np.ones(RESHAPE.space)
+            cover = np.ones(self.RESHAPE.space)
 
         self.p0 = np.array(
             [

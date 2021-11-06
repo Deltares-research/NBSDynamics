@@ -219,7 +219,9 @@ class Simulation:
 
         # TODO: add other dependencies based on process switches in self.constants if required
 
-    def initiate(self, coral, x_range=None, y_range=None, value=None):
+    def initiate(
+        self, coral: coral_model.Coral, x_range=None, y_range=None, value=None
+    ):
         """Initiate the coral distribution. The default coral distribution is a full coral cover over the whole domain.
         More complex initial conditions of the coral cover cannot be realised with this method. See the documentation on
         workarounds to achieve this anyway.
@@ -240,7 +242,7 @@ class Simulation:
         self.input_check()
 
         #        self.hydrodynamics.initiate()
-        coral_model.RESHAPE.space = self.hydrodynamics.space
+        coral.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
             self.output.initiate_his()
@@ -254,7 +256,7 @@ class Simulation:
         if value is None:
             value = 1
 
-        cover = value * np.ones(coral_model.RESHAPE.space)
+        cover = value * np.ones(coral.RESHAPE.space)
 
         if x_range is not None:
             x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -273,7 +275,7 @@ class Simulation:
 
         return coral
 
-    def exec(self, coral, duration=None):
+    def exec(self, coral: coral_model.Coral, duration=None):
         """Execute simulation.
 
         :param coral: coral animal
@@ -296,7 +298,7 @@ class Simulation:
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
-                coral_model.RESHAPE.time = len(
+                coral.RESHAPE.time = len(
                     self.environment.dates.dt.year[
                         self.environment.dates.dt.year == years[i]
                     ]
@@ -316,6 +318,7 @@ class Simulation:
                     light_in=time_series_year(self.environment.light, years[i]),
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
+                    datareshape=coral.RESHAPE,
                 )
                 lme.rep_light(coral)
                 # flow micro-environment
@@ -325,6 +328,7 @@ class Simulation:
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
                     peak_period=wave_per,
+                    datareshape=coral.RESHAPE,
                 )
                 fme.velocities(coral, in_canopy=self.constants.fme)
                 fme.thermal_boundary_layer(coral)
@@ -334,6 +338,7 @@ class Simulation:
                     temperature=time_series_year(
                         self.environment.temp_kelvin, years[i]
                     ),
+                    datareshape=coral.RESHAPE,
                 )
                 tme.coral_temperature(coral)
 
@@ -344,6 +349,7 @@ class Simulation:
                     constants=self.constants,
                     light_in=time_series_year(self.environment.light, years[i]),
                     first_year=True if i == 0 else False,
+                    datareshape=coral.RESHAPE,
                 )
                 phd.photo_rate(coral, self.environment, years[i])
                 # population states
@@ -361,6 +367,7 @@ class Simulation:
                     constants=self.constants,
                     calc_sum=coral.calc.sum(axis=1),
                     light_in=time_series_year(self.environment.light, years[i]),
+                    datareshape=coral.RESHAPE,
                 )
                 mor.update(coral)
 
@@ -382,6 +389,7 @@ class Simulation:
                             u_wave=wave_vel,
                             h=self.hydrodynamics.water_depth,
                             peak_period=wave_per,
+                            datareshape=coral.RESHAPE,
                         )
                         sfe.velocities(coral, in_canopy=self.constants.fme)
                         # storm dislodgement criterion
