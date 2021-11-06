@@ -2,6 +2,7 @@ import faulthandler
 import os
 
 import numpy as np
+from pathlib import Path
 
 faulthandler.enable()
 
@@ -42,7 +43,7 @@ class Transect:
         return msg
 
     @property
-    def working_dir(self):
+    def working_dir(self) -> Path:
         """Model working directory."""
         return self._working_dir
 
@@ -52,6 +53,9 @@ class Transect:
         :param folder: working directory
         :type folder:  str
         """
+        if not isinstance(folder, Path):
+            self._working_dir = Path(folder)
+            return
         self._working_dir = folder
 
     @property
@@ -84,7 +88,7 @@ class Transect:
         :param file_dir: file directory of config-file
         :type file_dir: str, list, tuple
         """
-        self._config = os.path.join(self.working_dir, file_dir)
+        self._config = self.working_dir / file_dir
 
     def input_check(self):
         """Check if all requested content is provided"""
@@ -142,6 +146,7 @@ class Transect:
 
     def reset_counters(self):
         """Reset properties for next model update."""
+        pass
 
     def set_morphology(self, coral):
         """Set morphological dimensions to Delft3D-model.
@@ -149,6 +154,7 @@ class Transect:
         :param coral: coral animal
         :type coral: Coral
         """
+        pass
 
     def initiate(self):
         """Initialize the working model.
