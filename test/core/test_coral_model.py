@@ -18,10 +18,9 @@ class TestCoralModel:
         return Coral(**input_dict)
 
     def test_init_coral_model(self, coral_model_test: Coral):
-        assert repr(coral_model_test) == "Morphology(None, None, None, None, None)"
+        assert repr(coral_model_test) == "Morphology([0.2], [0.1], [0.2], [0.2], [0.2])"
         assert str(coral_model_test) == (
-            f"Coral morphology with: dc = None m; hc = None ;"
-            f"bc = None m; tc = None m; ac = None m"
+            "Coral morphology with: dc = [0.2] m; hc = [0.1] ;bc = [0.2] m; tc = [0.1] m; ac = [0.2] m"
         )
 
     def test_set_cover(self, coral_model_test: Coral):
