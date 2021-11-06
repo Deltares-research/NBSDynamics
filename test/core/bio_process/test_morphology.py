@@ -23,3 +23,12 @@ class TestMorphology:
         assert str(e_info.value) == (
             "The optimal ratios are determined based on the coral's light and flow conditions; none are provided."
         )
+
+    def test_ratio_update_raises_error(self):
+        test_morphology = Morphology(None, None, None, None)
+        ratio_value = "notARatio"
+
+        with pytest.raises(ValueError) as e_info:
+            test_coral = Coral(0.2, 0.1, 0.2, 0.1, 0.2, 0.1, 1)
+            test_morphology.ratio_update(test_coral, ratio_value)
+        assert str(e_info.value) == "notARatio not in ('rf', 'rp', 'rs')."
