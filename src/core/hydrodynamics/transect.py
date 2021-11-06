@@ -72,7 +72,7 @@ class Transect:
         :param file_dir: file directory of MDU-file
         :type file_dir: str
         """
-        self._mdu = os.path.join(self.working_dir, file_dir)
+        self._mdu = self.working_dir / file_dir
 
     @property
     def config(self):

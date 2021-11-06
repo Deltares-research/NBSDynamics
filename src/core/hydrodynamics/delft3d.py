@@ -73,6 +73,7 @@ class Delft3D:
         """
         if not isinstance(folder, Path):
             self._home = Path(folder)
+            return
         self._home = folder
 
     @property
@@ -88,6 +89,7 @@ class Delft3D:
         """
         if not isinstance(folder, Path):
             self._working_dir = Path(folder)
+            return
         self._working_dir = folder
 
     @property

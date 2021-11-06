@@ -53,3 +53,20 @@ class TestDelft3d:
         test_delft3d.working_dir = Path()
         test_delft3d.config = "aPath"
         assert test_delft3d.settings == expected_text
+
+    def test_set_workdir_as_str_returns_path(self):
+        test_delft3d = Delft3D()
+        test_delft3d.working_dir = "thisPath"
+        assert isinstance(test_delft3d.working_dir, Path)
+
+    def test_set_mdu_relative_to_work_dir(self):
+        test_delft3d = Delft3D()
+        test_delft3d.working_dir = "thisPath"
+        test_delft3d.mdu = "anMdu"
+        assert test_delft3d.mdu == Path("thisPath") / "anMdu"
+
+    def test_set_config_relative_to_work_dir(self):
+        test_delft3d = Delft3D()
+        test_delft3d.working_dir = "thisPath"
+        test_delft3d.config = "config"
+        assert test_delft3d.config == Path("thisPath") / "config"
