@@ -1,9 +1,9 @@
 import faulthandler
 import os
+from pathlib import Path
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
-from pathlib import Path
 
 faulthandler.enable()
 
