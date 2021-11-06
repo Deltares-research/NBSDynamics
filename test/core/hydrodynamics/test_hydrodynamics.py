@@ -211,7 +211,6 @@ class TestReef1D:
         test_ref1d = Reef1D()
         test_ref1d.Tp = 1
         test_ref1d.bath = np.array([1])
-        # test_ref1d.dispersion = 1
         assert test_ref1d.wave_length[0] == pytest.approx(1.56031758)
 
     def test_wave_number(self):
