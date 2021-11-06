@@ -258,7 +258,7 @@ class Delft3D:
     def water_depth(self):
         """Water depth."""
         if self.time_step is None:
-            self.time_step = self.get_var("is_dtint")
+            self.time_step = self.get_variable("is_dtint")
         if self._water_depth is None:
             return (
                 self.get_variable("is_sumvalsnd")[range(self.space), 2] / self.time_step

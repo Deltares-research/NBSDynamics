@@ -59,6 +59,11 @@ class TestDelft3d:
         test_delft3d.working_dir = "thisPath"
         assert isinstance(test_delft3d.working_dir, Path)
 
+    def test_set_d3dhome_as_str_returns_path(self):
+        test_delft3d = Delft3D()
+        test_delft3d.d3d_home = "thisPath"
+        assert isinstance(test_delft3d.d3d_home, Path)
+
     def test_set_mdu_relative_to_work_dir(self):
         test_delft3d = Delft3D()
         test_delft3d.working_dir = "thisPath"
