@@ -5,73 +5,20 @@ Created on Fri Sep 24 11:36:48 2021
 @author: herman
 """
 
-import os
+import platform
+from pathlib import Path
 from typing import Callable
 
-import matplotlib.pyplot as plt
-import netCDF4
 import numpy as np
+from netCDF4 import Dataset
 
-plt.style.use("seaborn-whitegrid")
+platform_sys = platform.system().lower()
 
+if platform_sys in ["windows"]:
+    import matplotlib.pyplot as plt
 
-def subplot_mapfile(var_t, ylims, plot_axes):
-    x = np.linspace(1, 100, 100)
-    plt.ylim(ylims)
-    plot_axes.plot(x, var_t[:, 1], "-g", label="Cell 1")
-    plot_axes.plot(x, var_t[:, 100], "-r", label="Cell 100")
-    plot_axes.plot(x, var_t[:, 300], "-c", label="Cell 300")
-    plt.legend()
+    plt.style.use("seaborn-whitegrid")
 
-
-def subplot_hisfile(var_t, ylims, plot_axes):
-    x = np.linspace(0, 100, 36525)
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, var_t.shape[1])))
-    for i in range(var_t.shape[1]):
-        plot_axes.plot(x, var_t[:, i], color=next(colors), label=f"Point {i}")
-    plt.legend()
-
-
-def plot_nc_variables(nc_variables, subplot_call: Callable):
-    teller = 0
-    for vv in nc_variables.keys():
-        teller = teller + 1
-        if teller > 3:
-
-            VT = nc_variables[vv]
-            VarT = VT[:]
-
-            fig = plt.figure()
-            ax = plt.axes()
-            plt.xlim(0, 100)
-            ylims = limdict[vv]
-            if ylims[0] == 9999:
-                ylims[0] = 0.95 * np.min(VarT)
-            if ylims[1] == 9999:
-                ylims[1] = 1.05 * np.max(VarT)
-            plt.title(VT.long_name)
-            plt.xlabel("Time (years)")
-            plt.ylabel(VT.units)
-            subplot_call(VarT, VT, ax)
-
-
-# NetCDF4-Python can read a remote OPeNDAP dataset or a local NetCDF file:
-out_dir = os.path.join(
-    "C:\\",
-    "Users",
-    "herman",
-    "OneDrive - Stichting Deltares",
-    "Documents",
-    "PyProjects",
-    "Mariya_model",
-    "Run_Transect",
-    "output",
-)
-
-# read map file and plot
-url = os.path.join(out_dir, "CoralModel_map.nc")
-nc = netCDF4.Dataset(url)
-nc.variables.keys()
 limdict = {
     "Iz": [0, 9999],
     "Tc": [300, 304],
@@ -93,14 +40,67 @@ limdict = {
     "G": [9999, 9999],
 }
 
-plot_nc_variables(nc.variables, subplot_mapfile)
 
-nc.close()
+def _plot_nc_variables(nc_variables, subplot_call: Callable):
+    teller = 0
+    for vv in nc_variables.keys():
+        teller = teller + 1
+        if teller > 3:
+
+            VT = nc_variables[vv]
+            VarT = VT[:]
+
+            plt.figure()
+            ax = plt.axes()
+            plt.xlim(0, 100)
+            ylims = limdict[vv]
+            if ylims[0] == 9999:
+                ylims[0] = 0.95 * np.min(VarT)
+            if ylims[1] == 9999:
+                ylims[1] = 1.05 * np.max(VarT)
+            plt.title(VT.long_name)
+            plt.xlabel("Time (years)")
+            plt.ylabel(VT.units)
+            subplot_call(VarT, ylims, ax)
+            plt.close()
+
+
+# read map file and plot
+def plot_map(map_path: Path):
+    """
+    Plots the map file according to the coral model.
+
+    Args:
+        map_path (Path): Path to the netcdf file representing the map.
+    """
+
+    def _subplot_mapfile(var_t, ylims, plot_axes):
+        x = np.linspace(1, 100, 100)
+        plt.ylim(ylims)
+        plot_axes.plot(x, var_t[:, 1], "-g", label="Cell 1")
+        plot_axes.plot(x, var_t[:, 100], "-r", label="Cell 100")
+        plot_axes.plot(x, var_t[:, 300], "-c", label="Cell 300")
+        plt.legend()
+
+    with Dataset(map_path) as nc:
+        _plot_nc_variables(nc.variables, _subplot_mapfile)
+
 
 # read his file and plot
-url = os.path.join(out_dir, "CoralModel_his.nc")
-nc = netCDF4.Dataset(url)
-nc.variables.keys()
-plot_nc_variables(nc.variables, subplot_hisfile)
+def plot_his(his_path: Path):
+    """
+    Plots the his file according to the coral model.
 
-nc.close()
+    Args:
+        his_path (Path): Path to the netcdf file representing the his.
+    """
+
+    def _subplot_hisfile(var_t, ylims, plot_axes):
+        x = np.linspace(0, 100, 36525)
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, var_t.shape[1])))
+        for i in range(var_t.shape[1]):
+            plot_axes.plot(x, var_t[:, i], color=next(colors), label=f"Point {i}")
+        plt.legend()
+
+    with Dataset(his_path) as nc:
+        _plot_nc_variables(nc.variables, _subplot_hisfile)

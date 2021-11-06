@@ -5,12 +5,13 @@ coral_model v3 - hydrodynamics
 @contributor: Peter M.J. Herman
 """
 import faulthandler
-import os
 import sys
 
 import numpy as np
-from bmi.wrapper import BMIWrapper
 from scipy.optimize import fsolve
+
+from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.transect import Transect
 
 faulthandler.enable()
 
@@ -48,7 +49,7 @@ class Hydrodynamics:
         """
         return self.__model
 
-    def set_model(self, mode):
+    def set_model(self, mode: str) -> str:
         """Function that verifies if the mode is included.
 
         :param mode: choice of hydrodynamic model
@@ -62,6 +63,7 @@ class Hydrodynamics:
 
         model_cls = mode
         self.__model = getattr(sys.modules[__name__], model_cls)()
+        self.mode = mode
         return mode
 
     @property
@@ -212,6 +214,7 @@ class BaseHydro:
 
     def initiate(self):
         """Initiate hydrodynamic model."""
+        pass
 
     def update(self, coral, storm=False):
         """Update hydrodynamic model.
@@ -230,6 +233,7 @@ class BaseHydro:
 
     def finalise(self):
         """Finalise hydrodynamic model."""
+        pass
 
 
 class Reef0D(BaseHydro):
@@ -243,15 +247,6 @@ class Reef0D(BaseHydro):
         """Print settings of Reef0D-model."""
         msg = f"Not yet implemented."
         return msg
-
-    def initiate(self):
-        pass
-
-    def update(self, coral, storm=False):
-        pass
-
-    def finalise(self):
-        pass
 
 
 class Reef1D(BaseHydro):
@@ -399,12 +394,3 @@ class Reef1D(BaseHydro):
             / (np.sinh(self.wave_number * self.depth))
         )
         return n * self.wave_celerity
-
-    def initiate(self):
-        pass
-
-    def update(self, coral, storm=False):
-        pass
-
-    def finalise(self):
-        pass

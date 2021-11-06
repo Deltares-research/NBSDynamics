@@ -1,3 +1,4 @@
+import platform
 from pathlib import Path
 from test.utils import TestUtils
 from typing import List
@@ -11,6 +12,7 @@ from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
+from src.tools.plot_output import plot_his, plot_map
 
 
 class TestAcceptance:
@@ -62,16 +64,7 @@ class TestAcceptance:
         # finalizing
         sim_run.finalise()
 
-    @pytest.mark.parametrize(
-        "coral_values",
-        [
-            pytest.param(
-                dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
-                id="Species constant 0.6",
-            ),
-        ],
-    )
-    def test_given_interface_transect_runs(self, coral_values: dict):
+    def test_given_interface_transect_runs(self):
         # 1. Define test data.
         test_dir = TestUtils.get_local_test_data_dir("transect_case")
         assert test_dir.is_dir()
@@ -120,7 +113,10 @@ class TestAcceptance:
         run_trans.define_output("map", fme=False)
         run_trans.define_output("his", fme=False)
         # initiate coral
-        coral_dict = {**dict(constants=run_trans.constants), **coral_values}
+        coral_dict = {
+            **dict(constants=run_trans.constants),
+            **dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
+        }
         coral = Coral(**coral_dict)
         coral = run_trans.initiate(coral)
 
@@ -157,6 +153,13 @@ class TestAcceptance:
         compare_files(run_trans.output_dir / his_filename)
         compare_files(run_trans.output_dir / map_filename)
 
+        # 5. Verify plotting can be done.
+        # Plotting does not seem to work on linux or mac pipelines.
+        if platform.system().lower() not in ["windows"]:
+            return
+        plot_his(run_trans.output_dir / his_filename)
+        plot_map(run_trans.output_dir / map_filename)
+
     @pytest.mark.skip(reason="Only to be run locally.")
     @pytest.mark.parametrize(
         "nc_filename",
@@ -188,3 +191,23 @@ class TestAcceptance:
                     savetxt(ref_file, ref_netcdf[variable])
 
         output_file(expected_dir / nc_filename)
+
+    @pytest.mark.skip(reason="Only to run locally.")
+    def test_plot_map_output(self):
+        expected_file = (
+            TestUtils.get_local_test_data_dir("transect_case")
+            / "output"
+            / "CoralModel_map.nc"
+        )
+
+        plot_map(expected_file)
+
+    @pytest.mark.skip(reason="Only to run locally.")
+    def test_plot_his_output(self):
+        expected_file = (
+            TestUtils.get_local_test_data_dir("transect_case")
+            / "output"
+            / "CoralModel_his.nc"
+        )
+
+        plot_his(expected_file)
