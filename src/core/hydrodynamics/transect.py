@@ -1,5 +1,6 @@
 import faulthandler
 import os
+from pathlib import Path
 
 import numpy as np
 
@@ -42,7 +43,7 @@ class Transect:
         return msg
 
     @property
-    def working_dir(self):
+    def working_dir(self) -> Path:
         """Model working directory."""
         return self._working_dir
 
@@ -52,6 +53,9 @@ class Transect:
         :param folder: working directory
         :type folder:  str
         """
+        if not isinstance(folder, Path):
+            self._working_dir = Path(folder)
+            return
         self._working_dir = folder
 
     @property
@@ -68,7 +72,7 @@ class Transect:
         :param file_dir: file directory of MDU-file
         :type file_dir: str
         """
-        self._mdu = os.path.join(self.working_dir, file_dir)
+        self._mdu = self.working_dir / file_dir
 
     @property
     def config(self):
@@ -84,7 +88,7 @@ class Transect:
         :param file_dir: file directory of config-file
         :type file_dir: str, list, tuple
         """
-        self._config = os.path.join(self.working_dir, file_dir)
+        self._config = self.working_dir / file_dir
 
     def input_check(self):
         """Check if all requested content is provided"""
@@ -142,6 +146,7 @@ class Transect:
 
     def reset_counters(self):
         """Reset properties for next model update."""
+        pass
 
     def set_morphology(self, coral):
         """Set morphological dimensions to Delft3D-model.
@@ -149,6 +154,7 @@ class Transect:
         :param coral: coral animal
         :type coral: Coral
         """
+        pass
 
     def initiate(self):
         """Initialize the working model.
@@ -170,7 +176,6 @@ class Transect:
         self.max_curr_vel = self.forcings[:, 5]
 
     def update(self, coral, stormcat=0):
-        """Update the model, which is just knowing the waves"""
         """Update the model, which is just knowing the waves"""
         mean_current_vel = 0
         if stormcat in [0, 1, 2, 3]:

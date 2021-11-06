@@ -1,4 +1,4 @@
-from src.core.coral_model import RESHAPE
+from src.core.coral_model import Coral
 from src.core.utils import CoralOnly
 
 
@@ -18,7 +18,7 @@ class Recruitment:
         coral.p0[:, 0] += Recruitment.spawning(self, coral, "P")
         coral.volume += Recruitment.spawning(self, coral, "V")
 
-    def spawning(self, coral, param):
+    def spawning(self, coral: Coral, param):
         """Contribution due to mass coral spawning.
 
         :param coral: coral animal
@@ -44,7 +44,7 @@ class Recruitment:
         # recruitment
         averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
         # living cover
-        living_cover = RESHAPE.matrix2array(coral.living_cover, "space")
+        living_cover = coral.RESHAPE.matrix2array(coral.living_cover, "space")
 
         recruited = CoralOnly().in_space(
             coral=coral,

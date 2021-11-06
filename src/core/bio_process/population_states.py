@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.core.coral_model import RESHAPE
+from src.core.coral_model import Coral
 
 
 class PopulationStates:
@@ -17,22 +17,22 @@ class PopulationStates:
         self.dt = dt
         self.constants = constants
 
-    def pop_states_t(self, coral):
+    def pop_states_t(self, coral: Coral):
         """Population dynamics over time.
 
         :param coral: coral animal
         :type coral: Coral
         """
-        coral.pop_states = np.zeros((*RESHAPE.spacetime, 4))
-        for n in range(RESHAPE.time):
-            photosynthesis = np.zeros(RESHAPE.space)
+        coral.pop_states = np.zeros((*coral.RESHAPE.spacetime, 4))
+        for n in range(coral.RESHAPE.time):
+            photosynthesis = np.zeros(coral.RESHAPE.space)
             photosynthesis[coral.cover > 0.0] = coral.photo_rate[
                 coral.cover > 0.0, n
             ]  # 21_09 have changed coral.cover>0 to .0.
             coral.pop_states[:, n, :] = self.pop_states_xy(coral, photosynthesis)
             coral.p0[coral.cover > 0.0, :] = coral.pop_states[coral.cover > 0.0, n, :]
 
-    def pop_states_xy(self, coral, ps):
+    def pop_states_xy(self, coral: Coral, ps):
         """Population dynamics over space.
 
         :param coral: coral animal
@@ -41,7 +41,7 @@ class PopulationStates:
         :type coral: Coral
         :type ps: numpy.ndarray
         """
-        p = np.zeros((RESHAPE.space, 4))
+        p = np.zeros((coral.RESHAPE.space, 4))
         # # calculations
         # growing conditions
         # > bleached pop.      # ps>0. here represents ps>tsh that is the value of the bleaching treshold light and 1. where 1.0 is a number, not column reference
