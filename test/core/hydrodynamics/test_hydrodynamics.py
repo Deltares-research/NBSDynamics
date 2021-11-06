@@ -107,6 +107,28 @@ class TestHydrodynamics:
         assert str(e_info.value) == expected_mssg
 
 
+class TestBaseHydro:
+    def test_init_base_hydro(self) -> BaseHydro:
+        test_base = BaseHydro()
+        assert test_base.update_interval_storm == None
+        assert test_base.update_interval == None
+        assert test_base.settings == "No hydrodynamic model coupled."
+        assert test_base.x == None
+        assert test_base.y == None
+
+    @pytest.mark.parametrize(
+        "storm_value, expected_value",
+        [
+            pytest.param(True, (None, None), id="Storm is True"),
+            pytest.param(False, (None, None, None), id="Storm is False"),
+        ],
+    )
+    def test_update(self, storm_value: bool, expected_value):
+        test_base = BaseHydro()
+        result = test_base.update(coral=None, storm=storm_value)
+        assert result == expected_value
+
+
 class TestReef0D:
     def test_init_reef0d(self):
         test_reef = Reef0D()

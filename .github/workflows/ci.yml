@@ -59,7 +59,8 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-        if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+        # if: ${{ (matrix.os == 'ubuntu-18.04') && (matrix.python-version == 3.8) }}
+        if: ${{ (matrix.os == 'windows-latest') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
