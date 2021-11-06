@@ -26,6 +26,11 @@ class TestHydrodynamics:
         test_hd = Hydrodynamics(mode)
         assert test_hd.mode == mode
         assert isinstance(test_hd.model, expected_type)
+        assert (
+            str(test_hd)
+            == f"Coupled hydrodynamic model: {str(test_hd.model)}\n\tmode={mode}"
+        )
+        assert repr(test_hd) == f"Hydrodynamics(mode={mode})"
 
     @pytest.mark.parametrize(
         "old_mode, old_type",

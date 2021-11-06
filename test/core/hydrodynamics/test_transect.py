@@ -1,5 +1,3 @@
-import pytest
-
 from src.core.hydrodynamics.transect import Transect
 
 
@@ -17,3 +15,4 @@ class TestTransect:
         assert test_transect.working_dir is None
         assert test_transect.mdu is None
         assert test_transect.config is None
+        assert repr(test_transect) == "Transect()"
