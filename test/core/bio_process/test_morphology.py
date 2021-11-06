@@ -5,7 +5,7 @@ from src.core.coral_model import Coral
 
 class TestMorphology:
     def test_set_rf_optimal_raises_typeerror(self):
-        test_morphology = Morphology(None, None, None, None)
+        test_morphology = Morphology(2.4, 2.4, 2.4, 2.4)
         with pytest.raises(TypeError) as e_info:
             test_morphology.rf_optimal = None
         assert (
@@ -14,7 +14,7 @@ class TestMorphology:
         )
 
     def test_set_rf_optimal_raises_valueerror(self):
-        test_morphology = Morphology(None, None, None, None)
+        test_morphology = Morphology(2.4, 2.4, 2.4, 2.4)
         with pytest.raises(AttributeError) as e_info:
             test_coral = Coral(0.2, 0.1, 0.2, 0.1, 0.2, 0.1, 1)
             delattr(test_coral, "light")
@@ -25,7 +25,7 @@ class TestMorphology:
         )
 
     def test_ratio_update_raises_error(self):
-        test_morphology = Morphology(None, None, None, None)
+        test_morphology = Morphology(2.4, 2.4, 2.4, 2.4)
         ratio_value = "notARatio"
 
         with pytest.raises(ValueError) as e_info:
