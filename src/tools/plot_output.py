@@ -74,8 +74,6 @@ def plot_map(map_path: Path):
     Args:
         map_path (Path): Path to the netcdf file representing the map.
     """
-    if "win" not in platform.system().lower():
-        return
     init_matplotlib()
 
     def _subplot_mapfile(var_t, ylims, plot_axes):
@@ -98,8 +96,6 @@ def plot_his(his_path: Path):
     Args:
         his_path (Path): Path to the netcdf file representing the his.
     """
-    if "win" not in platform.system().lower():
-        return
     init_matplotlib()
 
     def _subplot_hisfile(var_t, ylims, plot_axes):
