@@ -51,10 +51,15 @@ class TestPhotosynthesis:
         assert valid_photosynthesis.pfd[0][0] == pytest.approx(0.76159416)
 
     def test_light_dependency_raises_notimplemented_error(
-        self, valid_photosynthesis: Photosynthesis, valid_coral
+        self, valid_photosynthesis: Photosynthesis
     ):
+        class constant_test:
+            c1 = 1
+
         with pytest.raises(NotImplementedError) as e_info:
-            valid_photosynthesis.light_dependency(valid_coral, None)
+            valid_photosynthesis.light_dependency(
+                Coral(constant_test(), 1, 1, 1, 1, 1, 1), None
+            )
         assert (
             str(e_info.value)
             == "Only the quasi-steady state solution is currently implemented; use key-word 'qss'."
