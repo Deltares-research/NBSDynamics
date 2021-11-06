@@ -1,5 +1,4 @@
 from src.core.bio_process.temperature import Temperature
-import pytest
 
 
 class TestTemperature:
@@ -18,4 +17,4 @@ class TestTemperature:
         test_temp = Temperature(TestConstants(), 42)
         test_coral = TestCoral()
         test_temp.coral_temperature(test_coral)
-        assert test_coral.temp[0][0] == pytest.approx(43.68)
+        assert test_coral.temp[0][0] == 43.68
