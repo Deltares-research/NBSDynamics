@@ -1,4 +1,5 @@
 from typing import Type
+
 import pytest
 
 from src.core.hydrodynamics.hydrodynamics import (
@@ -8,6 +9,7 @@ from src.core.hydrodynamics.hydrodynamics import (
     Reef1D,
 )
 from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.hydrodynamics import Hydrodynamics, Reef0D, Reef1D
 from src.core.hydrodynamics.transect import Transect
 
 

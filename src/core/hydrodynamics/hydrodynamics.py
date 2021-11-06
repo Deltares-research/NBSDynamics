@@ -9,6 +9,7 @@ import sys
 
 import numpy as np
 from scipy.optimize import fsolve
+
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 
