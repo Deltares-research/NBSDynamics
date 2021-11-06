@@ -14,13 +14,10 @@ from netCDF4 import Dataset
 
 platform_sys = platform.system().lower()
 
-if platform_sys in ["windows", "linux"]:
-    import matplotlib
-
-    if "linux" in platform_sys:
-        matplotlib.use("Agg")
+if platform_sys in ["windows"]:
     import matplotlib.pyplot as plt
 
+    plt.style.use("seaborn-whitegrid")
 
 limdict = {
     "Iz": [0, 9999],
@@ -42,13 +39,6 @@ limdict = {
     "Vc": [9999, 9999],
     "G": [9999, 9999],
 }
-
-
-def init_matplotlib():
-    if platform.system().lower() in "linux":
-        plt.style.use("Agg")
-    else:
-        plt.style.use("seaborn-whitegrid")
 
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
@@ -83,7 +73,6 @@ def plot_map(map_path: Path):
     Args:
         map_path (Path): Path to the netcdf file representing the map.
     """
-    init_matplotlib()
 
     def _subplot_mapfile(var_t, ylims, plot_axes):
         x = np.linspace(1, 100, 100)
@@ -105,7 +94,6 @@ def plot_his(his_path: Path):
     Args:
         his_path (Path): Path to the netcdf file representing the his.
     """
-    init_matplotlib()
 
     def _subplot_hisfile(var_t, ylims, plot_axes):
         x = np.linspace(0, 100, 36525)

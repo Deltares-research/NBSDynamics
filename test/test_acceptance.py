@@ -155,7 +155,7 @@ class TestAcceptance:
 
         # 5. Verify plotting can be done.
         # Plotting does not seem to work on linux or mac pipelines.
-        if platform.system().lower() not in ["windows", "linux"]:
+        if platform.system().lower() not in ["windows"]:
             return
         plot_his(run_trans.output_dir / his_filename)
         plot_map(run_trans.output_dir / map_filename)
