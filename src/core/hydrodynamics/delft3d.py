@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
+from pathlib import Path
 
 faulthandler.enable()
 
@@ -70,10 +71,12 @@ class Delft3D:
         :param folder: Delft3D home directory
         :type folder: str
         """
+        if not isinstance(folder, Path):
+            self._home = Path(folder)
         self._home = folder
 
     @property
-    def working_dir(self):
+    def working_dir(self) -> Path:
         """Model working directory."""
         return self._working_dir
 
@@ -83,18 +86,20 @@ class Delft3D:
         :param folder: working directory
         :type folder:  str
         """
+        if not isinstance(folder, Path):
+            self._working_dir = Path(folder)
         self._working_dir = folder
 
     @property
-    def dflow_dir(self):
+    def dflow_dir(self) -> Path:
         """Directory to DFlow-ddl."""
-        self._dflow_dir = os.path.join(self.d3d_home, "dflowfm", "bin", "dflowfm")
+        self._dflow_dir = self.d3d_home / "dflowfm" / "bin" / "dflowfm"
         return self._dflow_dir
 
     @property
-    def dimr_dir(self):
+    def dimr_dir(self) -> Path:
         """Directory to DIMR-dll."""
-        self._dimr_dir = os.path.join(self.d3d_home, "dimr", "bin", "dimr_dll")
+        self._dimr_dir = self.d3d_home / "dimr" / "bin" / "dimr_dll"
         return self._dimr_dir
 
     @property
@@ -111,7 +116,7 @@ class Delft3D:
         :param file_dir: file directory of MDU-file
         :type file_dir: str
         """
-        self._mdu = os.path.join(self.working_dir, file_dir)
+        self._mdu = self.working_dir / file_dir
 
     @property
     def config(self):
@@ -127,7 +132,7 @@ class Delft3D:
         :param file_dir: file directory of config-file
         :type file_dir: str, list, tuple
         """
-        self._config = os.path.join(self.working_dir, file_dir)
+        self._config = self.working_dir / file_dir
 
     @property
     def model(self):
@@ -137,26 +142,30 @@ class Delft3D:
     @property
     def model_fm(self):
         """Deflt3D-FM model-object."""
+        if self._model_fm is None:
+            raise ValueError("Model FM has not been defined.")
         return self._model_fm
 
     @property
     def model_dimr(self):
         """Delft3D DIMR model-object."""
+        if self._model_dimr is None:
+            raise ValueError("Model dimr has not been defined.")
         return self._model_dimr
 
     def environment(self):
         """Set Python environment to include Delft3D-code."""
         dirs = [
-            os.path.join(self.d3d_home, "share", "bin"),
-            os.path.join(self.d3d_home, "dflowfm", "bin"),
+            self.d3d_home / "share" / "bin",
+            self.d3d_home / "dflowfm" / "bin",
         ]
         if self.config:
             dirs.extend(
                 [
-                    os.path.join(self.d3d_home, "dimr", "bin"),
-                    os.path.join(self.d3d_home, "dwaves", "bin"),
-                    os.path.join(self.d3d_home, "esmf", "scripts"),
-                    os.path.join(self.d3d_home, "swan", "scripts"),
+                    self.d3d_home / "dimr" / "bin",
+                    self.d3d_home / "dwaves" / "bin",
+                    self.d3d_home / "esmf" / "scripts",
+                    self.d3d_home / "swan" / "scripts",
                 ]
             )
 
