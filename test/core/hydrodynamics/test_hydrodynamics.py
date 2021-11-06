@@ -1,5 +1,6 @@
 from typing import Type
 
+import numpy as np
 import pytest
 
 from src.core.hydrodynamics.delft3d import Delft3D
@@ -10,7 +11,6 @@ from src.core.hydrodynamics.hydrodynamics import (
     Reef1D,
 )
 from src.core.hydrodynamics.transect import Transect
-import numpy as np
 
 
 class TestHydrodynamics:
