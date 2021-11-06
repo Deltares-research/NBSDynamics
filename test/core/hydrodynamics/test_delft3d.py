@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-
+from inspect import cleandoc
 from src.core.hydrodynamics.delft3d import Delft3D
 
 
@@ -29,3 +29,24 @@ class TestDelft3d:
         with pytest.raises(ValueError) as e_info:
             test_delft3d.model_dimr
         assert str(e_info.value) == "Model dimr has not been defined."
+
+    def test_settings_returns_expected_values(self):
+        expected_text = (
+            "Coupling with Delft3D model (incl. DFlow-module) with the following settings:"
+            "\n\tDelft3D home dir.  : None"
+            "\n\tDFlow file         : None"
+        )
+        test_delft3d = Delft3D()
+        assert test_delft3d.settings == expected_text
+
+    def test_settings_returns_expected_values_config_true(self):
+        expected_text = (
+            "Coupling with Delft3D model (incl. DFlow- and DWaves-modules) with the following settings:"
+            "\n\tDelft3D home dir.  : None"
+            "\n\tDFlow file         : None"
+            "\n\tConfiguration file : aPath"
+        )
+        test_delft3d = Delft3D()
+        test_delft3d.working_dir = Path()
+        test_delft3d.config = "aPath"
+        assert test_delft3d.settings == expected_text
