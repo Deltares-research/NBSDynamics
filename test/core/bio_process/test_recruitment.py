@@ -1,4 +1,5 @@
 import pytest
+
 from src.core.bio_process.recruitment import Recruitment
 from src.core.coral_model import Coral
 

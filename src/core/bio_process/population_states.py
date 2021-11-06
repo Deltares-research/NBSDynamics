@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.core.coral_model import Coral
 
 

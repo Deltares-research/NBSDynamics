@@ -1,8 +1,8 @@
-from src.core.bio_process.photosynthesis import Photosynthesis
-import pytest
 import numpy as np
-from src.core.coral_model import Coral
+import pytest
 
+from src.core.bio_process.photosynthesis import Photosynthesis
+from src.core.coral_model import Coral
 from src.core.utils import DataReshape
 
 

@@ -1,5 +1,5 @@
-from src.core.utils import CoralOnly
 from src.core.coral_model import Coral
+from src.core.utils import CoralOnly
 
 
 class Recruitment:

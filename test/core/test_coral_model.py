@@ -1,6 +1,7 @@
-import pytest
-from src.core.coral_model import Coral
 import numpy as np
+import pytest
+
+from src.core.coral_model import Coral
 
 
 class TestCoralModel:

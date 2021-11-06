@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import newton
+
 from src.core.utils import CoralOnly, DataReshape
 
 
