@@ -10,6 +10,7 @@ from src.core.hydrodynamics.hydrodynamics import (
     Reef1D,
 )
 from src.core.hydrodynamics.transect import Transect
+import numpy as np
 
 
 class TestHydrodynamics:
@@ -111,6 +112,12 @@ class TestHydrodynamics:
         # 3. Verify final expectation
         assert str(e_info.value) == expected_mssg
 
+    def test_input_check_definition_raises_exception(self):
+        test_hd = Hydrodynamics("Reef0D")
+        with pytest.raises(ValueError) as e_err:
+            test_hd.input_check_definition("x")
+        assert str(e_err.value) == "x undefined (required for Reef0D-mode)"
+
 
 class TestBaseHydro:
     def test_init_base_hydro(self) -> BaseHydro:
@@ -199,3 +206,33 @@ class TestReef1D:
     def test_dispersion(self):
         val = Reef1D.dispersion(4, 2, 2, 4)
         assert val == pytest.approx(1.463013990480674)
+
+    def test_wave_length(self):
+        test_ref1d = Reef1D()
+        test_ref1d.Tp = 1
+        test_ref1d.bath = np.array([1])
+        # test_ref1d.dispersion = 1
+        assert test_ref1d.wave_length[0] == pytest.approx(1.56031758)
+
+    def test_wave_number(self):
+        test_ref1d = Reef1D()
+        test_ref1d.Tp = 1
+        test_ref1d.bath = np.array([1])
+        assert test_ref1d.wave_number[0] == pytest.approx(4.02686311)
+
+    def test_wave_frequency(self):
+        test_ref1d = Reef1D()
+        test_ref1d.Tp = 1
+        assert test_ref1d.wave_frequency == pytest.approx(6.2831853)
+
+    def test_wave_celerity(self):
+        test_ref1d = Reef1D()
+        test_ref1d.Tp = 1
+        test_ref1d.bath = np.array([1])
+        assert test_ref1d.wave_celerity[0] == pytest.approx(1.56031758)
+
+    def test_group_celerity(self):
+        test_ref1d = Reef1D()
+        test_ref1d.Tp = 1
+        test_ref1d.bath = np.array([1])
+        assert test_ref1d.group_celerity[0] == pytest.approx(1.00429061)

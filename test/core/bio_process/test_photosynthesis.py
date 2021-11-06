@@ -50,7 +50,7 @@ class TestPhotosynthesis:
         valid_photosynthesis.flow_dependency(test_coral)
         assert valid_photosynthesis.pfd[0][0] == pytest.approx(0.76159416)
 
-    def light_dependency_raises_notimplemented_error(
+    def test_light_dependency_raises_notimplemented_error(
         self, valid_photosynthesis: Photosynthesis, valid_coral
     ):
         with pytest.raises(NotImplementedError) as e_info:

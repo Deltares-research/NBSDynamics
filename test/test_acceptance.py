@@ -155,10 +155,22 @@ class TestAcceptance:
 
         # 5. Verify plotting can be done.
         # Plotting does not seem to work on linux or mac pipelines.
-        if platform.system().lower() not in ["windows"]:
-            return
-        plot_his(run_trans.output_dir / his_filename)
-        plot_map(run_trans.output_dir / map_filename)
+        if platform.system().lower() in ["windows"]:
+            plot_his(run_trans.output_dir / his_filename)
+            plot_map(run_trans.output_dir / map_filename)
+        else:
+            with pytest.raises(NotImplementedError) as his_err:
+                plot_his(run_trans.output_dir / his_filename)
+            with pytest.raises(NotImplementedError) as map_err:
+                plot_map(run_trans.output_dir / map_filename)
+            assert (
+                str(his_err.value)
+                == "Plotting is currently only supported for Windows."
+            )
+            assert (
+                str(map_err.value)
+                == "Plotting is currently only supported for Windows."
+            )
 
     @pytest.mark.skip(reason="Only to be run locally.")
     @pytest.mark.parametrize(

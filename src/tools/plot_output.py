@@ -43,13 +43,13 @@ limdict = {
 
 def _plot_nc_variables(nc_variables, subplot_call: Callable):
     teller = 0
+    if platform_sys not in ["windows"]:
+        raise NotImplementedError("Plotting is currently only supported for Windows.")
     for vv in nc_variables.keys():
         teller = teller + 1
         if teller > 3:
-
             VT = nc_variables[vv]
             VarT = VT[:]
-
             plt.figure()
             ax = plt.axes()
             plt.xlim(0, 100)
