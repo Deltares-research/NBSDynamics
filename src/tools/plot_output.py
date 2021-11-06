@@ -12,7 +12,7 @@ from typing import Callable
 import numpy as np
 from netCDF4 import Dataset
 
-if "windows" in platform.system().lower():
+if platform.system().lower() in ["windows", "linux"]:
     import matplotlib.pyplot as plt
 
 
