@@ -10,6 +10,8 @@ class TestDelft3d:
         assert test_delft3d.time_step == None
         assert test_delft3d.d3d_home == None
         assert test_delft3d.working_dir == None
+        assert test_delft3d.mdu == None
+        assert test_delft3d.config == None
 
     def test_set_d3d_home_sets_other_paths(self):
         test_delft3d = Delft3D()
