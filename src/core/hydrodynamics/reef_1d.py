@@ -1,9 +1,10 @@
 from typing import Optional
+from pathlib import Path
+
 import numpy as np
 from scipy.optimize import fsolve
 
 from src.core.coral_model import Coral
-from pathlib import Path
 
 
 class Reef1D:
