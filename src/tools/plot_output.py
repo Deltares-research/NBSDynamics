@@ -48,18 +48,6 @@ limdict = {
 
 
 class OutputPlot:
-    def check_supported_platforms(self):
-        """
-        Verifies whether the platform running the scripts supports the current plotting logic.
-
-        Raises:
-            NotImplementedError: When the platform is not supported.
-        """
-        if platform_sys not in ["windows", "linux"]:
-            raise NotImplementedError(
-                "Plotting is currently only supported for Windows or Linux."
-            )
-
     def _plot_nc_variables(self, nc_variables: dict, subplot_call: Callable):
         teller = 0
         for vv in nc_variables.keys():
