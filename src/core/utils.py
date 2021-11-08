@@ -117,7 +117,9 @@ class DataReshape(SpaceTime):
         """
         super().__init__(spacetime=spacetime)
 
-    def variable2matrix(self, variable, dimension):
+    def variable2matrix(
+        self, variable: Union[float, int, list, Tuple, np.ndarray], dimension: str
+    ):
         """Transform variable to matrix.
 
         :param variable: variable to be transformed
@@ -146,7 +148,7 @@ class DataReshape(SpaceTime):
         elif dimension == "time":
             return np.tile(variable, (self.space, 1))
 
-    def dimension_value(self, variable, dimension):
+    def dimension_value(self, variable: Union[list, tuple, np.ndarray], dimension: str):
         """Check consistency between variable's dimensions and the defined spacetime dimensions.
 
         :param variable: variable to be checked
@@ -165,7 +167,7 @@ class DataReshape(SpaceTime):
             raise ValueError(msg)
 
     @staticmethod
-    def variable2array(variable):
+    def variable2array(variable: Union[float, int, list, np.ndarray]):
         """ "Transform variable to numpy.array (if float or string).
 
         :param variable: variable to be transformed
@@ -185,7 +187,9 @@ class DataReshape(SpaceTime):
             return np.array([variable])
         return variable
 
-    def matrix2array(self, matrix, dimension, conversion=None):
+    def matrix2array(
+        self, matrix: np.ndarray, dimension: str, conversion: Optional[str] = None
+    ):
         """Transform matrix to array.
 
         :param matrix: variable as matrix in spacetime
