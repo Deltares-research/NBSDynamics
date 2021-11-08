@@ -16,7 +16,14 @@ from src.core.output_model import Output
 
 platform_sys = platform.system().lower()
 
-if platform_sys in ["windows", "linux"]:
+if platform_sys in ["windows"]:
+    import matplotlib.pyplot as plt
+
+    plt.style.use("seaborn-whitegrid")
+else:
+    import matplotlib
+
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
 limdict = {
@@ -44,12 +51,6 @@ limdict = {
 class OutputPlot:
     def __init__(self) -> None:
         self.check_supported_platforms()
-        if platform_sys in ["windows"]:
-            plt.style.use("seaborn-whitegrid")
-        else:
-            import matplotlib
-
-            matplotlib.use("Agg")
 
     def check_supported_platforms(self):
         """
