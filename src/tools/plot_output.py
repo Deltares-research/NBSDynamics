@@ -9,11 +9,11 @@ import platform
 from pathlib import Path
 from typing import Callable
 
+import matplotlib
 import numpy as np
 from netCDF4 import Dataset
 
 from src.core.output_model import Output
-import matplotlib
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:
