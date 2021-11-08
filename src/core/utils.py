@@ -4,11 +4,11 @@ coral_model - utils
 @author: Gijs G. Hendrickx
 @contributor: Peter M.J. Herman
 """
-import os
 
 # TODO: Restructure all utils-related files, methods, and methods.
+from typing import Callable, Optional, Tuple, Union
 import numpy as np
-from netCDF4 import Dataset
+from pandas import DataFrame
 
 
 class SpaceTime:
@@ -16,7 +16,7 @@ class SpaceTime:
 
     __spacetime = None
 
-    def __init__(self, spacetime=None):
+    def __init__(self, spacetime: Optional[Tuple] = None):
         """
         :param spacetime: spacetime dimensions, defaults to None
         :type spacetime: None, tuple, optional
@@ -45,7 +45,7 @@ class SpaceTime:
         return self.__spacetime
 
     @spacetime.setter
-    def spacetime(self, space_time):
+    def spacetime(self, space_time: Union[Tuple, list, np.ndarray]):
         """
         :param space_time: spacetime dimensions
         :type space_time: tuple, list, numpy.ndarray
@@ -66,7 +66,7 @@ class SpaceTime:
         self.set_coral_only(tuple(space_time))
 
     @property
-    def space(self):
+    def space(self) -> int:
         """Space dimension.
 
         :rtype: int
@@ -74,7 +74,7 @@ class SpaceTime:
         return self.spacetime[0]
 
     @space.setter
-    def space(self, x):
+    def space(self, x: int):
         """
         :param x: space dimension
         :type x: int
@@ -82,7 +82,7 @@ class SpaceTime:
         self.spacetime = (x, self.time)
 
     @property
-    def time(self):
+    def time(self) -> int:
         """Time dimension.
 
         :rtype: int
@@ -90,7 +90,7 @@ class SpaceTime:
         return self.spacetime[1]
 
     @time.setter
-    def time(self, t):
+    def time(self, t: int):
         """
         :param t: time dimension
         :type t: int
@@ -98,7 +98,7 @@ class SpaceTime:
         self.spacetime = (self.space, t)
 
     # TODO: Refactor to a private method
-    def set_coral_only(self, spacetime):
+    def set_coral_only(self, spacetime: Tuple):
         """Automatically set the spacetime dimensions for the CoralOnly-class.
 
         :param spacetime: spacetime dimension
@@ -110,7 +110,7 @@ class SpaceTime:
 class DataReshape(SpaceTime):
     """Reshape data to create a spacetime matrix."""
 
-    def __init__(self, spacetime=None):
+    def __init__(self, spacetime: Optional[Tuple] = None):
         """
         :param spacetime: spacetime dimensions, defaults to None
         :type spacetime: None, tuple, optional
@@ -261,7 +261,13 @@ class CoralOnly:
         """Time dimension."""
         return None if self.spacetime is None else self.spacetime[1]
 
-    def in_space(self, coral, function, args, no_cover_value=0):
+    def in_space(
+        self,
+        coral,
+        function: Callable,
+        args: Tuple,
+        no_cover_value: Optional[float] = 0,
+    ):
         """Only execute the function when there is coral cover.
 
         :param coral: coral object
@@ -287,7 +293,13 @@ class CoralOnly:
         output[coral.cover > 0] = function(*[arg[coral.cover > 0] for arg in args])
         return output
 
-    def in_spacetime(self, coral, function, args, no_cover_value=0):
+    def in_spacetime(
+        self,
+        coral,
+        function: Callable,
+        args: Tuple,
+        no_cover_value: Optional[float] = 0,
+    ):
         """Only execute the function when there is coral cover.
 
         :param coral: coral object
@@ -316,7 +328,7 @@ class CoralOnly:
         return output
 
 
-def time_series_year(time_series, year):
+def time_series_year(time_series: DataFrame, year: int):
     """Extract a section of the time-series based on the year.
 
     :param time_series: time-series to be extracted
