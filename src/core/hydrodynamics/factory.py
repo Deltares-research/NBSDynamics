@@ -7,10 +7,10 @@ coral_model v3 - hydrodynamics
 import faulthandler
 from typing import Dict, List
 
+from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.reef_0d import Reef0D
 from src.core.hydrodynamics.reef_1d import Reef1D
-from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 
 faulthandler.enable()

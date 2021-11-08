@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import fsolve
+
 from src.core.coral_model import Coral
 
 

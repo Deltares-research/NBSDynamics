@@ -1,5 +1,6 @@
-from src.core.coral_model import Coral
 import numpy as np
+
+from src.core.coral_model import Coral
 
 
 class Reef0D:
