@@ -1,4 +1,15 @@
 
+## v0.1.3 (2021-11-08)
+
+### Refactor
+
+- **src/core/coral_only.py**: Extracted coral only for better maintainability.
+- **src/core/output_model.py;src/core/utils.py**: further type hinting.
+- **src/core/output_model.py**: Fixed setting of xy_stations.
+- **core/utils.py**: Added more type hinting.
+- **core/utils.py**: Adding type hints.
+- **core/loop.py;core/output_model.py;core/utils.py**: Extracted output model logic into its own class. Introduced new libraries.
+
 ## v0.1.2 (2021-11-05)
 
 ## v0.1.1 (2021-11-05)
