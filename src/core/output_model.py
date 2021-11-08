@@ -466,7 +466,7 @@ class Output:
                 idx[s] = np.argmin((x - x_station[s]) ** 2 + (y - y_station[s]) ** 2)
 
             self._idx_stations = idx.astype(int)
-            self.xy_stations = self.xy_coordinates[self._idx_stations, :]
+            self._xy_stations = self.xy_coordinates[self._idx_stations, :]
 
     @property
     def idx_stations(self):
