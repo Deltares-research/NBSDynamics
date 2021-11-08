@@ -7,8 +7,10 @@ coral_model - utils
 
 # TODO: Restructure all utils-related files, methods, and methods.
 from typing import Optional, Tuple, Union
+
 import numpy as np
 from pandas import DataFrame
+
 from src.core.coral_only import CoralOnly
 
 
