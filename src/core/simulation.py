@@ -34,7 +34,7 @@ class Simulation:
 
     working_dir: Optional[Path]
 
-    def __init__(self, mode=None):
+    def __init__(self, mode: Optional[str]):
 
         """Simulation loop of a coral model.
         :param mode: mode of hydrodynamics to be used in simulation
@@ -134,11 +134,6 @@ class Simulation:
         infil = os.path.join(ddir, file)
         self._constants.read_it(infil)
 
-    def set_delft3d_environment(self):
-        """Set directories and files of hydrodynamic mode 'Delft3D'."""
-        # TODO: Set D3D-files and -directories
-        pass
-
     def define_output(
         self,
         output_type: str,
@@ -221,8 +216,12 @@ class Simulation:
         # TODO: add other dependencies based on process switches in self.constants if required
 
     def initiate(
-        self, coral: coral_model.Coral, x_range=None, y_range=None, value=None
-    ):
+        self,
+        coral: coral_model.Coral,
+        x_range: Optional[tuple],
+        y_range: Optional[tuple],
+        value: Optional[float],
+    ) -> coral_model.Coral:
         """Initiate the coral distribution. The default coral distribution is a full coral cover over the whole domain.
         More complex initial conditions of the coral cover cannot be realised with this method. See the documentation on
         workarounds to achieve this anyway.
@@ -276,7 +275,7 @@ class Simulation:
 
         return coral
 
-    def exec(self, coral: coral_model.Coral, duration=None):
+    def exec(self, coral: coral_model.Coral, duration: Optional[int]):
         """Execute simulation.
 
         :param coral: coral animal
