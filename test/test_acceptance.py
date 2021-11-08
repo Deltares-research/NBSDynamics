@@ -158,18 +158,11 @@ class TestAcceptance:
         if platform.system().lower() in ["windows", "linux"]:
             plot_output(run_trans.output)
         else:
-            output_plot = OutputPlot()
             with pytest.raises(NotImplementedError) as his_err:
-                output_plot.plot_his(run_trans.output_dir / his_filename)
-            with pytest.raises(NotImplementedError) as map_err:
-                output_plot.plot_map(run_trans.output_dir / map_filename)
+                OutputPlot()
             assert (
                 str(his_err.value)
-                == "Plotting is currently only supported for Windows."
-            )
-            assert (
-                str(map_err.value)
-                == "Plotting is currently only supported for Windows."
+                == "Plotting is currently only supported for Windows or Linux."
             )
 
     @pytest.mark.skip(reason="Only to be run locally.")
@@ -211,8 +204,8 @@ class TestAcceptance:
             / "output"
             / "CoralModel_map.nc"
         )
-
-        plot_map(expected_file)
+        output_plot = OutputPlot()
+        output_plot.plot_map(expected_file)
 
     @pytest.mark.skip(reason="Only to run locally.")
     def test_plot_his_output(self):
@@ -222,4 +215,5 @@ class TestAcceptance:
             / "CoralModel_his.nc"
         )
 
-        plot_his(expected_file)
+        output_plot = OutputPlot()
+        output_plot.plot_his(expected_file)
