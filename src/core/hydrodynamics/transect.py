@@ -59,7 +59,7 @@ class Transect:
         self._working_dir = folder
 
     @property
-    def definition_file(self):
+    def definition_file(self) -> Path:
         """Delft3D's MDU-file.
 
         :rtype: str
@@ -75,7 +75,7 @@ class Transect:
         self._mdu = self.working_dir / file_dir
 
     @property
-    def config_file(self):
+    def config_file(self) -> Path:
         """Transect's config-file.
 
         :rtype: str

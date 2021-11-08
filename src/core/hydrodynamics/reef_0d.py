@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 from pathlib import Path
 
@@ -14,15 +15,15 @@ class Reef0D:
         return msg
 
     @property
-    def working_dir(self) -> Path:
+    def working_dir(self) -> Optional[Path]:
         return None
 
     @property
-    def config_file(self) -> Path:
+    def config_file(self) -> Optional[Path]:
         return None
 
     @property
-    def definition_file(self) -> Path:
+    def definition_file(self) -> Optional[Path]:
         return None
 
     @property

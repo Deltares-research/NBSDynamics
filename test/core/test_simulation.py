@@ -23,7 +23,6 @@ class TestSimulation:
         self, mode_case: str, expected_hydro: Callable
     ):
         test_sim = Simulation(mode=mode_case)
-        assert test_sim is not None
         assert isinstance(test_sim.environment, Environment)
         assert isinstance(test_sim.constants, Constants)
         assert isinstance(test_sim.working_dir, Path)
