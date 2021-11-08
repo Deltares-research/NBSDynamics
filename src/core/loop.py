@@ -25,7 +25,8 @@ from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
-from src.core.utils import Output, time_series_year
+from src.core.utils import time_series_year
+from src.core.output_model import Output
 
 
 class Simulation:
