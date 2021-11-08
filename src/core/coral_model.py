@@ -6,8 +6,8 @@ coral_model - core
 """
 
 import numpy as np
-from src.core.environment import Constants
 
+from src.core.environment import Constants
 from src.core.utils import CoralOnly, DataReshape
 
 
