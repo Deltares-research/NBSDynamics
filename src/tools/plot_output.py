@@ -48,9 +48,6 @@ limdict = {
 
 
 class OutputPlot:
-    # def __init__(self) -> None:
-    # self.check_supported_platforms()
-
     def check_supported_platforms(self):
         """
         Verifies whether the platform running the scripts supports the current plotting logic.
@@ -133,7 +130,7 @@ def plot_output(output_model: Output):
     Raises:
         ValueError: When no input argument has been provided.
     """
-    if output_model is None:
+    if not isinstance(output_model, Output):
         raise ValueError("No output model provided.")
     output_plot = OutputPlot()
     output_plot.plot_map(output_model.file_name_map)

@@ -1,14 +1,10 @@
-import platform
 from pathlib import Path
 from test.utils import TestUtils
-from typing import List
 
 import numpy
 import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
-from numpy.ma import getdata
-from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
@@ -154,16 +150,7 @@ class TestAcceptance:
         compare_files(run_trans.output_dir / map_filename)
 
         # 5. Verify plotting can be done.
-        # Plotting does not seem to work on linux or mac pipelines.
-        # if platform.system().lower() in ["windows", "linux"]:
         plot_output(run_trans.output)
-        # else:
-        #     with pytest.raises(NotImplementedError) as his_err:
-        #         OutputPlot()
-        #     assert (
-        #         str(his_err.value)
-        #         == "Plotting is currently only supported for Windows or Linux."
-        #     )
 
     @pytest.mark.skip(reason="Only to be run locally.")
     @pytest.mark.parametrize(
