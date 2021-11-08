@@ -25,6 +25,8 @@ from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
+from src.core.hydrodynamics.hydrodynamics import Reef0D, Reef1D
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output_model import Output
 from src.core.utils import time_series_year
 
@@ -46,12 +48,12 @@ class Simulation:
         self.output = None
 
         modes = {
-            #                 'Reef0D'   : Reef0D(),
-            #                 'Reef1D'   : Reef1D(),
+            "Reef0D": Reef0D(),
+            "Reef1D": Reef1D(),
             "Delft3D": Delft3D(),
             "Transect": Transect(),
         }
-        modeset = modes.get(mode, None)
+        modeset: Optional[HydrodynamicProtocol] = modes.get(mode, None)
         if modeset is None:
             keys_names = ", ".join(modes.keys())
             msg = f"{mode} not in [{keys_names}]."
