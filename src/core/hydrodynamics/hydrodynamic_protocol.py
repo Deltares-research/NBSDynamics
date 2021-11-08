@@ -4,6 +4,11 @@ import numpy as np
 
 
 class HydrodynamicProtocol(Protocol):
+    """
+    Protocol describing the mandatory properties and methods to be implemented by any hydromodel.
+    The binding between a model and the protocol is made at the factory level ('HydrodynamicsFactory').
+    """
+
     @property
     def settings(self) -> str:
         """
