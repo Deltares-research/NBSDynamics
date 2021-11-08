@@ -1,5 +1,6 @@
 from src.core.coral_model import Coral
 import numpy as np
+from pathlib import Path
 
 
 class Reef0D:
@@ -10,6 +11,18 @@ class Reef0D:
         """Print settings of Reef0D-model."""
         msg = f"Not yet implemented."
         return msg
+
+    @property
+    def working_dir(self) -> Path:
+        return None
+
+    @property
+    def config_file(self) -> Path:
+        return None
+
+    @property
+    def definition_file(self) -> Path:
+        return None
 
     @property
     def water_depth(self):

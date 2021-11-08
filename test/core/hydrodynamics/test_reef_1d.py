@@ -7,10 +7,13 @@ import numpy as np
 class TestReef1D:
     def test_init_reef1d(self):
         test_reef = Reef1D()
-        assert test_reef.bath == None
-        assert test_reef.Hs == None
-        assert test_reef.Tp == None
-        assert test_reef.dx == None
+        assert test_reef.bath is None
+        assert test_reef.Hs is None
+        assert test_reef.Tp is None
+        assert test_reef.dx is None
+        assert test_reef.working_dir is None
+        assert test_reef.definition_file is None
+        assert test_reef.config_file is None
         # Some of the defined properties with fix values.
         assert test_reef.y_coordinates == 0
         with pytest.raises(TypeError):

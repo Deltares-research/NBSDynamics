@@ -7,9 +7,12 @@ class TestReef0D:
     def test_init_reef0d(self):
         test_reef = Reef0D()
         assert test_reef.settings == "Not yet implemented."
-        assert test_reef.x_coordinates == None
-        assert test_reef.y_coordinates == None
-        assert test_reef.water_depth == None
+        assert test_reef.x_coordinates is None
+        assert test_reef.y_coordinates is None
+        assert test_reef.water_depth is None
+        assert test_reef.working_dir is None
+        assert test_reef.definition_file is None
+        assert test_reef.config_file is None
         with pytest.raises(ValueError) as e_err:
             test_reef.xy_coordinates
         assert (

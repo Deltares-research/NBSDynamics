@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import fsolve
 from src.core.coral_model import Coral
+from pathlib import Path
 
 
 class Reef1D:
@@ -30,6 +31,18 @@ class Reef1D:
             f"wave_period={self.Tp})"
         )
         return msg
+
+    @property
+    def working_dir(self) -> Path:
+        return None
+
+    @property
+    def config_file(self) -> Path:
+        return None
+
+    @property
+    def definition_file(self) -> Path:
+        return None
 
     @property
     def settings(self):
