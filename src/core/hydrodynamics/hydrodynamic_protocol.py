@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Protocol
 from src.core.coral_model import Coral
 import numpy as np
@@ -8,6 +9,42 @@ class HydrodynamicProtocol(Protocol):
     Protocol describing the mandatory properties and methods to be implemented by any hydromodel.
     The binding between a model and the protocol is made at the factory level ('HydrodynamicsFactory').
     """
+
+    @property
+    def working_dir(self) -> Path:
+        """
+        Gets the working directory for the current model.
+
+        Raises:
+            NotImplementedError: When the model does not implement its own definition.
+
+        Returns:
+            Path: The path to the working directory.
+        """
+        raise NotImplementedError
+
+    @property
+    def config(self) -> Path:
+        """
+        Configuration file for the model.
+
+        Returns:
+            Path: The path to the configuration file.
+        """
+        raise NotImplementedError
+
+    @property
+    def definition_file(self) -> Path:
+        """
+        Model definition file, its format (extension) may vary per file.
+
+        Raises:
+            NotImplementedError: When the model does not implement its own definition.
+
+        Returns:
+            Path: The path to the definition file.
+        """
+        raise NotImplementedError
 
     @property
     def settings(self) -> str:

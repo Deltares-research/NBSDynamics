@@ -17,8 +17,8 @@ class TestTransect:
         assert test_transect.time_step is None
         assert test_transect.settings == expected_settings
         assert test_transect.working_dir is None
-        assert test_transect.mdu is None
-        assert test_transect.config is None
+        assert test_transect.definition_file is None
+        assert test_transect.config_file is None
         assert repr(test_transect) == "Transect()"
 
     def test_set_workdir_as_str_returns_path(self):
@@ -26,17 +26,17 @@ class TestTransect:
         test_trans.working_dir = "thisPath"
         assert isinstance(test_trans.working_dir, Path)
 
-    def test_set_mdu_relative_to_work_dir(self):
+    def test_set_definition_file_relative_to_work_dir(self):
         test_trans = Transect()
         test_trans.working_dir = "thisPath"
-        test_trans.mdu = "anMdu"
-        assert test_trans.mdu == Path("thisPath") / "anMdu"
+        test_trans.definition_file = "anMdu"
+        assert test_trans.definition_file == Path("thisPath") / "anMdu"
 
     def test_set_config_relative_to_work_dir(self):
         test_trans = Transect()
         test_trans.working_dir = "thisPath"
-        test_trans.config = "config"
-        assert test_trans.config == Path("thisPath") / "config"
+        test_trans.config_file = "config"
+        assert test_trans.config_file == Path("thisPath") / "config"
 
     def test_update_with_stormcat_4_raises_valueerror(self):
         test_trans = Transect()

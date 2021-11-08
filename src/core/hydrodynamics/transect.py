@@ -32,8 +32,8 @@ class Transect:
     def settings(self):
         """Print settings of simple transect imposed forcing."""
         files = (
-            f"\n\tTransect config file  : {self.config}"
-            f"\n\tTransect forcings file : {self.mdu}"
+            f"\n\tTransect config file  : {self.config_file}"
+            f"\n\tTransect forcings file : {self.definition_file}"
         )
         msg = (
             f"1D schematic cross-shore transect with forced hydrodynamics: "
@@ -59,15 +59,15 @@ class Transect:
         self._working_dir = folder
 
     @property
-    def mdu(self):
+    def definition_file(self):
         """Delft3D's MDU-file.
 
         :rtype: str
         """
         return self._mdu
 
-    @mdu.setter
-    def mdu(self, file_dir):
+    @definition_file.setter
+    def definition_file(self, file_dir):
         """
         :param file_dir: file directory of MDU-file
         :type file_dir: str
@@ -75,15 +75,15 @@ class Transect:
         self._mdu = self.working_dir / file_dir
 
     @property
-    def config(self):
+    def config_file(self):
         """Transect's config-file.
 
         :rtype: str
         """
         return self._config
 
-    @config.setter
-    def config(self, file_dir):
+    @config_file.setter
+    def config_file(self, file_dir):
         """
         :param file_dir: file directory of config-file
         :type file_dir: str, list, tuple
@@ -101,7 +101,7 @@ class Transect:
 
     def input_check_definition(self, obj):
         """Check definition of critical object."""
-        if getattr(self.model, obj) is None:
+        if getattr(self, obj) is None:
             msg = f"{obj} undefined (required for Transect)"
             raise ValueError(msg)
 
@@ -161,13 +161,15 @@ class Transect:
         In this case, read the spatial configuration and the forcings
         from files. Set the computing environment.
         """
-        csv = np.genfromtxt(self.config, delimiter=",", skip_header=1)
+        csv = np.genfromtxt(self.config_file, delimiter=",", skip_header=1)
         self._x_coordinates = csv[:, 0]
         self._y_coordinates = csv[:, 1]
         self._water_depth = csv[:, 2]
         self._outpoint = csv[:, 3] == 1
 
-        self.forcings = np.genfromtxt(self.mdu, delimiter=",", skip_header=1)
+        self.forcings = np.genfromtxt(
+            self.definition_file, delimiter=",", skip_header=1
+        )
         self.stormcat = self.forcings[:, 0]
         self.return_period = self.forcings[:, 1]
         self.wave_height = self.forcings[:, 2]
