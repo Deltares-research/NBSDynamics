@@ -12,7 +12,7 @@ from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
-from src.tools.plot_output import plot_his, plot_map
+from src.tools.plot_output import OutputPlot, plot_his, plot_map, plot_output
 
 
 class TestAcceptance:
@@ -155,14 +155,14 @@ class TestAcceptance:
 
         # 5. Verify plotting can be done.
         # Plotting does not seem to work on linux or mac pipelines.
-        if platform.system().lower() in ["windows"]:
-            plot_his(run_trans.output_dir / his_filename)
-            plot_map(run_trans.output_dir / map_filename)
+        if platform.system().lower() in ["windows", "linux"]:
+            plot_output(run_trans.output)
         else:
+            output_plot = OutputPlot()
             with pytest.raises(NotImplementedError) as his_err:
-                plot_his(run_trans.output_dir / his_filename)
+                output_plot.plot_his(run_trans.output_dir / his_filename)
             with pytest.raises(NotImplementedError) as map_err:
-                plot_map(run_trans.output_dir / map_filename)
+                output_plot.plot_map(run_trans.output_dir / map_filename)
             assert (
                 str(his_err.value)
                 == "Plotting is currently only supported for Windows."
