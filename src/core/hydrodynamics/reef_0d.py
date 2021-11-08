@@ -1,6 +1,7 @@
-from src.core.coral_model import Coral
 import numpy as np
 from pathlib import Path
+
+from src.core.coral_model import Coral
 
 
 class Reef0D:

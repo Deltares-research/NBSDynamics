@@ -1,7 +1,8 @@
-from src.core.hydrodynamics.reef_1d import Reef1D
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-import pytest
 import numpy as np
+import pytest
+
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.hydrodynamics.reef_1d import Reef1D
 
 
 class TestReef1D:
