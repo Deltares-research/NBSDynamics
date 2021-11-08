@@ -51,7 +51,7 @@ class Simulation:
         self._hydrodynamics = HydrodynamicsFactory.get_hydrodynamic_model(mode)
 
     @property
-    def environment(self):
+    def environment(self) -> Environment:
         """Environment attribute of the Simulation
 
         :rtype: Environment
@@ -59,7 +59,7 @@ class Simulation:
         return self._environment
 
     @property
-    def constants(self):
+    def constants(self) -> Constants:
         """Constants attribute of the Simulation
 
         :rtype: Constants
@@ -67,7 +67,7 @@ class Simulation:
         return self._constants
 
     @property
-    def hydrodynamics(self):
+    def hydrodynamics(self) -> HydrodynamicProtocol:
         """Hydrodynamics attribute of the Simulation
 
         :rtype: Hydrodynamics
