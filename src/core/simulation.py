@@ -210,9 +210,9 @@ class Simulation:
     def initiate(
         self,
         coral: coral_model.Coral,
-        x_range: Optional[tuple],
-        y_range: Optional[tuple],
-        value: Optional[float],
+        x_range: Optional[tuple] = None,
+        y_range: Optional[tuple] = None,
+        value: Optional[float] = None,
     ) -> coral_model.Coral:
         """Initiate the coral distribution. The default coral distribution is a full coral cover over the whole domain.
         More complex initial conditions of the coral cover cannot be realised with this method. See the documentation on
@@ -267,7 +267,7 @@ class Simulation:
 
         return coral
 
-    def exec(self, coral: coral_model.Coral, duration: Optional[int]):
+    def exec(self, coral: coral_model.Coral, duration: Optional[int] = None):
         """Execute simulation.
 
         :param coral: coral animal
