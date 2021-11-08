@@ -1,18 +1,14 @@
-import platform
 from pathlib import Path
 from test.utils import TestUtils
-from typing import List
 
 import numpy
 import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
-from numpy.ma import getdata
-from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
-from src.tools.plot_output import plot_his, plot_map
+from src.tools.plot_output import OutputPlot, plot_output
 
 
 class TestAcceptance:
@@ -154,23 +150,7 @@ class TestAcceptance:
         compare_files(run_trans.output_dir / map_filename)
 
         # 5. Verify plotting can be done.
-        # Plotting does not seem to work on linux or mac pipelines.
-        if platform.system().lower() in ["windows"]:
-            plot_his(run_trans.output_dir / his_filename)
-            plot_map(run_trans.output_dir / map_filename)
-        else:
-            with pytest.raises(NotImplementedError) as his_err:
-                plot_his(run_trans.output_dir / his_filename)
-            with pytest.raises(NotImplementedError) as map_err:
-                plot_map(run_trans.output_dir / map_filename)
-            assert (
-                str(his_err.value)
-                == "Plotting is currently only supported for Windows."
-            )
-            assert (
-                str(map_err.value)
-                == "Plotting is currently only supported for Windows."
-            )
+        plot_output(run_trans.output)
 
     @pytest.mark.skip(reason="Only to be run locally.")
     @pytest.mark.parametrize(
@@ -211,8 +191,8 @@ class TestAcceptance:
             / "output"
             / "CoralModel_map.nc"
         )
-
-        plot_map(expected_file)
+        output_plot = OutputPlot()
+        output_plot.plot_map(expected_file)
 
     @pytest.mark.skip(reason="Only to run locally.")
     def test_plot_his_output(self):
@@ -222,4 +202,5 @@ class TestAcceptance:
             / "CoralModel_his.nc"
         )
 
-        plot_his(expected_file)
+        output_plot = OutputPlot()
+        output_plot.plot_his(expected_file)
