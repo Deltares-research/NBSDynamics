@@ -12,7 +12,7 @@ from numpy.ma.core import var
 
 from src.core.coral_model import Coral
 from src.core.loop import Simulation
-from src.tools.plot_output import OutputPlot, plot_his, plot_map, plot_output
+from src.tools.plot_output import OutputPlot, plot_output
 
 
 class TestAcceptance:
