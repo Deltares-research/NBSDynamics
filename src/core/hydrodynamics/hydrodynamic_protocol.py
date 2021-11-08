@@ -24,7 +24,7 @@ class HydrodynamicProtocol(Protocol):
         raise NotImplementedError
 
     @property
-    def config(self) -> Path:
+    def config_file(self) -> Path:
         """
         Configuration file for the model.
 
