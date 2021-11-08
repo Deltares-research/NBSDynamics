@@ -12,9 +12,11 @@ class TestReef1D:
         assert test_reef.Tp == None
         assert test_reef.dx == None
         # Some of the defined properties with fix values.
-        assert test_reef.x_coordinates == 0
         assert test_reef.y_coordinates == 0
-        assert test_reef.xy_coordinates == [0, 0]
+        with pytest.raises(TypeError):
+            test_reef.x_coordinates
+        with pytest.raises(TypeError):
+            test_reef.xy_coordinates
         assert test_reef.vel_wave == 0
         assert test_reef.vel_curr_mn == 0
         assert test_reef.vel_curr_mx == 0
