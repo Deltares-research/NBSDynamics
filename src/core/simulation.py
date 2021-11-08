@@ -24,6 +24,7 @@ from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.transect import Transect
 from src.core.hydrodynamics.reef_0d import Reef0D
 from src.core.hydrodynamics.reef_1d import Reef1D
@@ -47,19 +48,7 @@ class Simulation:
         self._constants = Constants()
         self.working_dir = Path.cwd()
         self.output = None
-
-        modes = {
-            "Reef0D": Reef0D(),
-            "Reef1D": Reef1D(),
-            "Delft3D": Delft3D(),
-            "Transect": Transect(),
-        }
-        modeset: Optional[HydrodynamicProtocol] = modes.get(mode, None)
-        if modeset is None:
-            keys_names = ", ".join(modes.keys())
-            msg = f"{mode} not in [{keys_names}]."
-            raise ValueError(msg)
-        self._hydrodynamics = modeset
+        self._hydrodynamics = HydrodynamicsFactory.get_hydrodynamic_model(mode)
 
     @property
     def environment(self):

@@ -5,15 +5,38 @@ coral_model v3 - hydrodynamics
 @contributor: Peter M.J. Herman
 """
 import faulthandler
-import sys
+from typing import Dict, Optional
 
-import numpy as np
-from scipy.optimize import fsolve
-
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.hydrodynamics.reef_0d import Reef0D
+from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 
 faulthandler.enable()
+
+
+class HydrodynamicsFactory:
+    """
+    Factory class to select hydrodynamic models.
+    It also works as a binding model-protocol between the hydrodynamic models
+    and the 'HydrodynamicProtocol'.
+    """
+
+    @staticmethod
+    def get_hydrodynamic_model(model_name: str) -> HydrodynamicProtocol:
+        modes: Dict[str, HydrodynamicProtocol] = {
+            "reef0d": Reef0D(),
+            "reef1d": Reef1D(),
+            "delft3d": Delft3D(),
+            "transect": Transect(),
+        }
+        hydromodel: Optional[HydrodynamicProtocol] = modes.get(model_name.lower(), None)
+        if hydromodel is None:
+            keys_names = ", ".join(modes.keys())
+            msg = f"{model_name} not in [{keys_names}]."
+            raise ValueError(msg)
+        return hydromodel
 
 
 class Hydrodynamics:
