@@ -38,7 +38,10 @@ class TestSimulation:
     def test_init_simulation_unsupported_modes(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
             Simulation(mode_case)
-        assert str(e_info.value) == f"{mode_case} not in [Delft3D, Transect]."
+        assert (
+            str(e_info.value)
+            == f"{mode_case} not in [Reef0D, Reef1D, Delft3D, Transect]."
+        )
 
     @pytest.mark.parametrize(
         "unknown_type",
