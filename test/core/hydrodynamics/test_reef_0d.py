@@ -1,13 +1,11 @@
 from src.core.hydrodynamics.reef_0d import Reef0D
-from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 import pytest
 
 
 class TestReef0D:
     def test_init_reef0d(self):
-        test_reef = Reef1D()
-        assert isinstance(test_reef, HydrodynamicProtocol)
+        test_reef = Reef0D()
         assert test_reef.settings == "Not yet implemented."
         assert test_reef.x_coordinates == None
         assert test_reef.y_coordinates == None

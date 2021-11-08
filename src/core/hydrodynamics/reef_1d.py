@@ -58,6 +58,15 @@ class Reef1D:
         return 0
 
     @property
+    def xy_coordinates(self):
+        return np.array(
+            [
+                [self.x_coordinates[i], self.y_coordinates[i]]
+                for i in range(len(self.x_coordinates))
+            ]
+        )
+
+    @property
     def vel_wave(self):
         return 0
 

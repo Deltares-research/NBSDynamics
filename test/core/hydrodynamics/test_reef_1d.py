@@ -1,12 +1,12 @@
 from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 import pytest
+import numpy as np
 
 
 class TestReef1D:
     def test_init_reef1d(self):
         test_reef = Reef1D()
-        assert isinstance(test_reef, HydrodynamicProtocol)
         assert test_reef.bath == None
         assert test_reef.Hs == None
         assert test_reef.Tp == None
