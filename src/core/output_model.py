@@ -1,9 +1,10 @@
-import numpy as np
 from pathlib import Path
-from src.core.coral_model import Coral
+
+import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
 
+from src.core.coral_model import Coral
 from src.core.utils import DataReshape
 
 
