@@ -6,7 +6,7 @@ import pytest
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
-from src.core.loop import Simulation
+from src.core.simulation import Simulation
 
 simulation_cases = [pytest.param("Delft3D"), pytest.param("Transect")]
 

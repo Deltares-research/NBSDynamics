@@ -12,8 +12,8 @@
 ### Environment
 ::: src.core.environment
 
-### Loop
-::: src.core.loop
+### Simulation
+::: src.core.simulation
 
 ### Utils
 ::: src.core.utils

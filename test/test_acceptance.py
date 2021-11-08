@@ -7,7 +7,7 @@ from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
 from src.core.coral_model import Coral
-from src.core.loop import Simulation
+from src.core.simulation import Simulation
 from src.tools.plot_output import OutputPlot, plot_output
 
 
