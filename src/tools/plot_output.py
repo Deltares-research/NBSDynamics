@@ -46,6 +46,10 @@ class OutputPlot:
         self.check_supported_platforms()
         if platform_sys in ["windows"]:
             plt.style.use("seaborn-whitegrid")
+        else:
+            import matplotlib
+
+            matplotlib.use("Agg")
 
     def check_supported_platforms(self):
         """
