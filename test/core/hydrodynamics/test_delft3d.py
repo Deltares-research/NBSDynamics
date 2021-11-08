@@ -11,8 +11,8 @@ class TestDelft3d:
         assert test_delft3d.time_step == None
         assert test_delft3d.d3d_home == None
         assert test_delft3d.working_dir == None
-        assert test_delft3d.mdu == None
-        assert test_delft3d.config == None
+        assert test_delft3d.definition_file == None
+        assert test_delft3d.config_file == None
 
     def test_set_d3d_home_sets_other_paths(self):
         test_delft3d = Delft3D()
@@ -51,7 +51,7 @@ class TestDelft3d:
         )
         test_delft3d = Delft3D()
         test_delft3d.working_dir = Path()
-        test_delft3d.config = "aPath"
+        test_delft3d.config_file = "aPath"
         assert test_delft3d.settings == expected_text
 
     def test_set_workdir_as_str_returns_path(self):
@@ -64,14 +64,14 @@ class TestDelft3d:
         test_delft3d.d3d_home = "thisPath"
         assert isinstance(test_delft3d.d3d_home, Path)
 
-    def test_set_mdu_relative_to_work_dir(self):
+    def test_set_definition_file_relative_to_work_dir(self):
         test_delft3d = Delft3D()
         test_delft3d.working_dir = "thisPath"
-        test_delft3d.mdu = "anMdu"
-        assert test_delft3d.mdu == Path("thisPath") / "anMdu"
+        test_delft3d.definition_file = "anMdu"
+        assert test_delft3d.definition_file == Path("thisPath") / "anMdu"
 
     def test_set_config_relative_to_work_dir(self):
         test_delft3d = Delft3D()
         test_delft3d.working_dir = "thisPath"
-        test_delft3d.config = "config"
-        assert test_delft3d.config == Path("thisPath") / "config"
+        test_delft3d.config_file = "config"
+        assert test_delft3d.config_file == Path("thisPath") / "config"
