@@ -10,7 +10,7 @@ from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.transect import Transect
 
 
-class TestHydrodynamics:
+class TestFactory:
     @pytest.mark.parametrize(
         "mode, expected_type",
         [
