@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 from src.core.coral_model import Coral
 from netCDF4 import Dataset
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from src.core.utils import DataReshape
 
@@ -23,7 +23,13 @@ class Output:
     _xy_stations = None
     _idx_stations = None
 
-    def __init__(self, outdir, xy_coordinates, outpoint, first_date):
+    def __init__(
+        self,
+        outdir: Path,
+        xy_coordinates: np.ndarray,
+        outpoint: np.ndarray,
+        first_date: Series,
+    ):
         """Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
 
         :param outdir: directory to write the output to
@@ -60,20 +66,20 @@ class Output:
         return f"Output(xy_coordinates={self.xy_coordinates}, first_date={self.first_date})"
 
     @property
-    def defined(self):
+    def defined(self) -> bool:
         """Output is defined."""
         return False if self._map_output is None and self._his_output is None else True
 
     def define_output(
         self,
-        output_type,
-        lme=True,
-        fme=True,
-        tme=True,
-        pd=True,
-        ps=True,
-        calc=True,
-        md=True,
+        output_type: str,
+        lme: bool = True,
+        fme: bool = True,
+        tme: bool = True,
+        pd: bool = True,
+        ps: bool = True,
+        calc: bool = True,
+        md: bool = True,
     ):
         """Define output dictionary.
 
@@ -469,7 +475,7 @@ class Output:
             self._xy_stations = self.xy_coordinates[self._idx_stations, :]
 
     @property
-    def idx_stations(self):
+    def idx_stations(self) -> np.ndarray:
         """Space indices of stations.
 
         :rtype: numpy.ndarray
