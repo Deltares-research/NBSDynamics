@@ -26,17 +26,17 @@ class HydrodynamicsFactory:
     @staticmethod
     def get_hydrodynamic_model(model_name: str) -> HydrodynamicProtocol:
         modes: Dict[str, HydrodynamicProtocol] = {
-            "reef0d": Reef0D(),
-            "reef1d": Reef1D(),
-            "delft3d": Delft3D(),
-            "transect": Transect(),
+            "reef0d": Reef0D,
+            "reef1d": Reef1D,
+            "delft3d": Delft3D,
+            "transect": Transect,
         }
         hydromodel: Optional[HydrodynamicProtocol] = modes.get(model_name.lower(), None)
         if hydromodel is None:
             keys_names = ", ".join(modes.keys())
             msg = f"{model_name} not in [{keys_names}]."
             raise ValueError(msg)
-        return hydromodel
+        return hydromodel()
 
 
 class Hydrodynamics:
