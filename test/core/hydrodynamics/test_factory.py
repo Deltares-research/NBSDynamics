@@ -1,91 +1,41 @@
-from typing import Type
+from typing import Iterable, List, Tuple, Type
 
 import numpy as np
 import pytest
 
 from src.core.hydrodynamics.delft3d import Delft3D
-from src.core.hydrodynamics.hydrodynamics import Hydrodynamics
+from src.core.hydrodynamics.factory import HydrodynamicsFactory
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.reef_0d import Reef0D
 from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.transect import Transect
 
 
-class TestFactory:
+def valid_model_cases() -> Iterable[pytest.param]:
+    def get_all_cases(type_name: Type) -> Iterable[pytest.param]:
+        name = type_name.__name__
+        yield pytest.param(name, type_name, id=name)
+        yield pytest.param(name.lower(), type_name, id=name.lower())
+        yield pytest.param(name.upper(), type_name, id=name.upper())
+
+    cases_from = [Reef0D, Reef1D, Delft3D, Transect]
+    cases: List[Tuple[str]] = []
+    for case in cases_from:
+        cases.extend(get_all_cases(case))
+    return cases
+
+
+class TestHydrodynamicsFactory:
     @pytest.mark.parametrize(
         "mode, expected_type",
-        [
-            pytest.param("Reef0D", Reef0D, id="Reef0D"),
-            pytest.param("Reef1D", Reef1D, id="Reef1D"),
-            pytest.param("Delft3D", Delft3D, id="Delft3D"),
-            pytest.param("Transect", Transect, id="Transect"),
-        ],
+        valid_model_cases(),
     )
-    def test_init_hydrodynamics(self, mode: str, expected_type: Type):
-        test_hd = Hydrodynamics(mode)
-        assert test_hd.mode == mode
-        assert isinstance(test_hd.model, expected_type)
-        assert (
-            str(test_hd)
-            == f"Coupled hydrodynamic model: {str(test_hd.model)}\n\tmode={mode}"
-        )
-        assert repr(test_hd) == f"Hydrodynamics(mode={mode})"
-
-    @pytest.mark.parametrize(
-        "old_mode, old_type",
-        [
-            pytest.param("Reef0D", Reef0D, id="Reef0D"),
-            pytest.param("Reef1D", Reef1D, id="Reef1D"),
-            pytest.param("Delft3D", Delft3D, id="Delft3D"),
-            pytest.param("Transect", Transect, id="Transect"),
-        ],
-    )
-    @pytest.mark.parametrize(
-        "new_mode, new_type",
-        [
-            pytest.param("Reef0D", Reef0D, id="Reef0D"),
-            pytest.param("Reef1D", Reef1D, id="Reef1D"),
-            pytest.param("Delft3D", Delft3D, id="Delft3D"),
-            pytest.param("Transect", Transect, id="Transect"),
-        ],
-    )
-    def test_set_model_changes_model_and_mode(
-        self, old_mode: str, old_type: Type, new_mode: str, new_type: Type
-    ):
-        # 1. Define first condition
-        test_hd = Hydrodynamics(old_mode)
-        assert test_hd.mode == old_mode
-        assert isinstance(test_hd.model, old_type)
-
-        # 2. Do test.
-        set_mode = test_hd.set_model(new_mode)
-
-        # 3. Verify expectations
-        assert set_mode == new_mode
-        assert test_hd.mode == new_mode
-        assert isinstance(test_hd.model, new_type)
-
-    @pytest.mark.parametrize(
-        "unknown_mode",
-        [
-            pytest.param("reef0d"),
-            pytest.param("reef1d"),
-            pytest.param("delft3d"),
-            pytest.param("transect"),
-        ],
-    )
-    def test_set_model_mode_lowercase_raises_valueerror(self, unknown_mode: str):
-        # 1. Set up test data.
-        test_hd = Hydrodynamics("Reef0D")
-        expected_mssg = (
-            f"{unknown_mode} not in ('Reef0D', 'Reef1D', 'Delft3D', 'Transect')."
-        )
-
-        # 2. Run test.
-        with pytest.raises(ValueError) as e_info:
-            test_hd.set_model(unknown_mode)
-
-        # 3. Verify final expectation
-        assert str(e_info.value) == expected_mssg
+    def test_get_hydrodynamic_model(self, mode: str, expected_type: Type):
+        test_hd = HydrodynamicsFactory.get_hydrodynamic_model(mode)
+        assert isinstance(test_hd, expected_type)
+        assert isinstance(
+            type(test_hd), HydrodynamicProtocol
+        ), f"{expected_type} does not fully implement the HydrodynamicProtocol."
 
     @pytest.mark.parametrize(
         "unknown_mode",
@@ -97,20 +47,13 @@ class TestFactory:
     )
     def test_set_model_mode_unknown_raises_valueerror(self, unknown_mode: str):
         # 1. Set up test data.
-        test_hd = Hydrodynamics("Reef0D")
         expected_mssg = (
-            f"{unknown_mode} not in ('Reef0D', 'Reef1D', 'Delft3D', 'Transect')."
+            f"{unknown_mode} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
         )
 
         # 2. Run test.
         with pytest.raises(ValueError) as e_info:
-            test_hd.set_model(unknown_mode)
+            HydrodynamicsFactory.get_hydrodynamic_model(unknown_mode)
 
         # 3. Verify final expectation
         assert str(e_info.value) == expected_mssg
-
-    def test_input_check_definition_raises_exception(self):
-        test_hd = Hydrodynamics("Reef0D")
-        with pytest.raises(ValueError) as e_err:
-            test_hd.input_check_definition("x_coordinates")
-        assert str(e_err.value) == "x_coordinates undefined (required for Reef0D-mode)"

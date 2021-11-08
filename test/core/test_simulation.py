@@ -40,7 +40,7 @@ class TestSimulation:
             Simulation(mode_case)
         assert (
             str(e_info.value)
-            == f"{mode_case} not in [Reef0D, Reef1D, Delft3D, Transect]."
+            == f"{mode_case} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
         )
 
     @pytest.mark.parametrize(

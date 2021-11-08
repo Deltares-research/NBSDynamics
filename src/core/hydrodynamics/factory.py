@@ -5,7 +5,7 @@ coral_model v3 - hydrodynamics
 @contributor: Peter M.J. Herman
 """
 import faulthandler
-from typing import Dict, Optional
+from typing import Dict, List
 
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.reef_0d import Reef0D
@@ -25,16 +25,14 @@ class HydrodynamicsFactory:
 
     @staticmethod
     def get_hydrodynamic_model(model_name: str) -> HydrodynamicProtocol:
-        modes: Dict[str, HydrodynamicProtocol] = {
-            "reef0d": Reef0D,
-            "reef1d": Reef1D,
-            "delft3d": Delft3D,
-            "transect": Transect,
-        }
-        hydromodel: Optional[HydrodynamicProtocol] = modes.get(model_name.lower(), None)
+        modes: List[HydrodynamicProtocol] = [Reef0D, Reef1D, Delft3D, Transect]
+        nm_name = model_name.lower() if model_name is not None else model_name
+        hydromodel: HydrodynamicProtocol = next(
+            (m_type for m_type in modes if m_type.__name__.lower() == nm_name), None
+        )
         if hydromodel is None:
-            keys_names = ", ".join(modes.keys())
-            msg = f"{model_name} not in [{keys_names}]."
+
+            msg = f"{model_name} not in {[x.__name__ for x in modes]}."
             raise ValueError(msg)
         return hydromodel()
 

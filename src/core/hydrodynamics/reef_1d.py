@@ -50,6 +50,10 @@ class Reef1D:
         return len(self.bath)
 
     @property
+    def water_depth(self):
+        return None
+
+    @property
     def x_coordinates(self):
         return np.arange(0, self.space, self.dx)
 
