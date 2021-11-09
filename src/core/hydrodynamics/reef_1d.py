@@ -181,7 +181,7 @@ class Reef1D:
         """Initiate hydrodynamic model."""
         raise NotImplementedError
 
-    def update(self, coral: Coral, storm=False):
+    def update(self, coral: Coral, storm=False) -> tuple:
         """Update hydrodynamic model.
 
         :param coral: coral animal
