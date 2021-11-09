@@ -20,6 +20,7 @@ tqdm = "^4.62.3"
 isort = "^5.9.3"
 black = "^21.9b0"
 bmi-python = "^0.3.0"
+pydantic = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
