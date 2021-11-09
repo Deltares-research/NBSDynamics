@@ -3,16 +3,24 @@ from pathlib import Path
 import pytest
 
 from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 
 
 class TestDelft3d:
     def test_init_delft3d(self):
         test_delft3d = Delft3D()
-        assert test_delft3d.time_step == None
-        assert test_delft3d.d3d_home == None
-        assert test_delft3d.working_dir == None
-        assert test_delft3d.mdu == None
-        assert test_delft3d.config == None
+        assert isinstance(test_delft3d, HydrodynamicProtocol)
+        assert test_delft3d.time_step is None
+        assert test_delft3d.d3d_home is None
+        assert test_delft3d.working_dir is None
+        assert test_delft3d.definition_file is None
+        assert test_delft3d.config_file is None
+        assert test_delft3d.x_coordinates is None
+        assert test_delft3d.y_coordinates is None
+        assert test_delft3d.xy_coordinates is None
+        assert test_delft3d.water_depth is None
+        assert test_delft3d.space is None
+        assert repr(test_delft3d) == "Delft3D()"
 
     def test_set_d3d_home_sets_other_paths(self):
         test_delft3d = Delft3D()
@@ -51,7 +59,7 @@ class TestDelft3d:
         )
         test_delft3d = Delft3D()
         test_delft3d.working_dir = Path()
-        test_delft3d.config = "aPath"
+        test_delft3d.config_file = "aPath"
         assert test_delft3d.settings == expected_text
 
     def test_set_workdir_as_str_returns_path(self):
@@ -64,14 +72,14 @@ class TestDelft3d:
         test_delft3d.d3d_home = "thisPath"
         assert isinstance(test_delft3d.d3d_home, Path)
 
-    def test_set_mdu_relative_to_work_dir(self):
+    def test_set_definition_file_relative_to_work_dir(self):
         test_delft3d = Delft3D()
         test_delft3d.working_dir = "thisPath"
-        test_delft3d.mdu = "anMdu"
-        assert test_delft3d.mdu == Path("thisPath") / "anMdu"
+        test_delft3d.definition_file = "anMdu"
+        assert test_delft3d.definition_file == Path("thisPath") / "anMdu"
 
     def test_set_config_relative_to_work_dir(self):
         test_delft3d = Delft3D()
         test_delft3d.working_dir = "thisPath"
-        test_delft3d.config = "config"
-        assert test_delft3d.config == Path("thisPath") / "config"
+        test_delft3d.config_file = "config"
+        assert test_delft3d.config_file == Path("thisPath") / "config"

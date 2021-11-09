@@ -7,7 +7,7 @@ from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
 from src.core.coral_model import Coral
-from src.core.loop import Simulation
+from src.core.simulation import Simulation
 from src.tools.plot_output import OutputPlot, plot_output
 
 
@@ -37,7 +37,7 @@ class TestAcceptance:
         sim_run.hydrodynamics.working_dir = sim_run.working_dir / "d3d_work"
         sim_run.hydrodynamics.d3d_home = model_dir / "d3d_suite"
         sim_run.hydrodynamics.mdu = fm_dir / "FlowFM.mdu"
-        sim_run.hydrodynamics.config = "dimr_config.xml"
+        sim_run.hydrodynamics.config_file = "dimr_config.xml"
         sim_run.hydrodynamics.set_update_intervals(300, 300)
         # sleep(2)
         sim_run.hydrodynamics.initiate()
@@ -100,8 +100,8 @@ class TestAcceptance:
         # settings for a 1D idealized transect using fixed currents and Soulsby
         # orbital velocities depending on stormcat and depth
         run_trans.hydrodynamics.working_dir = run_trans.working_dir
-        run_trans.hydrodynamics.mdu = Path("input") / "TS_waves.txt"
-        run_trans.hydrodynamics.config = Path("input") / "config.csv"
+        run_trans.hydrodynamics.definition_file = Path("input") / "TS_waves.txt"
+        run_trans.hydrodynamics.config_file = Path("input") / "config.csv"
         run_trans.hydrodynamics.initiate()
         # check
         print(run_trans.hydrodynamics.settings)

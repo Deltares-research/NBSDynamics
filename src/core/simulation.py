@@ -24,6 +24,10 @@ from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.factory import HydrodynamicsFactory
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.hydrodynamics.reef_0d import Reef0D
+from src.core.hydrodynamics.reef_1d import Reef1D
 from src.core.hydrodynamics.transect import Transect
 from src.core.output_model import Output
 from src.core.utils import time_series_year
@@ -34,7 +38,7 @@ class Simulation:
 
     working_dir: Optional[Path]
 
-    def __init__(self, mode=None):
+    def __init__(self, mode: Optional[str]):
 
         """Simulation loop of a coral model.
         :param mode: mode of hydrodynamics to be used in simulation
@@ -44,22 +48,10 @@ class Simulation:
         self._constants = Constants()
         self.working_dir = Path.cwd()
         self.output = None
-
-        modes = {
-            #                 'Reef0D'   : Reef0D(),
-            #                 'Reef1D'   : Reef1D(),
-            "Delft3D": Delft3D(),
-            "Transect": Transect(),
-        }
-        modeset = modes.get(mode, None)
-        if modeset is None:
-            keys_names = ", ".join(modes.keys())
-            msg = f"{mode} not in [{keys_names}]."
-            raise ValueError(msg)
-        self._hydrodynamics = modeset
+        self._hydrodynamics = HydrodynamicsFactory.get_hydrodynamic_model(mode)
 
     @property
-    def environment(self):
+    def environment(self) -> Environment:
         """Environment attribute of the Simulation
 
         :rtype: Environment
@@ -67,7 +59,7 @@ class Simulation:
         return self._environment
 
     @property
-    def constants(self):
+    def constants(self) -> Constants:
         """Constants attribute of the Simulation
 
         :rtype: Constants
@@ -75,7 +67,7 @@ class Simulation:
         return self._constants
 
     @property
-    def hydrodynamics(self):
+    def hydrodynamics(self) -> HydrodynamicProtocol:
         """Hydrodynamics attribute of the Simulation
 
         :rtype: Hydrodynamics
@@ -133,11 +125,6 @@ class Simulation:
         ddir = self.input_dir if folder is None else folder
         infil = os.path.join(ddir, file)
         self._constants.read_it(infil)
-
-    def set_delft3d_environment(self):
-        """Set directories and files of hydrodynamic mode 'Delft3D'."""
-        # TODO: Set D3D-files and -directories
-        pass
 
     def define_output(
         self,
@@ -221,8 +208,12 @@ class Simulation:
         # TODO: add other dependencies based on process switches in self.constants if required
 
     def initiate(
-        self, coral: coral_model.Coral, x_range=None, y_range=None, value=None
-    ):
+        self,
+        coral: coral_model.Coral,
+        x_range: Optional[tuple] = None,
+        y_range: Optional[tuple] = None,
+        value: Optional[float] = None,
+    ) -> coral_model.Coral:
         """Initiate the coral distribution. The default coral distribution is a full coral cover over the whole domain.
         More complex initial conditions of the coral cover cannot be realised with this method. See the documentation on
         workarounds to achieve this anyway.
@@ -276,7 +267,7 @@ class Simulation:
 
         return coral
 
-    def exec(self, coral: coral_model.Coral, duration=None):
+    def exec(self, coral: coral_model.Coral, duration: Optional[int] = None):
         """Execute simulation.
 
         :param coral: coral animal

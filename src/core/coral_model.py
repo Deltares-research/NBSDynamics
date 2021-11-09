@@ -7,13 +7,14 @@ coral_model - core
 
 import numpy as np
 
+from src.core.environment import Constants
 from src.core.utils import CoralOnly, DataReshape
 
 
 class Coral:
     """Coral object, representing one coral type."""
 
-    def __init__(self, constants, dc, hc, bc, tc, ac, species_constant=1):
+    def __init__(self, constants: Constants, dc, hc, bc, tc, ac, species_constant=1):
         """
         :param dc: diameter coral plate [m]
         :param hc: coral height [m]

@@ -6,7 +6,7 @@ import pytest
 from src.core.environment import Constants, Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
-from src.core.loop import Simulation
+from src.core.simulation import Simulation
 
 simulation_cases = [pytest.param("Delft3D"), pytest.param("Transect")]
 
@@ -23,7 +23,6 @@ class TestSimulation:
         self, mode_case: str, expected_hydro: Callable
     ):
         test_sim = Simulation(mode=mode_case)
-        assert test_sim is not None
         assert isinstance(test_sim.environment, Environment)
         assert isinstance(test_sim.constants, Constants)
         assert isinstance(test_sim.working_dir, Path)
@@ -38,7 +37,10 @@ class TestSimulation:
     def test_init_simulation_unsupported_modes(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
             Simulation(mode_case)
-        assert str(e_info.value) == f"{mode_case} not in [Delft3D, Transect]."
+        assert (
+            str(e_info.value)
+            == f"{mode_case} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
+        )
 
     @pytest.mark.parametrize(
         "unknown_type",

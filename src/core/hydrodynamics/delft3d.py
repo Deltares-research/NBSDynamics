@@ -9,7 +9,10 @@ faulthandler.enable()
 
 
 class Delft3D:
-    """Coupling of coral_model to Delft3D using the BMI wrapper."""
+    """
+    Implements the 'HydrodynamicProtocol'.
+    Coupling of coral_model to Delft3D using the BMI wrapper.
+    """
 
     _home = None
     _dflow_dir = None
@@ -40,15 +43,15 @@ class Delft3D:
     @property
     def settings(self):
         """Print settings of Delft3D-model."""
-        if self.config:
+        if self.config_file:
             incl = f"DFlow- and DWaves-modules"
             files = (
-                f"\n\tDFlow file         : {self.mdu}"
-                f"\n\tConfiguration file : {self.config}"
+                f"\n\tDFlow file         : {self.definition_file}"
+                f"\n\tConfiguration file : {self.config_file}"
             )
         else:
             incl = f"DFlow-module"
-            files = f"\n\tDFlow file         : {self.mdu}"
+            files = f"\n\tDFlow file         : {self.definition_file}"
 
         msg = (
             f"Coupling with Delft3D model (incl. {incl}) with the following settings:"
@@ -105,15 +108,15 @@ class Delft3D:
         return self._dimr_dir
 
     @property
-    def mdu(self):
+    def definition_file(self) -> Path:
         """Delft3D's MDU-file.
 
         :rtype: str
         """
         return self._mdu
 
-    @mdu.setter
-    def mdu(self, file_dir):
+    @definition_file.setter
+    def definition_file(self, file_dir):
         """
         :param file_dir: file directory of MDU-file
         :type file_dir: str
@@ -121,15 +124,15 @@ class Delft3D:
         self._mdu = self.working_dir / file_dir
 
     @property
-    def config(self):
+    def config_file(self) -> Path:
         """Delft3D's config-file.
 
         :rtype: str
         """
         return self._config
 
-    @config.setter
-    def config(self, file_dir):
+    @config_file.setter
+    def config_file(self, file_dir):
         """
         :param file_dir: file directory of config-file
         :type file_dir: str, list, tuple
@@ -139,7 +142,7 @@ class Delft3D:
     @property
     def model(self):
         """Main model-object."""
-        return self.model_dimr if self.config else self.model_fm
+        return self.model_dimr if self.config_file else self.model_fm
 
     @property
     def model_fm(self):
@@ -161,7 +164,7 @@ class Delft3D:
             self.d3d_home / "share" / "bin",
             self.d3d_home / "dflowfm" / "bin",
         ]
-        if self.config:
+        if self.config_file:
             dirs.extend(
                 [
                     self.d3d_home / "dimr" / "bin",
@@ -217,12 +220,16 @@ class Delft3D:
     @property
     def space(self):
         """Number of non-boundary boxes; i.e. within-domain boxes."""
+        if not self._model_fm:
+            return None
         self._space = self.get_variable("ndxi") if self._space is None else self._space
         return self._space.item()
 
     @property
     def x_coordinates(self):
         """Center of gravity's x-coordinates as part of `space`."""
+        if not self._model_fm:
+            return None
         self._x_coordinates = (
             self.get_variable("xzw")[range(self.space)]
             if self._x_coordinates is None
@@ -233,6 +240,8 @@ class Delft3D:
     @property
     def y_coordinates(self):
         """Center of gravity's y-coodinates as part of `space`."""
+        if not self._model_fm:
+            return None
         self._y_coordinates = (
             self.get_variable("yzw")[range(self.space)]
             if self._y_coordinates is None
@@ -247,6 +256,8 @@ class Delft3D:
 
         :rtype: numpy.ndarray
         """
+        if not self._model_fm:
+            return None
         return np.array(
             [
                 [self.x_coordinates[i], self.y_coordinates[i]]
@@ -257,6 +268,8 @@ class Delft3D:
     @property
     def water_depth(self):
         """Water depth."""
+        if self._model_fm is None:
+            return None
         if self.time_step is None:
             self.time_step = self.get_variable("is_dtint")
         if self._water_depth is None:
@@ -319,9 +332,13 @@ class Delft3D:
     def initiate(self):
         """Initialize the working model."""
         self.environment()
-        self._model_fm = BMIWrapper(engine=self.dflow_dir, configfile=self.mdu)
-        if self.config:
-            self._model_dimr = BMIWrapper(engine=self.dimr_dir, configfile=self.config)
+        self._model_fm = BMIWrapper(
+            engine=self.dflow_dir, configfile=self.definition_file
+        )
+        if self.config_file:
+            self._model_dimr = BMIWrapper(
+                engine=self.dimr_dir, configfile=self.config_file
+            )
         self.model.initialize()  # if self.model_dimr is None else self.model_dimr.initialize()
 
     def update(self, coral, stormcat=0):
