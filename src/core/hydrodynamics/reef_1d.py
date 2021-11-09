@@ -73,7 +73,7 @@ class Reef1D:
 
     @property
     def space(self):
-        if not self.bath:
+        if self.bath is None:
             return None
         return len(self.bath)
 
@@ -83,7 +83,7 @@ class Reef1D:
 
     @property
     def x_coordinates(self):
-        if not self.space or not self.dx:
+        if self.space is None or self.dx is None:
             return None
         return np.arange(0, self.space, self.dx)
 

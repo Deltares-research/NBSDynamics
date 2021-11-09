@@ -41,7 +41,7 @@ class Reef0D:
 
     @property
     def xy_coordinates(self):
-        if not self.x_coordinates or self.y_coordinates:
+        if self.x_coordinates is None or self.y_coordinates is None:
             return None
         return np.array(
             [
@@ -52,7 +52,7 @@ class Reef0D:
 
     @property
     def space(self):
-        if not self.xy_coordinates:
+        if self.xy_coordinates is None:
             return None
         return len(self.xy_coordinates)
 

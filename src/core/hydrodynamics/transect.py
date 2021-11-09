@@ -107,7 +107,7 @@ class Transect:
     @property
     def space(self):
         """Number of non-boundary boxes; i.e. within-domain boxes."""
-        if not self.x_coordinates:
+        if self.x_coordinates is None:
             return None
         return len(self._x_coordinates)
 
@@ -128,7 +128,7 @@ class Transect:
 
         :rtype: numpy.ndarray
         """
-        if not self.x_coordinates or not self.y_coordinates:
+        if self.x_coordinates is None or self.y_coordinates is None:
             return None
 
         return np.array(
