@@ -42,9 +42,7 @@ class Reef0D:
     @property
     def xy_coordinates(self):
         if not self.x_coordinates or self.y_coordinates:
-            raise ValueError(
-                "XY Coordinates require both 'x_coorinates' and 'y_coordinates' to be defined."
-            )
+            return None
         return np.array(
             [
                 [self.x_coordinates[i], self.y_coordinates[i]]
@@ -54,6 +52,8 @@ class Reef0D:
 
     @property
     def space(self):
+        if not self.xy_coordinates:
+            return None
         return len(self.xy_coordinates)
 
     def initiate(self):
