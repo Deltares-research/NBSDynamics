@@ -50,12 +50,22 @@ class Reef1D:
     @property
     def settings(self):
         """Print settings of Reef1D-model."""
+        bath_value = None
+        min_max_bath = None
+        space_dx = None
+
+        if self.bath is not None:
+            bath_value = type(self.bath).__name__
+            min_max_bath = f"{min(self.bath)}-{max(self.bath)}"
+            if self.dx is not None:
+                space_dx = self.space * self.dx
+
         msg = (
             f"One-dimensional simple hydrodynamic model to simulate the "
             f"hydrodynamics on a (coral) reef with the following settings:"
-            f"\n\tBathymetric cross-shore data : {type(self.bath).__name__}"
-            f"\n\t\trange [m]  : {min(self.bath)}-{max(self.bath)}"
-            f"\n\t\tlength [m] : {self.space * self.dx}"
+            f"\n\tBathymetric cross-shore data : {bath_value}"
+            f"\n\t\trange [m]  : {min_max_bath}"
+            f"\n\t\tlength [m] : {space_dx}"
             f"\n\tSignificant wave height [m]  : {self.Hs}"
             f"\n\tPeak wave period [s]         : {self.Tp}"
         )
@@ -63,6 +73,8 @@ class Reef1D:
 
     @property
     def space(self):
+        if not self.bath:
+            return None
         return len(self.bath)
 
     @property
@@ -71,17 +83,21 @@ class Reef1D:
 
     @property
     def x_coordinates(self):
+        if not self.space or not self.dx:
+            return None
         return np.arange(0, self.space, self.dx)
 
     @property
     def y_coordinates(self):
-        return 0
+        return np.array([0])
 
     @property
     def xy_coordinates(self):
+        if self.x_coordinates is None:
+            return None
         return np.array(
             [
-                [self.x_coordinates[i], self.y_coordinates[i]]
+                [self.x_coordinates[i], self.y_coordinates[0]]
                 for i in range(len(self.x_coordinates))
             ]
         )
