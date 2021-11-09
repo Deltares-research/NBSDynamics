@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from src.core.hydrodynamics.transect import Transect
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.hydrodynamics.transect import Transect
 
 
 class TestTransect:
