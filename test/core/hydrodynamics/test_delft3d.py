@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 
 
 class TestDelft3d:
@@ -13,6 +14,7 @@ class TestDelft3d:
         assert test_delft3d.working_dir == None
         assert test_delft3d.definition_file == None
         assert test_delft3d.config_file == None
+        assert repr(test_delft3d) == "Delft3D()"
 
     def test_set_d3d_home_sets_other_paths(self):
         test_delft3d = Delft3D()

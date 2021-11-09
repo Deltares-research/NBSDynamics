@@ -9,7 +9,10 @@ faulthandler.enable()
 
 
 class Delft3D:
-    """Coupling of coral_model to Delft3D using the BMI wrapper."""
+    """
+    Implements the 'HydrodynamicProtocol'.
+    Coupling of coral_model to Delft3D using the BMI wrapper.
+    """
 
     _home = None
     _dflow_dir = None
