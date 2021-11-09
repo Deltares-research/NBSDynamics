@@ -1,5 +1,4 @@
 import faulthandler
-import os
 from pathlib import Path
 
 import numpy as np
@@ -108,6 +107,8 @@ class Transect:
     @property
     def space(self):
         """Number of non-boundary boxes; i.e. within-domain boxes."""
+        if not self.x_coordinates:
+            return None
         return len(self._x_coordinates)
 
     @property
@@ -127,6 +128,9 @@ class Transect:
 
         :rtype: numpy.ndarray
         """
+        if not self.x_coordinates or not self.y_coordinates:
+            return None
+
         return np.array(
             [
                 [self.x_coordinates[i], self.y_coordinates[i]]

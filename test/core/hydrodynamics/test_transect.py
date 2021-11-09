@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from src.core.hydrodynamics.transect import Transect
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 
 
 class TestTransect:
@@ -14,11 +15,17 @@ class TestTransect:
             "\n\tTransect config file  : None"
             "\n\tTransect forcings file : None"
         )
+        assert isinstance(test_transect, HydrodynamicProtocol)
         assert test_transect.time_step is None
         assert test_transect.settings == expected_settings
         assert test_transect.working_dir is None
         assert test_transect.definition_file is None
         assert test_transect.config_file is None
+        assert test_transect.x_coordinates is None
+        assert test_transect.y_coordinates is None
+        assert test_transect.xy_coordinates is None
+        assert test_transect.space is None
+        assert test_transect.water_depth is None
         assert repr(test_transect) == "Transect()"
 
     def test_set_workdir_as_str_returns_path(self):
