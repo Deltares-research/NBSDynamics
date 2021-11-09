@@ -220,12 +220,16 @@ class Delft3D:
     @property
     def space(self):
         """Number of non-boundary boxes; i.e. within-domain boxes."""
+        if not self._model_fm:
+            return None
         self._space = self.get_variable("ndxi") if self._space is None else self._space
         return self._space.item()
 
     @property
     def x_coordinates(self):
         """Center of gravity's x-coordinates as part of `space`."""
+        if not self._model_fm:
+            return None
         self._x_coordinates = (
             self.get_variable("xzw")[range(self.space)]
             if self._x_coordinates is None
@@ -236,6 +240,8 @@ class Delft3D:
     @property
     def y_coordinates(self):
         """Center of gravity's y-coodinates as part of `space`."""
+        if not self._model_fm:
+            return None
         self._y_coordinates = (
             self.get_variable("yzw")[range(self.space)]
             if self._y_coordinates is None
@@ -250,6 +256,8 @@ class Delft3D:
 
         :rtype: numpy.ndarray
         """
+        if not self._model_fm:
+            return None
         return np.array(
             [
                 [self.x_coordinates[i], self.y_coordinates[i]]
@@ -260,6 +268,8 @@ class Delft3D:
     @property
     def water_depth(self):
         """Water depth."""
+        if self._model_fm is None:
+            return None
         if self.time_step is None:
             self.time_step = self.get_variable("is_dtint")
         if self._water_depth is None:

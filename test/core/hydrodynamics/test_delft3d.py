@@ -9,11 +9,17 @@ from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 class TestDelft3d:
     def test_init_delft3d(self):
         test_delft3d = Delft3D()
-        assert test_delft3d.time_step == None
-        assert test_delft3d.d3d_home == None
-        assert test_delft3d.working_dir == None
-        assert test_delft3d.definition_file == None
-        assert test_delft3d.config_file == None
+        assert isinstance(test_delft3d, HydrodynamicProtocol)
+        assert test_delft3d.time_step is None
+        assert test_delft3d.d3d_home is None
+        assert test_delft3d.working_dir is None
+        assert test_delft3d.definition_file is None
+        assert test_delft3d.config_file is None
+        assert test_delft3d.x_coordinates is None
+        assert test_delft3d.y_coordinates is None
+        assert test_delft3d.xy_coordinates is None
+        assert test_delft3d.water_depth is None
+        assert test_delft3d.space is None
         assert repr(test_delft3d) == "Delft3D()"
 
     def test_set_d3d_home_sets_other_paths(self):
