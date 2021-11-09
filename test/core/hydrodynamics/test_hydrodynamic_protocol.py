@@ -1,4 +1,5 @@
 from typing import Callable
+
 import pytest
 
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
