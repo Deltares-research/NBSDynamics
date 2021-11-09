@@ -7,7 +7,7 @@ from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
 from src.core.coral_model import Coral
-from src.core.simulation import Simulation
+from src.core.simulation import CoralTransectSimulation, Simulation
 from src.tools.plot_output import OutputPlot, plot_output
 
 
@@ -78,46 +78,36 @@ class TestAcceptance:
 
         # 2. Prepare model.
         # Define the basic Simulation object, indicating already here the type of hydrodynamics
-        run_trans = Simulation(mode="Transect")
-        run_trans.set_directories(test_dir)
-        # read the input file with parameters (processes, parameters,constants, now all in "constants")
-        run_trans.read_parameters(file="coral_input.txt", folder=run_trans.input_dir)
-        # environment definition
-        run_trans.environment.from_file(
-            "light", "TS_PAR.txt", folder=run_trans.input_dir
+        input_dir = test_dir / "input"
+        run_trans = CoralTransectSimulation(
+            working_dir=test_dir,
+            constants_filename=input_dir / "coral_input.txt",
+            light=input_dir / "TS_PAR.txt",
+            temperature=input_dir / "TS_SST.txt",
+            storm=input_dir / "TS_stormcat2.txt",
+            start_date="2000-01-01",
+            end_date="2100-01-01",
+            definition_file=input_dir / "TS_waves.txt",
+            config_file=input_dir / "config.csv",
+            output_map_values=dict(fme=False),
+            output_his_values=dict(fme=False),
         )
-        run_trans.environment.from_file(
-            "temperature", "TS_SST.txt", folder=run_trans.input_dir
-        )
-        run_trans.environment.from_file(
-            "storm", "TS_stormcat2.txt", folder=run_trans.input_dir
-        )
-
-        # time definition
-        run_trans.environment.set_dates(start_date="2000-01-01", end_date="2100-01-01")
 
         # hydrodynamic model
         # settings for a 1D idealized transect using fixed currents and Soulsby
         # orbital velocities depending on stormcat and depth
-        run_trans.hydrodynamics.working_dir = run_trans.working_dir
-        run_trans.hydrodynamics.definition_file = Path("input") / "TS_waves.txt"
-        run_trans.hydrodynamics.config_file = Path("input") / "config.csv"
-        run_trans.hydrodynamics.initiate()
-        # check
-        print(run_trans.hydrodynamics.settings)
-        # define output
-        run_trans.define_output("map", fme=False)
-        run_trans.define_output("his", fme=False)
-        # initiate coral
-        coral_dict = {
-            **dict(constants=run_trans.constants),
-            **dict(dc=0.125, hc=0.125, bc=0.1, tc=0.1, ac=0.2, species_constant=0.6),
-        }
-        coral = Coral(**coral_dict)
-        coral = run_trans.initiate(coral)
-
+        coral_dict = dict(
+            constants=run_trans.constants,
+            dc=0.125,
+            hc=0.125,
+            bc=0.1,
+            tc=0.1,
+            ac=0.2,
+            species_constant=0.6,
+        )
         # 3. Run simulation
-        run_trans.exec(coral)
+        coral = run_trans.initiate(Coral(**coral_dict))
+        run_trans.run(coral)
         run_trans.finalise()
 
         # 4. Verify expectations.

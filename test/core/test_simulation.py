@@ -32,13 +32,13 @@ class TestSimulation:
         assert test_sim.output_dir.stem == "output"
 
     @pytest.mark.parametrize(
-        "mode_case", [pytest.param(""), pytest.param(None), pytest.param("unsupported")]
+        "mode_case", [pytest.param(""), pytest.param("unsupported")]
     )
     def test_init_simulation_unsupported_modes(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
-            Simulation(mode_case)
+            Simulation(mode=mode_case)
         assert (
-            str(e_info.value)
+            e_info.value.errors()[0]["msg"]
             == f"{mode_case} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
         )
 
@@ -66,7 +66,7 @@ class TestSimulation:
         with pytest.raises(ValueError) as e_info:
             test_sim = Simulation(mode=mode_case)
             assert test_sim.environment.light is None
-            test_sim.input_check()
+            test_sim.validate_environment()
         assert (
             str(e_info.value)
             == "CoralModel simulation cannot run without data on light conditions."
@@ -78,7 +78,7 @@ class TestSimulation:
             test_sim = Simulation(mode=mode_case)
             test_sim.environment._light = 4.2
             assert test_sim.environment.temperature is None
-            test_sim.input_check()
+            test_sim.validate_environment()
         assert (
             str(e_info.value)
             == f"CoralModel simulation cannot run without data on temperature conditions."

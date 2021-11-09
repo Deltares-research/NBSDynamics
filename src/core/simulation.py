@@ -5,13 +5,13 @@ coral_model - loop
 
 """
 
-import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
+from pydantic import root_validator, validator
 from tqdm import tqdm
-
+from src.core.base_model import BaseModel
 from src.core import coral_model
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -23,165 +23,64 @@ from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.environment import Constants, Environment
-from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.hydrodynamics.reef_0d import Reef0D
-from src.core.hydrodynamics.reef_1d import Reef1D
-from src.core.hydrodynamics.transect import Transect
 from src.core.output_model import Output
 from src.core.utils import time_series_year
 
 
-class Simulation:
+class Simulation(BaseModel):
     """CoralModel simulation."""
 
-    working_dir: Optional[Path]
+    mode: str
 
-    def __init__(self, mode: Optional[str]):
+    # Directories related to working dir
+    working_dir: Optional[Path] = Path.cwd()
+    figures_dir: Path = working_dir / "figures"
+    output_dir: Path = working_dir / "output"
+    input_dir: Path = working_dir / "input"
 
-        """Simulation loop of a coral model.
-        :param mode: mode of hydrodynamics to be used in simulation
-        :type mode: str
+    # Other attributes.
+    environment: Environment = Environment()
+    constants: Constants = Constants()
+    output: Optional[Output] = None
+
+    hydrodynamics: Optional[HydrodynamicProtocol] = None
+
+    @validator("working_dir", always=True)
+    @classmethod
+    def validate_working_dir(cls, field_value: Optional[Path]) -> Path:
+        if field_value is None:
+            field_value = Path.cwd()
+        if not isinstance(field_value, Path):
+            field_value = Path(field_value)
+
+        return field_value
+
+    @root_validator
+    @classmethod
+    def validate_simulation_attrs(cls, values: dict) -> dict:
+        values["hydrodynamics"] = HydrodynamicsFactory.get_hydrodynamic_model(
+            values.get("mode", None)
+        )
+        return values
+
+    def validate_simulation_directories(self):
         """
-        self._environment = Environment()
-        self._constants = Constants()
-        self.working_dir = Path.cwd()
-        self.output = None
-        self._hydrodynamics = HydrodynamicsFactory.get_hydrodynamic_model(mode)
-
-    @property
-    def environment(self) -> Environment:
-        """Environment attribute of the Simulation
-
-        :rtype: Environment
+        Generates the required directories if they do not exist already.
         """
-        return self._environment
-
-    @property
-    def constants(self) -> Constants:
-        """Constants attribute of the Simulation
-
-        :rtype: Constants
-        """
-        return self._constants
-
-    @property
-    def hydrodynamics(self) -> HydrodynamicProtocol:
-        """Hydrodynamics attribute of the Simulation
-
-        :rtype: Hydrodynamics
-        """
-        return self._hydrodynamics
-
-    @property
-    def figures_dir(self) -> Path:
-        """Figures directory.
-
-        :rtype: str
-        """
-        return self.working_dir / "figures"
-
-    @property
-    def output_dir(self) -> Path:
-        """Output directory.
-
-        :rtype: str
-        """
-        return self.working_dir / "output"
-
-    @property
-    def input_dir(self) -> Path:
-        """Input directory.
-
-        :rtype: str
-        """
-        return self.working_dir / "input"
-
-    def set_directories(self, workdir: Path):
-        """
-        Sets the input, output, figures and working directories based on working directory.
-
-        Args:
-            workdir (Path): Working directory path.
-        """
-
-        self.working_dir = workdir
-        self._make_directories()
-
-    def _make_directories(self):
-        """Create directories if not existing."""
         loop_dirs: List[Path] = [
-            self.working_dir,
-            self.output_dir,
-            self.input_dir,
-            self.figures_dir,
+            "working_dir",
+            "output_dir",
+            "input_dir",
+            "figures_dir",
         ]
         for loop_dir in loop_dirs:
-            if not loop_dir.is_dir():
-                loop_dir.mkdir(parents=True)
+            value_dir: Path = getattr(self, loop_dir)
+            if not value_dir.is_dir():
+                value_dir.mkdir(parents=True)
 
-    def read_parameters(self, file="coral_input.txt", folder=None):
-        ddir = self.input_dir if folder is None else folder
-        infil = os.path.join(ddir, file)
-        self._constants.read_it(infil)
-
-    def define_output(
-        self,
-        output_type: str,
-        lme: bool = True,
-        fme: bool = True,
-        tme: bool = True,
-        pd: bool = True,
-        ps: bool = True,
-        calc: bool = True,
-        md: bool = True,
-    ):
-        """Initiate output files based on requested output data.
-
-        :param output_type: mapping or history output
-        :param lme: light micro-environment, defaults to True
-        :param fme: flow micro-environment, defaults to True
-        :param tme: thermal micro-environment, defaults to True
-        :param pd: photosynthetic dependencies, defaults to True
-        :param ps: population states, defaults to True
-        :param calc: calcification rates, defaults to True
-        :param md: morphological development, defaults to True
-
-        :type output_type: str
-        :type lme: bool, optional
-        :type fme: bool, optional
-        :type tme: bool, optional
-        :type pd: bool, optional
-        :type ps: bool, optional
-        :type calc: bool, optional
-        :type md: bool, optional
-        """
-        types = ("map", "his")
-        if output_type not in types:
-            msg = f"{output_type} not in {types}."
-            raise ValueError(msg)
-
-        if not isinstance(self.output, Output):
-            self.output = Output(
-                self.output_dir,
-                self.hydrodynamics.xy_coordinates,
-                self.hydrodynamics.outpoint,
-                self.environment.dates[0],
-            )
-
-        self.output.define_output(
-            output_type=output_type,
-            lme=lme,
-            fme=fme,
-            tme=tme,
-            pd=pd,
-            ps=ps,
-            calc=calc,
-            md=md,
-        )
-
-    def input_check(self):
+    def validate_environment(self):
         """Check input; if all required data is provided."""
         if self.environment.light is None:
             msg = f"CoralModel simulation cannot run without data on light conditions."
@@ -231,9 +130,9 @@ class Simulation:
         :return: coral animal initiated
         :rtype: Coral
         """
-        self.input_check()
-
-        #        self.hydrodynamics.initiate()
+        # Load constants and validate environment.
+        self.validate_simulation_directories()
+        self.validate_environment()
         coral.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
@@ -267,8 +166,8 @@ class Simulation:
 
         return coral
 
-    def exec(self, coral: coral_model.Coral, duration: Optional[int] = None):
-        """Execute simulation.
+    def run(self, coral: coral_model.Coral, duration: Optional[int] = None):
+        """Run simulation.
 
         :param coral: coral animal
         :param duration: simulation duration [yrs], defaults to None
@@ -407,6 +306,86 @@ class Simulation:
     def finalise(self):
         """Finalise simulation."""
         self.hydrodynamics.finalise()
+
+
+class CoralTransectSimulation(Simulation):
+    """
+    Coral Transect Simulation. Contains the specific logic and parameters
+    required for the case.
+    """
+
+    mode: str = "Transect"
+
+    # Directories related to working dir
+    working_dir: Optional[Path] = Path.cwd()
+    figures_dir: Path = working_dir / "figures"
+    output_dir: Path = working_dir / "output"
+    input_dir: Path = working_dir / "input"
+
+    # Constant variables
+    constants: Constants = Constants()
+    constants_filename: Path
+
+    # Environment variables
+    environment: Environment = Environment()
+    light: Path
+    temperature: Path
+    storm: Path
+    start_date: str
+    end_date: str
+
+    # Hydrodynamics variables
+    hydrodynamics: HydrodynamicProtocol = None
+    definition_file: Path
+    config_file: Path
+
+    # Other variables.
+    output: Output = None
+    output_map_values: Optional[dict] = dict()
+    output_his_values: Optional[dict] = dict()
+
+    @root_validator
+    @classmethod
+    def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
+        # Initialize constants.
+        constants: Constants = values["constants"]
+        constants.read_it(values["constants_filename"])
+
+        # Initialize environment.
+        environment: Environment = values["environment"]
+        environment.from_file("light", values["light"])
+        environment.from_file("temperature", values["temperature"])
+        environment.from_file("storm", values["storm"])
+        environment.set_dates(
+            start_date=values["start_date"], end_date=values["end_date"]
+        )
+
+        # Initialize hydrodynamics model.
+        hydromodel: HydrodynamicProtocol = values["hydrodynamics"]
+        hydromodel.working_dir = values["working_dir"]
+        hydromodel.definition_file = values["definition_file"]
+        hydromodel.config_file = values["config_file"]
+        hydromodel.initiate()
+
+        # Initialize output.
+        output_model: Output = values["output"]
+        if output_model is None:
+            output_model = Output(
+                values["output_dir"],
+                hydromodel.xy_coordinates,
+                hydromodel.outpoint,
+                environment.dates[0],
+            )
+        output_model.define_output("map", **values["output_map_values"])
+        output_model.define_output("his", **values["output_his_values"])
+
+        # Set formatted values and return.
+        values["output"] = output_model
+        values["hydrodynamics"] = hydromodel
+        values["environment"] = environment
+        values["constants"] = constants
+
+        return values
 
 
 # TODO: Define folder structure

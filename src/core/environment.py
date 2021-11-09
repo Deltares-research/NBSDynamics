@@ -7,7 +7,7 @@ coral_mostoel - environment
 
 import distutils.util as du
 import os
-
+from pathlib import Path
 import numpy as np
 import pandas as pd
 
@@ -470,7 +470,7 @@ class Environment:
             msg = f"Entered parameter ({parameter}) not included. See documentation."
             raise ValueError(msg)
 
-    def from_file(self, parameter, file, folder):
+    def from_file(self, parameter: str, file: Path):
         """Read the time-series data from a file.
 
         Included parameters:
@@ -482,14 +482,15 @@ class Environment:
 
         :param parameter: parameter to be read from file
         :param file: file name, incl. file extension
-        :param folder: folder directory, defaults to None
 
         :type parameter: str
         :type file: str
-        :type folder: str
         """
         # TODO: Include functionality to check file's existence
         #  > certain files are necessary: light, temperature
+
+        if not file.exists():
+            raise FileNotFoundError(file)
 
         def read_index(fil):
             """Function applicable to time-series in Pandas."""
@@ -501,16 +502,14 @@ class Environment:
             time_series.set_index("date", inplace=True)
             return time_series
 
-        f = os.path.join(folder, file)
-
         if parameter == "LAC":
             parameter = "light_attenuation"
 
         daily_params = ("light", "light_attenuation", "temperature", "aragonite")
         if parameter in daily_params:
-            setattr(self, f"_{parameter}", read_index(f))
+            setattr(self, f"_{parameter}", read_index(file))
         elif parameter == "storm":
-            self._storm_category = pd.read_csv(f, sep="\t")
+            self._storm_category = pd.read_csv(file, sep="\t")
             self._storm_category.set_index("year", inplace=True)
         else:
             msg = f"Entered parameter ({parameter}) not included. See documentation."
