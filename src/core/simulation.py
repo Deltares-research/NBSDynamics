@@ -42,7 +42,7 @@ class Simulation(BaseModel):
 
     # Other attributes.
     environment: Environment = Environment()
-    constants: Constants = Constants()
+    constants: Optional[Constants] = None
     output: Optional[Output] = None
 
     hydrodynamics: Optional[HydrodynamicProtocol] = None
@@ -323,7 +323,7 @@ class CoralTransectSimulation(Simulation):
     input_dir: Path = working_dir / "input"
 
     # Constant variables
-    constants: Constants = Constants()
+    constants: Constants = None
     constants_filename: Path
 
     # Environment variables
@@ -349,7 +349,7 @@ class CoralTransectSimulation(Simulation):
     def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
         # Initialize constants.
         constants: Constants = values["constants"]
-        constants.read_it(values["constants_filename"])
+        constants = Constants.from_input_file(values["constants_filename"])
 
         # Initialize environment.
         environment: Environment = values["environment"]
