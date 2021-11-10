@@ -1,4 +1,5 @@
 from pathlib import Path
+import netCDF4
 
 import numpy as np
 from netCDF4 import Dataset
@@ -24,13 +25,13 @@ class Output(BaseModel):
     ]  # boolean indicating per (x,y) point if his output is desired
     first_date: Union[np.datetime64, datetime]  # first date of simulation
 
-    _file_name_map = None
-    _file_name_his = None
+    file_name_map: Optional[Path]
+    file_name_his: Optional[Path]
 
-    map_output: Optional[Path]
-    his_output: Optional[Path]
-    _map_data = None
-    _his_data = None
+    map_output: Optional[Dataset] = None
+    his_output: Optional[Dataset] = None
+    _map_data: Optional[Dataset] = None
+    _his_data: Optional[Dataset] = None
 
     # Optional values
     space: Optional[int]
@@ -80,6 +81,15 @@ class Output(BaseModel):
         values["nout_his"] = nout_his
         values["first_year"] = values["first_date"].year
         values["space"] = len(xy_coordinates)
+
+        output_dir: Path = values["output_dir"]
+        values["file_name_map"] = values.get(
+            "file_name_map", output_dir / "CoralModel_map.nc"
+        )
+        values["file_name_his"] = values.get(
+            "file_name_his", output_dir / "CoralModel_his.nc"
+        )
+
         return values
 
     def __str__(self):
@@ -135,58 +145,7 @@ class Output(BaseModel):
             msg = f"{output_type} not in {types}."
             raise ValueError(msg)
 
-        setattr(self, f"_{output_type}_output", locals())
-
-    @staticmethod
-    def __file_ext(file_name: Path) -> Path:
-        """Ensure NetCDF file extension.
-
-        :param file_name: file name
-        :type file_name: Path
-        """
-        if not isinstance(file_name, Path):
-            file_name = Path(file_name)
-        if file_name.suffix != ".nc":
-            return f"{file_name.stem}.nc"
-        return file_name
-
-    @property
-    def file_name_map(self) -> Path:
-        """File name of mapping output.
-
-        :rtype: str
-        """
-        if self._file_name_map is None:
-            self._file_name_map = self.file_dir_map / "CoralModel_map.nc"
-
-        return self._file_name_map
-
-    @file_name_map.setter
-    def file_name_map(self, file_name: Path):
-        """
-        :param file_name: file name of mapping output
-        :type file_name: None, str
-        """
-        self._file_name_map = self.__file_ext(file_name)
-
-    @property
-    def file_name_his(self) -> Path:
-        """File name of history output.
-
-        :rtype: str
-        """
-        if self._file_name_his is None:
-            self._file_name_his = self.file_dir_his / "CoralModel_his.nc"
-
-        return self._file_name_his
-
-    @file_name_his.setter
-    def file_name_his(self, file_name: Path):
-        """
-        :param file_name: file name of history output
-        :type file_name: str
-        """
-        self._file_name_his = self.__file_ext(file_name)
+        setattr(self, f"{output_type}_output", locals())
 
     def initiate_map(self, coral: Coral):
         """Initiate mapping output file in which annual output covering the whole model domain is stored.
@@ -195,7 +154,7 @@ class Output(BaseModel):
         :type coral: Coral
         """
         # Open netcdf data and initialize needed variables.
-        if self._map_output is not None and any(self._map_output.values()):
+        if self.map_output is not None and any(self.map_output.values()):
             self._map_data = Dataset(self.file_name_map, "w", format="NETCDF4")
             self._map_data.description = "Mapped simulation data of the CoralModel."
 
@@ -367,7 +326,7 @@ class Output(BaseModel):
                 md=init_md,
             )
             for key, v_func in conditions_funct.items():
-                if self._map_output[key]:
+                if self.map_output[key]:
                     v_func()
 
             self._map_data.close()
@@ -381,7 +340,7 @@ class Output(BaseModel):
         :type coral: Coral
         :type year: int
         """
-        if self._map_output is not None and any(self._map_output.values()):
+        if self.map_output is not None and any(self.map_output.values()):
             self._map_data = Dataset(self.file_name_map, mode="a")
 
             i = int(year - self.first_year)
@@ -437,30 +396,14 @@ class Output(BaseModel):
                 md=update_md,
             )
             for key, v_func in conditions_funct.items():
-                if self._map_output[key]:
+                if self.map_output[key]:
                     v_func()
 
             self._map_data.close()
 
-    @property
-    def xy_stations(self) -> np.ndarray:
-        """(x,y)-coordinates of the stations.
-
-        :rtype: numpy.ndarray
-        """
-        return self._xy_stations
-
-    @property
-    def idx_stations(self) -> np.ndarray:
-        """Space indices of stations.
-
-        :rtype: numpy.ndarray
-        """
-        return self._idx_stations
-
     def initiate_his(self):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
-        if self._his_output is not None and any(self._his_output.values()):
+        if self.his_output is not None and any(self.his_output.values()):
             self._his_data = Dataset(self.file_name_his, "w", format="NETCDF4")
             self._his_data.description = "Historic simulation data of the CoralModel"
 
@@ -586,7 +529,7 @@ class Output(BaseModel):
                 md=init_md,
             )
             for key, v_func in conditions_funct.items():
-                if self._his_output[key]:
+                if self.his_output[key]:
                     v_func()
             self._his_data.close()
 
@@ -599,7 +542,7 @@ class Output(BaseModel):
         :type coral: Coral
         :type dates: DataFrame
         """
-        if self._his_output is not None and any(self._his_output.values()):
+        if self.his_output is not None and any(self.his_output.values()):
             self._his_data = Dataset(self.file_name_his, mode="a")
             y_dates = dates.reset_index(drop=True)
             ti = (y_dates - self.first_date).dt.days.values
@@ -694,7 +637,7 @@ class Output(BaseModel):
                 md=update_md,
             )
             for key, v_func in conditions_funct.items():
-                if self._his_output[key]:
+                if self.his_output[key]:
                     v_func()
 
             self._his_data.close()
