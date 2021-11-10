@@ -1,9 +1,10 @@
+from test.utils import TestUtils
 from typing import Any
+
 import numpy as np
 import pytest
 
 from src.core.constants import Constants
-from test.utils import TestUtils
 
 
 class TestConstants:

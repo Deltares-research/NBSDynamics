@@ -1,8 +1,10 @@
-from src.core.base_model import BaseModel
-from pydantic import root_validator, validator
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
 import numpy as np
+from pydantic import root_validator, validator
+
+from src.core.base_model import BaseModel
 
 
 class Constants(BaseModel):
