@@ -1,10 +1,11 @@
+from datetime import datetime
 import numpy as np
 from test.utils import TestUtils
 import pytest
 from pathlib import Path
 from src.core.environment import Environment
 import pandas as pd
-from typing import Any, List
+from typing import Any, List, Union
 
 daily_params: List[str] = [
     ("light"),
@@ -30,6 +31,15 @@ class TestEnvironment:
     @staticmethod
     def get_test_input_data() -> Path:
         return TestUtils.get_local_test_file("transect_case") / "input"
+
+    def test_init_environment(self):
+        test_env = Environment()
+        assert test_env.dates is None
+        assert test_env.light is None
+        assert test_env.light_attenuation is None
+        assert test_env.temperature is None
+        assert test_env.aragonite is None
+        assert test_env.storm_category is None
 
     @pytest.mark.parametrize("input_key, input_file", env_params_cases())
     def test_init_environment_with_key_and_file(self, input_key: str, input_file: Path):
@@ -71,3 +81,12 @@ class TestEnvironment:
         assert (
             str(e_err.value) == f"Validator not available for type {type(unsupported)}"
         )
+
+    @pytest.mark.parametrize("start_date", [("2001, 10, 02"), (datetime(2001, 10, 2))])
+    @pytest.mark.parametrize("end_date", [("2021, 12, 21"), (datetime(2021, 12, 21))])
+    def test_set_dates_update_dataframe(self, start_date: Union[str, datetime], end_date: Union[str, datetime]):
+        test_env = Environment()
+        test_env.set_dates(start_date, end_date)
+        assert isinstance(test_env.dates, pd.DataFrame)
+
+
