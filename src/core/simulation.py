@@ -9,11 +9,11 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import numpy as np
+import pandas as pd
 from pydantic import root_validator, validator
 from tqdm import tqdm
 
 from src.core import coral_model
-import pandas as pd
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement

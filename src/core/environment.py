@@ -7,12 +7,15 @@ coral_mostoel - environment
 
 from datetime import datetime
 from pathlib import Path
-import numpy as np
+from typing import Any, Iterable, Optional, Union
 
+import numpy as np
 import pandas as pd
 from src.core.base_model import BaseModel
 from typing import Any, Iterable, Optional, Union
 from pydantic import validator
+
+from src.core.base_model import BaseModel
 
 EnvInputAttr = Union[pd.DataFrame, Path]
 
