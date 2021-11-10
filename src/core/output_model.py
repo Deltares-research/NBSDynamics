@@ -19,7 +19,9 @@ class Output(BaseModel):
 
     output_dir: Path  # directory to write the output to
     xy_coordinates: np.ndarray  # (x,y)-coordinates
-    outpoint: np.ndarray  # boolean indicating per (x,y) point if his output is desired
+    outpoint: Optional[
+        np.ndarray
+    ]  # boolean indicating per (x,y) point if his output is desired
     first_date: Union[np.datetime64, datetime]  # first date of simulation
 
     _file_name_map = None
@@ -95,7 +97,7 @@ class Output(BaseModel):
     @property
     def defined(self) -> bool:
         """Output is defined."""
-        return False if self._map_output is None and self._his_output is None else True
+        return False if self.map_output is None and self.his_output is None else True
 
     def define_output(
         self,
