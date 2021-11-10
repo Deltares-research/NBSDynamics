@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 from src.core.environment import Environment
 import pandas as pd
-from typing import Any, List, Union
+from typing import Any, Iterable, List, Union
 
 daily_params: List[str] = [
     ("light"),
@@ -13,6 +13,8 @@ daily_params: List[str] = [
     ("temperature"),
     ("aragonite"),
 ]
+
+unsupported_params = [(None), (42.24), (42), ("not/a/Path"), datetime(2021, 12, 20)]
 
 
 def env_params_cases() -> List[pytest.param]:
@@ -66,7 +68,7 @@ class TestEnvironment:
         test_env = Environment.validate_storm_category(test_value)
         assert all(test_env == test_value)
 
-    @pytest.mark.parametrize("unsupported", [(None), (float), (int), ("not/a/Path")])
+    @pytest.mark.parametrize("unsupported", unsupported_params)
     def test_validate_dataframe_or_path_from_unsupported_raises(self, unsupported: Any):
         with pytest.raises(NotImplementedError) as e_err:
             Environment.validate_dataframe_or_path(unsupported)
@@ -74,7 +76,7 @@ class TestEnvironment:
             str(e_err.value) == f"Validator not available for type {type(unsupported)}"
         )
 
-    @pytest.mark.parametrize("unsupported", [(None), (float), (int), ("not/a/Path")])
+    @pytest.mark.parametrize("unsupported", unsupported_params)
     def test_validate_storm_category_from_unsupported_raises(self, unsupported: Any):
         with pytest.raises(NotImplementedError) as e_err:
             Environment.validate_storm_category(unsupported)
@@ -84,9 +86,42 @@ class TestEnvironment:
 
     @pytest.mark.parametrize("start_date", [("2001, 10, 02"), (datetime(2001, 10, 2))])
     @pytest.mark.parametrize("end_date", [("2021, 12, 21"), (datetime(2021, 12, 21))])
-    def test_set_dates_update_dataframe(self, start_date: Union[str, datetime], end_date: Union[str, datetime]):
+    def test_set_dates_update_dataframe(
+        self, start_date: Union[str, datetime], end_date: Union[str, datetime]
+    ):
         test_env = Environment()
         test_env.set_dates(start_date, end_date)
         assert isinstance(test_env.dates, pd.DataFrame)
 
+    @pytest.mark.parametrize("start_date", [("2001, 10, 02"), (datetime(2001, 10, 2))])
+    @pytest.mark.parametrize("end_date", [("2021, 12, 21"), (datetime(2021, 12, 21))])
+    def test_get_dates_dataframe(
+        self, start_date: Union[str, datetime], end_date: Union[str, datetime]
+    ):
+        test_value = Environment.get_dates_dataframe(start_date, end_date)
+        assert isinstance(test_value, pd.DataFrame)
 
+    def test_validate_dates_as_dataframe(self):
+        test_value = pd.date_range("2021, 01, 01", "2021, 12, 21")
+        test_value = pd.DataFrame({"date": test_value})
+        validated_dates = Environment.validate_dates(test_value)
+        assert all(validated_dates == test_value)
+
+    @pytest.mark.parametrize(
+        "it_value",
+        [
+            pytest.param(("2021, 01, 01", "2021, 12, 21"), id="As tuple"),
+            pytest.param(["2021, 01, 01", "2021, 12, 21"], id="As list"),
+        ],
+    )
+    def test_validate_dates_as_iterable(self, it_value: Iterable):
+        return_value = Environment.validate_dates(it_value)
+        assert isinstance(return_value, pd.DataFrame)
+
+    @pytest.mark.parametrize("unsupported", unsupported_params)
+    def test_validate_dates_from_unsupported_raises(self, unsupported: Any):
+        with pytest.raises(NotImplementedError) as e_err:
+            Environment.validate_storm_category(unsupported)
+        assert (
+            str(e_err.value) == f"Validator not available for type {type(unsupported)}"
+        )

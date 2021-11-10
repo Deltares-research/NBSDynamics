@@ -342,12 +342,13 @@ class CoralTransectSimulation(Simulation):
         constants = Constants.from_input_file(values["constants_filename"])
 
         # Initialize environment.
-        environment: Environment = values["environment"]
-        environment.from_file("light", values["light"])
-        environment.from_file("temperature", values["temperature"])
-        environment.from_file("storm", values["storm"])
-        environment.set_dates(
-            start_date=values["start_date"], end_date=values["end_date"]
+        values["environment"] = Environment(
+            **dict(
+                light=values["light"],
+                temperature=values["temperature"],
+                storm=values["storm"],
+                dates=(values["start_date"], values["end_date"]),
+            )
         )
 
         # Initialize hydrodynamics model.
@@ -388,12 +389,13 @@ class VersionSimulation(BaseModel):
 
     def initiate(self, duration: Optional[int] = None):
         raise NotImplementedError
-    
+
     def run(self, duration: Optional[int] = None):
         raise NotImplementedError
-    
+
     def finalise(self):
         raise NotImplementedError
+
 
 # TODO: Define folder structure
 #  > working directory

@@ -11,7 +11,7 @@ import numpy as np
 
 import pandas as pd
 from src.core.base_model import BaseModel
-from typing import Optional, Union
+from typing import Iterable, Optional, Tuple, Union
 from pydantic import validator
 
 EnvInputAttr = Union[pd.DataFrame, Path]
@@ -70,6 +70,24 @@ class Environment(BaseModel):
             return csv_values
         raise NotImplementedError(f"Validator not available for type {type(value)}")
 
+    @validator("dates", pre=True)
+    @classmethod
+    def validate_dates(
+        cls, value: Union[pd.DataFrame, Iterable[Union[str, datetime]]]
+    ) -> pd.DataFrame:
+        if isinstance(value, pd.DataFrame):
+            return value
+        if isinstance(value, Iterable):
+            return cls.get_dates_dataframe(value[0], value[-1])
+        raise NotImplementedError(f"Validator not available for type {type(value)}")
+
+    @staticmethod
+    def get_dates_dataframe(
+        start_date: Union[str, datetime], end_date: Union[str, datetime]
+    ) -> pd.DataFrame:
+        dates = pd.date_range(start_date, end_date, freq="D")
+        return pd.DataFrame({"date": dates})
+
     def set_dates(
         self, start_date: Union[str, datetime], end_date: Union[str, datetime]
     ):
@@ -80,8 +98,8 @@ class Environment(BaseModel):
             start_date (Union[str, datetime]): Start of the range dates.
             end_date (Union[str, datetime]): End of the range dates.
         """
-        dates = pd.date_range(start_date, end_date, freq="D")
-        self.dates = pd.DataFrame({"date": dates})
+
+        self.dates = self.get_dates_dataframe(start_date, end_date)
 
     EnvironmentValue = Union[float, list, tuple, np.ndarray, pd.DataFrame]
 
