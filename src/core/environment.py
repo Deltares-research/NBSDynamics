@@ -5,10 +5,9 @@ coral_mostoel - environment
 @contributor: Peter M.J. Herman
 """
 
-import distutils.util as du
 from pathlib import Path
 from src.core.base_model import BaseModel
-from pydantic import root_validator
+from pydantic import root_validator, validator
 from typing import Optional
 import numpy as np
 import pandas as pd
@@ -41,8 +40,8 @@ class Constants(BaseModel):
     rd: float = 500
     numericTheta: float = 0.5
     err: float = 1e-3
-    maxiter_k: np.int32 = 1e5
-    maxiter_aw: np.int32 = 1e5
+    maxiter_k: int = 1e5
+    maxiter_aw: int = 1e5
 
     # thermal micro-environment
     K0: float = 80.0
@@ -100,6 +99,27 @@ class Constants(BaseModel):
     no_larvae: float = 1e6
     prob_settle: float = 1e-4
     d_larvae: float = 1e-3
+
+    @validator("maxiter_k", "maxiter_aw", pre=True, always=True)
+    @classmethod
+    def validate_scientific_int_value(cls, v) -> int:
+        """
+        Validates the parameters that can be provided with scientific notation.
+
+        Args:
+            v (Any): Scientific value to validate.
+
+        Returns:
+            int: Validated value as integer.
+        """
+        if isinstance(v, int):
+            return v
+        if isinstance(v, float):
+            return int(v)
+        if isinstance(v, str):
+            return int(float(v))
+
+        raise NotImplementedError(f"No converter available for {type(v)}.")
 
     @root_validator
     @classmethod
