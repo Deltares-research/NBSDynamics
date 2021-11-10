@@ -27,7 +27,7 @@ class Environment(BaseModel):
 
     @validator("light", "light_attenuation", "temperature", "aragonite", pre=True)
     @classmethod
-    def validate_dataframe_from_file(value: EnvInputAttr) -> pd.DataFrame:
+    def validate_dataframe_or_path(cls, value: EnvInputAttr) -> pd.DataFrame:
         """
         Transforms an input into the expected type for the parameter. In case a file it's provided
         it's content is converted into a pandas DataFrame.
@@ -57,9 +57,9 @@ class Environment(BaseModel):
             return read_index(value)
         raise NotImplementedError(f"Validator not available for type {type(value)}")
 
-    @validator("storm_category")
+    @validator("storm_category", pre=True)
     @classmethod
-    def validate_storm_category(value: EnvInputAttr) -> pd.DataFrame:
+    def validate_storm_category(cls, value: EnvInputAttr) -> pd.DataFrame:
         if isinstance(value, pd.DataFrame):
             return value
         if isinstance(value, Path):
