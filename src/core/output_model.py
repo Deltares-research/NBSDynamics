@@ -1,15 +1,16 @@
+from datetime import datetime
 from pathlib import Path
-import netCDF4
+from typing import Optional, Union
 
+import netCDF4
 import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
+from pydantic import root_validator
+
+from src.core.base_model import BaseModel
 from src.core.coral_model import Coral
 from src.core.utils import DataReshape
-from src.core.base_model import BaseModel
-from typing import Optional, Union
-from pydantic import root_validator
-from datetime import datetime
 
 
 class Output(BaseModel):
