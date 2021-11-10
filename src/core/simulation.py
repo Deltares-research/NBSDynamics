@@ -6,7 +6,7 @@ coral_model - loop
 """
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
 from pydantic import root_validator, validator
@@ -45,7 +45,7 @@ class Simulation(BaseModel):
 
     # Other attributes.
     environment: Optional[Environment] = Environment()
-    constants: Optional[Constants] = Constants()
+    constants: Constants = Constants()
     output: Optional[Output] = None
     hydrodynamics: Optional[HydrodynamicProtocol] = None
 
@@ -58,6 +58,29 @@ class Simulation(BaseModel):
             field_value = Path(field_value)
 
         return field_value
+
+    @validator("constants", pre=True)
+    @classmethod
+    def validate_constants(cls, field_value: Union[str, Path, Constants]) -> Constants:
+        """
+        Validates the user-input constants value and transforms in case it's a filepath (str, Path).
+
+        Args:
+            field_value (Union[str, Path, Constants]): Value given by the user representing Constants.
+
+        Raises:
+            NotImplementedError: When the input value does not have any converter.
+
+        Returns:
+            Constants: Validated constants value.
+        """
+        if isinstance(field_value, Constants):
+            return field_value
+        if isinstance(field_value, str):
+            field_value = Path(field_value)
+        if isinstance(field_value, Path):
+            return Constants.from_input_file(field_value)
+        raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @root_validator
     @classmethod
@@ -85,11 +108,11 @@ class Simulation(BaseModel):
     def validate_environment(self):
         """Check input; if all required data is provided."""
         if self.environment.light is None:
-            msg = f"CoralModel simulation cannot run without data on light conditions."
+            msg = "CoralModel simulation cannot run without data on light conditions."
             raise ValueError(msg)
 
         if self.environment.temperature is None:
-            msg = f"CoralModel simulation cannot run without data on temperature conditions."
+            msg = "CoralModel simulation cannot run without data on temperature conditions."
             raise ValueError(msg)
 
         if self.environment.light_attenuation is None:
@@ -141,7 +164,7 @@ class Simulation(BaseModel):
             self.output.initiate_his()
             self.output.initiate_map(coral)
         else:
-            msg = f"WARNING: No output defined, so none exported."
+            msg = "WARNING: No output defined, so none exported."
             print(msg)
 
         xy = self.hydrodynamics.xy_coordinates
@@ -316,9 +339,6 @@ class CoralTransectSimulation(Simulation):
 
     mode: str = "Transect"
 
-    # Constant variables
-    constants_filename: Path
-
     # Environment variables
     light: Path
     temperature: Path
@@ -337,9 +357,6 @@ class CoralTransectSimulation(Simulation):
     @root_validator
     @classmethod
     def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
-        # Initialize constants.
-        constants = Constants.from_input_file(values["constants_filename"])
-
         # Initialize environment.
         environment = Environment(
             **dict(
@@ -375,7 +392,6 @@ class CoralTransectSimulation(Simulation):
         values["output"] = output_model
         values["hydrodynamics"] = hydromodel
         values["environment"] = environment
-        values["constants"] = constants
 
         return values
 
