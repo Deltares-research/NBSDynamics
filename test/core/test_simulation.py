@@ -3,8 +3,8 @@ from typing import Callable
 
 import pytest
 
-from src.core.environment import Environment
 from src.core.constants import Constants
+from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation import Simulation

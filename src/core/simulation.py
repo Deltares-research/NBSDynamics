@@ -11,8 +11,9 @@ from typing import List, Optional
 import numpy as np
 from pydantic import root_validator, validator
 from tqdm import tqdm
-from src.core.base_model import BaseModel
+
 from src.core import coral_model
+from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
 from src.core.bio_process.flow import Flow
@@ -22,8 +23,8 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.environment import Environment
 from src.core.constants import Constants
+from src.core.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output_model import Output

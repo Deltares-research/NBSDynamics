@@ -3,9 +3,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas
+import pytest
 
 from src.core.output_model import Output
-import pytest
 
 
 class TestOutput:
