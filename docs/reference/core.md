@@ -6,6 +6,9 @@
 ### Coral only model
 ::: src.core.coral_only
 
+### Constants
+::: src.core.constants
+
 ### Output model
 ::: src.core.output_model
 

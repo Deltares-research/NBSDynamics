@@ -13,19 +13,6 @@ class HydrodynamicProtocol(Protocol):
     """
 
     @property
-    def working_dir(self) -> Path:
-        """
-        Gets the working directory for the current model.
-
-        Raises:
-            NotImplementedError: When the model does not implement its own definition.
-
-        Returns:
-            Path: The path to the working directory.
-        """
-        raise NotImplementedError
-
-    @property
     def config_file(self) -> Path:
         """
         Configuration file for the model.
