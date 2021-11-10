@@ -36,7 +36,7 @@ class TestEnvironment:
 
     def test_init_environment(self):
         test_env = Environment()
-        assert test_env.dates is None
+        assert test_env.dates is not None
         assert test_env.light is None
         assert test_env.light_attenuation is None
         assert test_env.temperature is None
@@ -90,8 +90,13 @@ class TestEnvironment:
         self, start_date: Union[str, datetime], end_date: Union[str, datetime]
     ):
         test_env = Environment()
+        initial_dates = test_env.get_dates()
+
         test_env.set_dates(start_date, end_date)
+        new_dates = test_env.get_dates()
         assert isinstance(test_env.dates, pd.DataFrame)
+        assert initial_dates.array[0] != new_dates.array[0]
+        assert initial_dates.array[-1] != new_dates.array[-1]
 
     @pytest.mark.parametrize("start_date", [("2001, 10, 02"), (datetime(2001, 10, 2))])
     @pytest.mark.parametrize("end_date", [("2021, 12, 21"), (datetime(2021, 12, 21))])
@@ -104,7 +109,7 @@ class TestEnvironment:
     def test_validate_dates_as_dataframe(self):
         test_value = pd.date_range("2021, 01, 01", "2021, 12, 21")
         test_value = pd.DataFrame({"date": test_value})
-        validated_dates = Environment.validate_dates(test_value)
+        validated_dates = Environment.prevalidate_dates(test_value)
         assert all(validated_dates == test_value)
 
     @pytest.mark.parametrize(
@@ -115,7 +120,7 @@ class TestEnvironment:
         ],
     )
     def test_validate_dates_as_iterable(self, it_value: Iterable):
-        return_value = Environment.validate_dates(it_value)
+        return_value = Environment.prevalidate_dates(it_value)
         assert isinstance(return_value, pd.DataFrame)
 
     @pytest.mark.parametrize("unsupported", unsupported_params)

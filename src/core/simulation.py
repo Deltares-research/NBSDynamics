@@ -13,6 +13,7 @@ from pydantic import root_validator, validator
 from tqdm import tqdm
 
 from src.core import coral_model
+from src.core import environment
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -43,7 +44,7 @@ class Simulation(BaseModel):
     input_dir: Path = working_dir / "input"
 
     # Other attributes.
-    environment: Environment = Environment()
+    environment: Optional[Environment] = Environment()
     constants: Optional[Constants] = Constants()
     output: Optional[Output] = None
     hydrodynamics: Optional[HydrodynamicProtocol] = None
@@ -342,7 +343,7 @@ class CoralTransectSimulation(Simulation):
         constants = Constants.from_input_file(values["constants_filename"])
 
         # Initialize environment.
-        values["environment"] = Environment(
+        environment = Environment(
             **dict(
                 light=values["light"],
                 temperature=values["temperature"],
@@ -365,7 +366,7 @@ class CoralTransectSimulation(Simulation):
                 values["output_dir"],
                 hydromodel.xy_coordinates,
                 hydromodel.outpoint,
-                environment.dates[0],
+                environment.get_dates()[0],
             )
         output_model.define_output("map", **values["output_map_values"])
         output_model.define_output("his", **values["output_his_values"])

@@ -10,15 +10,16 @@ from pathlib import Path
 import numpy as np
 
 import pandas as pd
+from pandas.core.series import Series
 from src.core.base_model import BaseModel
-from typing import Iterable, Optional, Tuple, Union
+from typing import Any, Iterable, Optional, Tuple, Union
 from pydantic import validator
 
 EnvInputAttr = Union[pd.DataFrame, Path]
 
 
 class Environment(BaseModel):
-    dates: Optional[pd.DataFrame]
+    dates: Optional[pd.DataFrame] = ("1990, 01, 01", "2021, 12, 20")
     light: Optional[pd.DataFrame]
     light_attenuation: Optional[pd.DataFrame]
     temperature: Optional[pd.DataFrame]
@@ -33,7 +34,11 @@ class Environment(BaseModel):
         it's content is converted into a pandas DataFrame.
 
         Args:
-            value (Union[pd.DataFrame, Path]): Value to be validated.
+            value (EnvInputAttr): Value to be validated (Union[pd.DataFrame, Path]).
+
+        Raises:
+            FileNotFoundError: When the provided value is a non-existent Path.
+            NotImplementedError: When the provided value is not supported.
 
         Returns:
             pd.DataFrame: Validated attribute value.
@@ -60,6 +65,20 @@ class Environment(BaseModel):
     @validator("storm_category", pre=True)
     @classmethod
     def validate_storm_category(cls, value: EnvInputAttr) -> pd.DataFrame:
+        """
+        Transforms the input value given for the 'storm_category' parameter
+        into a valid 'Environment' attribute.
+
+        Args:
+            value (EnvInputAttr): Value assigned to the attribute (Union[pd.DataFrame, Path]).
+
+        Raises:
+            FileNotFoundError: When the provided value is a non-existent Path.
+            NotImplementedError: When the provided value is not supported.
+
+        Returns:
+            pd.DataFrame: Validated value.
+        """
         if isinstance(value, pd.DataFrame):
             return value
         if isinstance(value, Path):
@@ -72,14 +91,54 @@ class Environment(BaseModel):
 
     @validator("dates", pre=True)
     @classmethod
-    def validate_dates(
+    def prevalidate_dates(
         cls, value: Union[pd.DataFrame, Iterable[Union[str, datetime]]]
     ) -> pd.DataFrame:
+        """
+        Prevalidates the the input value given for the 'dates' parameter transforming it
+        into a valid 'Environment' attribute.
+
+        Args:
+            value (Union[pd.DataFrame, Iterable[Union[str, datetime]]]): Value assigned to the attribute.
+
+        Raises:
+            NotImplementedError: When the provided value is not supported.
+
+        Returns:
+            pd.DataFrame: Validated value.
+        """
         if isinstance(value, pd.DataFrame):
             return value
         if isinstance(value, Iterable):
             return cls.get_dates_dataframe(value[0], value[-1])
         raise NotImplementedError(f"Validator not available for type {type(value)}")
+
+    @validator("dates", always=True, pre=False)
+    @classmethod
+    def check_dates(cls, v: Optional[pd.DataFrame], values: dict) -> pd.DataFrame:
+        """
+        Validates the dates value (post-process).
+
+        Args:
+            v (Optional[pd.DataFrame]): Value pre-validated for dates (if any).
+            values (dict): Dictionary containing the rest of values given to initialize 'Environment'.
+
+        Returns:
+            pd.DataFrame: Validated dates value.
+        """
+        # Validate dates have values.
+        if isinstance(v, pd.DataFrame):
+            return v
+        light_value: pd.DataFrame = values.get("light", None)
+        if light_value is not None:
+            # TODO: Check column name of light-file
+            return light_value.reset_index().drop("light", axis=1)
+
+        temp_value: pd.DataFrame = values.get("temperature", None)
+        if temp_value is not None:
+            return temp_value.reset_index().drop("sst", axis=1)
+
+        return None
 
     @staticmethod
     def get_dates_dataframe(
@@ -87,6 +146,20 @@ class Environment(BaseModel):
     ) -> pd.DataFrame:
         dates = pd.date_range(start_date, end_date, freq="D")
         return pd.DataFrame({"date": dates})
+
+    def get_dates(self) -> Iterable[datetime]:
+        """
+        Just a shortcut being used in some occasions to get the datetime series array.
+
+        Raises:
+            ValueError: When no dates could be set for the 'Environment'.
+
+        Returns:
+            pd.Series[datetime]: Collection of timeseries stored in Environment.dates
+        """
+        if self.dates is None:
+            raise ValueError("No values were assigned to dates.")
+        return pd.to_datetime(self.dates["date"])
 
     def set_dates(
         self, start_date: Union[str, datetime], end_date: Union[str, datetime]
