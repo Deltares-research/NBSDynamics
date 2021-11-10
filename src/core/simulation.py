@@ -44,7 +44,7 @@ class Simulation(BaseModel):
     input_dir: Path = working_dir / "input"
 
     # Other attributes.
-    environment: Optional[Environment] = Environment()
+    environment: Environment = Environment()
     constants: Constants = Constants()
     output: Optional[Output] = None
     hydrodynamics: Optional[HydrodynamicProtocol] = None
@@ -339,13 +339,6 @@ class CoralTransectSimulation(Simulation):
 
     mode: str = "Transect"
 
-    # Environment variables
-    light: Path
-    temperature: Path
-    storm: Path
-    start_date: str
-    end_date: str
-
     # Hydrodynamics variables
     definition_file: Path
     config_file: Path
@@ -357,16 +350,6 @@ class CoralTransectSimulation(Simulation):
     @root_validator
     @classmethod
     def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
-        # Initialize environment.
-        environment = Environment(
-            **dict(
-                light=values["light"],
-                temperature=values["temperature"],
-                storm=values["storm"],
-                dates=(values["start_date"], values["end_date"]),
-            )
-        )
-
         # Initialize hydrodynamics model.
         hydromodel: HydrodynamicProtocol = values["hydrodynamics"]
         hydromodel.working_dir = values["working_dir"]
@@ -382,7 +365,7 @@ class CoralTransectSimulation(Simulation):
                     output_dir=values["output_dir"],
                     xy_coordinates=hydromodel.xy_coordinates,
                     outpoint=hydromodel.outpoint,
-                    first_date=environment.get_dates()[0],
+                    first_date=values["environment"].get_dates()[0],
                 )
             )
         output_model.define_output("map", **values["output_map_values"])
@@ -391,7 +374,6 @@ class CoralTransectSimulation(Simulation):
         # Set formatted values and return.
         values["output"] = output_model
         values["hydrodynamics"] = hydromodel
-        values["environment"] = environment
 
         return values
 

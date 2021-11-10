@@ -81,12 +81,13 @@ class TestAcceptance:
         input_dir = test_dir / "input"
         run_trans = CoralTransectSimulation(
             working_dir=test_dir,
-            constants_filename=input_dir / "coral_input.txt",
-            light=input_dir / "TS_PAR.txt",
-            temperature=input_dir / "TS_SST.txt",
-            storm=input_dir / "TS_stormcat2.txt",
-            start_date="2000-01-01",
-            end_date="2100-01-01",
+            constants=input_dir / "coral_input.txt",
+            environment=dict(
+                light=input_dir / "TS_PAR.txt",
+                temperature=input_dir / "TS_SST.txt",
+                storm=input_dir / "TS_stormcat2.txt",
+                dates=("2000-01-01", "2100-01-01"),
+            ),
             definition_file=input_dir / "TS_waves.txt",
             config_file=input_dir / "config.csv",
             output_map_values=dict(fme=False),
