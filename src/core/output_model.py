@@ -30,8 +30,8 @@ class Output(BaseModel):
 
     map_output: Optional[Dataset] = None
     his_output: Optional[Dataset] = None
-    _map_data: Optional[Dataset] = None
-    _his_data: Optional[Dataset] = None
+    _map_data = None
+    _his_data = None
 
     # Optional values
     space: Optional[int]
@@ -83,12 +83,10 @@ class Output(BaseModel):
         values["space"] = len(xy_coordinates)
 
         output_dir: Path = values["output_dir"]
-        values["file_name_map"] = values.get(
-            "file_name_map", output_dir / "CoralModel_map.nc"
-        )
-        values["file_name_his"] = values.get(
-            "file_name_his", output_dir / "CoralModel_his.nc"
-        )
+        if not values["file_name_map"]:
+            values["file_name_map"] = output_dir / "CoralModel_map.nc"
+        if not values["file_name_his"]:
+            values["file_name_his"] = output_dir / "CoralModel_his.nc"
 
         return values
 
