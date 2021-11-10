@@ -20,15 +20,21 @@ class HydrodynamicsFactory:
     and the 'HydrodynamicProtocol'.
     """
 
+    supported_modes: List[HydrodynamicProtocol] = [Reef0D, Reef1D, Delft3D, Transect]
+
     @staticmethod
     def get_hydrodynamic_model(model_name: str) -> HydrodynamicProtocol:
-        modes: List[HydrodynamicProtocol] = [Reef0D, Reef1D, Delft3D, Transect]
         nm_name = model_name.lower() if model_name is not None else model_name
         hydromodel: HydrodynamicProtocol = next(
-            (m_type for m_type in modes if m_type.__name__.lower() == nm_name), None
+            (
+                m_type
+                for m_type in HydrodynamicsFactory.supported_modes
+                if m_type.__name__.lower() == nm_name
+            ),
+            None,
         )
         if hydromodel is None:
 
-            msg = f"{model_name} not in {[x.__name__ for x in modes]}."
+            msg = f"{model_name} not in {[x.__name__ for x in HydrodynamicsFactory.supported_modes]}."
             raise ValueError(msg)
         return hydromodel()

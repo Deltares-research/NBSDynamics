@@ -3,7 +3,8 @@ from typing import Callable
 
 import pytest
 
-from src.core.environment import Constants, Environment
+from src.core.constants import Constants
+from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation import Simulation
@@ -32,41 +33,22 @@ class TestSimulation:
         assert test_sim.output_dir.stem == "output"
 
     @pytest.mark.parametrize(
-        "mode_case", [pytest.param(""), pytest.param(None), pytest.param("unsupported")]
+        "mode_case", [pytest.param(""), pytest.param("unsupported")]
     )
     def test_init_simulation_unsupported_modes(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
-            Simulation(mode_case)
+            Simulation(mode=mode_case)
         assert (
-            str(e_info.value)
+            e_info.value.errors()[0]["msg"]
             == f"{mode_case} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
         )
-
-    @pytest.mark.parametrize(
-        "unknown_type",
-        [
-            pytest.param("MAP"),
-            pytest.param("HIS"),
-            pytest.param("unknown"),
-            pytest.param(""),
-            pytest.param(None),
-        ],
-    )
-    @pytest.mark.parametrize("mode_case", simulation_cases)
-    def test_define_output_with_unknown_output_type_raises(
-        self, mode_case: str, unknown_type: str
-    ):
-        with pytest.raises(ValueError) as e_info:
-            test_sim = Simulation(mode=mode_case)
-            test_sim.define_output(unknown_type)
-        assert str(e_info.value) == f"{unknown_type} not in ('map', 'his')."
 
     @pytest.mark.parametrize("mode_case", simulation_cases)
     def test_input_check_wihtout_light(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
             test_sim = Simulation(mode=mode_case)
             assert test_sim.environment.light is None
-            test_sim.input_check()
+            test_sim.validate_environment()
         assert (
             str(e_info.value)
             == "CoralModel simulation cannot run without data on light conditions."
@@ -78,7 +60,7 @@ class TestSimulation:
             test_sim = Simulation(mode=mode_case)
             test_sim.environment._light = 4.2
             assert test_sim.environment.temperature is None
-            test_sim.input_check()
+            test_sim.validate_environment()
         assert (
             str(e_info.value)
             == f"CoralModel simulation cannot run without data on temperature conditions."
