@@ -13,7 +13,7 @@ from pydantic import root_validator, validator
 from tqdm import tqdm
 
 from src.core import coral_model
-from src.core import environment
+import pandas as pd
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -178,23 +178,21 @@ class Simulation(BaseModel):
         :type duration: int, optional
         """
         # auto-set duration based on environmental time-series
+        environment_dates: pd.core.series.Series = self.environment.get_dates()
         if duration is None:
             duration = int(
-                self.environment.dates.iloc[-1].year
-                - self.environment.dates.iloc[0].year
+                environment_dates.iloc[-1].year - environment_dates.iloc[0].year
             )
         years = range(
-            int(self.environment.dates.iloc[0].year),
-            int(self.environment.dates.iloc[0].year + duration),
+            int(environment_dates.iloc[0].year),
+            int(environment_dates.iloc[0].year + duration),
         )
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
                 coral.RESHAPE.time = len(
-                    self.environment.dates.dt.year[
-                        self.environment.dates.dt.year == years[i]
-                    ]
+                    environment_dates.dt.year[environment_dates.dt.year == years[i]]
                 )
 
                 # if-statement that encompasses all for which the hydrodynamic should be used
@@ -302,7 +300,7 @@ class Simulation(BaseModel):
                 # his-file
                 self.output.update_his(
                     coral,
-                    self.environment.dates[self.environment.dates.dt.year == years[i]],
+                    environment_dates[environment_dates.dt.year == years[i]],
                 )
 
     def finalise(self):

@@ -174,6 +174,45 @@ class Environment(BaseModel):
 
         self.dates = self.get_dates_dataframe(start_date, end_date)
 
+    @property
+    def temp_kelvin(self) -> float:
+        """
+        Temperature in Kelvin.
+
+        Returns:
+            float: value representation.
+        """
+        if all(self.temperature.values < 100) and self.temperature is not None:
+            return self.temperature + 273.15
+        return self.temperature
+
+    @property
+    def temp_celsius(self) -> float:
+        """
+        Temperature in Celsius
+
+        Returns:
+            float: value representation.
+        """
+        if all(self.temperature.values > 100) and self.temperature is not None:
+            return self.temperature - 273.15
+        return self.temperature
+
+    @property
+    def temp_mmm(self) -> pd.DataFrame:
+        """
+        Temperature in Monthly mean.
+
+        Returns:
+            pd.DataFrame: value as a pandas DataFrame.
+        """
+        monthly_mean = self.temp_kelvin.groupby(
+            [self.temp_kelvin.index.year, self.temp_kelvin.index.month]
+        ).agg(["mean"])
+        monthly_maximum_mean = monthly_mean.groupby(level=0).agg(["min", "max"])
+        monthly_maximum_mean.columns = monthly_maximum_mean.columns.droplevel([0, 1])
+        return monthly_maximum_mean
+
     EnvironmentValue = Union[float, list, tuple, np.ndarray, pd.DataFrame]
 
     def set_parameter_values(
@@ -199,12 +238,13 @@ class Environment(BaseModel):
 
         def set_value(val):
             """Function to set  value."""
+            simple_dates = self.get_dates()
             if pre_date is None:
-                return pd.DataFrame({parameter: val}, index=self.dates)
+                return pd.DataFrame({parameter: val}, index=simple_dates)
 
             dates = pd.date_range(
-                self.dates.iloc[0] - pd.DateOffset(years=pre_date),
-                self.dates.iloc[-1],
+                simple_dates.iloc[0] - pd.DateOffset(years=pre_date),
+                simple_dates.iloc[-1],
                 freq="D",
             )
             return pd.DataFrame({parameter: val}, index=dates)
@@ -222,10 +262,10 @@ class Environment(BaseModel):
 
         daily_params = ("light", "light_attenuation", "temperature", "aragonite")
         if parameter in daily_params:
-            setattr(self, f"_{parameter}", set_value(value))
+            setattr(self, parameter, set_value(value))
         elif parameter == "storm":
-            years = set(self.dates.dt.year)
-            self._storm_category = pd.DataFrame(data=value, index=years)
+            years = set(self.get_dates().dt.year)
+            self.storm_category = pd.DataFrame(data=value, index=years)
         else:
             msg = f"Entered parameter ({parameter}) not included. See documentation."
             raise ValueError(msg)
