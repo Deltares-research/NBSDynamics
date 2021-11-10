@@ -361,10 +361,12 @@ class CoralTransectSimulation(Simulation):
         output_model: Output = values["output"]
         if output_model is None:
             output_model = Output(
-                values["output_dir"],
-                hydromodel.xy_coordinates,
-                hydromodel.outpoint,
-                environment.get_dates()[0],
+                **dict(
+                    output_dir=values["output_dir"],
+                    xy_coordinates=hydromodel.xy_coordinates,
+                    outpoint=hydromodel.outpoint,
+                    first_date=environment.get_dates()[0],
+                )
             )
         output_model.define_output("map", **values["output_map_values"])
         output_model.define_output("his", **values["output_his_values"])

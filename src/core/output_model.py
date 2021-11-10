@@ -2,64 +2,90 @@ from pathlib import Path
 
 import numpy as np
 from netCDF4 import Dataset
-from pandas import DataFrame, Series
-
+from pandas import DataFrame
 from src.core.coral_model import Coral
 from src.core.utils import DataReshape
+from src.core.base_model import BaseModel
+from typing import Optional, Union
+from pydantic import root_validator
+from datetime import datetime
 
 
-class Output:
-    """Output files based on predefined output content."""
+class Output(BaseModel):
+    """
+    Output files based on predefined output content.
+    Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
+    """
+
+    output_dir: Path  # directory to write the output to
+    xy_coordinates: np.ndarray  # (x,y)-coordinates
+    outpoint: np.ndarray  # boolean indicating per (x,y) point if his output is desired
+    first_date: Union[np.datetime64, datetime]  # first date of simulation
 
     _file_name_map = None
     _file_name_his = None
-    _outdir = None
 
-    _map_output = None
-    _his_output = None
-
+    map_output: Optional[Path]
+    his_output: Optional[Path]
     _map_data = None
     _his_data = None
 
-    _xy_stations = None
-    _idx_stations = None
+    # Optional values
+    space: Optional[int]
+    xy_stations: Optional[np.ndarray]
+    idx_stations: Optional[np.ndarray]
+    first_year: Optional[int]
 
-    def __init__(
-        self,
-        outdir: Path,
-        xy_coordinates: np.ndarray,
-        outpoint: np.ndarray,
-        first_date: Series,
-    ):
-        """Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
-
-        :param outdir: directory to write the output to
-        :param xy_coordinates: (x,y)-coordinates
-        :param outpoint: boolean indicating per (x,y) point if his output is desired
-        :param first_date: first date of simulation
-
-        :type outdir: str
-        :type xy_coordinates: numpy.ndarray
-        :type outpoint: numpy.ndarray
-        :type first_date: pandas
+    @root_validator
+    @classmethod
+    def check_model(cls, values: dict) -> dict:
         """
-        self.xy_coordinates = xy_coordinates
-        self.outpoint = outpoint
-        self.nout_his = len(xy_coordinates[outpoint, 0])
-        self.set_xy_stations()
-        self.space = len(xy_coordinates)
+        Checks all the provided values and does further assignments if needed.
 
-        self.first_date = first_date
-        self.first_year = first_date.year
+        Args:
+            values (dict): Dictionary of values given to initialize an 'Output'.
 
-        self._outdir = outdir
+        Returns:
+            dict: Dictionary of validated values.
+        """
+        xy_coordinates: np.ndarray = values["xy_coordinates"]
+        outpoint: np.ndarray = values["outpoint"]
+        nout_his = len(xy_coordinates[outpoint, 0])
+        xy_stations = values.get("xy_stations", None)
+
+        def set_xy_stations():
+            """Determine space indices based on the (x,y)-coordinates of the stations."""
+            if xy_stations is not None:
+                return
+            x_coord = xy_coordinates[:, 0]
+            y_coord = xy_coordinates[:, 1]
+
+            x_station = xy_coordinates[outpoint, 0]
+            y_station = xy_coordinates[outpoint, 1]
+
+            idx = np.zeros(nout_his)
+
+            for s in range(len(idx)):
+                idx[s] = np.argmin(
+                    (x_coord - x_station[s]) ** 2 + (y_coord - y_station[s]) ** 2
+                )
+
+            idx_stations = idx.astype(int)
+            values["xy_stations"] = xy_coordinates[idx_stations, :]
+            values["idx_stations"] = idx_stations
+
+        set_xy_stations()
+        values["nout_his"] = nout_his
+        values["first_year"] = values["first_date"].year
+        values["space"] = len(xy_coordinates)
+        return values
 
     def __str__(self):
         """String-representation of Output."""
         return (
-            f"Output exported:\n\t{self._map_output}\n\t{self._his_output}"
+            f"Output exported:\n\t{self.map_output}\n\t{self.his_output}"
             if self.defined
-            else f"Output undefined."
+            else "Output undefined."
         )
 
     def __repr__(self):
@@ -123,26 +149,6 @@ class Output:
         return file_name
 
     @property
-    def outdir(self) -> str:
-        """
-        :return: output directory
-        :rtype: str
-        """
-        return self._outdir.stem
-
-    @outdir.setter
-    def set_outdir(self, output_folder: Path):
-        """Output folder.
-
-        :param output_folder: output folder for output files
-        :type output_folder: None, str, list, tuple
-        """
-        if not isinstance(output_folder, Path):
-            self._outdir = Path(output_folder)
-            return
-        self._outdir = output_folder
-
-    @property
     def file_name_map(self) -> Path:
         """File name of mapping output.
 
@@ -162,14 +168,6 @@ class Output:
         self._file_name_map = self.__file_ext(file_name)
 
     @property
-    def file_dir_map(self) -> Path:
-        """Full file directory of mapping output.
-
-        :rtype: str
-        """
-        return self._outdir
-
-    @property
     def file_name_his(self) -> Path:
         """File name of history output.
 
@@ -187,14 +185,6 @@ class Output:
         :type file_name: str
         """
         self._file_name_his = self.__file_ext(file_name)
-
-    @property
-    def file_dir_his(self) -> Path:
-        """Full file directory of history output.
-
-        :rtype: str
-        """
-        return self._outdir
 
     def initiate_map(self, coral: Coral):
         """Initiate mapping output file in which annual output covering the whole model domain is stored.
@@ -457,23 +447,6 @@ class Output:
         :rtype: numpy.ndarray
         """
         return self._xy_stations
-
-    def set_xy_stations(self):
-        """Determine space indices based on the (x,y)-coordinates of the stations."""
-        if self.xy_stations is None:
-            x = self.xy_coordinates[:, 0]
-            y = self.xy_coordinates[:, 1]
-
-            x_station = self.xy_coordinates[self.outpoint, 0]
-            y_station = self.xy_coordinates[self.outpoint, 1]
-
-            idx = np.zeros(self.nout_his)
-
-            for s in range(len(idx)):
-                idx[s] = np.argmin((x - x_station[s]) ** 2 + (y - y_station[s]) ** 2)
-
-            self._idx_stations = idx.astype(int)
-            self._xy_stations = self.xy_coordinates[self._idx_stations, :]
 
     @property
     def idx_stations(self) -> np.ndarray:

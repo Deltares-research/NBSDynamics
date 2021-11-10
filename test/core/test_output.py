@@ -13,7 +13,14 @@ class TestOutput:
         xy_array = np.array([[0, 1], [1, 0]], np.float64)
         outpoint_array = np.array([False, True])
         now_time = datetime.now()
-        test_output = Output(Path(), xy_array, outpoint_array, now_time)
+        test_output = Output(
+            **dict(
+                output_dir=Path(),
+                xy_coordinates=xy_array,
+                outpoint=outpoint_array,
+                first_date=now_time,
+            )
+        )
         assert str(test_output) == "Output undefined."
         assert (
             repr(test_output)
@@ -28,9 +35,16 @@ class TestOutput:
         xy_array = np.array([[0, 1], [1, 0]], np.float64)
         outpoint_array = np.array([False, True])
         now_time = datetime.now()
-        test_output = Output(Path(), xy_array, outpoint_array, now_time)
-        test_output._map_output = Path()
-        test_output._his_output = Path()
+        test_output = Output(
+            **dict(
+                output_dir=Path(),
+                xy_coordinates=xy_array,
+                outpoint=outpoint_array,
+                first_date=now_time,
+            )
+        )
+        test_output.map_output = Path()
+        test_output.his_output = Path()
         assert str(test_output) == "Output exported:\n\t.\n\t."
         assert test_output.defined == True
 
@@ -48,10 +62,12 @@ class TestOutput:
         with pytest.raises(ValueError) as e_info:
             pandas_dt = pandas.to_datetime(np.array("2021-12-20", dtype=np.datetime64))
             test_output = Output(
-                Path.cwd(),
-                np.array([[0, 1], [1, 0]]),
-                None,
-                pandas_dt,
+                **dict(
+                    output_dir=Path.cwd(),
+                    xy_coordinates=np.array([[0, 1], [1, 0]]),
+                    outpoint=None,
+                    first_date=pandas_dt,
+                )
             )
             test_output.define_output(unknown_type)
         assert str(e_info.value) == f"{unknown_type} not in ('map', 'his')."

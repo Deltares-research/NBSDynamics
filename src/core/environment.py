@@ -10,9 +10,8 @@ from pathlib import Path
 import numpy as np
 
 import pandas as pd
-from pandas.core.series import Series
 from src.core.base_model import BaseModel
-from typing import Any, Iterable, Optional, Tuple, Union
+from typing import Any, Iterable, Optional, Union
 from pydantic import validator
 
 EnvInputAttr = Union[pd.DataFrame, Path]
