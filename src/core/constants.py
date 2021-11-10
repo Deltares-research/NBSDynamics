@@ -19,7 +19,7 @@ class Constants(BaseModel):
 
     # light micro-environment
     Kd0: float = 0.1
-    theta_max: float = 0.5 * np.pi
+    theta_max: float = 0.5
 
     # flow micro-environment
     Cs: float = 0.17
@@ -178,4 +178,13 @@ class Constants(BaseModel):
             for line in input_file.read_text().splitlines(keepends=False)
             if line and not (n_line := normalize_line(line)).startswith("#")
         ]
-        return cls(**dict(input_lines))
+        cls_constants = cls(**dict(input_lines))
+        cls_constants.correct_values()
+        return cls_constants
+
+    def correct_values(self):
+        """
+        Corrects values that require extra operations, such as theta_max and prop_space.
+        """
+        self.theta_max *= np.pi
+        self.prop_space /= np.sqrt(2.0)

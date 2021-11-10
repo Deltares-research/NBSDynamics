@@ -1,4 +1,5 @@
 from typing import Any
+import numpy as np
 import pytest
 
 from src.core.constants import Constants
@@ -67,3 +68,16 @@ class TestConstants:
     def test_check_processes(self, input_dict: dict, output_dict: dict):
         result_dict = Constants.check_processes(input_dict)
         assert result_dict == output_dict
+
+    def test_correct_values(self):
+        # Define test data.
+        test_constants = Constants()
+        test_constants.theta_max = 0.42
+        test_constants.prop_space = 0.24
+
+        # Run test.
+        test_constants.correct_values()
+
+        # Verify final expectations.
+        assert test_constants.theta_max == 0.42 * np.pi
+        assert test_constants.prop_space == 0.24 / np.sqrt(2.0)
