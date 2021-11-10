@@ -32,8 +32,8 @@ class Constants(BaseModel):
     rd: float = 500
     numericTheta: float = 0.5
     err: float = 1e-3
-    maxiter_k: int = 1e5
-    maxiter_aw: int = 1e5
+    maxiter_k: int = int(1e5)
+    maxiter_aw: int = int(1e5)
 
     # thermal micro-environment
     K0: float = 80.0

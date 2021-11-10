@@ -1,5 +1,3 @@
-from typing import Callable
-
 import pytest
 
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
@@ -106,7 +104,6 @@ class TestHydrodynamicProtocol:
                 pytest.fail(f"Method {method_name} was supposed to raise.")
 
         props_to_test = [
-            "working_dir",
             "config_file",
             "definition_file",
             "settings",

@@ -45,7 +45,6 @@ class Simulation(BaseModel):
     environment: Environment = Environment()
     constants: Optional[Constants] = Constants()
     output: Optional[Output] = None
-
     hydrodynamics: Optional[HydrodynamicProtocol] = None
 
     @validator("working_dir", always=True)
@@ -317,18 +316,10 @@ class CoralTransectSimulation(Simulation):
 
     mode: str = "Transect"
 
-    # Directories related to working dir
-    working_dir: Optional[Path] = Path.cwd()
-    figures_dir: Path = working_dir / "figures"
-    output_dir: Path = working_dir / "output"
-    input_dir: Path = working_dir / "input"
-
     # Constant variables
-    constants: Constants = None
     constants_filename: Path
 
     # Environment variables
-    environment: Environment = Environment()
     light: Path
     temperature: Path
     storm: Path
@@ -336,12 +327,10 @@ class CoralTransectSimulation(Simulation):
     end_date: str
 
     # Hydrodynamics variables
-    hydrodynamics: HydrodynamicProtocol = None
     definition_file: Path
     config_file: Path
 
     # Other variables.
-    output: Output = None
     output_map_values: Optional[dict] = dict()
     output_his_values: Optional[dict] = dict()
 
@@ -349,7 +338,6 @@ class CoralTransectSimulation(Simulation):
     @classmethod
     def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
         # Initialize constants.
-        constants: Constants = values["constants"]
         constants = Constants.from_input_file(values["constants_filename"])
 
         # Initialize environment.
