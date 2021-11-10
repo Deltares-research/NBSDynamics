@@ -6,7 +6,7 @@ coral_model - loop
 """
 
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import numpy as np
 from pydantic import root_validator, validator
@@ -22,7 +22,8 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.environment import Constants, Environment
+from src.core.environment import Environment
+from src.core.constants import Constants
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output_model import Output
