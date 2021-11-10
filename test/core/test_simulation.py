@@ -58,7 +58,7 @@ class TestSimulation:
     def test_input_check_wihtout_temperature(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:
             test_sim = Simulation(mode=mode_case)
-            test_sim.environment._light = 4.2
+            test_sim.environment.light = 4.2
             assert test_sim.environment.temperature is None
             test_sim.validate_environment()
         assert (

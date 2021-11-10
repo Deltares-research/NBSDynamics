@@ -378,6 +378,23 @@ class CoralTransectSimulation(Simulation):
         return values
 
 
+class VersionSimulation(BaseModel):
+
+    environment: Environment
+    constants: Constants
+    hydrodynamics: HydrodynamicProtocol
+    coral: coral_model.Coral
+    output: Output
+
+    def initiate(self, duration: Optional[int] = None):
+        raise NotImplementedError
+    
+    def run(self, duration: Optional[int] = None):
+        raise NotImplementedError
+    
+    def finalise(self):
+        raise NotImplementedError
+
 # TODO: Define folder structure
 #  > working directory
 #  > figures directory
