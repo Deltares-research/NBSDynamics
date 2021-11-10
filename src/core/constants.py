@@ -19,7 +19,7 @@ class Constants(BaseModel):
 
     # light micro-environment
     Kd0: float = 0.1
-    theta_max: float = 0.5
+    theta_max: float = 0.5 * np.pi
 
     # flow micro-environment
     Cs: float = 0.17

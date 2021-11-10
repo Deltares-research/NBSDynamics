@@ -43,7 +43,7 @@ class Simulation(BaseModel):
 
     # Other attributes.
     environment: Environment = Environment()
-    constants: Optional[Constants] = None
+    constants: Optional[Constants] = Constants()
     output: Optional[Output] = None
 
     hydrodynamics: Optional[HydrodynamicProtocol] = None

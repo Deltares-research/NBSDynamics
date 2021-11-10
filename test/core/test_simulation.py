@@ -43,25 +43,6 @@ class TestSimulation:
             == f"{mode_case} not in ['Reef0D', 'Reef1D', 'Delft3D', 'Transect']."
         )
 
-    @pytest.mark.parametrize(
-        "unknown_type",
-        [
-            pytest.param("MAP"),
-            pytest.param("HIS"),
-            pytest.param("unknown"),
-            pytest.param(""),
-            pytest.param(None),
-        ],
-    )
-    @pytest.mark.parametrize("mode_case", simulation_cases)
-    def test_define_output_with_unknown_output_type_raises(
-        self, mode_case: str, unknown_type: str
-    ):
-        with pytest.raises(ValueError) as e_info:
-            test_sim = Simulation(mode=mode_case)
-            test_sim.define_output(unknown_type)
-        assert str(e_info.value) == f"{unknown_type} not in ('map', 'his')."
-
     @pytest.mark.parametrize("mode_case", simulation_cases)
     def test_input_check_wihtout_light(self, mode_case: str):
         with pytest.raises(ValueError) as e_info:

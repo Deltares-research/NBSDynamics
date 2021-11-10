@@ -2,8 +2,10 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
+import pandas
 
 from src.core.output_model import Output
+import pytest
 
 
 class TestOutput:
@@ -31,3 +33,25 @@ class TestOutput:
         test_output._his_output = Path()
         assert str(test_output) == "Output exported:\n\t.\n\t."
         assert test_output.defined == True
+
+    @pytest.mark.parametrize(
+        "unknown_type",
+        [
+            pytest.param("MAP"),
+            pytest.param("HIS"),
+            pytest.param("unknown"),
+            pytest.param(""),
+            pytest.param(None),
+        ],
+    )
+    def test_define_output_with_unknown_output_type_raises(self, unknown_type: str):
+        with pytest.raises(ValueError) as e_info:
+            pandas_dt = pandas.to_datetime(np.array("2021-12-20", dtype=np.datetime64))
+            test_output = Output(
+                Path.cwd(),
+                np.array([[0, 1], [1, 0]]),
+                None,
+                pandas_dt,
+            )
+            test_output.define_output(unknown_type)
+        assert str(e_info.value) == f"{unknown_type} not in ('map', 'his')."
