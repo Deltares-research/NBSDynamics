@@ -68,7 +68,7 @@ class MapOutput(BaseOutput):
         """
         return len(self.xy_coordinates)
 
-    def initiate(self, coral: Coral):
+    def initialize(self, coral: Coral):
         """Initiate mapping output file in which annual output covering the whole model domain is stored.
 
         :param coral: coral animal
@@ -306,7 +306,7 @@ class HisOutput(BaseOutput):
     idx_stations: np.ndarray
     first_date: Union[np.datetime64, datetime]
 
-    def initiate(self):
+    def initialize(self):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
         if not self.valid_output():
             return

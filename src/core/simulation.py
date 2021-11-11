@@ -161,8 +161,7 @@ class Simulation(BaseModel):
         coral.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
-            self.output.initiate_his()
-            self.output.initiate_map(coral)
+            self.output.initialize(coral)
         else:
             msg = "WARNING: No output defined, so none exported."
             print(msg)
@@ -186,8 +185,7 @@ class Simulation(BaseModel):
 
         coral.initiate_spatial_morphology(cover)
 
-        self.output.initiate_his()
-        self.output.initiate_map(coral)
+        self.output.initialize(coral)
 
         return coral
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+from src.core.coral_model import Coral
 from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
 from src.core.base_model import BaseModel
@@ -123,3 +124,13 @@ class OutputWrapper(BaseModel):
 
         idx_stations = idx.astype(int)
         return xy_coordinates[idx_stations, :], idx_stations
+
+    def initialize(self, coral: Coral):
+        """
+        Initializes all available output models (His and Map).
+
+        Args:
+            coral (Coral): Coral model to be used in the output.
+        """
+        self.his_output.initialize(coral)
+        self.map_output.initialize(coral)
