@@ -9,9 +9,6 @@
 ### Constants
 ::: src.core.constants
 
-### Output model
-::: src.core.output_model
-
 ### Environment
 ::: src.core.environment
 
