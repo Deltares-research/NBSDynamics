@@ -4,6 +4,6 @@ __all__ = [
     "hydrodynamics",
     "simulation",
     "utils",
-    "output_model",
+    "output",
     "constants",
 ]
