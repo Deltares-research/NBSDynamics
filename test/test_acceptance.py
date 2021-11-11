@@ -1,5 +1,6 @@
 from pathlib import Path
 from test.utils import TestUtils
+from typing import Callable
 
 import numpy
 import pytest
@@ -8,7 +9,7 @@ from numpy import loadtxt, savetxt
 
 from src.core.coral_model import Coral
 from src.core.simulation import CoralTransectSimulation, Simulation
-from src.tools.plot_output import OutputPlot, plot_output
+from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
 class TestAcceptance:
@@ -49,15 +50,9 @@ class TestAcceptance:
         sim_run.define_output("his", fme=False)
         sim_run.output.xy_stations = (0, 0)
         # initiate coral
-        coral = Coral(sim_run.constants, 0.1, 0.1, 0.05, 0.05, 0.2)
-        print("coral defined")
-        coral = sim_run.initiate(coral)
-
-        print("coral initiated")
-        # simulation
-        sim_run.exec(coral)
-
-        # finalizing
+        sim_run.coral = Coral(sim_run.constants, 0.1, 0.1, 0.05, 0.05, 0.2)
+        sim_run.initiate()
+        sim_run.run()
         sim_run.finalise()
 
     def test_given_interface_transect_runs(self):
@@ -81,33 +76,31 @@ class TestAcceptance:
         input_dir = test_dir / "input"
         run_trans = CoralTransectSimulation(
             working_dir=test_dir,
-            constants_filename=input_dir / "coral_input.txt",
-            light=input_dir / "TS_PAR.txt",
-            temperature=input_dir / "TS_SST.txt",
-            storm=input_dir / "TS_stormcat2.txt",
-            start_date="2000-01-01",
-            end_date="2100-01-01",
+            constants=input_dir / "coral_input.txt",
+            environment=dict(
+                light=input_dir / "TS_PAR.txt",
+                temperature=input_dir / "TS_SST.txt",
+                storm=input_dir / "TS_stormcat2.txt",
+                dates=("2000-01-01", "2100-01-01"),
+            ),
             definition_file=input_dir / "TS_waves.txt",
             config_file=input_dir / "config.csv",
+            output_dir=test_dir / "output",
             output_map_values=dict(fme=False),
             output_his_values=dict(fme=False),
+            coral=dict(
+                dc=0.125,
+                hc=0.125,
+                bc=0.1,
+                tc=0.1,
+                ac=0.2,
+                species_constant=0.6,
+            ),
         )
 
-        # hydrodynamic model
-        # settings for a 1D idealized transect using fixed currents and Soulsby
-        # orbital velocities depending on stormcat and depth
-        coral_dict = dict(
-            constants=run_trans.constants,
-            dc=0.125,
-            hc=0.125,
-            bc=0.1,
-            tc=0.1,
-            ac=0.2,
-            species_constant=0.6,
-        )
         # 3. Run simulation
-        coral = run_trans.initiate(Coral(**coral_dict))
-        run_trans.run(coral)
+        run_trans.initiate()
+        run_trans.run()
         run_trans.finalise()
 
         # 4. Verify expectations.
@@ -136,8 +129,8 @@ class TestAcceptance:
                         ref_variable, out_netcdf[variable]
                     ), f"{variable} not close to reference data."
 
-        compare_files(run_trans.output_dir / his_filename)
-        compare_files(run_trans.output_dir / map_filename)
+        compare_files(run_trans.output.his_output.output_filepath)
+        compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
@@ -175,22 +168,15 @@ class TestAcceptance:
         output_file(expected_dir / nc_filename)
 
     @pytest.mark.skip(reason="Only to run locally.")
-    def test_plot_map_output(self):
+    @pytest.mark.parametrize(
+        "nc_filename, output_type",
+        [
+            pytest.param("CoralModel_his.nc", OutputHis, id="Plot HIS local file."),
+            pytest.param("CoralModel_map.nc", OutputMap, id="Plot MAP local file."),
+        ],
+    )
+    def test_plot_output(self, nc_filename: str, output_type: Callable):
         expected_file = (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "output"
-            / "CoralModel_map.nc"
+            TestUtils.get_local_test_data_dir("transect_case") / "output" / nc_filename
         )
-        output_plot = OutputPlot()
-        output_plot.plot_map(expected_file)
-
-    @pytest.mark.skip(reason="Only to run locally.")
-    def test_plot_his_output(self):
-        expected_file = (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "output"
-            / "CoralModel_his.nc"
-        )
-
-        output_plot = OutputPlot()
-        output_plot.plot_his(expected_file)
+        output_type().plot(expected_file)

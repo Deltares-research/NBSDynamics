@@ -6,13 +6,13 @@ coral_model - loop
 """
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
+import pandas as pd
 from pydantic import root_validator, validator
 from tqdm import tqdm
 
-from src.core import coral_model
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -24,17 +24,18 @@ from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.constants import Constants
+from src.core.coral_model import Coral
 from src.core.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output_model import Output
+from src.core.output.output_wrapper import OutputWrapper
 from src.core.utils import time_series_year
 
 
 class Simulation(BaseModel):
     """CoralModel simulation."""
 
-    mode: str
+    mode: Optional[str]  # Either mode or hydrodynamics should be given.
 
     # Directories related to working dir
     working_dir: Optional[Path] = Path.cwd()
@@ -44,9 +45,10 @@ class Simulation(BaseModel):
 
     # Other attributes.
     environment: Environment = Environment()
-    constants: Optional[Constants] = Constants()
-    output: Optional[Output] = None
-    hydrodynamics: Optional[HydrodynamicProtocol] = None
+    constants: Constants = Constants()
+    output: Optional[OutputWrapper]
+    hydrodynamics: Optional[HydrodynamicProtocol]
+    coral: Optional[Coral]
 
     @validator("working_dir", always=True)
     @classmethod
@@ -58,12 +60,90 @@ class Simulation(BaseModel):
 
         return field_value
 
+    @validator("constants", pre=True)
+    @classmethod
+    def validate_constants(cls, field_value: Union[str, Path, Constants]) -> Constants:
+        """
+        Validates the user-input constants value and transforms in case it's a filepath (str, Path).
+
+        Args:
+            field_value (Union[str, Path, Constants]): Value given by the user representing Constants.
+
+        Raises:
+            NotImplementedError: When the input value does not have any converter.
+
+        Returns:
+            Constants: Validated constants value.
+        """
+        if isinstance(field_value, Constants):
+            return field_value
+        if isinstance(field_value, str):
+            field_value = Path(field_value)
+        if isinstance(field_value, Path):
+            return Constants.from_input_file(field_value)
+        raise NotImplementedError(f"Validator not available for {type(field_value)}")
+
+    @validator("coral", pre=True)
+    @classmethod
+    def validate_coral(cls, field_value: Union[dict, Coral], values: dict) -> Coral:
+        """
+        Initializes coral in case a dictionary is provided. Ensuring the constants are also
+        given to the object.
+
+        Args:
+            field_value (Union[dict, Coral]): Value given by the user for the Coral field.
+            values (dict): Dictionary of remaining user-given field values.
+
+        Returns:
+            Coral: Validated instance of 'Coral'.
+        """
+        if isinstance(field_value, Coral):
+            return field_value
+        if isinstance(field_value, dict):
+            # Check if constants present in the dictionary:
+            if "constants" in field_value.keys():
+                # It will be generated automatically.
+                # in case parameters are missing an error will also be displayed.
+                return Coral(**field_value)
+            if "constants" in values.keys():
+                field_value["constants"] = values["constants"]
+                return Coral(**field_value)
+            raise ValueError(
+                "Constants should be provided to initialize a Coral Model."
+            )
+        raise NotImplementedError(f"Validator not available for {type(field_value)}")
+
     @root_validator
     @classmethod
     def validate_simulation_attrs(cls, values: dict) -> dict:
-        values["hydrodynamics"] = HydrodynamicsFactory.get_hydrodynamic_model(
-            values.get("mode", None)
-        )
+        """
+        Validates all the provided simulation attributes.
+
+        Args:
+            values (dict): Dictionary of pre-validated values.
+
+        Raises:
+            ValueError: When Hydrodynamics were not provided either as mode or as instantiated class.
+
+        Returns:
+            dict: Dictionary of resulting validated values.
+        """
+        # Validate either hydrodynamics as object or as mode has been provided:
+        def validate_hydrodynamics(
+            hydromodel: Optional[HydrodynamicProtocol],
+        ) -> HydrodynamicProtocol:
+            if hydromodel is not None:
+                return hydromodel
+            # Hydrodynamics not present as an object.
+            v_mode = values.get("mode", None)
+            if v_mode is None:
+                raise ValueError(
+                    "Hydrodynamics should be provided, either as 'mode' or as a 'HydrodynamicProtocol' instantiated object."
+                )
+            return HydrodynamicsFactory.get_hydrodynamic_model(values.get("mode", None))
+
+        values["hydrodynamics"] = validate_hydrodynamics(values["hydrodynamics"])
+
         return values
 
     def validate_simulation_directories(self):
@@ -84,11 +164,11 @@ class Simulation(BaseModel):
     def validate_environment(self):
         """Check input; if all required data is provided."""
         if self.environment.light is None:
-            msg = f"CoralModel simulation cannot run without data on light conditions."
+            msg = "CoralModel simulation cannot run without data on light conditions."
             raise ValueError(msg)
 
         if self.environment.temperature is None:
-            msg = f"CoralModel simulation cannot run without data on temperature conditions."
+            msg = "CoralModel simulation cannot run without data on temperature conditions."
             raise ValueError(msg)
 
         if self.environment.light_attenuation is None:
@@ -109,16 +189,14 @@ class Simulation(BaseModel):
 
     def initiate(
         self,
-        coral: coral_model.Coral,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
         value: Optional[float] = None,
-    ) -> coral_model.Coral:
+    ) -> Coral:
         """Initiate the coral distribution. The default coral distribution is a full coral cover over the whole domain.
         More complex initial conditions of the coral cover cannot be realised with this method. See the documentation on
         workarounds to achieve this anyway.
 
-        :param coral: coral animal
         :param x_range: minimum and maximum x-coordinate, defaults to None
         :param y_range: minimum and maximum y-coordinate, defaults to None
         :param value: coral cover, defaults to None
@@ -134,13 +212,12 @@ class Simulation(BaseModel):
         # Load constants and validate environment.
         self.validate_simulation_directories()
         self.validate_environment()
-        coral.RESHAPE.space = self.hydrodynamics.space
+        self.coral.RESHAPE.space = self.hydrodynamics.space
 
         if self.output.defined:
-            self.output.initiate_his()
-            self.output.initiate_map(coral)
+            self.output.initialize(self.coral)
         else:
-            msg = f"WARNING: No output defined, so none exported."
+            msg = "WARNING: No output defined, so none exported."
             print(msg)
 
         xy = self.hydrodynamics.xy_coordinates
@@ -148,7 +225,7 @@ class Simulation(BaseModel):
         if value is None:
             value = 1
 
-        cover = value * np.ones(coral.RESHAPE.space)
+        cover = value * np.ones(self.coral.RESHAPE.space)
 
         if x_range is not None:
             x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -160,14 +237,11 @@ class Simulation(BaseModel):
             y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
             cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        coral.initiate_spatial_morphology(cover)
+        self.coral.initiate_spatial_morphology(cover)
 
-        self.output.initiate_his()
-        self.output.initiate_map(coral)
+        self.output.initialize(self.coral)
 
-        return coral
-
-    def run(self, coral: coral_model.Coral, duration: Optional[int] = None):
+    def run(self, duration: Optional[int] = None):
         """Run simulation.
 
         :param coral: coral animal
@@ -177,29 +251,27 @@ class Simulation(BaseModel):
         :type duration: int, optional
         """
         # auto-set duration based on environmental time-series
+        environment_dates: pd.core.series.Series = self.environment.get_dates()
         if duration is None:
             duration = int(
-                self.environment.dates.iloc[-1].year
-                - self.environment.dates.iloc[0].year
+                environment_dates.iloc[-1].year - environment_dates.iloc[0].year
             )
         years = range(
-            int(self.environment.dates.iloc[0].year),
-            int(self.environment.dates.iloc[0].year + duration),
+            int(environment_dates.iloc[0].year),
+            int(environment_dates.iloc[0].year + duration),
         )
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
-                coral.RESHAPE.time = len(
-                    self.environment.dates.dt.year[
-                        self.environment.dates.dt.year == years[i]
-                    ]
+                self.coral.RESHAPE.time = len(
+                    environment_dates.dt.year[environment_dates.dt.year == years[i]]
                 )
 
                 # if-statement that encompasses all for which the hydrodynamic should be used
                 progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                 current_vel, wave_vel, wave_per = self.hydrodynamics.update(
-                    coral, stormcat=0
+                    self.coral, stormcat=0
                 )
 
                 # # environment
@@ -210,9 +282,9 @@ class Simulation(BaseModel):
                     light_in=time_series_year(self.environment.light, years[i]),
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
-                    datareshape=coral.RESHAPE,
+                    datareshape=self.coral.RESHAPE,
                 )
-                lme.rep_light(coral)
+                lme.rep_light(self.coral)
                 # flow micro-environment
                 fme = Flow(
                     constants=self.constants,
@@ -220,19 +292,19 @@ class Simulation(BaseModel):
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
                     peak_period=wave_per,
-                    datareshape=coral.RESHAPE,
+                    datareshape=self.coral.RESHAPE,
                 )
-                fme.velocities(coral, in_canopy=self.constants.fme)
-                fme.thermal_boundary_layer(coral)
+                fme.velocities(self.coral, in_canopy=self.constants.fme)
+                fme.thermal_boundary_layer(self.coral)
                 # thermal micro-environment
                 tme = Temperature(
                     constants=self.constants,
                     temperature=time_series_year(
                         self.environment.temp_kelvin, years[i]
                     ),
-                    datareshape=coral.RESHAPE,
+                    datareshape=self.coral.RESHAPE,
                 )
-                tme.coral_temperature(coral)
+                tme.coral_temperature(self.coral)
 
                 # # physiology
                 progress.set_postfix(inner_loop="coral physiology")
@@ -241,27 +313,27 @@ class Simulation(BaseModel):
                     constants=self.constants,
                     light_in=time_series_year(self.environment.light, years[i]),
                     first_year=True if i == 0 else False,
-                    datareshape=coral.RESHAPE,
+                    datareshape=self.coral.RESHAPE,
                 )
-                phd.photo_rate(coral, self.environment, years[i])
+                phd.photo_rate(self.coral, self.environment, years[i])
                 # population states
                 ps = PopulationStates(constants=self.constants)
-                ps.pop_states_t(coral)
+                ps.pop_states_t(self.coral)
                 # calcification
                 cr = Calcification(constants=self.constants)
                 cr.calcification_rate(
-                    coral, time_series_year(self.environment.aragonite, years[i])
+                    self.coral, time_series_year(self.environment.aragonite, years[i])
                 )
                 # # morphology
                 progress.set_postfix(inner_loop="coral morphology")
                 # morphological development
                 mor = Morphology(
                     constants=self.constants,
-                    calc_sum=coral.calc.sum(axis=1),
+                    calc_sum=self.coral.calc.sum(axis=1),
                     light_in=time_series_year(self.environment.light, years[i]),
-                    datareshape=coral.RESHAPE,
+                    datareshape=self.coral.RESHAPE,
                 )
-                mor.update(coral)
+                mor.update(self.coral)
 
                 # # storm damage
                 if self.environment.storm_category is not None:
@@ -272,7 +344,7 @@ class Simulation(BaseModel):
                         progress.set_postfix(inner_loop="storm damage")
                         # update hydrodynamic model
                         current_vel, wave_vel, wave_per = self.hydrodynamics.update(
-                            coral, stormcat
+                            self.coral, stormcat
                         )
                         # storm flow environment
                         sfe = Flow(
@@ -281,27 +353,27 @@ class Simulation(BaseModel):
                             u_wave=wave_vel,
                             h=self.hydrodynamics.water_depth,
                             peak_period=wave_per,
-                            datareshape=coral.RESHAPE,
+                            datareshape=self.coral.RESHAPE,
                         )
-                        sfe.velocities(coral, in_canopy=self.constants.fme)
+                        sfe.velocities(self.coral, in_canopy=self.constants.fme)
                         # storm dislodgement criterion
                         sdc = Dislodgement(self.constants)
-                        sdc.update(coral)
+                        sdc.update(self.coral)
 
                 # # recruitment
                 progress.set_postfix(inner_loop="coral recruitment")
                 # recruitment
                 rec = Recruitment(self.constants)
-                rec.update(coral)
+                rec.update(self.coral)
 
                 # # export results
                 progress.set_postfix(inner_loop="export results")
                 # map-file
-                self.output.update_map(coral, years[i])
+                self.output.map_output.update(self.coral, years[i])
                 # his-file
-                self.output.update_his(
-                    coral,
-                    self.environment.dates[self.environment.dates.dt.year == years[i]],
+                self.output.his_output.update(
+                    self.coral,
+                    environment_dates[environment_dates.dt.year == years[i]],
                 )
 
     def finalise(self):
@@ -317,16 +389,6 @@ class CoralTransectSimulation(Simulation):
 
     mode: str = "Transect"
 
-    # Constant variables
-    constants_filename: Path
-
-    # Environment variables
-    light: Path
-    temperature: Path
-    storm: Path
-    start_date: str
-    end_date: str
-
     # Hydrodynamics variables
     definition_file: Path
     config_file: Path
@@ -338,18 +400,6 @@ class CoralTransectSimulation(Simulation):
     @root_validator
     @classmethod
     def initialize_coral_transect_simulation_attrs(cls, values: dict) -> dict:
-        # Initialize constants.
-        constants = Constants.from_input_file(values["constants_filename"])
-
-        # Initialize environment.
-        environment: Environment = values["environment"]
-        environment.from_file("light", values["light"])
-        environment.from_file("temperature", values["temperature"])
-        environment.from_file("storm", values["storm"])
-        environment.set_dates(
-            start_date=values["start_date"], end_date=values["end_date"]
-        )
-
         # Initialize hydrodynamics model.
         hydromodel: HydrodynamicProtocol = values["hydrodynamics"]
         hydromodel.working_dir = values["working_dir"]
@@ -358,24 +408,42 @@ class CoralTransectSimulation(Simulation):
         hydromodel.initiate()
 
         # Initialize output.
-        output_model: Output = values["output"]
+        output_model: OutputWrapper = values["output"]
         if output_model is None:
-            output_model = Output(
-                values["output_dir"],
-                hydromodel.xy_coordinates,
-                hydromodel.outpoint,
-                environment.dates[0],
+            output_model = OutputWrapper(
+                **dict(
+                    output_dir=values["output_dir"],
+                    xy_coordinates=hydromodel.xy_coordinates,
+                    outpoint=hydromodel.outpoint,
+                    first_date=values["environment"].get_dates()[0],
+                    map_values=values["output_map_values"],
+                    his_values=values["output_his_values"],
+                )
             )
-        output_model.define_output("map", **values["output_map_values"])
-        output_model.define_output("his", **values["output_his_values"])
 
         # Set formatted values and return.
         values["output"] = output_model
         values["hydrodynamics"] = hydromodel
-        values["environment"] = environment
-        values["constants"] = constants
 
         return values
+
+
+class NewVersionSimulation(BaseModel):
+
+    environment: Environment
+    constants: Constants
+    hydromodel: HydrodynamicProtocol
+    coral: Coral
+    output: OutputWrapper
+
+    def initiate(self, duration: Optional[int] = None):
+        raise NotImplementedError
+
+    def run(self, duration: Optional[int] = None):
+        raise NotImplementedError
+
+    def finalise(self):
+        raise NotImplementedError
 
 
 # TODO: Define folder structure

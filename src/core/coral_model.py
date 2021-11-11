@@ -32,11 +32,11 @@ class Coral:
         """
         self.constants = constants
         self.RESHAPE = DataReshape()
-        self.dc = self.RESHAPE.variable2array(dc)
-        self.hc = self.RESHAPE.variable2array(hc)
-        self.bc = self.RESHAPE.variable2array(bc)
-        self.tc = self.RESHAPE.variable2array(tc)
-        self.ac = self.RESHAPE.variable2array(ac)
+        self.dc = DataReshape.variable2array(dc)
+        self.hc = DataReshape.variable2array(hc)
+        self.bc = DataReshape.variable2array(bc)
+        self.tc = DataReshape.variable2array(tc)
+        self.ac = DataReshape.variable2array(ac)
 
         self.Csp = species_constant  # make into the constants list
 

@@ -17,6 +17,9 @@ class HydrodynamicProtocol(Protocol):
         """
         Configuration file for the model.
 
+        Raises:
+            NotImplementedError: When the model does not implement its own definition.
+
         Returns:
             Path: The path to the configuration file.
         """

@@ -6,6 +6,7 @@ Created on Fri Sep 24 11:36:48 2021
 """
 
 import platform
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable
 
@@ -13,7 +14,7 @@ import matplotlib
 import numpy as np
 from netCDF4 import Dataset
 
-from src.core.output_model import Output
+from src.core.output.output_wrapper import OutputWrapper
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:
@@ -47,7 +48,7 @@ limdict = {
 }
 
 
-class OutputPlot:
+class _BaseOutputPlot(ABC):
     def _plot_nc_variables(self, nc_variables: dict, subplot_call: Callable):
         teller = 0
         for vv in nc_variables.keys():
@@ -69,7 +70,22 @@ class OutputPlot:
                 subplot_call(VarT, ylims, ax)
                 plt.close()
 
-    def plot_map(self, map_path: Path):
+    @abstractmethod
+    def plot(self, nc_path: Path):
+        """
+        Plots the content of the given filepath.
+
+        Args:
+            nc_path (Path): Path to the netcdf file.
+
+        Raises:
+            NotImplementedError: When not defined in the base class.
+        """
+        raise NotImplementedError
+
+
+class OutputMap(_BaseOutputPlot):
+    def plot(self, map_path: Path):
         """
         Plots the map file according to the coral model.
 
@@ -88,7 +104,9 @@ class OutputPlot:
         with Dataset(map_path) as nc:
             self._plot_nc_variables(nc.variables, _subplot_mapfile)
 
-    def plot_his(self, his_path: Path):
+
+class OutputHis(_BaseOutputPlot):
+    def plot(self, his_path: Path):
         """
         Plots the his file according to the coral model.
 
@@ -108,7 +126,7 @@ class OutputPlot:
             self._plot_nc_variables(nc.variables, _subplot_hisfile)
 
 
-def plot_output(output_model: Output):
+def plot_output(output_wrapper: OutputWrapper):
     """
     Plots the map and his files from an output model.
 
@@ -118,8 +136,7 @@ def plot_output(output_model: Output):
     Raises:
         ValueError: When no input argument has been provided.
     """
-    if not isinstance(output_model, Output):
+    if not isinstance(output_wrapper, OutputWrapper):
         raise ValueError("No output model provided.")
-    output_plot = OutputPlot()
-    output_plot.plot_map(output_model.file_name_map)
-    output_plot.plot_his(output_model.file_name_his)
+    OutputMap().plot(output_wrapper.map_output.output_filepath)
+    OutputHis().plot(output_wrapper.his_output.output_filepath)
