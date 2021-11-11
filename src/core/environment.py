@@ -181,24 +181,24 @@ class Environment(BaseModel):
         self.dates = self.get_dates_dataframe(start_date, end_date)
 
     @property
-    def temp_kelvin(self) -> float:
+    def temp_kelvin(self) -> pd.DataFrame:
         """
-        Temperature in Kelvin.
+        Gets the temperature property in Kelvin.
 
         Returns:
-            float: value representation.
+            pd.DataFrame: value representation.
         """
         if all(self.temperature.values < 100) and self.temperature is not None:
             return self.temperature + 273.15
         return self.temperature
 
     @property
-    def temp_celsius(self) -> float:
+    def temp_celsius(self) -> pd.DataFrame:
         """
-        Temperature in Celsius
+        Gets the temperature property in Celsius.
 
         Returns:
-            float: value representation.
+            pd.DataFrame: value representation.
         """
         if all(self.temperature.values > 100) and self.temperature is not None:
             return self.temperature - 273.15

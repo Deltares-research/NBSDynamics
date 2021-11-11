@@ -152,3 +152,11 @@ class TestEnvironment:
         assert (
             str(e_err.value) == f"Validator not available for type {type(unsupported)}"
         )
+
+    def test_load_temperature_then_check_other_outputs(self):
+        temp_file = self.get_test_input_data() / "TS_SST.txt"
+        assert temp_file.exists()
+        test_env = Environment(temperature=temp_file)
+        assert isinstance(test_env.temp_celsius, pd.DataFrame)
+        assert isinstance(test_env.temp_kelvin, pd.DataFrame)
+        assert isinstance(test_env.temp_mmm, pd.DataFrame)
