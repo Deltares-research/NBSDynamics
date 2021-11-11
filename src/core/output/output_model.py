@@ -30,8 +30,6 @@ class Output(BaseModel):
 
     map_output: Optional[Dataset] = None
     his_output: Optional[Dataset] = None
-    # _map_data = None
-    # _his_data = None
 
     # Optional values
     space: Optional[int]
@@ -145,7 +143,9 @@ class Output(BaseModel):
 
         setattr(self, f"{output_type}_output", locals())
 
-    def initiate_map(self, coral: Coral):
+
+class MapOutput:
+    def initiate(self, coral: Coral):
         """Initiate mapping output file in which annual output covering the whole model domain is stored.
 
         :param coral: coral animal
@@ -303,9 +303,7 @@ class Output(BaseModel):
                 if self.map_output[key]:
                     v_func()
 
-            _map_data.close()
-
-    def update_map(self, coral: Coral, year: int):
+    def update(self, coral: Coral, year: int):
         """Write data as annual output covering the whole model domain.
 
         :param coral: coral animal
@@ -315,187 +313,195 @@ class Output(BaseModel):
         :type year: int
         """
         if self.map_output is not None and any(self.map_output.values()):
-            _map_data = Dataset(self.file_name_map, mode="a")
+            with Dataset(self.file_name_map, mode="a") as _map_data:
+                i = int(year - self.first_year)
+                _map_data["time"][i] = year
 
-            i = int(year - self.first_year)
-            _map_data["time"][i] = year
+                def update_lme():
+                    _map_data["Iz"][-1, :] = coral.light[:, -1]
 
-            def update_lme():
-                _map_data["Iz"][-1, :] = coral.light[:, -1]
+                def update_fme():
+                    _map_data["ucm"][-1, :] = coral.ucm
 
-            def update_fme():
-                _map_data["ucm"][-1, :] = coral.ucm
+                def update_tme():
+                    _map_data["Tc"][-1, :] = coral.temp[:, -1]
+                    _map_data["Tlo"][-1, :] = (
+                        coral.Tlo
+                        if len(DataReshape.variable2array(coral.Tlo)) > 1
+                        else coral.Tlo * np.ones(self.space)
+                    )
+                    _map_data["Thi"][-1, :] = (
+                        coral.Thi
+                        if len(DataReshape.variable2array(coral.Thi)) > 1
+                        else coral.Thi * np.ones(self.space)
+                    )
 
-            def update_tme():
-                _map_data["Tc"][-1, :] = coral.temp[:, -1]
-                _map_data["Tlo"][-1, :] = (
-                    coral.Tlo
-                    if len(DataReshape.variable2array(coral.Tlo)) > 1
-                    else coral.Tlo * np.ones(self.space)
+                def update_pd():
+                    _map_data["PD"][-1, :] = coral.photo_rate.mean(axis=1)
+
+                def update_ps():
+                    _map_data["PT"][-1, :] = coral.pop_states[:, -1, :].sum(axis=1)
+                    _map_data["PH"][-1, :] = coral.pop_states[:, -1, 0]
+                    _map_data["PR"][-1, :] = coral.pop_states[:, -1, 1]
+                    _map_data["PP"][-1, :] = coral.pop_states[:, -1, 2]
+                    _map_data["PB"][-1, :] = coral.pop_states[:, -1, 3]
+
+                def update_calc():
+                    _map_data["calc"][-1, :] = coral.calc.sum(axis=1)
+
+                def update_md():
+                    _map_data["dc"][-1, :] = coral.dc
+                    _map_data["hc"][-1, :] = coral.hc
+                    _map_data["bc"][-1, :] = coral.bc
+                    _map_data["tc"][-1, :] = coral.tc
+                    _map_data["ac"][-1, :] = coral.ac
+                    _map_data["Vc"][-1, :] = coral.volume
+
+                conditions_funct = dict(
+                    lme=update_lme,
+                    fme=update_fme,
+                    tme=update_tme,
+                    pd=update_pd,
+                    ps=update_ps,
+                    calc=update_calc,
+                    md=update_md,
                 )
-                _map_data["Thi"][-1, :] = (
-                    coral.Thi
-                    if len(DataReshape.variable2array(coral.Thi)) > 1
-                    else coral.Thi * np.ones(self.space)
-                )
+                for key, v_func in conditions_funct.items():
+                    if self.map_output[key]:
+                        v_func()
 
-            def update_pd():
-                _map_data["PD"][-1, :] = coral.photo_rate.mean(axis=1)
 
-            def update_ps():
-                _map_data["PT"][-1, :] = coral.pop_states[:, -1, :].sum(axis=1)
-                _map_data["PH"][-1, :] = coral.pop_states[:, -1, 0]
-                _map_data["PR"][-1, :] = coral.pop_states[:, -1, 1]
-                _map_data["PP"][-1, :] = coral.pop_states[:, -1, 2]
-                _map_data["PB"][-1, :] = coral.pop_states[:, -1, 3]
-
-            def update_calc():
-                _map_data["calc"][-1, :] = coral.calc.sum(axis=1)
-
-            def update_md():
-                _map_data["dc"][-1, :] = coral.dc
-                _map_data["hc"][-1, :] = coral.hc
-                _map_data["bc"][-1, :] = coral.bc
-                _map_data["tc"][-1, :] = coral.tc
-                _map_data["ac"][-1, :] = coral.ac
-                _map_data["Vc"][-1, :] = coral.volume
-
-            conditions_funct = dict(
-                lme=update_lme,
-                fme=update_fme,
-                tme=update_tme,
-                pd=update_pd,
-                ps=update_ps,
-                calc=update_calc,
-                md=update_md,
-            )
-            for key, v_func in conditions_funct.items():
-                if self.map_output[key]:
-                    v_func()
-
-            _map_data.close()
-
-    def initiate_his(self):
+class HisOutput:
+    def initiate(self):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
         if self.his_output is not None and any(self.his_output.values()):
-            _his_data = Dataset(self.file_name_his, "w", format="NETCDF4")
-            _his_data.description = "Historic simulation data of the CoralModel"
+            with Dataset(self.file_name_his, "w", format="NETCDF4") as _his_data:
+                _his_data.description = "Historic simulation data of the CoralModel"
 
-            # dimensions
-            _his_data.createDimension("time", None)
-            _his_data.createDimension("stations", len(self.xy_stations))
+                # dimensions
+                _his_data.createDimension("time", None)
+                _his_data.createDimension("stations", len(self.xy_stations))
 
-            # variables
-            t = _his_data.createVariable("time", "f8", ("time",))
-            t.long_name = f"days since {self.first_date}"
-            t.units = "days"
+                # variables
+                t = _his_data.createVariable("time", "f8", ("time",))
+                t.long_name = f"days since {self.first_date}"
+                t.units = "days"
 
-            x = _his_data.createVariable("station_x_coordinate", "f8", ("stations",))
-            y = _his_data.createVariable("station_y_coordinate", "f8", ("stations",))
-
-            # setup data set
-            x[:] = self.xy_stations[:, 0]
-            y[:] = self.xy_stations[:, 1]
-
-            def init_lme():
-                light_set = _his_data.createVariable("Iz", "f8", ("time", "stations"))
-                light_set.long_name = "representative light-intensity"
-                light_set.units = "micro-mol photons m-2 s-1"
-
-            def init_fme():
-                flow_set = _his_data.createVariable("ucm", "f8", ("time", "stations"))
-                flow_set.long_name = "in-canopy flow"
-                flow_set.units = "m s-1"
-
-            def init_tme():
-                temp_set = _his_data.createVariable("Tc", "f8", ("time", "stations"))
-                temp_set.long_name = "coral temperature"
-                temp_set.units = "K"
-
-                low_temp_set = _his_data.createVariable(
-                    "Tlo", "f8", ("time", "stations")
+                x = _his_data.createVariable(
+                    "station_x_coordinate", "f8", ("stations",)
                 )
-                low_temp_set.long_name = "lower thermal limit"
-                low_temp_set.units = "K"
-
-                high_temp_set = _his_data.createVariable(
-                    "Thi", "f8", ("time", "stations")
+                y = _his_data.createVariable(
+                    "station_y_coordinate", "f8", ("stations",)
                 )
-                high_temp_set.long_name = "upper thermal limit"
-                high_temp_set.units = "K"
 
-            def init_pd():
-                pd_set = _his_data.createVariable("PD", "f8", ("time", "stations"))
-                pd_set.long_name = "photosynthetic rate"
-                pd_set.units = "-"
+                # setup data set
+                x[:] = self.xy_stations[:, 0]
+                y[:] = self.xy_stations[:, 1]
 
-            def init_ps():
-                pt_set = _his_data.createVariable("PT", "f8", ("time", "stations"))
-                pt_set.long_name = "total coral population"
-                pt_set.units = "-"
+                def init_lme():
+                    light_set = _his_data.createVariable(
+                        "Iz", "f8", ("time", "stations")
+                    )
+                    light_set.long_name = "representative light-intensity"
+                    light_set.units = "micro-mol photons m-2 s-1"
 
-                ph_set = _his_data.createVariable("PH", "f8", ("time", "stations"))
-                ph_set.long_name = "healthy coral population"
-                ph_set.units = "-"
+                def init_fme():
+                    flow_set = _his_data.createVariable(
+                        "ucm", "f8", ("time", "stations")
+                    )
+                    flow_set.long_name = "in-canopy flow"
+                    flow_set.units = "m s-1"
 
-                pr_set = _his_data.createVariable("PR", "f8", ("time", "stations"))
-                pr_set.long_name = "recovering coral population"
-                pr_set.units = "-"
+                def init_tme():
+                    temp_set = _his_data.createVariable(
+                        "Tc", "f8", ("time", "stations")
+                    )
+                    temp_set.long_name = "coral temperature"
+                    temp_set.units = "K"
 
-                pp_set = _his_data.createVariable("PP", "f8", ("time", "stations"))
-                pp_set.long_name = "pale coral population"
-                pp_set.units = "-"
+                    low_temp_set = _his_data.createVariable(
+                        "Tlo", "f8", ("time", "stations")
+                    )
+                    low_temp_set.long_name = "lower thermal limit"
+                    low_temp_set.units = "K"
 
-                pb_set = _his_data.createVariable("PB", "f8", ("time", "stations"))
-                pb_set.long_name = "bleached coral population"
-                pb_set.units = "-"
+                    high_temp_set = _his_data.createVariable(
+                        "Thi", "f8", ("time", "stations")
+                    )
+                    high_temp_set.long_name = "upper thermal limit"
+                    high_temp_set.units = "K"
 
-            def init_calc():
-                calc_set = _his_data.createVariable("G", "f8", ("time", "stations"))
-                calc_set.long_name = "calcification"
-                calc_set.units = "kg m-2 d-1"
+                def init_pd():
+                    pd_set = _his_data.createVariable("PD", "f8", ("time", "stations"))
+                    pd_set.long_name = "photosynthetic rate"
+                    pd_set.units = "-"
 
-            def init_md():
-                dc_set = _his_data.createVariable("dc", "f8", ("time", "stations"))
-                dc_set.long_name = "coral plate diameter"
-                dc_set.units = "m"
+                def init_ps():
+                    pt_set = _his_data.createVariable("PT", "f8", ("time", "stations"))
+                    pt_set.long_name = "total coral population"
+                    pt_set.units = "-"
 
-                hc_set = _his_data.createVariable("hc", "f8", ("time", "stations"))
-                hc_set.long_name = "coral height"
-                hc_set.units = "m"
+                    ph_set = _his_data.createVariable("PH", "f8", ("time", "stations"))
+                    ph_set.long_name = "healthy coral population"
+                    ph_set.units = "-"
 
-                bc_set = _his_data.createVariable("bc", "f8", ("time", "stations"))
-                bc_set.long_name = "coral base diameter"
-                bc_set.units = "m"
+                    pr_set = _his_data.createVariable("PR", "f8", ("time", "stations"))
+                    pr_set.long_name = "recovering coral population"
+                    pr_set.units = "-"
 
-                tc_set = _his_data.createVariable("tc", "f8", ("time", "stations"))
-                tc_set.long_name = "coral plate thickness"
-                tc_set.units = "m"
+                    pp_set = _his_data.createVariable("PP", "f8", ("time", "stations"))
+                    pp_set.long_name = "pale coral population"
+                    pp_set.units = "-"
 
-                ac_set = _his_data.createVariable("ac", "f8", ("time", "stations"))
-                ac_set.long_name = "coral axial distance"
-                ac_set.units = "m"
+                    pb_set = _his_data.createVariable("PB", "f8", ("time", "stations"))
+                    pb_set.long_name = "bleached coral population"
+                    pb_set.units = "-"
 
-                vc_set = _his_data.createVariable("Vc", "f8", ("time", "stations"))
-                vc_set.long_name = "coral volume"
-                vc_set.units = "m3"
+                def init_calc():
+                    calc_set = _his_data.createVariable("G", "f8", ("time", "stations"))
+                    calc_set.long_name = "calcification"
+                    calc_set.units = "kg m-2 d-1"
 
-            # initial conditions
-            conditions_funct = dict(
-                lme=init_lme,
-                fme=init_fme,
-                tme=init_tme,
-                pd=init_pd,
-                ps=init_ps,
-                calc=init_calc,
-                md=init_md,
-            )
-            for key, v_func in conditions_funct.items():
-                if self.his_output[key]:
-                    v_func()
-            _his_data.close()
+                def init_md():
+                    dc_set = _his_data.createVariable("dc", "f8", ("time", "stations"))
+                    dc_set.long_name = "coral plate diameter"
+                    dc_set.units = "m"
 
-    def update_his(self, coral: Coral, dates: DataFrame):
+                    hc_set = _his_data.createVariable("hc", "f8", ("time", "stations"))
+                    hc_set.long_name = "coral height"
+                    hc_set.units = "m"
+
+                    bc_set = _his_data.createVariable("bc", "f8", ("time", "stations"))
+                    bc_set.long_name = "coral base diameter"
+                    bc_set.units = "m"
+
+                    tc_set = _his_data.createVariable("tc", "f8", ("time", "stations"))
+                    tc_set.long_name = "coral plate thickness"
+                    tc_set.units = "m"
+
+                    ac_set = _his_data.createVariable("ac", "f8", ("time", "stations"))
+                    ac_set.long_name = "coral axial distance"
+                    ac_set.units = "m"
+
+                    vc_set = _his_data.createVariable("Vc", "f8", ("time", "stations"))
+                    vc_set.long_name = "coral volume"
+                    vc_set.units = "m3"
+
+                # initial conditions
+                conditions_funct = dict(
+                    lme=init_lme,
+                    fme=init_fme,
+                    tme=init_tme,
+                    pd=init_pd,
+                    ps=init_ps,
+                    calc=init_calc,
+                    md=init_md,
+                )
+                for key, v_func in conditions_funct.items():
+                    if self.his_output[key]:
+                        v_func()
+
+    def update(self, coral: Coral, dates: DataFrame):
         """Write data as daily output at predefined locations within the model domain.
 
         :param coral: coral animal
@@ -505,95 +511,99 @@ class Output(BaseModel):
         :type dates: DataFrame
         """
         if self.his_output is not None and any(self.his_output.values()):
-            _his_data = Dataset(self.file_name_his, mode="a")
-            y_dates = dates.reset_index(drop=True)
-            ti = (y_dates - self.first_date).dt.days.values
-            _his_data["time"][ti] = y_dates.values
+            with Dataset(self.file_name_his, mode="a") as _his_data:
+                y_dates = dates.reset_index(drop=True)
+                ti = (y_dates - self.first_date).dt.days.values
+                _his_data["time"][ti] = y_dates.values
 
-            def update_lme():
-                _his_data["Iz"][ti, :] = coral.light[self.idx_stations, :].transpose()
+                def update_lme():
+                    _his_data["Iz"][ti, :] = coral.light[
+                        self.idx_stations, :
+                    ].transpose()
 
-            def update_fme():
-                _his_data["ucm"][ti, :] = np.tile(coral.ucm, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-
-            def update_tme():
-                _his_data["Tc"][ti, :] = coral.temp[self.idx_stations, :].transpose()
-                if (
-                    len(DataReshape.variable2array(coral.Tlo)) > 1
-                    and len(DataReshape.variable2array(coral.Thi)) > 1
-                ):
-                    _his_data["Tlo"][ti, :] = np.tile(coral.Tlo, (len(y_dates), 1))[
+                def update_fme():
+                    _his_data["ucm"][ti, :] = np.tile(coral.ucm, (len(y_dates), 1))[
                         :, self.idx_stations
                     ]
-                    _his_data["Thi"][ti, :] = np.tile(coral.Thi, (len(y_dates), 1))[
+
+                def update_tme():
+                    _his_data["Tc"][ti, :] = coral.temp[
+                        self.idx_stations, :
+                    ].transpose()
+                    if (
+                        len(DataReshape.variable2array(coral.Tlo)) > 1
+                        and len(DataReshape.variable2array(coral.Thi)) > 1
+                    ):
+                        _his_data["Tlo"][ti, :] = np.tile(coral.Tlo, (len(y_dates), 1))[
+                            :, self.idx_stations
+                        ]
+                        _his_data["Thi"][ti, :] = np.tile(coral.Thi, (len(y_dates), 1))[
+                            :, self.idx_stations
+                        ]
+                    else:
+                        _his_data["Tlo"][ti, :] = coral.Tlo * np.ones(
+                            (len(y_dates), len(self.idx_stations))
+                        )
+                        _his_data["Thi"][ti, :] = coral.Thi * np.ones(
+                            (len(y_dates), len(self.idx_stations))
+                        )
+
+                def update_pd():
+                    _his_data["PD"][ti, :] = coral.photo_rate[
+                        self.idx_stations, :
+                    ].transpose()
+
+                def update_ps():
+                    _his_data["PT"][ti, :] = (
+                        coral.pop_states[self.idx_stations, :, :]
+                        .sum(axis=2)
+                        .transpose()
+                    )
+                    _his_data["PH"][ti, :] = coral.pop_states[
+                        self.idx_stations, :, 0
+                    ].transpose()
+                    _his_data["PR"][ti, :] = coral.pop_states[
+                        self.idx_stations, :, 1
+                    ].transpose()
+                    _his_data["PP"][ti, :] = coral.pop_states[
+                        self.idx_stations, :, 2
+                    ].transpose()
+                    _his_data["PB"][ti, :] = coral.pop_states[
+                        self.idx_stations, :, 3
+                    ].transpose()
+
+                def update_calc():
+                    _his_data["G"][ti, :] = coral.calc[self.idx_stations, :].transpose()
+
+                def update_md():
+                    _his_data["dc"][ti, :] = np.tile(coral.dc, (len(y_dates), 1))[
                         :, self.idx_stations
                     ]
-                else:
-                    _his_data["Tlo"][ti, :] = coral.Tlo * np.ones(
-                        (len(y_dates), len(self.idx_stations))
-                    )
-                    _his_data["Thi"][ti, :] = coral.Thi * np.ones(
-                        (len(y_dates), len(self.idx_stations))
-                    )
+                    _his_data["hc"][ti, :] = np.tile(coral.hc, (len(y_dates), 1))[
+                        :, self.idx_stations
+                    ]
+                    _his_data["bc"][ti, :] = np.tile(coral.bc, (len(y_dates), 1))[
+                        :, self.idx_stations
+                    ]
+                    _his_data["tc"][ti, :] = np.tile(coral.tc, (len(y_dates), 1))[
+                        :, self.idx_stations
+                    ]
+                    _his_data["ac"][ti, :] = np.tile(coral.ac, (len(y_dates), 1))[
+                        :, self.idx_stations
+                    ]
+                    _his_data["Vc"][ti, :] = np.tile(coral.volume, (len(y_dates), 1))[
+                        :, self.idx_stations
+                    ]
 
-            def update_pd():
-                _his_data["PD"][ti, :] = coral.photo_rate[
-                    self.idx_stations, :
-                ].transpose()
-
-            def update_ps():
-                _his_data["PT"][ti, :] = (
-                    coral.pop_states[self.idx_stations, :, :].sum(axis=2).transpose()
+                conditions_funct = dict(
+                    lme=update_lme,
+                    fme=update_fme,
+                    tme=update_tme,
+                    pd=update_pd,
+                    ps=update_ps,
+                    calc=update_calc,
+                    md=update_md,
                 )
-                _his_data["PH"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 0
-                ].transpose()
-                _his_data["PR"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 1
-                ].transpose()
-                _his_data["PP"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 2
-                ].transpose()
-                _his_data["PB"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 3
-                ].transpose()
-
-            def update_calc():
-                _his_data["G"][ti, :] = coral.calc[self.idx_stations, :].transpose()
-
-            def update_md():
-                _his_data["dc"][ti, :] = np.tile(coral.dc, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-                _his_data["hc"][ti, :] = np.tile(coral.hc, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-                _his_data["bc"][ti, :] = np.tile(coral.bc, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-                _his_data["tc"][ti, :] = np.tile(coral.tc, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-                _his_data["ac"][ti, :] = np.tile(coral.ac, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-                _his_data["Vc"][ti, :] = np.tile(coral.volume, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
-
-            conditions_funct = dict(
-                lme=update_lme,
-                fme=update_fme,
-                tme=update_tme,
-                pd=update_pd,
-                ps=update_ps,
-                calc=update_calc,
-                md=update_md,
-            )
-            for key, v_func in conditions_funct.items():
-                if self.his_output[key]:
-                    v_func()
-
-            _his_data.close()
+                for key, v_func in conditions_funct.items():
+                    if self.his_output[key]:
+                        v_func()
