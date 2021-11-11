@@ -11,8 +11,6 @@ from typing import Any, Iterable, Optional, Union
 
 import numpy as np
 import pandas as pd
-from src.core.base_model import BaseModel
-from typing import Any, Iterable, Optional, Union
 from pydantic import validator
 
 from src.core.base_model import BaseModel
