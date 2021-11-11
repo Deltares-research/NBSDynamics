@@ -13,7 +13,7 @@ import matplotlib
 import numpy as np
 from netCDF4 import Dataset
 
-from src.core.output_model import Output
+from src.core.output.output_wrapper import OutputWrapper
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:
@@ -108,7 +108,7 @@ class OutputPlot:
             self._plot_nc_variables(nc.variables, _subplot_hisfile)
 
 
-def plot_output(output_model: Output):
+def plot_output(output_model: OutputWrapper):
     """
     Plots the map and his files from an output model.
 

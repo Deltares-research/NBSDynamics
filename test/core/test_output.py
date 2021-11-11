@@ -5,7 +5,7 @@ import numpy as np
 import pandas
 import pytest
 
-from src.core.output_model import Output
+from src.core.output.output_wrapper import OutputWrapper
 
 
 class TestOutput:

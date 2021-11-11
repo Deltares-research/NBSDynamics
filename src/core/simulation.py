@@ -28,7 +28,7 @@ from src.core.constants import Constants
 from src.core.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output_model import Output
+from src.core.output.output_wrapper import OutputWrapper
 from src.core.utils import time_series_year
 
 
@@ -46,7 +46,7 @@ class Simulation(BaseModel):
     # Other attributes.
     environment: Environment = Environment()
     constants: Constants = Constants()
-    output: Optional[Output] = None
+    output: Optional[OutputWrapper] = None
     hydrodynamics: Optional[HydrodynamicProtocol] = None
 
     @validator("working_dir", always=True)
@@ -358,18 +358,18 @@ class CoralTransectSimulation(Simulation):
         hydromodel.initiate()
 
         # Initialize output.
-        output_model: Output = values["output"]
+        output_model: OutputWrapper = values["output"]
         if output_model is None:
-            output_model = Output(
+            output_model = OutputWrapper(
                 **dict(
                     output_dir=values["output_dir"],
                     xy_coordinates=hydromodel.xy_coordinates,
                     outpoint=hydromodel.outpoint,
                     first_date=values["environment"].get_dates()[0],
+                    map_values=values["output_map_values"],
+                    his_values=values["output_his_values"],
                 )
             )
-        output_model.define_output("map", **values["output_map_values"])
-        output_model.define_output("his", **values["output_his_values"])
 
         # Set formatted values and return.
         values["output"] = output_model

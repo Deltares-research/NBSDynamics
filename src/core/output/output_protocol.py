@@ -10,7 +10,7 @@ class OutputProtocol(Protocol):
     """
 
     @property
-    def file_name(self) -> Path:
+    def output_filename(self) -> Path:
         raise NotImplementedError
 
     @property
