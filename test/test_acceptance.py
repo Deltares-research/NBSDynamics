@@ -50,15 +50,9 @@ class TestAcceptance:
         sim_run.define_output("his", fme=False)
         sim_run.output.xy_stations = (0, 0)
         # initiate coral
-        coral = Coral(sim_run.constants, 0.1, 0.1, 0.05, 0.05, 0.2)
-        print("coral defined")
-        coral = sim_run.initiate(coral)
-
-        print("coral initiated")
-        # simulation
-        sim_run.exec(coral)
-
-        # finalizing
+        sim_run.coral = Coral(sim_run.constants, 0.1, 0.1, 0.05, 0.05, 0.2)
+        sim_run.initiate()
+        sim_run.run()
         sim_run.finalise()
 
     def test_given_interface_transect_runs(self):
