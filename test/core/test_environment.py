@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from test.utils import TestUtils
-from typing import Any, Iterable, List, Union
+from typing import Any, Callable, Iterable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,17 @@ daily_params: List[str] = [
     ("aragonite"),
 ]
 
-unsupported_params = [(None), (42.24), (42), ("not/a/Path"), datetime(2021, 12, 20)]
+unsupported_params = [
+    (None),
+    (42.24),
+    (42),
+    datetime(2021, 12, 20),
+]
+
+validator_methods: List[pytest.param] = [
+    pytest.param(Environment.validate_dataframe_or_path),
+    pytest.param(Environment.validate_storm_category),
+]
 
 
 def env_params_cases() -> List[pytest.param]:
@@ -71,20 +81,30 @@ class TestEnvironment:
         assert all(test_env == test_value)
 
     @pytest.mark.parametrize("unsupported", unsupported_params)
-    def test_validate_dataframe_or_path_from_unsupported_raises(self, unsupported: Any):
+    @pytest.mark.parametrize("env_method", validator_methods)
+    def test_validate_from_unsupported_raises(
+        self, unsupported: Any, env_method: Callable
+    ):
         with pytest.raises(NotImplementedError) as e_err:
-            Environment.validate_dataframe_or_path(unsupported)
+            env_method(unsupported)
         assert (
             str(e_err.value) == f"Validator not available for type {type(unsupported)}"
         )
 
-    @pytest.mark.parametrize("unsupported", unsupported_params)
-    def test_validate_storm_category_from_unsupported_raises(self, unsupported: Any):
-        with pytest.raises(NotImplementedError) as e_err:
-            Environment.validate_storm_category(unsupported)
-        assert (
-            str(e_err.value) == f"Validator not available for type {type(unsupported)}"
-        )
+    @pytest.mark.parametrize(
+        "unsupported_path",
+        [
+            pytest.param("not//a//Path", id="Path as string"),
+            pytest.param(Path("not//a//Path"), id="Path as Pathlib"),
+        ],
+    )
+    @pytest.mark.parametrize("env_method", validator_methods)
+    def test_validate_from_unsupported_path_raises(
+        self, unsupported_path: Union[str, Path], env_method: Callable
+    ):
+        with pytest.raises(FileNotFoundError) as e_err:
+            env_method(unsupported_path)
+        assert Path(str(e_err.value)) == Path(str(unsupported_path))
 
     @pytest.mark.parametrize("start_date", [("2001, 10, 02"), (datetime(2001, 10, 2))])
     @pytest.mark.parametrize("end_date", [("2021, 12, 21"), (datetime(2021, 12, 21))])
