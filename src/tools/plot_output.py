@@ -138,5 +138,5 @@ def plot_output(output_wrapper: OutputWrapper):
     """
     if not isinstance(output_wrapper, OutputWrapper):
         raise ValueError("No output model provided.")
-    OutputMap(output_wrapper.map_output.output_filepath)
-    OutputHis(output_wrapper.his_output.output_filepath)
+    OutputMap().plot(output_wrapper.map_output.output_filepath)
+    OutputHis().plot(output_wrapper.his_output.output_filepath)
