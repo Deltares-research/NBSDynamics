@@ -9,12 +9,21 @@ The project is currently being structured as follows:
         guides/         # Contains the documentation related to installation, usage and contribution to this project.
         reference/      # Contains references to the modules. Docstrings will be used to generate automatically documentation.        
     src/
-        core/    # Module containing all the classes and methods of NBSDynamics.
+        core/           # Module containing all the classes and methods of NBSDynamics.
+            bio_process/ # The classes describing biophysical processes.
+            hydrodynamics/ # The different hydrodynamic models ('Transect', 'Delft3D', 'Reef0D', 'Reef1D')
+            output/     # The output models.
         tools/          # Module containing tools used by the coral_model module.
     test/               # Module based on pytest to mirror and test all the classes from src/
 
 ## Version control
-t.b.d.
+Currently versioning is done with the help of [`commitizen`](https://commitizen-tools.github.io/commitizen/) using a tag system of v.Major.Minor.Patch . A the [`changelog.md`](../changelog.md) is generated automatically.
+
+## Project architecture
+At the moment of this edition (version v.0.1.3), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
+
+A summary of the architecture can be seen in the following 'reduced' class diagram:
+![`Class diagram v.0.1.3`](./diagrams/class_diagram.png)
 
 ## CoralModel
 A biophysical model framework written in Python to make simulations 
