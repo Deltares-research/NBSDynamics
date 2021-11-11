@@ -55,7 +55,7 @@ jobs:
       
       - name: Create bump and changelog
         run: |
-          poetry run cz bump
+          poetry run cz bump --changelog
 
       - name: Push new tag
         run: |
