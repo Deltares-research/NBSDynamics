@@ -94,23 +94,19 @@ class TestAcceptance:
             output_dir=test_dir / "output",
             output_map_values=dict(fme=False),
             output_his_values=dict(fme=False),
+            coral=dict(
+                dc=0.125,
+                hc=0.125,
+                bc=0.1,
+                tc=0.1,
+                ac=0.2,
+                species_constant=0.6,
+            ),
         )
 
-        # hydrodynamic model
-        # settings for a 1D idealized transect using fixed currents and Soulsby
-        # orbital velocities depending on stormcat and depth
-        coral_dict = dict(
-            constants=run_trans.constants,
-            dc=0.125,
-            hc=0.125,
-            bc=0.1,
-            tc=0.1,
-            ac=0.2,
-            species_constant=0.6,
-        )
         # 3. Run simulation
-        coral = run_trans.initiate(Coral(**coral_dict))
-        run_trans.run(coral)
+        run_trans.initiate()
+        run_trans.run()
         run_trans.finalise()
 
         # 4. Verify expectations.
