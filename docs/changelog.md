@@ -1,5 +1,53 @@
-
 ## v0.2.0 (2021-11-11)
+
+### Fix
+
+- **src/core/environment.py;src/core/simulation.py;test/core/test_environment.py**: Extended validation for dates so they can be added as string from the initialization
+- **src/core/output/output_wrapper.py**: Now we add the dict attributes from the wrapper to the output models
+- **src/core/output/output_model.py;src/core/output/output_wrapper.py;src/core/simulation.py;test/core/output/test_wrapper.py**: Now we correctly initialize the map_output model. Adapted test output wrapper
+- **src;test**: Output model generates again the netcdf files correctly.
+- **src/tools/plot_output.py**: Corrected call to plot tool
+
+### Feat
+
+- **src/core/environment.py;src/core/simulation.py**: Adapted environment and related classes to pydantic approach
+
+- **src/core/coral_model.py;src/core/simulation.py;test/test_acceptance.py**: Coral integrated in simulation
+
+### Refactor
+
+- **src/core/environment.py;src/core/simulation.py;test/core/test_simulation**: Improved environment as class
+
+- **src/core/environment.py;src/core/output_model.py;src/core/simulation.py;test/core/test_output**: Applying pydantic to Output model.
+
+- **src/core/simulation**: Added validator to simulation constants property
+
+- **src/core/simulation.py;test/test_acceptance**: Adapted code for better pydantic usage
+
+- **src/core/output_model**: Fixed failing tests for TestOutput
+
+- **src/core/output_model**: Minor corrections to the model
+
+- **src/core/output_model**: Small fix, however model still not running.
+
+- **src/core/output_model**: fixed ini/update his/map
+
+- **src/core/environment**: Added extra logic to accept str as path.
+
+- **src/core/output/output_model**: Extracted two submodels from Output, moved into its own module.
+
+- **src/core/output/output_protocol.py;src/core/output/output_wrapper**: Separating concepts to avoid code duplication
+
+- **src/core/output/output_model.py;src/core/output/output_protocol.py;src/core/output/output_wrapper**: Refactor output module for better maintainability and reducing its complexity.
+
+- **test/core/output/test_wrapper**: Moved test to mirror src structure
+
+- **src/core/output/**: Extended docstrings for output_protocol; Generated coverage tests for output_model. Fixed simulation calls to output initialization.
+
+- **test_output_wrapper**: Renamed filename to match src tested file
+
+
+## v0.1.4 (2021-11-11)
 
 ### Fix
 
