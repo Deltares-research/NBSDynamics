@@ -49,8 +49,8 @@ New code should be tested. As a rule of thumb public methods should be tested wi
 We use `pytest` to test our package. Run it with `poetry run pytest` to test your code changes locally.
 
 ### 1.5. Version Control
-We use `commitizen` to automatically bump the version number.
-If you use [conventional commit messages](https://www.conventionalcommits.org/en/v1.0.0/#summary), the [`changelog.md`](../changelog.md) is generated automatically.
+We use [`commitizen`](https://commitizen-tools.github.io/commitizen/) to automatically bump the version number.
+If you use [conventional commit messages](https://www.conventionalcommits.org/en/v1.0.0/#summary), the the [`changelog.md`](../changelog.md) is generated automatically.
 
 ### 1.6. Documentation
 We use `mkdocs` to automatically generate documentation. We define documentation in separate sections:
