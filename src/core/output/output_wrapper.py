@@ -1,13 +1,14 @@
+from datetime import datetime
 from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import numpy as np
+from pydantic import root_validator
+
+from src.core.base_model import BaseModel
 from src.core.coral_model import Coral
 from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
-from src.core.base_model import BaseModel
-from typing import Optional, Tuple, Union
-from pydantic import root_validator
-from datetime import datetime
 
 
 class OutputWrapper(BaseModel):

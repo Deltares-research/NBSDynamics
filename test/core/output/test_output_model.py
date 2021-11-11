@@ -1,4 +1,7 @@
 from datetime import datetime
+from test.utils import TestUtils
+
+import numpy as np
 
 from src.core.output.output_model import (
     BaseOutput,
@@ -7,8 +10,6 @@ from src.core.output.output_model import (
     ModelParameters,
 )
 from src.core.output.output_protocol import OutputProtocol
-from test.utils import TestUtils
-import numpy as np
 
 
 class TestBaseOutput:

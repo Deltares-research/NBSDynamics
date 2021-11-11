@@ -2,8 +2,8 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from src.core.output.output_model import HisOutput, MapOutput
 
+from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_wrapper import OutputWrapper
 
 

@@ -6,6 +6,7 @@ Created on Fri Sep 24 11:36:48 2021
 """
 
 import platform
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable
 
@@ -14,7 +15,6 @@ import numpy as np
 from netCDF4 import Dataset
 
 from src.core.output.output_wrapper import OutputWrapper
-from abc import ABC, abstractmethod
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:

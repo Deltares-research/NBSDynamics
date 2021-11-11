@@ -1,7 +1,7 @@
-from src.core.coral_model import Coral
-from typing import Protocol
 from pathlib import Path
+from typing import Protocol
 
+from src.core.coral_model import Coral
 from src.core.output.output_model import ModelParameters
 
 
