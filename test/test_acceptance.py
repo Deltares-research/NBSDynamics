@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Callable
 from test.utils import TestUtils
 
 import numpy
@@ -8,7 +9,7 @@ from numpy import loadtxt, savetxt
 
 from src.core.coral_model import Coral
 from src.core.simulation import CoralTransectSimulation, Simulation
-from src.tools.plot_output import OutputPlot, plot_output
+from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
 class TestAcceptance:
@@ -90,6 +91,7 @@ class TestAcceptance:
             ),
             definition_file=input_dir / "TS_waves.txt",
             config_file=input_dir / "config.csv",
+            output_dir=test_dir / "output",
             output_map_values=dict(fme=False),
             output_his_values=dict(fme=False),
         )
@@ -176,22 +178,15 @@ class TestAcceptance:
         output_file(expected_dir / nc_filename)
 
     @pytest.mark.skip(reason="Only to run locally.")
-    def test_plot_map_output(self):
+    @pytest.mark.parametrize(
+        "nc_filename, output_type",
+        [
+            pytest.param("CoralModel_his.nc", OutputHis, id="Plot HIS local file."),
+            pytest.param("CoralModel_map.nc", OutputMap, id="Plot MAP local file."),
+        ],
+    )
+    def test_plot_output(self, nc_filename: str, output_type: Callable):
         expected_file = (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "output"
-            / "CoralModel_map.nc"
+            TestUtils.get_local_test_data_dir("transect_case") / "output" / nc_filename
         )
-        output_plot = OutputPlot()
-        output_plot.plot_map(expected_file)
-
-    @pytest.mark.skip(reason="Only to run locally.")
-    def test_plot_his_output(self):
-        expected_file = (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "output"
-            / "CoralModel_his.nc"
-        )
-
-        output_plot = OutputPlot()
-        output_plot.plot_his(expected_file)
+        output_type().plot(expected_file)
