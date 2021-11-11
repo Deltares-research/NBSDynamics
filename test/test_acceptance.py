@@ -1,6 +1,6 @@
 from pathlib import Path
-from typing import Callable
 from test.utils import TestUtils
+from typing import Callable
 
 import numpy
 import pytest
