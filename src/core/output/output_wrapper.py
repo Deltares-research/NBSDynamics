@@ -42,9 +42,8 @@ class OutputWrapper(BaseModel):
             dict: Dictionary of validated values.
         """
         xy_coordinates: np.ndarray = values["xy_coordinates"]
-        xy_stations = values.get("xy_stations", None)
-
         wrap_output_dir: Path = values["output_dir"]
+
         # Define MapOutput
         map_output: OutputProtocol = values["map_output"]
         if map_output is None:

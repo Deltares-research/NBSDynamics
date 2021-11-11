@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 import numpy as np
 from netCDF4 import Dataset
