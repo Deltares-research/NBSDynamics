@@ -90,8 +90,8 @@ class OutputWrapper(BaseModel):
         """Output is defined."""
         return (
             False
-            if self.map_output.output_defined is None
-            and self.his_output.output_defined is None
+            if self.map_output.output_dataset is None
+            and self.his_output.output_dataset is None
             else True
         )
 
