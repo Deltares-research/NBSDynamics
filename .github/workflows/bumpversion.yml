@@ -48,11 +48,15 @@ jobs:
           git fetch --all --tags
           git tag
 
-      - name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Create bump and changelog
+      #   uses: commitizen-tools/commitizen-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Create bump and changelog
+        run: |
+          poetry run cz bump --changelog
+
       - name: Push new tag
         run: |
           git config --global user.name '${{ github.actor }}'

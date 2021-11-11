@@ -17,7 +17,7 @@ The project is currently being structured as follows:
     test/               # Module based on pytest to mirror and test all the classes from src/
 
 ## Version control
-Currently versioning is done with the help of [`commitizen`](https://commitizen-tools.github.io/commitizen/) using a tag system of v.Major.Minor.Patch . A the [`changelog.md`](../changelog.md) is generated automatically.
+Currently versioning is done with the help of [`commitizen`](https://commitizen-tools.github.io/commitizen/) using a tag system of v.Major.Minor.Patch . A the [`changelog.md`](changelog.md) is generated automatically.
 
 ## Project architecture
 At the moment of this edition (version v.0.1.3), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
