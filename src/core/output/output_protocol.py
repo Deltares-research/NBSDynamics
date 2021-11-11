@@ -1,4 +1,3 @@
-from pathlib import Path
 from src.core.coral_model import Coral
 from typing import Protocol
 from netCDF4 import Dataset

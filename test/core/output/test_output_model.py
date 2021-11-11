@@ -2,7 +2,6 @@ from datetime import datetime
 from src.core.output.output_model import BaseOutput, HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
 from test.utils import TestUtils
-from pathlib import Path
 import numpy as np
 
 

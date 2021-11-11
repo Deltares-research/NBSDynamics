@@ -7,7 +7,7 @@ coral_mostoel - environment
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Optional, Union
+from typing import Iterable, Optional, Union
 
 import numpy as np
 import pandas as pd
