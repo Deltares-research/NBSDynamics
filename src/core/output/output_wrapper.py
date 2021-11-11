@@ -52,7 +52,7 @@ class OutputWrapper(BaseModel):
                 output_dir=wrap_output_dir,
                 first_year=values["first_date"].year,
                 xy_coordinates=xy_coordinates,
-                **values["map_values"],
+                output_params=values["map_values"],
             )
 
         # Define HisOutput
@@ -66,7 +66,7 @@ class OutputWrapper(BaseModel):
                 first_date=values["first_date"],
                 xy_stations=xy_stations,
                 idx_stations=idx_stations,
-                **values["his_values"],
+                output_params=values["his_values"],
             )
 
         return values
@@ -86,11 +86,15 @@ class OutputWrapper(BaseModel):
     @property
     def defined(self) -> bool:
         """Output is defined."""
-        return (
-            False
-            if self.map_output.output_dataset is None
-            and self.his_output.output_dataset is None
-            else True
+
+        def output_model_defined(out_model: OutputProtocol) -> bool:
+            return (
+                out_model.output_params is not None
+                and out_model.output_filepath.exists()
+            )
+
+        return output_model_defined(self.map_output) or output_model_defined(
+            self.his_output
         )
 
     @staticmethod

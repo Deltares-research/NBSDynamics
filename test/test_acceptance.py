@@ -137,8 +137,8 @@ class TestAcceptance:
                         ref_variable, out_netcdf[variable]
                     ), f"{variable} not close to reference data."
 
-        compare_files(run_trans.output_dir / his_filename)
-        compare_files(run_trans.output_dir / map_filename)
+        compare_files(run_trans.output.his_output.output_filepath)
+        compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)

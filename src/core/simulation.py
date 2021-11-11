@@ -317,9 +317,9 @@ class Simulation(BaseModel):
                 # # export results
                 progress.set_postfix(inner_loop="export results")
                 # map-file
-                self.output.update_map(coral, years[i])
+                self.output.map_output.update(coral, years[i])
                 # his-file
-                self.output.update_his(
+                self.output.his_output.update(
                     coral,
                     environment_dates[environment_dates.dt.year == years[i]],
                 )

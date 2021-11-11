@@ -11,18 +11,7 @@ from src.core.coral_model import Coral
 from src.core.utils import DataReshape
 
 
-class BaseOutput(BaseModel):
-    """
-    Base class containing the generic definition of a 'Coral' output model.
-    """
-
-    output_dir: Path
-    output_filename: str
-
-    # Run time generated attributes.
-    output_dataset: Optional[Dataset]
-
-    # Output model attributes.
+class ModelParameters(BaseModel):
     lme: bool = True  # light micro-environment
     fme: bool = True  # flow micro-environment
     tme: bool = True  # thermal micro-environment
@@ -32,16 +21,31 @@ class BaseOutput(BaseModel):
     md: bool = True  # morphological development
 
     def valid_output(self) -> bool:
+        return any(self.dict().values())
+
+
+class BaseOutput(BaseModel):
+    """
+    Base class containing the generic definition of a 'Coral' output model.
+    """
+
+    output_dir: Path
+    output_filename: str
+
+    # Output model attributes.
+    output_params: ModelParameters = ModelParameters()
+
+    def valid_output(self) -> bool:
         """
-        Verifies whether this model contains a valid output dataset.
+        Verifies whether this model can generate valid output.
 
         Returns:
             bool: Output is valid.
         """
-        return self.output_dataset is not None and any(self.output_dataset.values())
+        return self.output_params.valid_output()
 
     @property
-    def output_nc(self) -> Path:
+    def output_filepath(self) -> Path:
         """
         Gets the full path to the output netcdf file.
 
@@ -76,10 +80,10 @@ class MapOutput(BaseOutput):
         :param coral: coral animal
         :type coral: Coral
         """
-        # Open netcdf data and initialize needed variables.
         if not self.valid_output():
             return
-        with Dataset(self.output_nc, "w", format="NETCDF4") as _map_data:
+        # Open netcdf data and initialize needed variables.
+        with Dataset(self.output_filepath, "w", format="NETCDF4") as _map_data:
             _map_data.description = "Mapped simulation data of the CoralModel."
 
             # dimensions
@@ -226,7 +230,7 @@ class MapOutput(BaseOutput):
                 md=init_md,
             )
             for key, v_func in conditions_funct.items():
-                if self.output_dataset[key]:
+                if self.output_params.dict()[key]:
                     v_func()
 
     def update(self, coral: Coral, year: int):
@@ -240,7 +244,7 @@ class MapOutput(BaseOutput):
         """
         if not self.valid_output():
             return
-        with Dataset(self.output_nc, mode="a") as _map_data:
+        with Dataset(self.output_filepath, mode="a") as _map_data:
             i = int(year - self.first_year)
             _map_data["time"][i] = year
 
@@ -294,7 +298,7 @@ class MapOutput(BaseOutput):
                 md=update_md,
             )
             for key, v_func in conditions_funct.items():
-                if self.output_dataset[key]:
+                if self.output_params.dict()[key]:
                     v_func()
 
 
@@ -308,11 +312,11 @@ class HisOutput(BaseOutput):
     idx_stations: np.ndarray
     first_date: Union[np.datetime64, datetime]
 
-    def initialize(self):
+    def initialize(self, _: Coral):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
         if not self.valid_output():
             return
-        with Dataset(self.output_nc, "w", format="NETCDF4") as _his_data:
+        with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
             _his_data.description = "Historic simulation data of the CoralModel"
 
             # dimensions
@@ -425,7 +429,7 @@ class HisOutput(BaseOutput):
                 md=init_md,
             )
             for key, v_func in conditions_funct.items():
-                if self.output_dataset[key]:
+                if self.output_params.dict()[key]:
                     v_func()
 
     def update(self, coral: Coral, dates: DataFrame):
@@ -439,7 +443,7 @@ class HisOutput(BaseOutput):
         """
         if not self.valid_output():
             return
-        with Dataset(self.output_nc, mode="a") as _his_data:
+        with Dataset(self.output_filepath, mode="a") as _his_data:
             y_dates = dates.reset_index(drop=True)
             ti = (y_dates - self.first_date).dt.days.values
             _his_data["time"][ti] = y_dates.values
@@ -527,5 +531,5 @@ class HisOutput(BaseOutput):
                 md=update_md,
             )
             for key, v_func in conditions_funct.items():
-                if self.output_dataset[key]:
+                if self.output_params.dict()[key]:
                     v_func()
