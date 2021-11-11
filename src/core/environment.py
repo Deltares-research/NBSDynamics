@@ -17,7 +17,7 @@ from pydantic import validator
 
 from src.core.base_model import BaseModel
 
-EnvInputAttr = Union[pd.DataFrame, Path]
+EnvInputAttr = Union[pd.DataFrame, Path, str]
 
 
 class Environment(BaseModel):
@@ -36,7 +36,7 @@ class Environment(BaseModel):
         it's content is converted into a pandas DataFrame.
 
         Args:
-            value (EnvInputAttr): Value to be validated (Union[pd.DataFrame, Path]).
+            value (EnvInputAttr): Value to be validated (Union[pd.DataFrame, Path, str]).
 
         Raises:
             FileNotFoundError: When the provided value is a non-existent Path.
@@ -58,6 +58,8 @@ class Environment(BaseModel):
 
         if isinstance(value, pd.DataFrame):
             return value
+        if isinstance(value, str):
+            value = Path(value)
         if isinstance(value, Path):
             if not value.is_file():
                 raise FileNotFoundError(value)
@@ -72,7 +74,7 @@ class Environment(BaseModel):
         into a valid 'Environment' attribute.
 
         Args:
-            value (EnvInputAttr): Value assigned to the attribute (Union[pd.DataFrame, Path]).
+            value (EnvInputAttr): Value assigned to the attribute (Union[pd.DataFrame, Path, str]).
 
         Raises:
             FileNotFoundError: When the provided value is a non-existent Path.
@@ -83,6 +85,8 @@ class Environment(BaseModel):
         """
         if isinstance(value, pd.DataFrame):
             return value
+        if isinstance(value, str):
+            value = Path(value)
         if isinstance(value, Path):
             if not value.is_file():
                 raise FileNotFoundError(value)
