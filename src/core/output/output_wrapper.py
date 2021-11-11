@@ -4,7 +4,7 @@ import numpy as np
 from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
 from src.core.base_model import BaseModel
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 from pydantic import root_validator
 from datetime import datetime
 
@@ -18,14 +18,11 @@ class OutputWrapper(BaseModel):
     output_dir: Path  # directory to write the output to
     xy_coordinates: np.ndarray  # (x,y)-coordinates
     first_date: Union[np.datetime64, datetime]  # first date of simulation
+    outpoint: np.ndarray  # boolean indicating per (x,y) point if his output is desired
 
     # Dictionary of values that will be needed to initialize the Output models.
-    map_values: dict
-    his_values: dict
-
-    # Optional attributes.
-    # boolean indicating per (x,y) point if his output is desired
-    outpoint: Optional[np.ndarray]
+    map_values: dict = dict()
+    his_values: dict = dict()
 
     # Output models.
     map_output: Optional[OutputProtocol]
@@ -53,7 +50,7 @@ class OutputWrapper(BaseModel):
             values["map_output"] = MapOutput(
                 output_dir=wrap_output_dir,
                 first_year=values["first_date"].year,
-                space=len(xy_coordinates),
+                xy_coordinates=xy_coordinates,
                 **values["map_values"],
             )
 

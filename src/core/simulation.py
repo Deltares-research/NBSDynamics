@@ -384,7 +384,7 @@ class VersionSimulation(BaseModel):
     constants: Constants
     hydrodynamics: HydrodynamicProtocol
     coral: coral_model.Coral
-    output: Output
+    output: OutputWrapper
 
     def initiate(self, duration: Optional[int] = None):
         raise NotImplementedError

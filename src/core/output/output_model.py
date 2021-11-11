@@ -55,10 +55,18 @@ class MapOutput(BaseOutput):
     """
 
     output_filename = "CoralModel_map.nc"
-
-    first_year: int
-    space: int
     xy_coordinates: np.ndarray
+    first_year: int
+
+    @property
+    def space(self) -> int:
+        """
+        Gets the total space for the model-defined xy-coordinates.
+
+        Returns:
+            int: length of 'xy_coordinates'.
+        """
+        return len(self.xy_coordinates)
 
     def initiate(self, coral: Coral):
         """Initiate mapping output file in which annual output covering the whole model domain is stored.
