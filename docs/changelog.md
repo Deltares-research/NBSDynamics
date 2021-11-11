@@ -1,4 +1,14 @@
 
+## v0.2.0 (2021-11-11)
+
+### Fix
+
+- quality gate fix (#62)
+
+### Feat
+
+- Create model input
+
 ## v0.1.3 (2021-11-08)
 
 ### Refactor
