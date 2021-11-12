@@ -94,5 +94,9 @@ class OutputWrapper(BaseModel):
         Args:
             coral (Coral): Coral model to be used in the output.
         """
+        # Initialize Output dir path.
+        self.output_dir.mkdir(parents=True)
+
+        # Initialize output models.
         self.his_output.initialize(coral)
         self.map_output.initialize(coral)
