@@ -44,7 +44,6 @@ jobs:
           git config --global user.email '${{ github.actor }}@users.noreply.github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git checkout $GITHUB_HEAD_REF
-          git tag
           git fetch --all --tags
           git tag
 
@@ -57,10 +56,11 @@ jobs:
         run: |
           poetry run cz bump --changelog
 
-      - name: Push new tag
+      - name: Push changelog, version files and new tag
         run: |
           git config --global user.name '${{ github.actor }}'
           git config --global user.email '${{ github.actor }}@users.noreply.github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git checkout $GITHUB_HEAD_REF
+          git push
           git push --tags
