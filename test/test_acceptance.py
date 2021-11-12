@@ -7,8 +7,10 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.coral_model import Coral
-from src.core.simulation import CoralTransectSimulation, Simulation
+from src.core.simulation import (
+    CoralDelft3DSimulation,
+    CoralTransectSimulation,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -16,41 +18,45 @@ class TestAcceptance:
     @pytest.mark.skip(reason="Not yet supported.")
     def test_given_interface_d3d_case_runs(self):
         # Test based on interface_D3D.py
-        model_dir = TestUtils.get_local_test_data_dir("CoralModel")
-        assert model_dir.is_dir()
+        test_dir = TestUtils.get_local_test_data_dir("delf3d_case")
+        assert test_dir.is_dir()
 
         fm_dir = TestUtils.get_external_test_data_dir("fm")
-        assert fm_dir.is_dir()
+        # assert fm_dir.is_dir()
 
-        sim_run = Simulation(mode="Delft3D")
+        input_dir = test_dir / "input"
 
-        # set the working directory and its subdirectories (input, output, figures)
-        sim_run.set_directories(model_dir / "work_dir_example")
-        # read the input file with parameters (processes, parameters,constants, now all in "constants")
-        sim_run.read_parameters(file="coral_input.txt", folder=sim_run.input_dir)
-        # environment definition
-        sim_run.environment.from_file("light", "TS_PAR.txt", folder=sim_run.input_dir)
-        sim_run.environment.from_file(
-            "temperature", "TS_SST.txt", folder=sim_run.input_dir
+        sim_run = CoralDelft3DSimulation(
+            working_dir=test_dir,
+            constants=input_dir / "coral_input.txt",
+            environment=dict(
+                light=input_dir / "TS_PAR.txt",
+                temperature=input_dir / "TS_SST.txt",
+            ),
+            definition_file=input_dir / "FlowFM.mdu",
+            config_file=input_dir / "dimr_config.xml",
+            coral=dict(
+                dc=0.1,
+                hc=0.1,
+                bc=0.05,
+                tc=0.05,
+                ac=0.2,
+                species_constant=1,
+            ),
+            hydrodynamics_values=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=test_dir / "d3d_suite",
+                update_intervals=(300, 300),
+            ),
+            output_values=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict(fme=False)),
+                his_output=dict(output_params=dict(fme=False)),
+                xy_stations=(0, 0),
+            ),
         )
 
-        # hydrodynamic model
-        sim_run.hydrodynamics.working_dir = sim_run.working_dir / "d3d_work"
-        sim_run.hydrodynamics.d3d_home = model_dir / "d3d_suite"
-        sim_run.hydrodynamics.mdu = fm_dir / "FlowFM.mdu"
-        sim_run.hydrodynamics.config_file = "dimr_config.xml"
-        sim_run.hydrodynamics.set_update_intervals(300, 300)
-        # sleep(2)
-        sim_run.hydrodynamics.initiate()
-
-        # check
-        print(sim_run.hydrodynamics.settings)
-        # define output
-        sim_run.define_output("map", fme=False)
-        sim_run.define_output("his", fme=False)
-        sim_run.output.xy_stations = (0, 0)
-        # initiate coral
-        sim_run.coral = Coral(sim_run.constants, 0.1, 0.1, 0.05, 0.05, 0.2)
+        # Run simulation.
         sim_run.initiate()
         sim_run.run()
         sim_run.finalise()
@@ -83,11 +89,16 @@ class TestAcceptance:
                 storm=input_dir / "TS_stormcat2.txt",
                 dates=("2000-01-01", "2100-01-01"),
             ),
-            definition_file=input_dir / "TS_waves.txt",
-            config_file=input_dir / "config.csv",
-            output_dir=test_dir / "output",
-            output_map_values=dict(fme=False),
-            output_his_values=dict(fme=False),
+            hydrodynamics=dict(
+                mode="Transect",
+                definition_file=input_dir / "TS_waves.txt",
+                config_file=input_dir / "config.csv",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict(fme=False)),
+                his_output=dict(output_params=dict(fme=False)),
+            ),
             coral=dict(
                 dc=0.125,
                 hc=0.125,

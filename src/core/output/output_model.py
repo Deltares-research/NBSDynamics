@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 from netCDF4 import Dataset
@@ -29,7 +29,7 @@ class BaseOutput(BaseModel):
     Base class containing the generic definition of a 'Coral' output model.
     """
 
-    output_dir: Path
+    output_dir: Optional[Path]
     output_filename: str
 
     # Output model attributes.
@@ -61,8 +61,8 @@ class MapOutput(BaseOutput):
     """
 
     output_filename = "CoralModel_map.nc"
-    xy_coordinates: np.ndarray
-    first_year: int
+    xy_coordinates: Optional[np.ndarray]
+    first_year: Optional[int]
 
     @property
     def space(self) -> int:
@@ -308,9 +308,9 @@ class HisOutput(BaseOutput):
     """
 
     output_filename = "CoralModel_his.nc"
-    xy_stations: np.ndarray
-    idx_stations: np.ndarray
-    first_date: Union[np.datetime64, datetime]
+    xy_stations: Optional[np.ndarray]
+    idx_stations: Optional[np.ndarray]
+    first_date: Optional[Union[np.datetime64, datetime]]
 
     def initialize(self, _: Coral):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""

@@ -1,9 +1,3 @@
-"""
-coral_model v3 - hydrodynamics
-
-@author: Gijs G. Hendrickx
-@contributor: Peter M.J. Herman
-"""
 from typing import List
 
 from src.core.hydrodynamics.delft3d import Delft3D
@@ -17,13 +11,25 @@ class HydrodynamicsFactory:
     """
     Factory class to select hydrodynamic models.
     It also works as a binding model-protocol between the hydrodynamic models
-    and the 'HydrodynamicProtocol'.
+    and the `HydrodynamicProtocol`.
     """
 
     supported_modes: List[HydrodynamicProtocol] = [Reef0D, Reef1D, Delft3D, Transect]
 
     @staticmethod
-    def get_hydrodynamic_model(model_name: str) -> HydrodynamicProtocol:
+    def get_hydrodynamic_model_type(model_name: str) -> HydrodynamicProtocol:
+        """
+        Returns the type associated with the given model name.
+
+        Args:
+            model_name (str): Model name to retrieve.
+
+        Raises:
+            ValueError: When the model name is not associated with a valid `HydrodynamicProtocol`.
+
+        Returns:
+            HydrodynamicProtocol: The requested model type.
+        """
         nm_name = model_name.lower() if model_name is not None else model_name
         hydromodel: HydrodynamicProtocol = next(
             (
@@ -37,4 +43,4 @@ class HydrodynamicsFactory:
 
             msg = f"{model_name} not in {[x.__name__ for x in HydrodynamicsFactory.supported_modes]}."
             raise ValueError(msg)
-        return hydromodel()
+        return hydromodel
