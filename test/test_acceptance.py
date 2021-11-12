@@ -135,7 +135,7 @@ class TestAcceptance:
                         expected_file.is_file()
                     ), f"Expected file for variable {variable} not found at {expected_file}"
                     ref_variable = loadtxt(expected_file)
-                    assert numpy.allclose(
+                    assert np.allclose(
                         ref_variable, out_netcdf[variable]
                     ), f"{variable} not close to reference data."
 
