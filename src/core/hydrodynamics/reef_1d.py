@@ -9,7 +9,7 @@ from src.core.coral_model import Coral
 
 class Reef1D:
     """
-    Implements the 'HydrodynamicProtocol'.
+    Implements the `HydrodynamicProtocol`.
     Simplified one-dimensional hydrodynamic model over a (coral) reef."""
 
     # TODO: Complete the one-dimensional hydrodynamic model

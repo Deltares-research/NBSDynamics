@@ -1,6 +1,7 @@
 import faulthandler
 import os
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
@@ -10,13 +11,11 @@ faulthandler.enable()
 
 class Delft3D:
     """
-    Implements the 'HydrodynamicProtocol'.
+    Implements the `HydrodynamicProtocol`.
     Coupling of coral_model to Delft3D using the BMI wrapper.
     """
 
     _home = None
-    _dflow_dir = None
-    _dimr_dir = None
 
     _working_dir = None
     _mdu = None
@@ -44,13 +43,13 @@ class Delft3D:
     def settings(self):
         """Print settings of Delft3D-model."""
         if self.config_file:
-            incl = f"DFlow- and DWaves-modules"
+            incl = "DFlow- and DWaves-modules"
             files = (
                 f"\n\tDFlow file         : {self.definition_file}"
                 f"\n\tConfiguration file : {self.config_file}"
             )
         else:
-            incl = f"DFlow-module"
+            incl = "DFlow-module"
             files = f"\n\tDFlow file         : {self.definition_file}"
 
         msg = (
@@ -61,10 +60,12 @@ class Delft3D:
         return msg
 
     @property
-    def d3d_home(self):
-        """Delft3D home directory.
+    def d3d_home(self) -> Path:
+        """
+        Delft3D home directory.
 
-        :rtype: str
+        Returns:
+            Path: Filepath value.
         """
         return self._home
 
@@ -85,7 +86,7 @@ class Delft3D:
         return self._working_dir
 
     @working_dir.setter
-    def working_dir(self, folder):
+    def working_dir(self, folder: Union[str, Path]):
         """
         :param folder: working directory
         :type folder:  str
@@ -98,14 +99,12 @@ class Delft3D:
     @property
     def dflow_dir(self) -> Path:
         """Directory to DFlow-ddl."""
-        self._dflow_dir = self.d3d_home / "dflowfm" / "bin" / "dflowfm"
-        return self._dflow_dir
+        return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
 
     @property
     def dimr_dir(self) -> Path:
         """Directory to DIMR-dll."""
-        self._dimr_dir = self.d3d_home / "dimr" / "bin" / "dimr_dll"
-        return self._dimr_dir
+        return self.d3d_home / "dimr" / "bin" / "dimr_dll"
 
     @property
     def definition_file(self) -> Path:
@@ -116,12 +115,12 @@ class Delft3D:
         return self._mdu
 
     @definition_file.setter
-    def definition_file(self, file_dir):
+    def definition_file(self, file_value: str):
         """
         :param file_dir: file directory of MDU-file
         :type file_dir: str
         """
-        self._mdu = self.working_dir / file_dir
+        self._mdu = self.working_dir / file_value
 
     @property
     def config_file(self) -> Path:
@@ -174,10 +173,10 @@ class Delft3D:
                 ]
             )
 
-        env = ";".join(dirs)
+        env = ";".join(map(str, dirs))
         os.environ["PATH"] = env
 
-        print(f'\nEnvironment "PATH":')
+        print('\nEnvironment "PATH":')
         [print(f"\t{path}") for path in dirs]
 
     def input_check(self):
@@ -333,11 +332,11 @@ class Delft3D:
         """Initialize the working model."""
         self.environment()
         self._model_fm = BMIWrapper(
-            engine=self.dflow_dir, configfile=self.definition_file
+            engine=str(self.dflow_dir), configfile=str(self.definition_file)
         )
         if self.config_file:
             self._model_dimr = BMIWrapper(
-                engine=self.dimr_dir, configfile=self.config_file
+                engine=str(self.dimr_dir), configfile=str(self.config_file)
             )
         self.model.initialize()  # if self.model_dimr is None else self.model_dimr.initialize()
 

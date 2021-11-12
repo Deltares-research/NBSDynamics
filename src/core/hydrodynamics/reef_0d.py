@@ -7,7 +7,7 @@ from src.core.coral_model import Coral
 
 
 class Reef0D:
-    """Implements the 'HydrodynamicProtocol'."""
+    """Implements the `HydrodynamicProtocol`."""
 
     @property
     def settings(self):

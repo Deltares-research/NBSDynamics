@@ -9,6 +9,15 @@ from src.core.output.output_wrapper import OutputWrapper
 
 class TestOutputWrapper:
     def test_output_init(self):
+        test_output = OutputWrapper()
+        assert isinstance(test_output.output_dir, Path)
+        assert test_output.xy_coordinates is None
+        assert test_output.first_date is None
+        assert test_output.outpoint is None
+        assert test_output.map_output is None
+        assert test_output.his_output is None
+
+    def test_output_init_with_args(self):
         xy_array = np.array([[0, 1], [1, 0]], np.float64)
         outpoint_array = np.array([False, True])
         now_time = datetime.now()
@@ -25,8 +34,8 @@ class TestOutputWrapper:
         assert test_output.defined is False
 
         # Verify output models were generated.
-        assert isinstance(test_output.map_output, MapOutput)
-        assert isinstance(test_output.his_output, HisOutput)
+        assert test_output.map_output is None
+        assert test_output.his_output is None
 
         # Verify built-in fields.
         assert str(test_output) == "Output undefined."

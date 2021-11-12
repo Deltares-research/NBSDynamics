@@ -30,11 +30,11 @@ class TestHydrodynamicsFactory:
         "mode, expected_type",
         valid_model_cases(),
     )
-    def test_get_hydrodynamic_model(self, mode: str, expected_type: Type):
-        test_hd = HydrodynamicsFactory.get_hydrodynamic_model(mode)
-        assert isinstance(test_hd, expected_type)
+    def test_get_hydrodynamic_model_type(self, mode: str, expected_type: Type):
+        mapped_type = HydrodynamicsFactory.get_hydrodynamic_model_type(mode)
+        assert mapped_type == expected_type
         assert isinstance(
-            type(test_hd), HydrodynamicProtocol
+            mapped_type, HydrodynamicProtocol
         ), f"{expected_type} does not fully implement the HydrodynamicProtocol."
 
     @pytest.mark.parametrize(
@@ -53,7 +53,7 @@ class TestHydrodynamicsFactory:
 
         # 2. Run test.
         with pytest.raises(ValueError) as e_info:
-            HydrodynamicsFactory.get_hydrodynamic_model(unknown_mode)
+            HydrodynamicsFactory.get_hydrodynamic_model_type(unknown_mode)
 
         # 3. Verify final expectation
         assert str(e_info.value) == expected_mssg
