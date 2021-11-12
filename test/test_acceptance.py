@@ -7,10 +7,7 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.simulation import (
-    CoralDelft3DSimulation,
-    CoralTransectSimulation,
-)
+from src.core.simulation import CoralDelft3DSimulation, CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 

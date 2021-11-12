@@ -8,9 +8,9 @@ from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation import (
-    _Simulation,
     CoralDelft3DSimulation,
     CoralTransectSimulation,
+    _Simulation,
 )
 
 simulation_cases = [
