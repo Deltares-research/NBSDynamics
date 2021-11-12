@@ -2,7 +2,7 @@ from pathlib import Path
 from test.utils import TestUtils
 from typing import Callable
 
-import numpy
+import numpy as np
 import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
@@ -15,10 +15,9 @@ from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
 class TestAcceptance:
-    @pytest.mark.skip(reason="Not yet supported.")
     def test_given_interface_d3d_case_runs(self):
         # Test based on interface_D3D.py
-        test_dir = TestUtils.get_local_test_data_dir("delf3d_case")
+        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         assert test_dir.is_dir()
 
         fm_dir = TestUtils.get_external_test_data_dir("fm")
@@ -33,8 +32,6 @@ class TestAcceptance:
                 light=input_dir / "TS_PAR.txt",
                 temperature=input_dir / "TS_SST.txt",
             ),
-            definition_file=input_dir / "FlowFM.mdu",
-            config_file=input_dir / "dimr_config.xml",
             coral=dict(
                 dc=0.1,
                 hc=0.1,
@@ -43,16 +40,19 @@ class TestAcceptance:
                 ac=0.2,
                 species_constant=1,
             ),
-            hydrodynamics_values=dict(
+            hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=test_dir / "d3d_suite",
                 update_intervals=(300, 300),
+                definition_file=input_dir / "FlowFM.mdu",
+                config_file=input_dir / "dimr_config.xml",
             ),
-            output_values=dict(
+            output=dict(
                 output_dir=test_dir / "output",
                 map_output=dict(output_params=dict(fme=False)),
-                his_output=dict(output_params=dict(fme=False)),
-                xy_stations=(0, 0),
+                his_output=dict(
+                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
+                ),
             ),
         )
 

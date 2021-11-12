@@ -130,19 +130,34 @@ class _Simulation(BaseModel, ABC):
             )()
             # TODO The following logic should actually be sent as arguments into the constructor
             # TODO This will imply creating a base class (like the BaseOutput).
-            hydrodynamics.working_dir = field_values.get(
-                "working_dir", values.get("working_dir", Path.cwd())
+            # Get a merged dictionary.
+            sim_dict = dict(list(field_values.items()) + list(values.items()))
+            # Emphasize working dir from explicit definition takes preference over simulation one.
+            sim_dict["working_dir"] = field_values.get(
+                "working_dir", values["working_dir"]
             )
-            # The following assignments can't be done if None
-            def_file: Optional[Path] = field_values.get("definition_file", None)
-            if def_file is not None:
-                hydrodynamics.definition_file = def_file
-            con_file: Optional[Path] = field_values.get("config_file", None)
-            if con_file is not None:
-                hydrodynamics.config_file = con_file
+            cls.set_simulation_hydrodynamics(hydrodynamics, sim_dict)
+
             return hydrodynamics
 
         return field_values
+
+    @classmethod
+    @abstractmethod
+    def set_simulation_hydrodynamics(
+        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
+    ):
+        """
+        Abstract method that gets triggered during `validate_hydrodynamics_present` so that each `_Simulation` can define extra attributes.
+
+        Args:
+            hydromodel (HydrodynamicProtocol): Hydrodynamic model to set up.
+            dict_values (dict): Values given by the user to configure the model.
+
+        Raises:
+            NotImplementedError: When abstract method not defined in concrete class.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def configure_hydrodynamics(self):
@@ -405,6 +420,24 @@ class CoralTransectSimulation(_Simulation):
 
     mode = "Transect"
 
+    @classmethod
+    def set_simulation_hydrodynamics(
+        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
+    ):
+        """
+        Sets the specific hydrodynamic attributes for a `CoralTransectSimulation`.
+
+        Args:
+            hydromodel (HydrodynamicProtocol): Hydromodel to configure.
+            dict_values (dict): Dictionary of values available for assignment.
+        """
+        hydromodel.working_dir = dict_values.get("working_dir")
+        # The following assignments can't be done if None
+        if (def_file := dict_values.get("definition_file", None)) is not None:
+            hydromodel.definition_file = def_file
+        if (con_file := dict_values.get("config_file", None)) is not None:
+            hydromodel.config_file = con_file
+
     def configure_hydrodynamics(self):
         """
         Initializes the `HydrodynamicsProtocol` model.
@@ -476,11 +509,34 @@ class CoralDelft3DSimulation(_Simulation):
 
     mode = "Delft3D"
 
+    @classmethod
+    def set_simulation_hydrodynamics(
+        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
+    ):
+        """
+        Sets the specific hydrodynamic attributes for a `CoralDelft3DSimulation`.
+
+        Args:
+            hydromodel (HydrodynamicProtocol): Hydromodel to configure.
+            dict_values (dict): Dictionary of values available for assignment.
+        """
+        hydromodel.working_dir = dict_values.get("working_dir")
+        # The following assignments can't be done if None
+        if (def_file := dict_values.get("definition_file", None)) is not None:
+            hydromodel.definition_file = def_file
+        if (con_file := dict_values.get("config_file", None)) is not None:
+            hydromodel.config_file = con_file
+        if (upd_intervals := dict_values.get("update_intervals", None)) is not None:
+            hydromodel.set_update_intervals(upd_intervals)
+
     def configure_hydrodynamics(self):
-        return super().configure_hydrodynamics()
+        """
+        Configures the hydrodynamics model for a `CoralDelft3DSimulation`.
+        """
+        self.hydrodynamics.initiate()
 
     def configure_output(self):
-        return super().configure_output()
+        return
 
 
 # TODO: Define folder structure
