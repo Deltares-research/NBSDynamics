@@ -17,11 +17,7 @@ class TestAcceptance:
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         assert test_dir.is_dir()
 
-        fm_dir = TestUtils.get_external_test_data_dir("fm")
-        # assert fm_dir.is_dir()
-
         input_dir = test_dir / "input"
-
         sim_run = CoralDelft3DSimulation(
             working_dir=test_dir,
             constants=input_dir / "coral_input.txt",
