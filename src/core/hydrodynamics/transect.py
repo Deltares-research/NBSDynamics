@@ -7,7 +7,10 @@ faulthandler.enable()
 
 
 class Transect:
-    """Simple 1D depth transect with imposed currents and waves"""
+    """
+    Implements the `HydrodynamicProtocol`.
+    Simple 1D depth transect with imposed currents and waves
+    """
 
     _home = None
 
