@@ -22,7 +22,7 @@ black = "^21.9b0"
 bmi-python = "^0.3.0"
 pydantic = "^1.8.2"
 pypiwin32 = "^223"
-pywin32 = "^302"
+pywin32 = {version = "^302", platform = "win32"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
