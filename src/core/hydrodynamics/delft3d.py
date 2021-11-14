@@ -2,11 +2,10 @@ import abc
 import faulthandler
 import os
 from pathlib import Path
-from typing import Optional, Protocol, Union
+from typing import Optional, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
-from pandas.core.frame import DataFrame
 from src.core.base_model import BaseModel
 from pydantic import Extra
 from abc import abstractmethod

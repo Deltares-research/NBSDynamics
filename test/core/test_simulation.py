@@ -1,18 +1,18 @@
 from pathlib import Path
-from typing import Callable, Type
+from typing import Callable
 
 import pytest
 
 from src.core.constants import Constants
 from src.core.environment import Environment
-from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
+from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.transect import Transect
-from src.core.simulation import (
+from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
-    CoralTransectSimulation,
-    _Simulation,
 )
+from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.core.simulation.base_simulation import _Simulation
 
 simulation_cases = [
     pytest.param(CoralDimrSimulation),
