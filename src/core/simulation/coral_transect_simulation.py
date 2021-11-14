@@ -1,6 +1,6 @@
-from src.core.simulation.base_simulation import _Simulation
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
+from src.core.simulation.base_simulation import _Simulation
 
 
 class CoralTransectSimulation(_Simulation):

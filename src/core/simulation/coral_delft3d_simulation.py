@@ -1,6 +1,7 @@
 from abc import ABC
-from src.core.simulation.base_simulation import _Simulation
+
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.simulation.base_simulation import _Simulation
 
 
 class _CoralDelft3DSimulation(_Simulation, ABC):
