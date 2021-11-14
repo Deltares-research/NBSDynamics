@@ -1,161 +1,44 @@
+import abc
 import faulthandler
 import os
 from pathlib import Path
-from typing import Union
+from typing import Optional, Protocol, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
+from pandas.core.frame import DataFrame
+from src.core.base_model import BaseModel
+from pydantic import Extra
+from abc import abstractmethod
 
 faulthandler.enable()
 
+WrapperVariable = Union[float, list, tuple, np.ndarray]
 
-class Delft3D:
+
+class Delft3D(BaseModel, abc.ABC):
     """
     Implements the `HydrodynamicProtocol`.
     Coupling of coral_model to Delft3D using the BMI wrapper.
     """
 
-    _home = None
+    class Config:
+        """
+        Allow this model to have extra fields defined during runtime.
+        """
 
-    _working_dir = None
-    _mdu = None
-    _config = None
+        extra = Extra.allow
 
-    _model_fm = None
-    _model_dimr = None
-
-    _space = None
-    _water_depth = None
-
-    _x_coordinates = None
-    _y_coordinates = None
-    _xy_coordinates = None
-
-    def __init__(self):
-
-        self.time_step = None
+    # Define model attributes.
+    time_step: Optional[np.datetime64]
+    model_wrapper: Optional[BMIWrapper]
+    d3d_home: Path  # Delft3D binaries home directory.
+    working_dir: Path  # Model working directory.
+    definition_file: Path
+    config_file: Path
 
     def __repr__(self):
-        msg = f"Delft3D()"
-        return msg
-
-    @property
-    def settings(self):
-        """Print settings of Delft3D-model."""
-        if self.config_file:
-            incl = "DFlow- and DWaves-modules"
-            files = (
-                f"\n\tDFlow file         : {self.definition_file}"
-                f"\n\tConfiguration file : {self.config_file}"
-            )
-        else:
-            incl = "DFlow-module"
-            files = f"\n\tDFlow file         : {self.definition_file}"
-
-        msg = (
-            f"Coupling with Delft3D model (incl. {incl}) with the following settings:"
-            f"\n\tDelft3D home dir.  : {self.d3d_home}"
-            f"{files}"
-        )
-        return msg
-
-    @property
-    def d3d_home(self) -> Path:
-        """
-        Delft3D home directory.
-
-        Returns:
-            Path: Filepath value.
-        """
-        return self._home
-
-    @d3d_home.setter
-    def d3d_home(self, folder):
-        """
-        :param folder: Delft3D home directory
-        :type folder: str
-        """
-        if not isinstance(folder, Path):
-            self._home = Path(folder)
-            return
-        self._home = folder
-
-    @property
-    def working_dir(self) -> Path:
-        """Model working directory."""
-        return self._working_dir
-
-    @working_dir.setter
-    def working_dir(self, folder: Union[str, Path]):
-        """
-        :param folder: working directory
-        :type folder:  str
-        """
-        if not isinstance(folder, Path):
-            self._working_dir = Path(folder)
-            return
-        self._working_dir = folder
-
-    @property
-    def dflow_dir(self) -> Path:
-        """Directory to DFlow-ddl."""
-        return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
-
-    @property
-    def dimr_dir(self) -> Path:
-        """Directory to DIMR-dll."""
-        return self.d3d_home / "dimr" / "bin" / "dimr_dll"
-
-    @property
-    def definition_file(self) -> Path:
-        """Delft3D's MDU-file.
-
-        :rtype: str
-        """
-        return self._mdu
-
-    @definition_file.setter
-    def definition_file(self, file_value: str):
-        """
-        :param file_dir: file directory of MDU-file
-        :type file_dir: str
-        """
-        self._mdu = self.working_dir / file_value
-
-    @property
-    def config_file(self) -> Path:
-        """Delft3D's config-file.
-
-        :rtype: str
-        """
-        return self._config
-
-    @config_file.setter
-    def config_file(self, file_dir):
-        """
-        :param file_dir: file directory of config-file
-        :type file_dir: str, list, tuple
-        """
-        self._config = self.working_dir / file_dir
-
-    @property
-    def model(self):
-        """Main model-object."""
-        return self.model_dimr if self.config_file else self.model_fm
-
-    @property
-    def model_fm(self):
-        """Deflt3D-FM model-object."""
-        if self._model_fm is None:
-            raise ValueError("Model FM has not been defined.")
-        return self._model_fm
-
-    @property
-    def model_dimr(self):
-        """Delft3D DIMR model-object."""
-        if self._model_dimr is None:
-            raise ValueError("Model dimr has not been defined.")
-        return self._model_dimr
+        return "Delft3D()"
 
     def environment(self):
         """Set Python environment to include Delft3D-code."""
@@ -179,6 +62,28 @@ class Delft3D:
         print('\nEnvironment "PATH":')
         [print(f"\t{path}") for path in dirs]
 
+    def get_variable(self, variable: str) -> Optional[WrapperVariable]:
+        """
+        Get variable from the model wrapper.
+
+        Args:
+            variable (str): Variable to retrieve.
+
+        Returns:
+            Optional[WrapperVariable]: Value found.
+        """
+        return self.model_wrapper.get_var(variable)
+
+    def set_variable(self, variable: str, value: Optional[WrapperVariable]):
+        """
+        Set variable to model wrapper.
+
+        Args:
+            variable (str): Variable to set.
+            value (Optional[WrapperVariable]): Value to set.
+        """
+        self.model_wrapper.set_var(variable, value)
+
     def input_check(self):
         """Check if all requested content is provided"""
 
@@ -193,99 +98,17 @@ class Delft3D:
 
     def input_check_definition(self, obj):
         """Check definition of critical object."""
-        if getattr(self.model, obj) is None:
+        if getattr(self.model_wrapper, obj) is None:
             msg = f"{obj} undefined (required for Delft3D coupling)"
             raise ValueError(msg)
 
-    def get_variable(self, variable):
-        """Get variable from DFlow-model.
-
-        :param variable: variable to get
-        :type variable: str
+    def set_update_intervals(self, default: int, storm: Optional[int] = None):
         """
-        return self._model_fm.get_var(variable)
+        Set update intervals
 
-    def set_variable(self, variable, value):
-        """Set variable to DFlow-model.
-
-        :param variable: variable to set
-        :param value: value of variable
-
-        :type variable: str
-        :type value: float, list, tuple, numpy.ndarray
-        """
-        self._model_fm.set_var(variable, value)
-
-    @property
-    def space(self):
-        """Number of non-boundary boxes; i.e. within-domain boxes."""
-        if not self._model_fm:
-            return None
-        self._space = self.get_variable("ndxi") if self._space is None else self._space
-        return self._space.item()
-
-    @property
-    def x_coordinates(self):
-        """Center of gravity's x-coordinates as part of `space`."""
-        if not self._model_fm:
-            return None
-        self._x_coordinates = (
-            self.get_variable("xzw")[range(self.space)]
-            if self._x_coordinates is None
-            else self._x_coordinates
-        )
-        return self._x_coordinates
-
-    @property
-    def y_coordinates(self):
-        """Center of gravity's y-coodinates as part of `space`."""
-        if not self._model_fm:
-            return None
-        self._y_coordinates = (
-            self.get_variable("yzw")[range(self.space)]
-            if self._y_coordinates is None
-            else self._y_coordinates
-        )
-        return self._y_coordinates
-
-    @property
-    def xy_coordinates(self):
-        """The (x,y)-coordinates of the model domain,
-        retrieved from hydrodynamic model; otherwise based on provided definition.
-
-        :rtype: numpy.ndarray
-        """
-        if not self._model_fm:
-            return None
-        return np.array(
-            [
-                [self.x_coordinates[i], self.y_coordinates[i]]
-                for i in range(len(self.x_coordinates))
-            ]
-        )
-
-    @property
-    def water_depth(self):
-        """Water depth."""
-        if self._model_fm is None:
-            return None
-        if self.time_step is None:
-            self.time_step = self.get_variable("is_dtint")
-        if self._water_depth is None:
-            return (
-                self.get_variable("is_sumvalsnd")[range(self.space), 2] / self.time_step
-            )
-        else:
-            return self._water_depth
-
-    def set_update_intervals(self, default, storm=None):
-        """Set update intervals
-
-        :param default: default update interval
-        :param storm: storm update interval, defaults to None
-
-        :type default: int
-        :type storm: int, optional
+        Args:
+            default (int): Default value to update.
+            storm (Optional[int], optional): Default value if none given. Defaults to None.
         """
         self.update_interval = default
         self.update_interval_storm = default if storm is None else storm
@@ -328,17 +151,17 @@ class Delft3D:
         wave_per = self.get_variable("twav")[range(self.space)]
         return current_vel, wave_vel, wave_per
 
-    def initiate(self):
-        """Initialize the working model."""
+    @abstractmethod
+    def configure_model_wrapper(self):
+        raise NotImplementedError
+
+    def initialize(self):
+        """
+        Creates a BMIWrapper and initializes it based on the given parameters for a FM Model.
+        """
         self.environment()
-        self._model_fm = BMIWrapper(
-            engine=str(self.dflow_dir), configfile=str(self.definition_file)
-        )
-        if self.config_file:
-            self._model_dimr = BMIWrapper(
-                engine=str(self.dimr_dir), configfile=str(self.config_file)
-            )
-        self.model.initialize()  # if self.model_dimr is None else self.model_dimr.initialize()
+        self.configure_model_wrapper()
+        self.model_wrapper.initialize()
 
     def update(self, coral, stormcat=0):
         """Update the Delft3D-model."""
@@ -346,7 +169,7 @@ class Delft3D:
             self.update_interval_storm if stormcat > 0 else self.update_interval
         )
         self.reset_counters()
-        self.model.update(self.time_step)
+        self.model_wrapper.update(self.time_step)
 
         return (
             self.get_max_hydrodynamics()
@@ -356,4 +179,135 @@ class Delft3D:
 
     def finalise(self):
         """Finalize the working model."""
-        self.model.finalize()
+        self.model_wrapper.finalize()
+
+
+class FlowFmModel(Delft3D):
+    d3d_home: Path
+    _space: Optional[DataFrame] = None
+    _water_depth: Optional[DataFrame] = None
+    _x_coordinates: Optional[np.array]
+    _y_coordinates: Optional[np.array]
+
+    @property
+    def settings(self) -> str:
+        incl = "DFlow-module"
+        files = f"\n\tDFlow file         : {self.definition_file}"
+
+        return (
+            f"Coupling with Delft3D model (incl. {incl}) with the following settings:"
+            f"\n\tDelft3D home dir.  : {self.d3d_home}"
+            f"{files}"
+        )
+
+    @property
+    def dll_dir(self) -> Path:
+        return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
+
+    @property
+    def space(self):
+        """Number of non-boundary boxes; i.e. within-domain boxes."""
+        self._space: Optional[DataFrame] = (
+            self.get_variable("ndxi") if self._space is None else self._space
+        )
+        return self._space.item()
+
+    @property
+    def water_depth(self):
+        """Water depth."""
+        if self.time_step is None:
+            self.time_step = self.get_variable("is_dtint")
+        if self._water_depth is None:
+            return (
+                self.get_variable("is_sumvalsnd")[range(self.space), 2] / self.time_step
+            )
+        else:
+            return self._water_depth
+
+    @property
+    def x_coordinates(self):
+        """Center of gravity's x-coordinates as part of `space`."""
+        self._x_coordinates = (
+            self.get_variable("xzw")[range(self.space)]
+            if self._x_coordinates is None
+            else self._x_coordinates
+        )
+        return self._x_coordinates
+
+    @property
+    def y_coordinates(self):
+        """Center of gravity's y-coodinates as part of `space`."""
+        self._y_coordinates = (
+            self.get_variable("yzw")[range(self.space)]
+            if self._y_coordinates is None
+            else self._y_coordinates
+        )
+        return self._y_coordinates
+
+    @property
+    def xy_coordinates(self):
+        """The (x,y)-coordinates of the model domain,
+        retrieved from hydrodynamic model; otherwise based on provided definition.
+
+        :rtype: numpy.ndarray
+        """
+        return np.array(
+            [
+                [self.x_coordinates[i], self.y_coordinates[i]]
+                for i in range(len(self.x_coordinates))
+            ]
+        )
+
+    def configure_model_wrapper(self):
+        self.model_wrapper = BMIWrapper(
+            engine=self.dll_dir.as_posix(), configfile=self.definition_file.as_posix()
+        )
+
+
+class DimrModel(Delft3D):
+    d3d_home: Path
+
+    @property
+    def settings(self) -> Path:
+        incl = "DFlow- and DWaves-modules"
+        files = (
+            f"\n\tDFlow file         : {self.definition_file}"
+            f"\n\tConfiguration file : {self.config_file}"
+        )
+        return (
+            f"Coupling with Delft3D model (incl. {incl}) with the following settings:"
+            f"\n\tDelft3D home dir.  : {self.d3d_home}"
+            f"{files}"
+        )
+
+    @property
+    def dll_dir(self) -> Path:
+        return self.d3d_home / "dimr" / "bin" / "dimr_dll"
+
+    @property
+    def space(self) -> None:
+        return None
+
+    @property
+    def water_depth(self):
+        return None
+
+    @property
+    def x_coordinates(self):
+        return None
+
+    @property
+    def y_coordinates(self):
+        return None
+
+    @property
+    def xy_coordinates(self):
+        return None
+
+    def configure_model_wrapper(self):
+        """
+        Initilizes a BMIWrapper instance based on the given DIMR parameters.
+        """
+        self.model_wrapper = BMIWrapper(
+            engine=self.dll_dir.as_posix(), configfile=self.config_file.as_posix()
+        )

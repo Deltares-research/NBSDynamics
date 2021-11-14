@@ -109,6 +109,19 @@ class TestUtils:
         return test_dir / TestUtils._name_external / dir_name
 
     @staticmethod
+    def get_external_repo(dir_name: str) -> Path:
+        """
+        Returns the parent directory of this repo directory.
+
+        Args:
+            dir_name (str): Repo 'sibbling' of the current one.
+
+        Returns:
+            Path: Path to the sibbling repo.
+        """
+        return Path(__file__).parent.parent.parent / dir_name
+
+    @staticmethod
     def copy_test_dir_into_artifacts_dir(
         test_name: str,
         *results_dirs,

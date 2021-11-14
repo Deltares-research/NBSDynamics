@@ -15,7 +15,12 @@ class TestAcceptance:
     def test_given_interface_d3d_case_runs(self):
         # Test based on interface_D3D.py
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
         assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        assert kernels_dir.is_dir()
+        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
+        assert test_case.is_dir()
 
         input_dir = test_dir / "input"
         sim_run = CoralDelft3DSimulation(
@@ -35,10 +40,10 @@ class TestAcceptance:
             ),
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
-                d3d_home=test_dir / "d3d_suite",
+                d3d_home=kernels_dir,
                 update_intervals=(300, 300),
-                definition_file=input_dir / "FlowFM.mdu",
-                config_file=input_dir / "dimr_config.xml",
+                definition_file=test_case / "fm" / "shallow_wave.mdu",
+                # config_file=test_case / "dimr_config.xml",
             ),
             output=dict(
                 output_dir=test_dir / "output",
