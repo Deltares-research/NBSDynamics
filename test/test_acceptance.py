@@ -4,6 +4,7 @@ from typing import Callable
 
 import numpy as np
 import pytest
+import sys
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
@@ -16,6 +17,9 @@ from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
 class TestAcceptance:
+    @pytest.mark.skipif(
+        sys.platform != "win32", reason="BMI only supported on Windows."
+    )
     def test_given_interface_d3d_case_runs(self):
         # Test based on interface_D3D.py
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
