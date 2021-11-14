@@ -12,8 +12,5 @@
 ### Environment
 ::: src.core.environment
 
-### Simulation
-::: src.core.simulation
-
 ### Utils
 ::: src.core.utils
