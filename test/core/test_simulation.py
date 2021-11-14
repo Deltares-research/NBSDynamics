@@ -5,16 +5,18 @@ import pytest
 
 from src.core.constants import Constants
 from src.core.environment import Environment
-from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation import (
-    CoralDelft3DSimulation,
+    CoralDimrSimulation,
+    CoralFlowFmSimulation,
     CoralTransectSimulation,
     _Simulation,
 )
 
 simulation_cases = [
-    pytest.param(CoralDelft3DSimulation),
+    pytest.param(CoralDimrSimulation),
+    pytest.param(CoralFlowFmSimulation),
     pytest.param(CoralTransectSimulation),
 ]
 
@@ -23,7 +25,8 @@ class TestSimulation:
     @pytest.mark.parametrize(
         "mode_case, expected_hydro",
         [
-            pytest.param(CoralDelft3DSimulation, Delft3D),
+            pytest.param(CoralFlowFmSimulation, FlowFmModel),
+            pytest.param(CoralDimrSimulation, DimrModel),
             pytest.param(CoralTransectSimulation, Transect),
         ],
     )
@@ -66,5 +69,5 @@ class TestSimulation:
             test_sim.validate_environment()
         assert (
             str(e_info.value)
-            == f"CoralModel simulation cannot run without data on temperature conditions."
+            == "CoralModel simulation cannot run without data on temperature conditions."
         )

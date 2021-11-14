@@ -7,7 +7,11 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.simulation import CoralDelft3DSimulation, CoralTransectSimulation
+from src.core.simulation import (
+    CoralDimrSimulation,
+    CoralFlowFmSimulation,
+    CoralTransectSimulation,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -23,7 +27,7 @@ class TestAcceptance:
         assert test_case.is_dir()
 
         input_dir = test_dir / "input"
-        sim_run = CoralDelft3DSimulation(
+        sim_run = CoralFlowFmSimulation(
             working_dir=test_dir,
             constants=input_dir / "coral_input.txt",
             environment=dict(

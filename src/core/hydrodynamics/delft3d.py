@@ -32,10 +32,15 @@ class Delft3D(BaseModel, abc.ABC):
     # Define model attributes.
     time_step: Optional[np.datetime64]
     model_wrapper: Optional[BMIWrapper]
-    d3d_home: Path  # Delft3D binaries home directory.
-    working_dir: Path  # Model working directory.
-    definition_file: Path
-    config_file: Path
+    d3d_home: Optional[Path]  # Delft3D binaries home directory.
+    working_dir: Optional[Path]  # Model working directory.
+    definition_file: Optional[Path] = None
+    config_file: Optional[Path] = None
+
+    @property
+    @abstractmethod
+    def dll_dir(self) -> Path:
+        raise NotImplementedError
 
     def __repr__(self):
         return "Delft3D()"
@@ -153,9 +158,15 @@ class Delft3D(BaseModel, abc.ABC):
 
     @abstractmethod
     def configure_model_wrapper(self):
+        """
+        Configures the model wrapper with the specifics of its type.
+
+        Raises:
+            NotImplementedError: When the concrete class does not define its own implementation.
+        """
         raise NotImplementedError
 
-    def initialize(self):
+    def initiate(self):
         """
         Creates a BMIWrapper and initializes it based on the given parameters for a FM Model.
         """
@@ -183,9 +194,14 @@ class Delft3D(BaseModel, abc.ABC):
 
 
 class FlowFmModel(Delft3D):
-    d3d_home: Path
-    _space: Optional[DataFrame] = None
-    _water_depth: Optional[DataFrame] = None
+    """
+    Class implementing the `HydrodynamicProtocol` which makes use of a
+    `BMIWrapper` to run its calculations.
+    Based on a FlowFM model configuration.
+    """
+
+    _space: Optional[int] = None
+    _water_depth: Optional[np.ndarray] = None
     _x_coordinates: Optional[np.array]
     _y_coordinates: Optional[np.array]
 
@@ -205,16 +221,20 @@ class FlowFmModel(Delft3D):
         return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
 
     @property
-    def space(self):
+    def space(self) -> int:
         """Number of non-boundary boxes; i.e. within-domain boxes."""
-        self._space: Optional[DataFrame] = (
+        if self.model_wrapper is None:
+            return None
+        self._space: Optional[int] = (
             self.get_variable("ndxi") if self._space is None else self._space
         )
         return self._space.item()
 
     @property
-    def water_depth(self):
+    def water_depth(self) -> np.ndarray:
         """Water depth."""
+        if self.model_wrapper is None:
+            return None
         if self.time_step is None:
             self.time_step = self.get_variable("is_dtint")
         if self._water_depth is None:
@@ -225,8 +245,10 @@ class FlowFmModel(Delft3D):
             return self._water_depth
 
     @property
-    def x_coordinates(self):
+    def x_coordinates(self) -> np.ndarray:
         """Center of gravity's x-coordinates as part of `space`."""
+        if self.model_wrapper is None:
+            return None
         self._x_coordinates = (
             self.get_variable("xzw")[range(self.space)]
             if self._x_coordinates is None
@@ -235,8 +257,10 @@ class FlowFmModel(Delft3D):
         return self._x_coordinates
 
     @property
-    def y_coordinates(self):
+    def y_coordinates(self) -> np.ndarray:
         """Center of gravity's y-coodinates as part of `space`."""
+        if self.model_wrapper is None:
+            return None
         self._y_coordinates = (
             self.get_variable("yzw")[range(self.space)]
             if self._y_coordinates is None
@@ -245,12 +269,14 @@ class FlowFmModel(Delft3D):
         return self._y_coordinates
 
     @property
-    def xy_coordinates(self):
+    def xy_coordinates(self) -> np.ndarray:
         """The (x,y)-coordinates of the model domain,
         retrieved from hydrodynamic model; otherwise based on provided definition.
 
         :rtype: numpy.ndarray
         """
+        if self.model_wrapper is None:
+            return None
         return np.array(
             [
                 [self.x_coordinates[i], self.y_coordinates[i]]
@@ -265,7 +291,11 @@ class FlowFmModel(Delft3D):
 
 
 class DimrModel(Delft3D):
-    d3d_home: Path
+    """
+    Class implementing the `HydrodynamicProtocol` which makes use of a
+    `BMIWrapper` to run its calculations.
+    Based on a DIMR model configuration.
+    """
 
     @property
     def settings(self) -> Path:

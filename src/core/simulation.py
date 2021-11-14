@@ -495,12 +495,12 @@ class CoralTransectSimulation(_Simulation):
         update_output(self.output.his_output, his_dict)
 
 
-class CoralDelft3DSimulation(_Simulation):
+class _CoralDelft3DSimulation(_Simulation, ABC):
     """
     Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 
-    mode = "Delft3D"
+    # mode = "Delft3D"
 
     @classmethod
     def set_simulation_hydrodynamics(
@@ -532,6 +532,14 @@ class CoralDelft3DSimulation(_Simulation):
 
     def configure_output(self):
         return
+
+
+class CoralDimrSimulation(_CoralDelft3DSimulation):
+    mode = "DimrModel"
+
+
+class CoralFlowFmSimulation(_CoralDelft3DSimulation):
+    mode = "FlowFMModel"
 
 
 # TODO: Define folder structure
