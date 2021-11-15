@@ -1,10 +1,11 @@
+from test.core.bio_process.bio_utils import valid_coral
+
 import numpy as np
 import pytest
 
 from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
-from test.core.bio_process.bio_utils import valid_coral
 
 
 class TestPhotosynthesis:

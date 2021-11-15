@@ -1,6 +1,7 @@
 import pytest
-from src.core.coral.coral_model import Coral
+
 from src.core.constants import Constants
+from src.core.coral.coral_model import Coral
 
 
 @pytest.fixture(scope="module", autouse=True)
