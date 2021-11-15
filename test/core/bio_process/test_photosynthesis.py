@@ -1,8 +1,10 @@
+from test.core.bio_process.bio_utils import valid_coral
+
 import numpy as np
 import pytest
 
 from src.core.bio_process.photosynthesis import Photosynthesis
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
 
 
@@ -37,29 +39,19 @@ class TestPhotosynthesis:
         valid_photosynthesis.flow_dependency(None)
         assert valid_photosynthesis.pfd == 1
 
-    def test_flow_dependency_with_pfd(self, valid_photosynthesis: Photosynthesis):
+    def test_flow_dependency_with_pfd(
+        self, valid_photosynthesis: Photosynthesis, valid_coral: Coral
+    ):
         assert valid_photosynthesis.pfd == 1
-
-        class TestConstants:
-            pfd = 1
-            pfd_min = 1
-            ucr = 1
-
-        test_coral = Coral(TestConstants(), 1, 1, 1, 1, 1, 1)
-        test_coral.ucm = 1
-        valid_photosynthesis.flow_dependency(test_coral)
+        valid_coral.ucm = 1
+        valid_photosynthesis.flow_dependency(valid_coral)
         assert valid_photosynthesis.pfd[0][0] == pytest.approx(0.76159416)
 
     def test_light_dependency_raises_notimplemented_error(
-        self, valid_photosynthesis: Photosynthesis
+        self, valid_photosynthesis: Photosynthesis, valid_coral: Coral
     ):
-        class constant_test:
-            c1 = 1
-
         with pytest.raises(NotImplementedError) as e_info:
-            valid_photosynthesis.light_dependency(
-                Coral(constant_test(), 1, 1, 1, 1, 1, 1), None
-            )
+            valid_photosynthesis.light_dependency(valid_coral, None)
         assert (
             str(e_info.value)
             == "Only the quasi-steady state solution is currently implemented; use key-word 'qss'."

@@ -11,7 +11,7 @@ from typing import Optional, Tuple, Union
 import numpy as np
 from pandas import DataFrame
 
-from src.core.coral_only import CoralOnly
+from src.core.coral.coral_only import CoralOnly
 
 
 class SpaceTime:

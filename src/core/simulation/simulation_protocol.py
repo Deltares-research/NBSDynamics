@@ -1,12 +1,13 @@
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from src.core.constants import Constants
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
 
 
+@runtime_checkable
 class SimulationProtocol(Protocol):
     """
     Protocol to define simulations for the `NBSDynamics` project.

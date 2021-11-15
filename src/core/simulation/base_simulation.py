@@ -18,7 +18,7 @@ from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.constants import Constants
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
@@ -265,7 +265,7 @@ class BaseSimulation(BaseModel, ABC):
             y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
             cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.coral.initiate_spatial_morphology(cover)
+        self.coral.initiate_coral_morphology(cover)
 
         self.output.initialize(self.coral)
 

@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Union
 import numpy as np
 
 from src.core.base_model import BaseModel
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
 

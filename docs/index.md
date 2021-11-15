@@ -31,6 +31,9 @@ A summary of the architecture can be seen in the following 'reduced' class diagr
 ### HydrodynamicProtocol
 ![`HydrodynamicProtocol v.0.4.0`](./diagrams/hydrodynamic_protocol.png)
 
+### CoralProtocol
+![`CoralProtocol v.0.4.0`](./diagrams/coral_protocol.png)
+
 ### OutputProtocol
 ![`OutputProtocol v.0.4.0`](./diagrams/output_protocol.png)
 
