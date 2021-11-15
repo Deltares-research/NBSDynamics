@@ -105,7 +105,17 @@ class TestSimulation:
         "field_value, values",
         [
             pytest.param(
-                Coral(Constants(), 0.2, 0.2, 0.2, 0.2, 0.2, 1),
+                Coral(
+                    **dict(
+                        constants=Constants(),
+                        dc=0.2,
+                        hc=0.1,
+                        bc=0.2,
+                        tc=0.1,
+                        ac=0.2,
+                        Csp=1,
+                    )
+                ),
                 None,
                 id="As Object",
             ),

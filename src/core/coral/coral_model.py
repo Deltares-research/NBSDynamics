@@ -11,7 +11,7 @@ import numpy as np
 from src.core.constants import Constants
 from src.core.utils import CoralOnly, DataReshape
 from src.core.base_model import BaseModel
-from pydantic import validator
+from pydantic import validator, Extra
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -22,6 +22,13 @@ class Coral(BaseModel):
     Coral object, representing one coral type.
     """
 
+    class Config:
+        """
+        Allow this model to have extra fields defined during runtime.
+        """
+
+        extra = Extra.allow
+
     RESHAPE = DataReshape()
     constants: Optional[Constants]
     dc: Optional[CoralAttribute]  # diameter coral plate [m]
@@ -30,6 +37,26 @@ class Coral(BaseModel):
     tc: Optional[CoralAttribute]  # thickness coral plate [m]
     ac: Optional[CoralAttribute]  # axial distance corals [m]
     Csp: Optional[float] = 1  # species constant [-]
+    _cover: Optional[CoralAttribute] = None
+    # light micro-environment
+    light: Optional[CoralAttribute] = None
+    light_bc: Optional[CoralAttribute] = None
+    # flow micro environment
+    ucm: Optional[CoralAttribute] = None
+    um: Optional[CoralAttribute] = None
+    delta_t: Optional[CoralAttribute] = None
+    # thermal micro-environment
+    dTc: Optional[CoralAttribute] = None
+    temp: Optional[CoralAttribute] = None
+    # photosynthesis
+    photo_rate: Optional[CoralAttribute] = None
+    Tlo: Optional[CoralAttribute] = None
+    Thi: Optional[CoralAttribute] = None
+    # population states
+    pop_states: Optional[CoralAttribute] = None
+    p0: Optional[CoralAttribute] = None
+    # calcification
+    calc: Optional[CoralAttribute] = None
 
     @validator("dc", "hc", "bc", "tc", "ac")
     @classmethod
@@ -39,31 +66,6 @@ class Coral(BaseModel):
         if value is None:
             return value
         return DataReshape.variable2array(value)
-        # self._cover = None
-
-        # # initiate environmental working objects
-        # # > light micro-environment
-        # self.light = None
-        # self.light_bc = None  # Former self.Bc (code smell duplicated property name)
-        # # > flow micro-environment
-        # self.ucm = None
-        # self.um = None
-        # self.delta_t = None
-        # # > thermal micro-environment
-        # self.dTc = None
-        # self.temp = None
-        # # > photosynthesis
-        # self.photo_rate = None
-        # self.Tlo = None
-        # self.Thi = None
-        # # > population states
-        # self.pop_states = None
-        # self.p0 = None
-        # # np.array([
-        # #     self.cover, np.zeros(self.cover.shape), np.zeros(self.cover.shape), np.zeros(self.cover.shape),
-        # # ])
-        # # > calcification
-        # self.calc = None
 
     def __repr__(self):
         """Development representation."""
@@ -104,17 +106,6 @@ class Coral(BaseModel):
             0.25 * np.pi * ((self.hc - self.tc) * self.bc ** 2 + self.tc * self.dc ** 2)
         )
         return coral_volume
-
-    @volume.setter  # what is the difference? And which volume does it call then?
-    # also function update morphology does not update coral volume
-    def volume(self, coral_volume):
-        """
-        :param coral_volume: coral volume [m3]
-        :type coral_volume: float, int, list, tuple, np.ndarray
-        """
-        self.update_coral_morphology(
-            coral_volume, dict(rf=self.rf, rp=self.rp, rs=self.rs)
-        )
 
     @property
     def dc_matrix(self):
@@ -167,11 +158,31 @@ class Coral(BaseModel):
 
         return self._cover
 
-    @cover.setter
-    def cover(self, carrying_capacity):
+    @property
+    def living_cover(self):
+        """Living coral cover based on population states."""
+        if self.pop_states is not None:
+            return self.pop_states.sum(axis=2)
+
+    def update_coral_volume(self, coral_volume: CoralAttribute):
         """
-        :param carrying_capacity: carrying capacity [m2 m-2]
-        :type carrying_capacity: float, list, tuple, numpy.ndarray
+        Updates the coral morphology based on the given coral volume.
+
+        Args:
+            coral_volume (CoralAttribute): New coral volume.
+        """
+        # TODO what is the difference? And which volume does it call then?
+        # TODO also function update morphology does not update coral volume
+        self.update_coral_morphology(
+            coral_volume, dict(rf=self.rf, rp=self.rp, rs=self.rs)
+        )
+
+    def update_cover(self, carrying_capacity: CoralAttribute):
+        """
+        Update cover value based on given parameters.
+
+        Args:
+            carrying_capacity (CoralAttribute): Carrying capacity [m2 m-2].
         """
         carrying_capacity = self.RESHAPE.variable2array(carrying_capacity)
         if not self.volume.shape == carrying_capacity.shape:
@@ -186,12 +197,6 @@ class Coral(BaseModel):
             )
 
         self._cover = carrying_capacity
-
-    @property
-    def living_cover(self):
-        """Living coral cover based on population states."""
-        if self.pop_states is not None:
-            return self.pop_states.sum(axis=2)
 
     def initiate_coral_morphology(self, cover: Optional[np.ndarray] = None):
         """

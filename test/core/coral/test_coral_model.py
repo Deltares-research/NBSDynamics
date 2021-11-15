@@ -27,13 +27,13 @@ class TestCoralModel:
         )
 
     def test_set_cover(self, coral_model_test: Coral):
-        coral_model_test.volume = np.array([4.2])
-        coral_model_test.cover = 2
+        coral_model_test.update_coral_volume(np.array([4.2]))
+        coral_model_test.update_cover(2)
         assert coral_model_test.cover == 2
 
     def test_set_cover_odd_shape_raises_error(self, coral_model_test: Coral):
         with pytest.raises(ValueError) as e_info:
-            coral_model_test.cover = np.array([4, 2])
+            coral_model_test.update_cover(np.array([4, 2]))
         assert str(e_info.value) == "Shapes do not match: (1,) =/= (2,)"
 
     def test_initiate_coral_morphology_with_invalid_cover_raises(
