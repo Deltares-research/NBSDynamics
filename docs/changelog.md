@@ -1,3 +1,10 @@
+## v0.5.0 (2021-11-15)
+
+### Feat
+
+- coral model as protocol (#66)
+- simulation as protocol (#65)
+
 ## v0.4.0 (2021-11-15)
 
 ### Fix
