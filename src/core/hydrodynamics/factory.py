@@ -1,6 +1,6 @@
 from typing import List
 
-from src.core.hydrodynamics.delft3d import Delft3D
+from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.reef_0d import Reef0D
 from src.core.hydrodynamics.reef_1d import Reef1D
@@ -14,7 +14,13 @@ class HydrodynamicsFactory:
     and the `HydrodynamicProtocol`.
     """
 
-    supported_modes: List[HydrodynamicProtocol] = [Reef0D, Reef1D, Delft3D, Transect]
+    supported_modes: List[HydrodynamicProtocol] = [
+        Reef0D,
+        Reef1D,
+        DimrModel,
+        FlowFmModel,
+        Transect,
+    ]
 
     @staticmethod
     def get_hydrodynamic_model_type(model_name: str) -> HydrodynamicProtocol:

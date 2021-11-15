@@ -1,5 +1,6 @@
+import sys
 from pathlib import Path
-from test.utils import TestUtils
+from test.utils import TestUtils, only_windows
 from typing import Callable
 
 import numpy as np
@@ -7,23 +8,36 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.simulation import CoralDelft3DSimulation, CoralTransectSimulation
+from src.core.simulation.coral_delft3d_simulation import (
+    CoralDimrSimulation,
+    CoralFlowFmSimulation,
+)
+from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
 class TestAcceptance:
-    def test_given_interface_d3d_case_runs(self):
+
+    constants_input_file = "coral_input.txt"
+    light_input_file = "TS_PAR.txt"
+    temp_input_file = "TS_SST.txt"
+
+    @only_windows
+    def test_given_delft3d_flowfm_case_runs(self):
         # Test based on interface_D3D.py
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
         assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
 
         input_dir = test_dir / "input"
-        sim_run = CoralDelft3DSimulation(
+        sim_run = CoralFlowFmSimulation(
             working_dir=test_dir,
-            constants=input_dir / "coral_input.txt",
+            constants=input_dir / self.constants_input_file,
             environment=dict(
-                light=input_dir / "TS_PAR.txt",
-                temperature=input_dir / "TS_SST.txt",
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
             ),
             coral=dict(
                 dc=0.1,
@@ -35,10 +49,9 @@ class TestAcceptance:
             ),
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
-                d3d_home=test_dir / "d3d_suite",
+                d3d_home=kernels_dir,
                 update_intervals=(300, 300),
-                definition_file=input_dir / "FlowFM.mdu",
-                config_file=input_dir / "dimr_config.xml",
+                definition_file=test_case / "fm" / "shallow_wave.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -56,7 +69,56 @@ class TestAcceptance:
             sim_run.run()
             sim_run.finalise()
 
-    def test_given_interface_transect_runs(self):
+    @only_windows
+    @pytest.mark.skip(reason="DIMR Test data not yet available.")
+    def test_given_delft3d_dimr_case_runs(self):
+        # Test based on interface_D3D.py
+        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+        assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
+
+        input_dir = test_dir / "input"
+        sim_run = CoralDimrSimulation(
+            working_dir=test_dir,
+            constants=input_dir / self.constants_input_file,
+            environment=dict(
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
+            ),
+            coral=dict(
+                dc=0.1,
+                hc=0.1,
+                bc=0.05,
+                tc=0.05,
+                ac=0.2,
+                species_constant=1,
+            ),
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                update_intervals=(300, 300),
+                definition_file=test_case / "fm" / "shallow_wave.mdu",
+                config_file=test_case / "dimr_config.xml",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict(fme=False)),
+                his_output=dict(
+                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
+                ),
+            ),
+        )
+
+        # Run simulation.
+        with pytest.raises(RuntimeError):
+            # Delft3D dlls not yet available at the repo level.
+            sim_run.initiate()
+            sim_run.run()
+            sim_run.finalise()
+
+    def test_given_transect_case_runs(self):
         # 1. Define test data.
         test_dir = TestUtils.get_local_test_data_dir("transect_case")
         assert test_dir.is_dir()
@@ -77,10 +139,10 @@ class TestAcceptance:
         input_dir = test_dir / "input"
         run_trans = CoralTransectSimulation(
             working_dir=test_dir,
-            constants=input_dir / "coral_input.txt",
+            constants=input_dir / self.constants_input_file,
             environment=dict(
-                light=input_dir / "TS_PAR.txt",
-                temperature=input_dir / "TS_SST.txt",
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
                 storm=input_dir / "TS_stormcat2.txt",
                 dates=("2000-01-01", "2100-01-01"),
             ),
@@ -141,7 +203,16 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
-    @pytest.mark.skip(reason="Only to be run locally.")
+    transect_local = pytest.mark.skipif(
+        not (
+            TestUtils.get_local_test_data_dir("transect_case")
+            / "expected_output"
+            / "nc_files"
+        ).is_dir(),
+        reason="Only to be run to generate expected data from local machines.",
+    )
+
+    @transect_local
     @pytest.mark.parametrize(
         "nc_filename",
         [
@@ -173,7 +244,7 @@ class TestAcceptance:
 
         output_file(expected_dir / nc_filename)
 
-    @pytest.mark.skip(reason="Only to run locally.")
+    @transect_local
     @pytest.mark.parametrize(
         "nc_filename, output_type",
         [

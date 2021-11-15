@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
+from numpy import equal
 
 try:
     from pip import main as pipmain
@@ -36,6 +37,9 @@ except Exception as e_info:
     from pip._internal import main as pipmain
 
 
+only_windows = pytest.mark.skipif(
+    not sys.platform.__eq__("win32"), reason="BMI only supported on Windows."
+)
 skiplinux = pytest.mark.skipif(
     not sys.platform.startswith("win"), reason="Linux not supported"
 )
@@ -107,6 +111,19 @@ class TestUtils:
         """
         test_dir = Path(__file__).parent
         return test_dir / TestUtils._name_external / dir_name
+
+    @staticmethod
+    def get_external_repo(dir_name: str) -> Path:
+        """
+        Returns the parent directory of this repo directory.
+
+        Args:
+            dir_name (str): Repo 'sibbling' of the current one.
+
+        Returns:
+            Path: Path to the sibbling repo.
+        """
+        return Path(__file__).parent.parent.parent / dir_name
 
     @staticmethod
     def copy_test_dir_into_artifacts_dir(
