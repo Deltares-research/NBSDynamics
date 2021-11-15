@@ -1,14 +1,14 @@
-import pytest
-
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.simulation.base_simulation import _Simulation
 from src.core.hydrodynamics.transect import Transect
 from pathlib import Path
 
 
 class TestCoralTransectSimulation:
-    def test_init_coral_transect_simulation(self):
-        assert CoralTransectSimulation.mode == "Transect"
+    def test_coral_transect_simulation_ctor(self):
+        test_sim = CoralTransectSimulation()
+        assert issubclass(type(test_sim), _Simulation)
+        assert test_sim.mode == "Transect"
 
     def test_set_simulation_hydrodynamics(self):
         # 1. Define test data.
@@ -30,9 +30,11 @@ class TestCoralTransectSimulation:
         assert hydromodel.definition_file == test_dict["definition_file"]
         assert hydromodel.config_file == test_dict["config_file"]
 
-    def test_Set_simulation_hydrodynamics_no_entries_raises_nothing(self):
+    def test_set_simulation_hydrodynamics_no_entries_raises_nothing(self):
         hydromodel = Transect()
-        CoralTransectSimulation.set_simulation_hydrodynamics(hydromodel, dict())
-        assert hydromodel.working_dir is None
+        CoralTransectSimulation.set_simulation_hydrodynamics(
+            hydromodel, dict(working_dir=Path.cwd())
+        )
+        assert hydromodel.working_dir == Path.cwd()
         assert hydromodel.definition_file is None
         assert hydromodel.config_file is None
