@@ -21,7 +21,7 @@ class CoralTransectSimulation(_Simulation):
             hydromodel (HydrodynamicProtocol): Hydromodel to configure.
             dict_values (dict): Dictionary of values available for assignment.
         """
-        hydromodel.working_dir = dict_values.get("working_dir")
+        hydromodel.working_dir = dict_values.get("working_dir", None)
         # The following assignments can't be done if None
         if (def_file := dict_values.get("definition_file", None)) is not None:
             hydromodel.definition_file = def_file

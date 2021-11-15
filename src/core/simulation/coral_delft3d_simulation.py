@@ -8,8 +8,6 @@ class _CoralDelft3DSimulation(_Simulation, ABC):
     Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 
-    # mode = "Delft3D"
-
     @classmethod
     def set_simulation_hydrodynamics(
         cls, hydromodel: HydrodynamicProtocol, dict_values: dict
@@ -43,8 +41,20 @@ class _CoralDelft3DSimulation(_Simulation, ABC):
 
 
 class CoralDimrSimulation(_CoralDelft3DSimulation):
+    """
+    Coral Dimr Simulation representation. Implements the specific
+    logic needed to run a Coral Simulation with a DIMR kernel through
+    `BMIWrapper`
+    """
+
     mode = "DimrModel"
 
 
 class CoralFlowFmSimulation(_CoralDelft3DSimulation):
+    """
+    Coral FlowFM Simulation representation. Implements the specific
+    logic needed to run a Coral Simulation with a FlowFM kernel through
+    `BMIWrapper`
+    """
+
     mode = "FlowFMModel"
