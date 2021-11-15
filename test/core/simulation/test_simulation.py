@@ -1,9 +1,11 @@
 from pathlib import Path
+from test.utils import TestUtils
 from typing import Any, Callable, Optional, Tuple, Union
 
 import pytest
 
 from src.core.constants import Constants
+from src.core.coral_model import Coral
 from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
@@ -14,8 +16,6 @@ from src.core.simulation.coral_delft3d_simulation import (
     CoralFlowFmSimulation,
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from test.utils import TestUtils
-from src.core.coral_model import Coral
 
 simulation_cases = [
     pytest.param(CoralDimrSimulation),
