@@ -4,7 +4,7 @@ theme:
   name: material
   language: en
   icon:
-    logo: material/water-polo
+    logo: material/leaf
   palette:
     - scheme: deltares
       toggle:
@@ -40,7 +40,7 @@ plugins:
 
       custom_templates: templates
       watch:
-        - src/src.core
+        - src/core
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
