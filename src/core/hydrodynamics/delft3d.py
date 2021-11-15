@@ -10,6 +10,7 @@ from bmi.wrapper import BMIWrapper
 from pydantic import Extra
 
 from src.core.base_model import BaseModel
+from src.core.coral.coral_model import Coral
 
 faulthandler.enable()
 
@@ -115,7 +116,7 @@ class Delft3D(BaseModel, abc.ABC):
         maxs.fill(0.0)
         self.set_variable("is_maxvalsnd", maxs)
 
-    def set_morphology(self, coral):
+    def set_morphology(self, coral: Coral):
         """Set morphological dimensions to Delft3D-model.
 
         :param coral: coral animal

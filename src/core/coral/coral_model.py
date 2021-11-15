@@ -22,20 +22,20 @@ class Coral(BaseModel):
     Coral object, representing one coral type.
     """
 
-    class Config:
-        """
-        Allow this model to have extra fields defined during runtime.
-        """
+    # class Config:
+    #     """
+    #     Allow this model to have extra fields defined during runtime.
+    #     """
 
-        extra = Extra.allow
+    #     extra = Extra.allow
 
     RESHAPE = DataReshape()
-    constants: Optional[Constants]
-    dc: Optional[CoralAttribute]  # diameter coral plate [m]
-    hc: Optional[CoralAttribute]  # coral height [m]
-    bc: Optional[CoralAttribute]  # diameter coral base [m]
-    tc: Optional[CoralAttribute]  # thickness coral plate [m]
-    ac: Optional[CoralAttribute]  # axial distance corals [m]
+    constants: Constants
+    dc: CoralAttribute  # diameter coral plate [m]
+    hc: CoralAttribute  # coral height [m]
+    bc: CoralAttribute  # diameter coral base [m]
+    tc: CoralAttribute  # thickness coral plate [m]
+    ac: CoralAttribute  # axial distance corals [m]
     Csp: Optional[float] = 1  # species constant [-]
     _cover: Optional[CoralAttribute] = None
     # light micro-environment
