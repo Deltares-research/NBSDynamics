@@ -5,6 +5,7 @@ from src.core.simulation.base_simulation import _Simulation
 
 class CoralTransectSimulation(_Simulation):
     """
+    Implements the `SimulationProtocol`
     Coral Transect Simulation. Contains the specific logic and parameters required for the case.
     """
 

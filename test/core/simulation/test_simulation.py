@@ -16,6 +16,7 @@ from src.core.simulation.coral_delft3d_simulation import (
     CoralFlowFmSimulation,
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.core.simulation.simulation_protocol import SimulationProtocol
 
 simulation_cases = [
     pytest.param(CoralDimrSimulation),
@@ -37,6 +38,8 @@ class TestSimulation:
         self, mode_case: _Simulation, expected_hydro: Callable
     ):
         test_sim: _Simulation = mode_case()
+        assert issubclass(mode_case, _Simulation)
+        assert isinstance(test_sim, SimulationProtocol)
         assert isinstance(test_sim.environment, Environment)
         assert isinstance(test_sim.constants, Constants)
         assert isinstance(test_sim.working_dir, Path)

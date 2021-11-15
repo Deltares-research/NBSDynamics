@@ -6,6 +6,7 @@ from src.core.simulation.base_simulation import _Simulation
 
 class _CoralDelft3DSimulation(_Simulation, ABC):
     """
+    Implements the `SimulationProtocol`
     Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 

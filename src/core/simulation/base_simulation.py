@@ -27,7 +27,10 @@ from src.core.utils import time_series_year
 
 
 class _Simulation(BaseModel, ABC):
-    """CoralModel simulation."""
+    """
+    Implements the `SimulationProtocol`
+    CoralModel simulation.
+    """
 
     mode: str
 
