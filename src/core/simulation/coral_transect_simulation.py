@@ -1,9 +1,9 @@
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
-from src.core.simulation.base_simulation import _Simulation
+from src.core.simulation.base_simulation import BaseSimulation
 
 
-class CoralTransectSimulation(_Simulation):
+class CoralTransectSimulation(BaseSimulation):
     """
     Implements the `SimulationProtocol`
     Coral Transect Simulation. Contains the specific logic and parameters required for the case.

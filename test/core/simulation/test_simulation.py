@@ -10,7 +10,7 @@ from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.transect import Transect
-from src.core.simulation.base_simulation import _Simulation
+from src.core.simulation.base_simulation import BaseSimulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
@@ -35,10 +35,10 @@ class TestSimulation:
         ],
     )
     def test_init_simulation_with_supported_modes(
-        self, mode_case: _Simulation, expected_hydro: Callable
+        self, mode_case: BaseSimulation, expected_hydro: Callable
     ):
-        test_sim: _Simulation = mode_case()
-        assert issubclass(mode_case, _Simulation)
+        test_sim: BaseSimulation = mode_case()
+        assert issubclass(mode_case, BaseSimulation)
         assert isinstance(test_sim, SimulationProtocol)
         assert isinstance(test_sim.environment, Environment)
         assert isinstance(test_sim.constants, Constants)
@@ -53,12 +53,12 @@ class TestSimulation:
     )
     def test_init_simulation_unsupported_modes(self, mode_case: str):
         with pytest.raises(TypeError):
-            _Simulation(mode=mode_case)
+            BaseSimulation(mode=mode_case)
 
     @pytest.mark.parametrize("mode_case", simulation_cases)
-    def test_input_check_wihtout_light(self, mode_case: _Simulation):
+    def test_input_check_without_light(self, mode_case: BaseSimulation):
         with pytest.raises(ValueError) as e_info:
-            test_sim: _Simulation = mode_case()
+            test_sim: BaseSimulation = mode_case()
             assert test_sim.environment.light is None
             test_sim.validate_environment()
         assert (
@@ -67,9 +67,9 @@ class TestSimulation:
         )
 
     @pytest.mark.parametrize("mode_case", simulation_cases)
-    def test_input_check_wihtout_temperature(self, mode_case: _Simulation):
+    def test_input_check_without_temperature(self, mode_case: BaseSimulation):
         with pytest.raises(ValueError) as e_info:
-            test_sim: _Simulation = mode_case()
+            test_sim: BaseSimulation = mode_case()
             test_sim.environment.light = 4.2
             assert test_sim.environment.temperature is None
             test_sim.validate_environment()
@@ -93,12 +93,12 @@ class TestSimulation:
     def test_validate_constants_with_valid_values(
         self, valid_value: Union[Constants, str, Path]
     ):
-        return_value = _Simulation.validate_constants(valid_value)
+        return_value = BaseSimulation.validate_constants(valid_value)
         assert isinstance(return_value, Constants)
 
     def test_validate_constants_with_not_valid_value(self):
         with pytest.raises(NotImplementedError) as e_err:
-            _Simulation.validate_constants(42)
+            BaseSimulation.validate_constants(42)
         assert str(e_err.value) == f"Validator not available for {type(42)}"
 
     @pytest.mark.parametrize(
@@ -124,17 +124,17 @@ class TestSimulation:
     def test_validate_coral_with_valid_values(
         self, field_value: Union[Coral, dict], values: Optional[dict]
     ):
-        return_value = _Simulation.validate_coral(field_value, values)
+        return_value = BaseSimulation.validate_coral(field_value, values)
         assert isinstance(return_value, Coral)
 
     def test_validate_coral_with_invalid_values(self):
         with pytest.raises(NotImplementedError) as e_err:
-            _Simulation.validate_coral(42, None)
+            BaseSimulation.validate_coral(42, None)
         assert str(e_err.value) == f"Validator not available for {type(42)}"
 
     def test_validate_coral_with_dict_without_constants(self):
         with pytest.raises(ValueError) as e_err:
-            _Simulation.validate_coral(
+            BaseSimulation.validate_coral(
                 dict(aKey="aValue"), dict(anotherKey="anotherValue")
             )
         assert (
@@ -154,6 +154,6 @@ class TestSimulation:
         self, model_type: HydrodynamicProtocol
     ):
         model_in = model_type()
-        model_out = _Simulation.validate_hydrodynamics_present(model_in, dict())
+        model_out = BaseSimulation.validate_hydrodynamics_present(model_in, dict())
         assert isinstance(model_out, HydrodynamicProtocol)
         assert model_in == model_out

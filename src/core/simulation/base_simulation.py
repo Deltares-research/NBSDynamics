@@ -26,7 +26,7 @@ from src.core.output.output_wrapper import OutputWrapper
 from src.core.utils import time_series_year
 
 
-class _Simulation(BaseModel, ABC):
+class BaseSimulation(BaseModel, ABC):
     """
     Implements the `SimulationProtocol`
     CoralModel simulation.
@@ -144,7 +144,7 @@ class _Simulation(BaseModel, ABC):
         cls, hydromodel: HydrodynamicProtocol, dict_values: dict
     ):
         """
-        Abstract method that gets triggered during `validate_hydrodynamics_present` so that each `_Simulation` can define extra attributes.
+        Abstract method that gets triggered during `validate_hydrodynamics_present` so that each `BaseSimulation` can define extra attributes.
 
         Args:
             hydromodel (HydrodynamicProtocol): Hydrodynamic model to set up.

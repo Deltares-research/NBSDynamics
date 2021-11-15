@@ -5,7 +5,7 @@ import pytest
 
 from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.simulation.base_simulation import _Simulation
+from src.core.simulation.base_simulation import BaseSimulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
@@ -31,7 +31,7 @@ class TestCoralDelft3dSimulation:
     ):
         test_coral = coral_mode()
         assert issubclass(coral_mode, _CoralDelft3DSimulation)
-        assert issubclass(coral_mode, _Simulation)
+        assert issubclass(coral_mode, BaseSimulation)
         assert test_coral.mode == expected_mode
 
     @pytest.mark.parametrize("hydrodynamic_model", hydrodynamic_model_cases)
