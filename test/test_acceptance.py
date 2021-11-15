@@ -162,7 +162,7 @@ class TestAcceptance:
                 bc=0.1,
                 tc=0.1,
                 ac=0.2,
-                species_constant=0.6,
+                Csp=0.6,
             ),
         )
 
