@@ -10,65 +10,60 @@ import numpy as np
 
 from src.core.constants import Constants
 from src.core.utils import CoralOnly, DataReshape
+from src.core.base_model import BaseModel
+from pydantic import validator
+
+CoralAttribute = Union[float, list, tuple, np.ndarray]
 
 
-class Coral:
+class Coral(BaseModel):
     """
     Implements the `CoralProtocol`.
     Coral object, representing one coral type.
     """
 
-    def __init__(self, constants: Constants, dc, hc, bc, tc, ac, species_constant=1):
-        """
-        :param dc: diameter coral plate [m]
-        :param hc: coral height [m]
-        :param bc: diameter coral base [m]
-        :param tc: thickness coral plate [m]
-        :param ac: axial distance corals [m]
-        :param species_constant: species constant [-]
+    RESHAPE = DataReshape()
+    constants: Optional[Constants]
+    dc: Optional[CoralAttribute]  # diameter coral plate [m]
+    hc: Optional[CoralAttribute]  # coral height [m]
+    bc: Optional[CoralAttribute]  # diameter coral base [m]
+    tc: Optional[CoralAttribute]  # thickness coral plate [m]
+    ac: Optional[CoralAttribute]  # axial distance corals [m]
+    Csp: Optional[float] = 1  # species constant [-]
 
-        :type dc: float, list, tuple, numpy.ndarray
-        :type hc: float, list, tuple, numpy.ndarray
-        :type bc: float, list, tuple, numpy.ndarray
-        :type tc: float, list, tuple, numpy.ndarray
-        :type ac: float, list, tuple, numpy.ndarray
-        :type species_constant: float
-        """
-        self.constants = constants
-        self.RESHAPE = DataReshape()
-        self.dc = DataReshape.variable2array(dc)
-        self.hc = DataReshape.variable2array(hc)
-        self.bc = DataReshape.variable2array(bc)
-        self.tc = DataReshape.variable2array(tc)
-        self.ac = DataReshape.variable2array(ac)
+    @validator("dc", "hc", "bc", "tc", "ac")
+    @classmethod
+    def validate_coral_attribute(
+        cls, value: Optional[CoralAttribute]
+    ) -> Optional[np.ndarray]:
+        if value is None:
+            return value
+        return DataReshape.variable2array(value)
+        # self._cover = None
 
-        self.Csp = species_constant  # make into the constants list
-
-        self._cover = None
-
-        # initiate environmental working objects
-        # > light micro-environment
-        self.light = None
-        self.light_bc = None  # Former self.Bc (code smell duplicated property name)
-        # > flow micro-environment
-        self.ucm = None
-        self.um = None
-        self.delta_t = None
-        # > thermal micro-environment
-        self.dTc = None
-        self.temp = None
-        # > photosynthesis
-        self.photo_rate = None
-        self.Tlo = None
-        self.Thi = None
-        # > population states
-        self.pop_states = None
-        self.p0 = None
-        # np.array([
-        #     self.cover, np.zeros(self.cover.shape), np.zeros(self.cover.shape), np.zeros(self.cover.shape),
-        # ])
-        # > calcification
-        self.calc = None
+        # # initiate environmental working objects
+        # # > light micro-environment
+        # self.light = None
+        # self.light_bc = None  # Former self.Bc (code smell duplicated property name)
+        # # > flow micro-environment
+        # self.ucm = None
+        # self.um = None
+        # self.delta_t = None
+        # # > thermal micro-environment
+        # self.dTc = None
+        # self.temp = None
+        # # > photosynthesis
+        # self.photo_rate = None
+        # self.Tlo = None
+        # self.Thi = None
+        # # > population states
+        # self.pop_states = None
+        # self.p0 = None
+        # # np.array([
+        # #     self.cover, np.zeros(self.cover.shape), np.zeros(self.cover.shape), np.zeros(self.cover.shape),
+        # # ])
+        # # > calcification
+        # self.calc = None
 
     def __repr__(self):
         """Development representation."""
