@@ -1,3 +1,15 @@
+## v0.4.0 (2021-11-15)
+
+### Fix
+
+- **test/test_acceptance.py**: corrected numpy usage
+- **src/core/output/output_wrapper.py**: Output wrapper now creates the output dir if it was not there already
+
+### Feat
+
+- **src/core/simulation.py;test/test_acceptance.py**: Now simulations can delegate the initial setup of a hydrodynamic model, adapted test for d3d case
+- **src/core/output/output_model.py;src/core/output/output_wrapper.py;src/core/hydrodynamics/factory.py;src/core/simulation.py**: Refactor output wrapper and simulation classes so they can be instantiated with less attributes
+
 ## v0.3.0 (2021-11-12)
 
 ### Feat
