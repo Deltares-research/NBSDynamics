@@ -158,7 +158,7 @@ class _Simulation(BaseModel, ABC):
         Configures the parameters for the `HydrodynamicsProtocol`.
 
         Raises:
-            NotImplementedError: [description]
+            NotImplementedError: When abstract method not defined in concrete class.
         """
         raise NotImplementedError
 

@@ -25,6 +25,16 @@ At the moment of this edition (version v.0.4.0), the project has undergone sever
 A summary of the architecture can be seen in the following 'reduced' class diagram:
 ![`Class diagram v.0.4.0`](./diagrams/general_class_diagram.png)
 
+### SimulationProtocol
+![`SimulationProtocol v.0.4.0`](./diagrams/simulation_protocol.png)
+
+### HydrodynamicProtocol
+![`HydrodynamicProtocol v.0.4.0`](./diagrams/hydrodynamic_protocol.png)
+
+### OutputProtocol
+![`OutputProtocol v.0.4.0`](./diagrams/output_protocol.png)
+
+
 ## CoralModel
 A biophysical model framework written in Python to make simulations 
 on coral development based on four environmental factors: 
