@@ -1,4 +1,5 @@
 import numpy as np
+from src.core.coral.coral_model import Coral
 
 from src.core.utils import CoralOnly
 
@@ -14,7 +15,7 @@ class Dislodgement:
 
         self.constants = constants
 
-    def update(self, coral, survival_coefficient=1):
+    def update(self, coral: Coral, survival_coefficient=1):
         """Update morphology due to storm damage.
 
         :param coral: coral animal
@@ -30,7 +31,7 @@ class Dislodgement:
         for s in range(4):
             coral.p0[:, s] *= self.survival
         # morphology
-        coral.volume *= self.survival
+        coral.update_coral_volume(coral.volume * self.survival)
 
     def partial_dislodgement(self, coral, survival_coefficient=1.0):
         """Percentage surviving storm event.

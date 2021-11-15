@@ -7,7 +7,7 @@ from src.core.coral.coral_protocol import CoralProtocol
 
 class TestCoralModel:
     @pytest.fixture(autouse=True)
-    def coral_model_test(self) -> Coral:
+    def coral_model_test(self) -> CoralProtocol:
         input_dict = dict(
             constants=None,
             dc=0.2,
@@ -19,7 +19,7 @@ class TestCoralModel:
         )
         return Coral(**input_dict)
 
-    def test_init_coral_model(self, coral_model_test: Coral):
+    def test_init_coral_model(self, coral_model_test: CoralProtocol):
         assert isinstance(coral_model_test, CoralProtocol)
         assert repr(coral_model_test) == "Morphology([0.2], [0.1], [0.2], [0.2], [0.2])"
         assert str(coral_model_test) == (

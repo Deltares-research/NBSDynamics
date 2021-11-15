@@ -1,11 +1,12 @@
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 import numpy as np
 
 from src.core.coral.coral_model import Coral
 
 
+@runtime_checkable
 class HydrodynamicProtocol(Protocol):
     """
     Protocol describing the mandatory properties and methods to be implemented by any hydromodel.

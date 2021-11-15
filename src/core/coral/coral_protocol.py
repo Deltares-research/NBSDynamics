@@ -1,13 +1,14 @@
-from typing import Dict, Protocol, Optional, Union
+from typing import Dict, Optional, Union, Protocol, runtime_checkable
 import numpy as np
 
 
+@runtime_checkable
 class CoralProtocol(Protocol):
     """
     Protocol for all Corals to be used in the `NBSDynamics` Project.
     """
 
-    def initate_coral_morphology(self, cover: Optional[np.ndarray]):
+    def initiate_coral_morphology(self, cover: Optional[np.ndarray]):
         """
         Initiate the morphology based on the on set of morphological dimensions and the coral cover. This method
         contains a catch that it can only be used to initiate the morphology, and cannot overwrite existing spatial

@@ -9,14 +9,14 @@ class Recruitment:
         """Recruitment initialize"""
         self.constants = constants
 
-    def update(self, coral):
+    def update(self, coral: Coral):
         """Update coral cover / volume after spawning event.
 
         :param coral: coral animal
         :type coral: Coral
         """
         coral.p0[:, 0] += Recruitment.spawning(self, coral, "P")
-        coral.volume += Recruitment.spawning(self, coral, "V")
+        coral.update_coral_volume(coral.volume + Recruitment.spawning(self, coral, "V"))
 
     def spawning(self, coral: Coral, param):
         """Contribution due to mass coral spawning.

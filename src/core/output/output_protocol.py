@@ -1,10 +1,11 @@
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from src.core.coral.coral_model import Coral
 from src.core.output.output_model import ModelParameters
 
 
+@runtime_checkable
 class OutputProtocol(Protocol):
     """
     Protocol defining how an Output model should look like.
