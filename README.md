@@ -1,6 +1,6 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_NBSDynamics&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Deltares_NBSDynamics)
-[![docs](https://github.com/Deltares/NBSDynamics/actions/workflows/docs.yml/badge.svg)](https://github.com/Deltares/NBSDynamics/actions/workflows/docs.yml)
 [![ci](https://github.com/Deltares/NBSDynamics/actions/workflows/ci.yml/badge.svg)](https://github.com/Deltares/NBSDynamics/actions/workflows/ci.yml)
+[![docs](https://github.com/Deltares/NBSDynamics/actions/workflows/docs.yml/badge.svg)](https://github.com/Deltares/NBSDynamics/actions/workflows/docs.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_NBSDynamics&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Deltares_NBSDynamics)
 
 # Official Documentation.
 Check our official GitHub pages documentation at [https://deltares.github.io/NBSDynamics/](https://deltares.github.io/NBSDynamics/).
