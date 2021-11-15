@@ -40,32 +40,19 @@ class Delft3D(BaseModel, abc.ABC):
     @property
     @abstractmethod
     def dll_dir(self) -> Path:
+        """
+        Returns the path to the model-specific dll of the wrapper class.
+
+        Raises:
+            NotImplementedError: When the concrete model does not implement its own definition.
+
+        Returns:
+            Path: The directory Path.
+        """
         raise NotImplementedError
 
     def __repr__(self):
         return "Delft3D()"
-
-    def environment(self):
-        """Set Python environment to include Delft3D-code."""
-        dirs = [
-            self.d3d_home / "share" / "bin",
-            self.d3d_home / "dflowfm" / "bin",
-        ]
-        if self.config_file:
-            dirs.extend(
-                [
-                    self.d3d_home / "dimr" / "bin",
-                    self.d3d_home / "dwaves" / "bin",
-                    self.d3d_home / "esmf" / "scripts",
-                    self.d3d_home / "swan" / "scripts",
-                ]
-            )
-
-        env = ";".join(map(str, dirs))
-        os.environ["PATH"] = env
-
-        print('\nEnvironment "PATH":')
-        [print(f"\t{path}") for path in dirs]
 
     def get_variable(self, variable: str) -> Optional[WrapperVariable]:
         """
@@ -166,6 +153,13 @@ class Delft3D(BaseModel, abc.ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def environment(self):
+        """
+        Sets the Python environment to include Delft3D-code.
+        """
+        raise NotImplementedError("Implement in concrete class")
+
     def initiate(self):
         """
         Creates a BMIWrapper and initializes it based on the given parameters for a FM Model.
@@ -221,7 +215,7 @@ class FlowFmModel(Delft3D):
         return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
 
     @property
-    def space(self) -> int:
+    def space(self) -> Optional[int]:
         """Number of non-boundary boxes; i.e. within-domain boxes."""
         if self.model_wrapper is None:
             return None
@@ -284,6 +278,19 @@ class FlowFmModel(Delft3D):
             ]
         )
 
+    def environment(self):
+        """Sets the Python environment to include Delft3D-code."""
+        dirs = [
+            self.d3d_home / "share" / "bin",
+            self.d3d_home / "dflowfm" / "bin",
+        ]
+
+        env = ";".join(map(str, dirs))
+        os.environ["PATH"] = env
+
+        print('\nEnvironment "PATH":')
+        [print(f"\t{path}") for path in dirs]
+
     def configure_model_wrapper(self):
         self.model_wrapper = BMIWrapper(
             engine=self.dll_dir.as_posix(), configfile=self.definition_file.as_posix()
@@ -296,6 +303,23 @@ class DimrModel(Delft3D):
     `BMIWrapper` to run its calculations.
     Based on a DIMR model configuration.
     """
+
+    def environment(self):
+        """
+        Sets the Python environment to include Delft3D-code.
+        """
+
+        dirs = [
+            self.d3d_home / "share" / "bin",
+            self.d3d_home / "dflowfm" / "bin",
+            self.d3d_home / "dimr" / "bin",
+            self.d3d_home / "dwaves" / "bin",
+            self.d3d_home / "esmf" / "scripts",
+            self.d3d_home / "swan" / "scripts",
+        ]
+
+        env = ";".join(map(str, dirs))
+        os.environ["PATH"] = env
 
     @property
     def settings(self) -> Path:

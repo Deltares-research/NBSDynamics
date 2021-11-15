@@ -32,6 +32,8 @@ class TestDelft3d:
         assert test_delft3d.water_depth is None
         assert test_delft3d.space is None
         assert repr(test_delft3d) == "Delft3D()"
+        with pytest.raises(NotImplementedError):
+            Delft3D.dll_dir
 
     @pytest.mark.parametrize(
         "model_type, expected_path",
