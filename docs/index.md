@@ -20,10 +20,10 @@ The project is currently being structured as follows:
 Currently versioning is done with the help of [`commitizen`](https://commitizen-tools.github.io/commitizen/) using a tag system of v.Major.Minor.Patch . A the [`changelog.md`](changelog.md) is generated automatically.
 
 ## Project architecture
-At the moment of this edition (version v.0.1.3), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
+At the moment of this edition (version v.0.4.0), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
 
 A summary of the architecture can be seen in the following 'reduced' class diagram:
-![`Class diagram v.0.1.3`](./diagrams/class_diagram.png)
+![`Class diagram v.0.4.0`](./diagrams/general_class_diagram.png)
 
 ## CoralModel
 A biophysical model framework written in Python to make simulations 
