@@ -1,14 +1,15 @@
 import abc
 import faulthandler
 import os
+from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
-from src.core.base_model import BaseModel
 from pydantic import Extra
-from abc import abstractmethod
+
+from src.core.base_model import BaseModel
 
 faulthandler.enable()
 

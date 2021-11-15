@@ -7,12 +7,12 @@ from src.core.constants import Constants
 from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.transect import Transect
+from src.core.simulation.base_simulation import _Simulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from src.core.simulation.base_simulation import _Simulation
 
 simulation_cases = [
     pytest.param(CoralDimrSimulation),

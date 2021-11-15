@@ -1,10 +1,10 @@
+import sys
 from pathlib import Path
 from test.utils import TestUtils
 from typing import Callable
 
 import numpy as np
 import pytest
-import sys
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
