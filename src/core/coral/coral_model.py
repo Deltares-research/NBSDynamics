@@ -5,6 +5,7 @@ coral_model - core
 @contributor: Peter M.J. Herman
 """
 
+from typing import Dict, Optional, Union
 import numpy as np
 
 from src.core.constants import Constants
@@ -12,7 +13,10 @@ from src.core.utils import CoralOnly, DataReshape
 
 
 class Coral:
-    """Coral object, representing one coral type."""
+    """
+    Implements the `CoralProtocol`.
+    Coral object, representing one coral type.
+    """
 
     def __init__(self, constants: Constants, dc, hc, bc, tc, ac, species_constant=1):
         """
@@ -113,64 +117,9 @@ class Coral:
         :param coral_volume: coral volume [m3]
         :type coral_volume: float, int, list, tuple, np.ndarray
         """
-        self.update_morphology(coral_volume, rf=self.rf, rp=self.rp, rs=self.rs)
-
-    def update_morphology(self, coral_volume, rf, rp, rs):
-        """Update the coral morphology based on updated coral volume and morphological ratios.
-
-        :param coral_volume: coral volume [m3]
-        :param rf: form ratio [-]
-        :param rp: plate ratio [-]
-        :param rs: spacing ratio [-]
-
-        :type coral_volume: float, numpy.ndarray
-        :type rf: float, numpy.ndarray
-        :type rp: float, numpy.ndarray
-        :type rs: float, numpy.ndarray
-        """
-
-        def vc2dc(coral_volume, rf, rp):
-            """Coral volume to coral plate diameter."""
-            dc = ((4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))) ** (
-                1.0 / 3.0
-            )
-            return dc
-
-        def vc2hc(coral_volume, rf, rp):
-            """Coral volume to coral height."""
-            hc = (
-                (4.0 * coral_volume * rf ** 2) / (np.pi * rp * (1.0 + rp - rp ** 2))
-            ) ** (1.0 / 3.0)
-            return hc
-
-        def vc2bc(coral_volume, rf, rp):
-            """Coral volume > diameter of the base."""
-            bc = (
-                (4.0 * coral_volume * rp ** 2) / (np.pi * rf * (1.0 + rp - rp ** 2))
-            ) ** (1.0 / 3.0)
-            return bc
-
-        def vc2tc(coral_volume, rf, rp):
-            """Coral volume > thickness of the plate."""
-            tc = (
-                (4.0 * coral_volume * rf ** 2 * rp ** 2)
-                / (np.pi * (1.0 + rp - rp ** 2))
-            ) ** (1.0 / 3.0)
-            return tc
-
-        def vc2ac(coral_volume, rf, rp, rs):
-            """Coral volume > axial distance."""
-            ac = (1.0 / rs) * (
-                (4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))
-            ) ** (1.0 / 3.0)
-            return ac
-
-        # # update morphology
-        self.dc = vc2dc(coral_volume, rf, rp)
-        self.hc = vc2hc(coral_volume, rf, rp)
-        self.bc = vc2bc(coral_volume, rf, rp)
-        self.tc = vc2tc(coral_volume, rf, rp)
-        self.ac = vc2ac(coral_volume, rf, rp, rs)
+        self.update_coral_morphology(
+            coral_volume, dict(rf=self.rf, rp=self.rp, rs=self.rs)
+        )
 
     @property
     def dc_matrix(self):
@@ -249,13 +198,14 @@ class Coral:
         if self.pop_states is not None:
             return self.pop_states.sum(axis=2)
 
-    def initiate_spatial_morphology(self, cover=None):
-        """Initiate the morphology based on the on set of morphological dimensions and the coral cover. This method
+    def initiate_coral_morphology(self, cover: Optional[np.ndarray] = None):
+        """
+        Initiate the morphology based on the on set of morphological dimensions and the coral cover. This method
         contains a catch that it can only be used to initiate the morphology, and cannot overwrite existing spatial
         heterogeneous morphology definitions.
 
-        :param cover: custom coral cover definition, defaults to None
-        :type cover: None, numpy.ndarray
+        Args:
+            cover (Optional[np.ndarray]): Custom coral definition.
         """
         if cover is not None:
             cover = self.RESHAPE.variable2array(cover)
@@ -279,3 +229,62 @@ class Coral:
         self.bc = cover * self.bc
         self.tc = cover * self.tc
         self.ac = cover * self.ac
+
+    def update_coral_morphology(
+        self,
+        coral_volume: Union[float, np.ndarray],
+        morphology_ratios: Dict[str, Union[float, np.ndarray]],
+    ):
+        """
+        Update the coral morphology based on updated coral volume and morphology ratios.
+
+        Args:
+            coral_volume (Union[float, np.ndarray]): Coral volume
+            morphology_ratios (Dict[str, Union[float, np.ndarray]]): Morphology ratios (rf, rp, rs, ..)
+        """
+        rf = morphology_ratios["rf"]
+        rp = morphology_ratios["rp"]
+        rs = morphology_ratios["rs"]
+
+        def vc2dc(coral_volume, rf, rp):
+            """Coral volume to coral plate diameter."""
+            dc = ((4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))) ** (
+                1.0 / 3.0
+            )
+            return dc
+
+        def vc2hc(coral_volume, rf, rp):
+            """Coral volume to coral height."""
+            hc = (
+                (4.0 * coral_volume * rf ** 2) / (np.pi * rp * (1.0 + rp - rp ** 2))
+            ) ** (1.0 / 3.0)
+            return hc
+
+        def vc2bc(coral_volume, rf, rp):
+            """Coral volume > diameter of the base."""
+            bc = (
+                (4.0 * coral_volume * rp ** 2) / (np.pi * rf * (1.0 + rp - rp ** 2))
+            ) ** (1.0 / 3.0)
+            return bc
+
+        def vc2tc(coral_volume, rf, rp):
+            """Coral volume > thickness of the plate."""
+            tc = (
+                (4.0 * coral_volume * rf ** 2 * rp ** 2)
+                / (np.pi * (1.0 + rp - rp ** 2))
+            ) ** (1.0 / 3.0)
+            return tc
+
+        def vc2ac(coral_volume, rf, rp, rs):
+            """Coral volume > axial distance."""
+            ac = (1.0 / rs) * (
+                (4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))
+            ) ** (1.0 / 3.0)
+            return ac
+
+        # # update morphology
+        self.dc = vc2dc(coral_volume, rf, rp)
+        self.hc = vc2hc(coral_volume, rf, rp)
+        self.bc = vc2bc(coral_volume, rf, rp)
+        self.tc = vc2tc(coral_volume, rf, rp)
+        self.ac = vc2ac(coral_volume, rf, rp, rs)

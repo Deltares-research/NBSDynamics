@@ -204,7 +204,7 @@ class Morphology:
                 getattr(coral, ratio), getattr(self, f"{ratio}_optimal")
             )
 
-    def update(self, coral):
+    def update(self, coral: Coral):
         """Update morphology.
 
         :param coral: coral animal
@@ -212,10 +212,12 @@ class Morphology:
         """
         # # calculations
         # updated ratios
-        ratios = [self.ratio_update(coral, ratio) for ratio in ("rf", "rp", "rs")]
+        ratios = {
+            ratio: self.ratio_update(coral, ratio) for ratio in ("rf", "rp", "rs")
+        }
 
         # updated volume
         volume = coral.volume + self.vol_increase
 
         # update coral morphology
-        coral.update_morphology(volume, *ratios)
+        coral.update_coral_morphology(volume, ratios)

@@ -265,7 +265,7 @@ class BaseSimulation(BaseModel, ABC):
             y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
             cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.coral.initiate_spatial_morphology(cover)
+        self.coral.initiate_coral_morphology(cover)
 
         self.output.initialize(self.coral)
 
