@@ -14,7 +14,7 @@ from src.core.simulation.coral_delft3d_simulation import (
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
-from test.utils import SkipReasons
+from test.utils import only_local, only_windows
 
 
 class TestAcceptance:
@@ -23,7 +23,7 @@ class TestAcceptance:
     light_input_file = "TS_PAR.txt"
     temp_input_file = "TS_SST.txt"
 
-    @SkipReasons.OnlyWindows
+    @only_windows
     def test_given_delft3d_flowfm_case_runs(self):
         # Test based on interface_D3D.py
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
@@ -70,7 +70,7 @@ class TestAcceptance:
             sim_run.run()
             sim_run.finalise()
 
-    @SkipReasons.OnlyWindows
+    @only_windows
     @pytest.mark.skip(reason="DIMR Test data not yet available.")
     def test_given_delft3d_dimr_case_runs(self):
         # Test based on interface_D3D.py
@@ -204,7 +204,7 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
-    @SkipReasons.OnlyLocal
+    @only_local
     @pytest.mark.parametrize(
         "nc_filename",
         [
@@ -236,7 +236,7 @@ class TestAcceptance:
 
         output_file(expected_dir / nc_filename)
 
-    @SkipReasons.OnlyLocal
+    @only_local
     @pytest.mark.parametrize(
         "nc_filename, output_type",
         [
