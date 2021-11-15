@@ -33,7 +33,7 @@ class TestSimulation:
     def test_init_simulation_with_supported_modes(
         self, mode_case: _Simulation, expected_hydro: Callable
     ):
-        test_sim = mode_case()
+        test_sim: _Simulation = mode_case()
         assert isinstance(test_sim.environment, Environment)
         assert isinstance(test_sim.constants, Constants)
         assert isinstance(test_sim.working_dir, Path)
@@ -52,7 +52,7 @@ class TestSimulation:
     @pytest.mark.parametrize("mode_case", simulation_cases)
     def test_input_check_wihtout_light(self, mode_case: _Simulation):
         with pytest.raises(ValueError) as e_info:
-            test_sim = mode_case()
+            test_sim: _Simulation = mode_case()
             assert test_sim.environment.light is None
             test_sim.validate_environment()
         assert (
@@ -63,7 +63,7 @@ class TestSimulation:
     @pytest.mark.parametrize("mode_case", simulation_cases)
     def test_input_check_wihtout_temperature(self, mode_case: _Simulation):
         with pytest.raises(ValueError) as e_info:
-            test_sim = mode_case()
+            test_sim: _Simulation = mode_case()
             test_sim.environment.light = 4.2
             assert test_sim.environment.temperature is None
             test_sim.validate_environment()
