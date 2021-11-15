@@ -1,7 +1,8 @@
+from test.core.bio_process.bio_utils import valid_coral
+
 from src.core.bio_process.temperature import Temperature
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
-from test.core.bio_process.bio_utils import valid_coral
 
 
 class TestTemperature:

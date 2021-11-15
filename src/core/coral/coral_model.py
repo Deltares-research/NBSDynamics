@@ -6,12 +6,13 @@ coral_model - core
 """
 
 from typing import Dict, Optional, Union
-import numpy as np
 
+import numpy as np
+from pydantic import Extra, validator
+
+from src.core.base_model import BaseModel
 from src.core.constants import Constants
 from src.core.utils import CoralOnly, DataReshape
-from src.core.base_model import BaseModel
-from pydantic import validator, Extra
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 

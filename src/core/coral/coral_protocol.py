@@ -1,5 +1,7 @@
-from typing import Dict, Optional, Union, Protocol, runtime_checkable
+from typing import Dict, Optional, Protocol, Union, runtime_checkable
+
 import numpy as np
+
 from src.core.constants import Constants
 
 
