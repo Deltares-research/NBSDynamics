@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 
 
 class Reef0D:

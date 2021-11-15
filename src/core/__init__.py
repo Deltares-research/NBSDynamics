@@ -1,6 +1,6 @@
 __version__ = "0.4.0"
 __all__ = [
-    "coral_model",
+    "coral",
     "hydrodynamics",
     "simulation",
     "utils",

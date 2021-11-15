@@ -1,13 +1,13 @@
 from pathlib import Path
 from test.utils import TestUtils
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Union
 
 import pytest
 
 from src.core.constants import Constants
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.environment import Environment
-from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
+from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation.base_simulation import BaseSimulation

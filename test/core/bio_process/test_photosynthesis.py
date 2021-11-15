@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from src.core.bio_process.photosynthesis import Photosynthesis
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
 
 

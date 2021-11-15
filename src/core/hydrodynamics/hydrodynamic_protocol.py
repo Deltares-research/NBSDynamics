@@ -3,7 +3,7 @@ from typing import Protocol
 
 import numpy as np
 
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 
 
 class HydrodynamicProtocol(Protocol):

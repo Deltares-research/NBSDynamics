@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 from scipy.optimize import fsolve
 
-from src.core.coral_model import Coral
+from src.core.coral.coral_model import Coral
 
 
 class Reef1D:
