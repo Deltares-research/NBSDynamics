@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from test.utils import TestUtils
+from test.utils import TestUtils, only_windows
 from typing import Callable
 
 import numpy as np
@@ -14,7 +14,6 @@ from src.core.simulation.coral_delft3d_simulation import (
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
-from test.utils import only_windows
 
 
 class TestAcceptance:

@@ -27,9 +27,9 @@ import shutil
 import sys
 from pathlib import Path
 from typing import List
-from numpy import equal
 
 import pytest
+from numpy import equal
 
 try:
     from pip import main as pipmain
