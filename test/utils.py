@@ -27,6 +27,7 @@ import shutil
 import sys
 from pathlib import Path
 from typing import List
+from numpy import equal
 
 import pytest
 
@@ -36,9 +37,14 @@ except Exception as e_info:
     from pip._internal import main as pipmain
 
 
-skiplinux = pytest.mark.skipif(
-    not sys.platform.startswith("win"), reason="Linux not supported"
-)
+class SkipReasons:
+    OnlyWindows = pytest.mark.skipif(
+        not sys.platform.__eq__("win32"), reason="BMI only supported on Windows."
+    )
+    OnlyLocal = pytest.mark(reason="Only to run locally.")
+    skiplinux = pytest.mark.skipif(
+        not sys.platform.startswith("win"), reason="Linux not supported"
+    )
 
 
 class TestUtils:

@@ -14,12 +14,16 @@ from src.core.simulation.coral_delft3d_simulation import (
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
+from test.utils import SkipReasons
 
 
 class TestAcceptance:
-    @pytest.mark.skipif(
-        sys.platform != "win32", reason="BMI only supported on Windows."
-    )
+
+    constants_input_file = "coral_input.txt"
+    light_input_file = "TS_PAR.txt"
+    temp_input_file = "TS_SST.txt"
+
+    @SkipReasons.OnlyWindows
     def test_given_delft3d_flowfm_case_runs(self):
         # Test based on interface_D3D.py
         test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
@@ -31,10 +35,10 @@ class TestAcceptance:
         input_dir = test_dir / "input"
         sim_run = CoralFlowFmSimulation(
             working_dir=test_dir,
-            constants=input_dir / "coral_input.txt",
+            constants=input_dir / self.constants_input_file,
             environment=dict(
-                light=input_dir / "TS_PAR.txt",
-                temperature=input_dir / "TS_SST.txt",
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
             ),
             coral=dict(
                 dc=0.1,
@@ -66,9 +70,7 @@ class TestAcceptance:
             sim_run.run()
             sim_run.finalise()
 
-    @pytest.mark.skipif(
-        sys.platform != "win32", reason="BMI only supported on Windows."
-    )
+    @SkipReasons.OnlyWindows
     @pytest.mark.skip(reason="DIMR Test data not yet available.")
     def test_given_delft3d_dimr_case_runs(self):
         # Test based on interface_D3D.py
@@ -79,12 +81,12 @@ class TestAcceptance:
         test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
 
         input_dir = test_dir / "input"
-        sim_run = CoralFlowFmSimulation(
+        sim_run = CoralDimrSimulation(
             working_dir=test_dir,
-            constants=input_dir / "coral_input.txt",
+            constants=input_dir / self.constants_input_file,
             environment=dict(
-                light=input_dir / "TS_PAR.txt",
-                temperature=input_dir / "TS_SST.txt",
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
             ),
             coral=dict(
                 dc=0.1,
@@ -138,10 +140,10 @@ class TestAcceptance:
         input_dir = test_dir / "input"
         run_trans = CoralTransectSimulation(
             working_dir=test_dir,
-            constants=input_dir / "coral_input.txt",
+            constants=input_dir / self.constants_input_file,
             environment=dict(
-                light=input_dir / "TS_PAR.txt",
-                temperature=input_dir / "TS_SST.txt",
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
                 storm=input_dir / "TS_stormcat2.txt",
                 dates=("2000-01-01", "2100-01-01"),
             ),
@@ -202,7 +204,7 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
-    @pytest.mark.skip(reason="Only to be run locally.")
+    @SkipReasons.OnlyLocal
     @pytest.mark.parametrize(
         "nc_filename",
         [
@@ -234,7 +236,7 @@ class TestAcceptance:
 
         output_file(expected_dir / nc_filename)
 
-    @pytest.mark.skip(reason="Only to run locally.")
+    @SkipReasons.OnlyLocal
     @pytest.mark.parametrize(
         "nc_filename, output_type",
         [
