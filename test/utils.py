@@ -40,7 +40,6 @@ except Exception as e_info:
 only_windows = pytest.mark.skipif(
     not sys.platform.__eq__("win32"), reason="BMI only supported on Windows."
 )
-only_local = pytest.mark(reason="Only to run locally.")
 skiplinux = pytest.mark.skipif(
     not sys.platform.startswith("win"), reason="Linux not supported"
 )

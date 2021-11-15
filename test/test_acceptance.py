@@ -14,7 +14,7 @@ from src.core.simulation.coral_delft3d_simulation import (
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
-from test.utils import only_local, only_windows
+from test.utils import only_windows
 
 
 class TestAcceptance:
@@ -204,7 +204,16 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
-    @only_local
+    transect_local = pytest.mark.skipif(
+        not (
+            TestUtils.get_local_test_data_dir("transect_case")
+            / "expected_output"
+            / "nc_files"
+        ).is_dir(),
+        reason="Only to be run to generate expected data from local machines.",
+    )
+
+    @transect_local
     @pytest.mark.parametrize(
         "nc_filename",
         [
@@ -236,7 +245,7 @@ class TestAcceptance:
 
         output_file(expected_dir / nc_filename)
 
-    @only_local
+    @transect_local
     @pytest.mark.parametrize(
         "nc_filename, output_type",
         [
