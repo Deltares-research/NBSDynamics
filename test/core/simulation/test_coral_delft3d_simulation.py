@@ -1,14 +1,16 @@
+from pathlib import Path
 from typing import List
+
+import pytest
+
+from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.simulation.base_simulation import _Simulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
     _CoralDelft3DSimulation,
 )
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-import pytest
-from pathlib import Path
-from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel, Delft3D
 
 hydrodynamic_model_cases: List[pytest.param] = [
     pytest.param(DimrModel, id="Dimr Model"),

@@ -1,7 +1,8 @@
-from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from src.core.simulation.base_simulation import _Simulation
-from src.core.hydrodynamics.transect import Transect
 from pathlib import Path
+
+from src.core.hydrodynamics.transect import Transect
+from src.core.simulation.base_simulation import _Simulation
+from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
 
 
 class TestCoralTransectSimulation:
