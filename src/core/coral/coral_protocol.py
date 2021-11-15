@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Union, Protocol, runtime_checkable
 import numpy as np
+from src.core.constants import Constants
 
 
 @runtime_checkable
@@ -7,6 +8,19 @@ class CoralProtocol(Protocol):
     """
     Protocol for all Corals to be used in the `NBSDynamics` Project.
     """
+
+    @property
+    def constants(self) -> Constants:
+        """
+        Constants associated to the Coral Model to be run.
+
+        Raises:
+            NotImplementedError: When the model does not implement its own definition.
+
+        Returns:
+            Constants: Instance of constants.
+        """
+        raise NotImplementedError
 
     def initiate_coral_morphology(self, cover: Optional[np.ndarray]):
         """

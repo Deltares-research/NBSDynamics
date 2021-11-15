@@ -22,12 +22,12 @@ class Coral(BaseModel):
     Coral object, representing one coral type.
     """
 
-    # class Config:
-    #     """
-    #     Allow this model to have extra fields defined during runtime.
-    #     """
+    class Config:
+        """
+        Allow this model to have extra fields defined during runtime.
+        """
 
-    #     extra = Extra.allow
+        extra = Extra.allow
 
     RESHAPE = DataReshape()
     constants: Constants

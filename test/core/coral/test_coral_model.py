@@ -3,13 +3,14 @@ import pytest
 
 from src.core.coral.coral_model import Coral
 from src.core.coral.coral_protocol import CoralProtocol
+from src.core.constants import Constants
 
 
 class TestCoralModel:
     @pytest.fixture(autouse=True)
     def coral_model_test(self) -> CoralProtocol:
         input_dict = dict(
-            constants=None,
+            constants=Constants(),
             dc=0.2,
             hc=0.1,
             bc=0.2,
