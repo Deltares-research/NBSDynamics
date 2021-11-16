@@ -1,3 +1,9 @@
+## v0.5.1 (2021-11-16)
+
+### Fix
+
+- **bio_process/test_morphology.py**: removed bug from test fixture
+
 ## v0.5.0 (2021-11-15)
 
 ### Feat
