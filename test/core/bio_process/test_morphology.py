@@ -37,6 +37,5 @@ class TestMorphology:
         ratio_value = "notARatio"
 
         with pytest.raises(ValueError) as e_info:
-            valid_coral
             valid_morphology.ratio_update(valid_coral, ratio_value)
         assert str(e_info.value) == "notARatio not in ('rf', 'rp', 'rs')."
