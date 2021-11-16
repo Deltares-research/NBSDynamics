@@ -155,7 +155,7 @@ class Delft3D(BaseModel, abc.ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def environment(self):
+    def set_environment_variables(self):
         """
         Sets the Python environment to include Delft3D-code.
         """
@@ -165,7 +165,7 @@ class Delft3D(BaseModel, abc.ABC):
         """
         Creates a BMIWrapper and initializes it based on the given parameters for a FM Model.
         """
-        self.environment()
+        self.set_environment_variables()
         self.configure_model_wrapper()
         self.model_wrapper.initialize()
 
@@ -213,7 +213,7 @@ class FlowFmModel(Delft3D):
 
     @property
     def dll_dir(self) -> Path:
-        return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
+        return self.d3d_home / "dflowfm" / "bin" / "dflowfm.dll"
 
     @property
     def space(self) -> Optional[int]:
@@ -279,7 +279,7 @@ class FlowFmModel(Delft3D):
             ]
         )
 
-    def environment(self):
+    def set_environment_variables(self):
         """Sets the Python environment to include Delft3D-code."""
         dirs = [
             self.d3d_home / "share" / "bin",
@@ -289,10 +289,12 @@ class FlowFmModel(Delft3D):
         env = ";".join(map(str, dirs))
         os.environ["PATH"] = env
 
-        print('\nEnvironment "PATH":')
-        [print(f"\t{path}") for path in dirs]
-
     def configure_model_wrapper(self):
+        """
+        Configures the model wrapper, it is recommended to set the environment variables beforehand.
+        If the PATH variables does not work it is recommended copying all t he contents from the share
+        directory into the dimr bin dir.
+        """
         self.model_wrapper = BMIWrapper(
             engine=self.dll_dir.as_posix(), configfile=self.definition_file.as_posix()
         )
@@ -305,7 +307,7 @@ class DimrModel(Delft3D):
     Based on a DIMR model configuration.
     """
 
-    def environment(self):
+    def set_environment_variables(self):
         """
         Sets the Python environment to include Delft3D-code.
         """
@@ -337,7 +339,7 @@ class DimrModel(Delft3D):
 
     @property
     def dll_dir(self) -> Path:
-        return self.d3d_home / "dimr" / "bin" / "dimr_dll"
+        return self.d3d_home / "dimr" / "bin" / "dimr_dll.dll"
 
     @property
     def space(self) -> None:

@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from test.utils import TestUtils, only_windows
 from typing import Callable
