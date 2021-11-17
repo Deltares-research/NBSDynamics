@@ -39,20 +39,7 @@ class Delft3D(BaseModel, abc.ABC):
     working_dir: Optional[Path]  # Model working directory.
     definition_file: Optional[Path] = None
     config_file: Optional[Path] = None
-
-    @property
-    @abstractmethod
-    def dll_path(self) -> Path:
-        """
-        Returns the path to the model-specific dll of the wrapper class.
-
-        Raises:
-            NotImplementedError: When the concrete model does not implement its own definition.
-
-        Returns:
-            Path: The directory Path.
-        """
-        raise NotImplementedError
+    dll_path: Optional[Path] = None
 
     def __repr__(self):
         return "Delft3D()"
@@ -236,8 +223,6 @@ class FlowFmModel(Delft3D):
     Based on a FlowFM model configuration.
     """
 
-    dll_path: Optional[str]
-
     _space: Optional[int] = None
     _water_depth: Optional[np.ndarray] = None
     _x_coordinates: Optional[np.array]
@@ -256,7 +241,8 @@ class FlowFmModel(Delft3D):
         Returns:
             dict: Validated dictionary with a `dll_path`.
         """
-        if "dll_path" not in values.keys():
+        dll_path_value = values.get("dll_path", None)
+        if dll_path_value is None:
             values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dflowfm.dll"
         return values
 
@@ -362,7 +348,7 @@ class DimrModel(Delft3D):
 
     @root_validator
     @classmethod
-    def verify_dll_path(cls, values: dict) -> dict:
+    def check_dll_path(cls, values: dict) -> dict:
         """
         Although not mandatory, we need to ensure at least a default value is given to the dll path.
         This default value is relative to the mandatory d3dhome attribute.
@@ -373,7 +359,8 @@ class DimrModel(Delft3D):
         Returns:
             dict: Validated dictionary with a `dll_path`.
         """
-        if "dll_path" not in values.keys():
+        dll_path_value = values.get("dll_path", None)
+        if dll_path_value is None:
             values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dimr_dll.dll"
         return values
 
