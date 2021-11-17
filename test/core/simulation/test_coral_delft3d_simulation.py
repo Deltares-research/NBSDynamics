@@ -1,4 +1,5 @@
 import pytest
+
 from src.core.simulation.base_simulation import BaseSimulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,

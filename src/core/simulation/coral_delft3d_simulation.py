@@ -1,6 +1,6 @@
 from abc import ABC
-from src.core.hydrodynamics.delft3d import Delft3D
 
+from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.output_wrapper import OutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 
