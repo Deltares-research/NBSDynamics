@@ -16,16 +16,30 @@ class TestCoralModel:
             bc=0.2,
             tc=0.1,
             ac=0.2,
-            species_constant=1,
+            Csp=1,
         )
         return Coral(**input_dict)
 
-    def test_init_coral_model(self, coral_model_test: CoralProtocol):
+    def test_init_coral_model(self, coral_model_test: Coral):
         assert isinstance(coral_model_test, CoralProtocol)
         assert repr(coral_model_test) == "Morphology([0.2], [0.1], [0.2], [0.2], [0.2])"
         assert str(coral_model_test) == (
             "Coral morphology with: dc = [0.2] m; hc = [0.1] ;bc = [0.2] m; tc = [0.1] m; ac = [0.2] m"
         )
+        assert coral_model_test.dc[0] == 0.2
+        assert coral_model_test.hc[0] == 0.1
+        assert coral_model_test.bc[0] == 0.2
+        assert coral_model_test.tc[0] == 0.1
+        assert coral_model_test.ac[0] == 0.2
+        assert coral_model_test.Csp == 1
+        eps_err = 0.0000001
+        assert float(coral_model_test.dc_rep), pytest.approx(0.2, eps_err)
+        assert float(coral_model_test.rf), pytest.approx(0.5, eps_err)
+        assert float(coral_model_test.rp), pytest.approx(1, eps_err)
+        assert float(coral_model_test.rs), pytest.approx(1, eps_err)
+        assert coral_model_test.volume, pytest.approx(0.00314159, eps_err)
+        assert coral_model_test.as_vegetation_density, pytest.approx(10, eps_err)
+        assert coral_model_test.cover, pytest.approx(1, eps_err)
 
     def test_set_cover(self, coral_model_test: Coral):
         coral_model_test.update_coral_volume(np.array([4.2]))
