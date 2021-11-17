@@ -118,6 +118,7 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
+    # TODO: Delft3D dlls not yet available at the repo level.
     @only_local
     def test_given_delft3d_flowfm_case_runs(self):
         # Test based on interface_D3D.py
@@ -146,6 +147,7 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
                 update_intervals=(300, 300),
                 definition_file=test_case / "fm" / "shallow_wave.mdu",
             ),
@@ -159,12 +161,11 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        with pytest.raises(RuntimeError):
-            # Delft3D dlls not yet available at the repo level.
-            sim_run.initiate()
-            sim_run.run()
-            sim_run.finalise()
+        sim_run.initiate()
+        sim_run.run()
+        sim_run.finalise()
 
+    # TODO: Delft3D dlls not yet available at the repo level.
     @only_local
     def test_given_delft3d_dimr_case_runs(self):
         # Test based on interface_D3D.py

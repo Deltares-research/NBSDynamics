@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 
 import numpy as np
+from pydantic.class_validators import root_validator
 
 from src.core.base_model import BaseModel
 from src.core.coral.coral_model import Coral
@@ -38,6 +39,32 @@ class OutputWrapper(BaseModel):
     def __repr__(self):
         """Representation of Output."""
         return f"Output(xy_coordinates={self.xy_coordinates}, first_date={self.first_date})"
+
+    @root_validator(pre=True)
+    @classmethod
+    def check_output_dir(cls, values: dict) -> dict:
+        """
+        Checks an `output_dir` attribute is given for the `output_model` instances
+        `map_output` and `his_output`.
+
+        Args:
+            values (dict): Dictionary of attribute values given by the user.
+
+        Returns:
+            dict: Dictionary of attribute values with a valid `output_dir` value.
+        """
+
+        def check_output_model_dir(out_model: dict) -> Optional[dict]:
+            if out_model is None:
+                return None
+            out_dir_val = out_model.get("output_dir", None)
+            if out_dir_val is None:
+                out_model["output_dir"] = values["output_dir"]
+            return out_model
+
+        values["map_output"] = check_output_model_dir(values["map_output"])
+        values["his_output"] = check_output_model_dir(values["his_output"])
+        return values
 
     @property
     def defined(self) -> bool:
