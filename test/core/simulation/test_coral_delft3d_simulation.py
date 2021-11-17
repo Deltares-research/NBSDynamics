@@ -1,21 +1,16 @@
 from pathlib import Path
-from typing import List
 
+import numpy as np
 import pytest
 
-from src.core.hydrodynamics.delft3d import Delft3D, DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.output.output_wrapper import OutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
     _CoralDelft3DSimulation,
 )
-
-hydrodynamic_model_cases: List[pytest.param] = [
-    pytest.param(DimrModel, id="Dimr Model"),
-    pytest.param(FlowFmModel, id="FlowFM Mode"),
-]
 
 
 class TestCoralDelft3dSimulation:
@@ -29,46 +24,70 @@ class TestCoralDelft3dSimulation:
     def test_delft3d_ctor(
         self, coral_mode: _CoralDelft3DSimulation, expected_mode: str
     ):
-        test_coral = coral_mode()
+        test_coral: _CoralDelft3DSimulation = coral_mode()
         assert issubclass(coral_mode, _CoralDelft3DSimulation)
         assert issubclass(coral_mode, BaseSimulation)
         assert test_coral.mode == expected_mode
 
-    @pytest.mark.parametrize("hydrodynamic_model", hydrodynamic_model_cases)
-    def test_set_simulation_hydrodynamics(
-        self, hydrodynamic_model: HydrodynamicProtocol
-    ):
-        # 1. Define test data.
-        test_dict = dict(
-            working_dir=Path.cwd(),
-            definition_file=Path.cwd() / "def_file",
-            config_file=Path.cwd() / "conf_file",
-            d3d_home=Path.cwd() / "d3d_home",
-        )
-        hydromodel: Delft3D = hydrodynamic_model()
-        assert hydromodel.working_dir is None
-        assert hydromodel.definition_file is None
-        assert hydromodel.config_file is None
-        assert hydromodel.d3d_home is None
+    class DummySim(_CoralDelft3DSimulation):
+        mode = "TestHydro"
 
-        # 2. Run test
-        _CoralDelft3DSimulation.set_simulation_hydrodynamics(hydromodel, test_dict)
+    class DummyHydro(HydrodynamicProtocol):
+        config_file = Path.cwd() / "aConfigFile"
+        definition_file = Path.cwd() / "aDefFile"
+        settings = "someSettings"
+        water_depth = np.array([0.42, 0.24])
+        space = 42
+        x_coordinates = np.array([4, 2])
+        y_coordinates = np.array([2, 4])
+        xy_coordinates = np.array([[4, 2], [2, 4]])
+        init_count = 0
+        update_count = 0
+        finalise_count = 0
 
-        # 3. Verify final expectations
-        assert hydromodel.working_dir == test_dict["working_dir"]
-        assert hydromodel.definition_file == test_dict["definition_file"]
-        assert hydromodel.config_file == test_dict["config_file"]
-        assert hydromodel.d3d_home == test_dict["d3d_home"]
+        def initiate(self):
+            self.init_count += 1
 
-    @pytest.mark.parametrize("hydrodynamic_model", hydrodynamic_model_cases)
-    def test_set_simulation_hydrodynamics_no_entries_raises_nothing(
-        self, hydrodynamic_model: HydrodynamicProtocol
-    ):
-        hydromodel: Delft3D = hydrodynamic_model()
-        _CoralDelft3DSimulation.set_simulation_hydrodynamics(
-            hydromodel, dict(working_dir=Path.cwd())
-        )
-        assert hydromodel.working_dir == Path.cwd()
-        assert hydromodel.definition_file is None
-        assert hydromodel.config_file is None
-        assert hydromodel.d3d_home is None
+        def update(self, coral, stormcat: int):
+            self.update_count += 1
+
+        def finalise(self):
+            self.finalise_count += 1
+
+    def test_configure_hydrodynamics(self):
+        """
+        This test is only meant to verify that only the initiate
+        method gets triggered while configuring hydrodynamics
+        at the simulation level.
+        """
+        hydro_model = self.DummyHydro()
+        test_sim = self.DummySim(hydrodynamics=hydro_model)
+        assert hydro_model.init_count == 0
+        assert hydro_model.update_count == 0
+        assert hydro_model.finalise_count == 0
+
+        test_sim.configure_hydrodynamics()
+        assert hydro_model.init_count == 1
+        assert hydro_model.update_count == 0
+        assert hydro_model.finalise_count == 0
+
+    def test_configure_output(self):
+        """
+        This test is only meant to verify that no init, update or finalize
+        methods are triggered while configuring the output.
+        """
+        hydro_model = self.DummyHydro()
+        test_sim = self.DummySim(hydrodynamics=hydro_model)
+        assert test_sim.output is None
+        assert hydro_model.init_count == 0
+        assert hydro_model.update_count == 0
+        assert hydro_model.finalise_count == 0
+
+        test_sim.configure_output()
+
+        assert hydro_model.init_count == 0
+        assert hydro_model.update_count == 0
+        assert hydro_model.finalise_count == 0
+        assert isinstance(test_sim.output, OutputWrapper)
+        assert test_sim.output.map_output is not None
+        assert test_sim.output.his_output is not None

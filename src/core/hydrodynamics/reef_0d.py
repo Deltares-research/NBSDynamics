@@ -3,41 +3,24 @@ from typing import Optional
 
 import numpy as np
 
+from src.core.base_model import BaseModel
 from src.core.coral.coral_model import Coral
 
 
-class Reef0D:
+class Reef0D(BaseModel):
     """Implements the `HydrodynamicProtocol`."""
+
+    working_dir: Optional[Path] = None
+    definition_file: Optional[Path] = None
+    config_file: Optional[Path] = None
+    x_coordinates: Optional[np.ndarray] = None
+    y_coordinates: Optional[np.ndarray] = None
+    water_depth: Optional[np.ndarray] = None
 
     @property
     def settings(self):
         """Print settings of Reef0D-model."""
-        msg = f"Not yet implemented."
-        return msg
-
-    @property
-    def working_dir(self) -> Optional[Path]:
-        return None
-
-    @property
-    def config_file(self) -> Optional[Path]:
-        return None
-
-    @property
-    def definition_file(self) -> Optional[Path]:
-        return None
-
-    @property
-    def water_depth(self):
-        return None
-
-    @property
-    def x_coordinates(self):
-        return None
-
-    @property
-    def y_coordinates(self):
-        return None
+        return "Not yet implemented."
 
     @property
     def xy_coordinates(self):

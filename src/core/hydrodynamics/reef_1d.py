@@ -1,32 +1,35 @@
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 from scipy.optimize import fsolve
 
+from src.core.base_model import BaseModel
 from src.core.coral.coral_model import Coral
 
 
-class Reef1D:
+class Reef1D(BaseModel):
     """
     Implements the `HydrodynamicProtocol`.
-    Simplified one-dimensional hydrodynamic model over a (coral) reef."""
+    Simplified one-dimensional hydrodynamic model over a (coral) reef.
+    Internal 1D hydrodynamic model for order-of-magnitude calculations on the hydrodynamic conditions on a coral
+    reef, where both flow and waves are included.
+    """
 
     # TODO: Complete the one-dimensional hydrodynamic model
-    def __init__(self):
-        """Internal 1D hydrodynamic model for order-of-magnitude calculations on the hydrodynamic conditions on a coral
-        reef, where both flow and waves are included.
-        """
-        self.bath = None
-        self.Hs = None
-        self.Tp = None
-        self.dx = None
 
-        # self.z = np.zeros(self.space)
+    working_dir: Optional[Path] = None
+    definition_file: Optional[Path] = None
+    config_file: Optional[Path] = None
+    water_depth: Optional[np.ndarray] = None
 
-        self._diameter = None
-        self._height = None
-        self._density = None
+    can_dia: Optional[Any] = None
+    can_height: Optional[Any] = None
+    can_den: Optional[Any] = None
+    bath: Optional[Any] = None
+    Hs: Optional[Any] = None
+    Tp: Optional[Any] = None
+    dx: Optional[Any] = None
 
     def __repr__(self):
         msg = (
@@ -34,18 +37,6 @@ class Reef1D:
             f"wave_period={self.Tp})"
         )
         return msg
-
-    @property
-    def working_dir(self) -> Optional[Path]:
-        return None
-
-    @property
-    def config_file(self) -> Optional[Path]:
-        return None
-
-    @property
-    def definition_file(self) -> Optional[Path]:
-        return None
 
     @property
     def settings(self):
@@ -76,10 +67,6 @@ class Reef1D:
         if self.bath is None:
             return None
         return len(self.bath)
-
-    @property
-    def water_depth(self):
-        return None
 
     @property
     def x_coordinates(self):
@@ -125,30 +112,6 @@ class Reef1D:
     @property
     def depth(self):
         return self.bath + self.water_level
-
-    @property
-    def can_dia(self):
-        return self._diameter
-
-    @can_dia.setter
-    def can_dia(self, canopy_diameter):
-        self._diameter = canopy_diameter
-
-    @property
-    def can_height(self):
-        return self._height
-
-    @can_height.setter
-    def can_height(self, canopy_height):
-        self._height = canopy_height
-
-    @property
-    def can_den(self):
-        return self._density
-
-    @can_den.setter
-    def can_den(self, canopy_density):
-        self._density = canopy_density
 
     @staticmethod
     def dispersion(wave_length, wave_period, depth, grav_acc):

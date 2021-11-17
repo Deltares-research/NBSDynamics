@@ -29,7 +29,7 @@ class BaseOutput(BaseModel):
     Base class containing the generic definition of a 'Coral' output model.
     """
 
-    output_dir: Optional[Path]
+    output_dir: Path
     output_filename: str
 
     # Output model attributes.

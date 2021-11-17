@@ -10,25 +10,18 @@ from typing import Dict, Optional, Union
 import numpy as np
 from pydantic import Extra, validator
 
-from src.core.base_model import BaseModel
+from src.core.base_model import ExtraModel
 from src.core.constants import Constants
 from src.core.utils import CoralOnly, DataReshape
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
 
-class Coral(BaseModel):
+class Coral(ExtraModel):
     """
     Implements the `CoralProtocol`.
     Coral object, representing one coral type.
     """
-
-    class Config:
-        """
-        Allow this model to have extra fields defined during runtime.
-        """
-
-        extra = Extra.allow
 
     RESHAPE = DataReshape()
     constants: Constants

@@ -1,15 +1,16 @@
 import abc
 import faulthandler
 import os
+import sys
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
-from pydantic import Extra
+from pydantic.class_validators import root_validator
 
-from src.core.base_model import BaseModel
+from src.core.base_model import ExtraModel
 from src.core.coral.coral_model import Coral
 
 faulthandler.enable()
@@ -17,43 +18,31 @@ faulthandler.enable()
 WrapperVariable = Union[float, list, tuple, np.ndarray]
 
 
-class Delft3D(BaseModel, abc.ABC):
+class Delft3D(ExtraModel, abc.ABC):
     """
     Implements the `HydrodynamicProtocol`.
     Coupling of coral_model to Delft3D using the BMI wrapper.
     """
 
-    class Config:
-        """
-        Allow this model to have extra fields defined during runtime.
-        """
-
-        extra = Extra.allow
-
     # Define model attributes.
-    time_step: Optional[np.datetime64]
-    model_wrapper: Optional[BMIWrapper]
-    d3d_home: Optional[Path]  # Delft3D binaries home directory.
-    working_dir: Optional[Path]  # Model working directory.
+    time_step: Optional[np.datetime64] = None
+    model_wrapper: Optional[BMIWrapper] = None
+    d3d_home: Optional[Path] = None  # Delft3D binaries home directory.
+    working_dir: Optional[Path] = None  # Model working directory.
     definition_file: Optional[Path] = None
     config_file: Optional[Path] = None
+    dll_path: Optional[Path] = None
 
-    @property
-    @abstractmethod
-    def dll_dir(self) -> Path:
-        """
-        Returns the path to the model-specific dll of the wrapper class.
-
-        Raises:
-            NotImplementedError: When the concrete model does not implement its own definition.
-
-        Returns:
-            Path: The directory Path.
-        """
-        raise NotImplementedError
+    update_interval: Optional[int] = None
+    update_interval_storm: Optional[int] = None
 
     def __repr__(self):
         return "Delft3D()"
+
+    @property
+    @abstractmethod
+    def space(self) -> Optional[int]:
+        raise NotImplementedError
 
     def get_variable(self, variable: str) -> Optional[WrapperVariable]:
         """
@@ -94,17 +83,6 @@ class Delft3D(BaseModel, abc.ABC):
         if getattr(self.model_wrapper, obj) is None:
             msg = f"{obj} undefined (required for Delft3D coupling)"
             raise ValueError(msg)
-
-    def set_update_intervals(self, default: int, storm: Optional[int] = None):
-        """
-        Set update intervals
-
-        Args:
-            default (int): Default value to update.
-            storm (Optional[int], optional): Default value if none given. Defaults to None.
-        """
-        self.update_interval = default
-        self.update_interval_storm = default if storm is None else storm
 
     def reset_counters(self):
         """Reset properties for next model update."""
@@ -155,17 +133,55 @@ class Delft3D(BaseModel, abc.ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def environment(self):
+    def get_environment_variables(self) -> List[str]:
         """
-        Sets the Python environment to include Delft3D-code.
+        Gets the Python environment variables to include in a Delft3D model run.
         """
         raise NotImplementedError("Implement in concrete class")
+
+    def _get_sys_environment_key(self) -> str:
+        os_key = dict(win32="PATH", linux="LD_LIBRARY_PATH", darwin="DYLD_LIBRARY_PATH")
+        env_key: str = os_key.get(sys.platform, None)
+        if env_key is None:
+            raise NotImplementedError(
+                f"System {sys.platform} not supported for a Delft3D run."
+            )
+        return env_key
+
+    def set_environment_variables(self):
+        """
+        Adds the required environment variables in to the systems path.
+        Windows: PATH
+        Linux: LD_LIBRARY_PATH
+        Os (Darwin): DYLD_LIBRARY_PATH
+        """
+        env_variables = self.get_environment_variables()
+        env_key = self._get_sys_environment_key()
+        # Set variable
+        path_var: str = os.environ[env_key]
+        for env_var in env_variables:
+            if str(env_var) not in path_var:
+                path_var += f";{str(env_var)}"
+        os.environ[env_key] = path_var
+
+    def cleanup_environment_variables(self):
+        """
+        Remove unnecessary environment variables from system.
+        """
+        env_variables = self.get_environment_variables()
+        env_key = self._get_sys_environment_key()
+        # Set variable
+        path_var: str = os.environ[env_key]
+        for env_var in env_variables:
+            if str(env_var) in path_var:
+                path_var.replace(f";{str(env_var)}", "")
+        os.environ[env_key] = path_var
 
     def initiate(self):
         """
         Creates a BMIWrapper and initializes it based on the given parameters for a FM Model.
         """
-        self.environment()
+        self.set_environment_variables()
         self.configure_model_wrapper()
         self.model_wrapper.initialize()
 
@@ -186,6 +202,7 @@ class Delft3D(BaseModel, abc.ABC):
     def finalise(self):
         """Finalize the working model."""
         self.model_wrapper.finalize()
+        self.cleanup_environment_variables()
 
 
 class FlowFmModel(Delft3D):
@@ -197,8 +214,26 @@ class FlowFmModel(Delft3D):
 
     _space: Optional[int] = None
     _water_depth: Optional[np.ndarray] = None
-    _x_coordinates: Optional[np.array]
-    _y_coordinates: Optional[np.array]
+    _x_coordinates: Optional[np.array] = None
+    _y_coordinates: Optional[np.array] = None
+
+    @root_validator
+    @classmethod
+    def check_dll_path(cls, values: dict) -> dict:
+        """
+        Although not mandatory, we need to ensure at least a default value is given to the dll path.
+        This default value is relative to the mandatory d3dhome attribute.
+
+        Args:
+            values (dict): Validated (and formatted) dictionary of values for a Delft3D object.
+
+        Returns:
+            dict: Validated dictionary with a `dll_path`.
+        """
+        dll_path_value = values.get("dll_path", None)
+        if dll_path_value is None and values.get("d3d_home", None) is not None:
+            values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dflowfm.dll"
+        return values
 
     @property
     def settings(self) -> str:
@@ -212,21 +247,17 @@ class FlowFmModel(Delft3D):
         )
 
     @property
-    def dll_dir(self) -> Path:
-        return self.d3d_home / "dflowfm" / "bin" / "dflowfm"
-
-    @property
     def space(self) -> Optional[int]:
         """Number of non-boundary boxes; i.e. within-domain boxes."""
         if self.model_wrapper is None:
             return None
-        self._space: Optional[int] = (
+        self._space: Optional[np.ndarray] = (
             self.get_variable("ndxi") if self._space is None else self._space
         )
         return self._space.item()
 
     @property
-    def water_depth(self) -> np.ndarray:
+    def water_depth(self) -> Optional[np.ndarray]:
         """Water depth."""
         if self.model_wrapper is None:
             return None
@@ -279,22 +310,22 @@ class FlowFmModel(Delft3D):
             ]
         )
 
-    def environment(self):
-        """Sets the Python environment to include Delft3D-code."""
-        dirs = [
+    def get_environment_variables(self) -> List[str]:
+        """Gets the Python environment variables required to run a FlowFM model."""
+        return [
             self.d3d_home / "share" / "bin",
             self.d3d_home / "dflowfm" / "bin",
         ]
 
-        env = ";".join(map(str, dirs))
-        os.environ["PATH"] = env
-
-        print('\nEnvironment "PATH":')
-        [print(f"\t{path}") for path in dirs]
-
     def configure_model_wrapper(self):
+        """
+        Initilizes a BMIWrapper instance based on the given FlowFM parameters.
+        Configures the model wrapper, it is recommended to set the environment variables beforehand.
+        If the PATH variables does not work it is recommended copying all the contents from the share
+        directory into the dimr bin dir.
+        """
         self.model_wrapper = BMIWrapper(
-            engine=self.dll_dir.as_posix(), configfile=self.definition_file.as_posix()
+            engine=self.dll_path.as_posix(), configfile=self.definition_file.as_posix()
         )
 
 
@@ -305,12 +336,30 @@ class DimrModel(Delft3D):
     Based on a DIMR model configuration.
     """
 
-    def environment(self):
+    @root_validator
+    @classmethod
+    def check_dll_path(cls, values: dict) -> dict:
         """
-        Sets the Python environment to include Delft3D-code.
+        Although not mandatory, we need to ensure at least a default value is given to the dll path.
+        This default value is relative to the mandatory d3dhome attribute.
+
+        Args:
+            values (dict): Validated (and formatted) dictionary of values for a Delft3D object.
+
+        Returns:
+            dict: Validated dictionary with a `dll_path`.
+        """
+        dll_path_value = values.get("dll_path", None)
+        if dll_path_value is None and values.get("d3d_home", None) is not None:
+            values["dll_path"] = values["d3d_home"] / "dimr" / "bin" / "dimr_dll.dll"
+        return values
+
+    def get_environment_variables(self) -> List[str]:
+        """
+        Gets the Python environment variables required to run a Dimr model.
         """
 
-        dirs = [
+        return [
             self.d3d_home / "share" / "bin",
             self.d3d_home / "dflowfm" / "bin",
             self.d3d_home / "dimr" / "bin",
@@ -318,9 +367,6 @@ class DimrModel(Delft3D):
             self.d3d_home / "esmf" / "scripts",
             self.d3d_home / "swan" / "scripts",
         ]
-
-        env = ";".join(map(str, dirs))
-        os.environ["PATH"] = env
 
     @property
     def settings(self) -> Path:
@@ -334,10 +380,6 @@ class DimrModel(Delft3D):
             f"\n\tDelft3D home dir.  : {self.d3d_home}"
             f"{files}"
         )
-
-    @property
-    def dll_dir(self) -> Path:
-        return self.d3d_home / "dimr" / "bin" / "dimr_dll"
 
     @property
     def space(self) -> None:
@@ -362,7 +404,10 @@ class DimrModel(Delft3D):
     def configure_model_wrapper(self):
         """
         Initilizes a BMIWrapper instance based on the given DIMR parameters.
+        It is recommended to set the environment variables beforehand.
+        If the PATH variables does not work it is recommended copying all the contents from the share
+        directory into the dimr bin dir.
         """
         self.model_wrapper = BMIWrapper(
-            engine=self.dll_dir.as_posix(), configfile=self.config_file.as_posix()
+            engine=self.dll_path.as_posix(), configfile=self.config_file.as_posix()
         )
