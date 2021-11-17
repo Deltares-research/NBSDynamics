@@ -1,9 +1,10 @@
 import faulthandler
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
+
 from src.core.base_model import ExtraModel
-from typing import Optional
 
 faulthandler.enable()
 
