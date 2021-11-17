@@ -7,7 +7,7 @@ import numpy as np
 
 
 class TestCalcification:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def calc_test(self) -> Calcification:
         return Calcification(Constants())
 

@@ -8,7 +8,7 @@ from src.core.constants import Constants
 
 
 class TestTemperature:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def temp_test(self) -> Temperature:
         return Temperature(Constants(), 300, DataReshape())
 

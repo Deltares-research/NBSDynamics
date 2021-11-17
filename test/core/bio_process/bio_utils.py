@@ -4,7 +4,7 @@ from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="module", autouse=False)
 def valid_coral() -> Coral:
     """
     Fixture to generate a valid coral to be used in any tes within the bio_process mudle.

@@ -52,7 +52,7 @@ class TestMorphology:
         assert morphology.rp_optimal is None
         assert morphology.rs_optimal is None
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def mor_legacy(self) -> Morphology:
         return Morphology(
             Constants(), 1, DataReshape().variable2matrix(600, "time"), DataReshape()

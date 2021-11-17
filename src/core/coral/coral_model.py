@@ -17,7 +17,7 @@ class Coral(ExtraModel):
     """
 
     RESHAPE = DataReshape()
-    constants: Constants
+    constants: Constants = Constants()
     dc: CoralAttribute  # diameter coral plate [m]
     hc: CoralAttribute  # coral height [m]
     bc: CoralAttribute  # diameter coral base [m]

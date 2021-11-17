@@ -7,7 +7,7 @@ from src.core.coral.coral_protocol import CoralProtocol
 
 
 class TestCoralModel:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def coral_model_test(self) -> CoralProtocol:
         input_dict = dict(
             constants=Constants(),

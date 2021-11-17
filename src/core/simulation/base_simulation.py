@@ -361,7 +361,7 @@ class BaseSimulation(BaseModel, ABC):
                         )
                         sfe.velocities(self.coral, in_canopy=self.constants.fme)
                         # storm dislodgement criterion
-                        sdc = Dislodgement(self.constants)
+                        sdc = Dislodgement(constants=self.constants)
                         sdc.update(self.coral)
 
                 # # recruitment

@@ -20,7 +20,7 @@ class TestPhotosynthesis:
         assert test_photo.pfd == 1
         assert test_photo.constants == None
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def valid_photosynthesis(self) -> Photosynthesis:
         class TestConstants:
             pfd = 1
@@ -58,7 +58,7 @@ class TestPhotosynthesis:
             == "Only the quasi-steady state solution is currently implemented; use key-word 'qss'."
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def photo_legacy(self) -> Photosynthesis:
         return Photosynthesis(Constants(), 600, False, DataReshape())
 

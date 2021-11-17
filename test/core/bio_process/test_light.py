@@ -10,7 +10,7 @@ tolerance = 0.0000001
 
 
 class TestLight:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def light_test(self) -> Light:
         return Light(Constants(), 600, 0.1, 5, DataReshape())
 

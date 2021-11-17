@@ -2,18 +2,18 @@ import numpy as np
 
 from src.core.coral.coral_model import Coral
 from src.core.utils import CoralOnly
+from src.core.base_model import ExtraModel
+from src.core.constants import Constants
+from typing import Optional
 
 
-class Dislodgement:
+class Dislodgement(ExtraModel):
     """Dislodgement due to storm conditions."""
 
-    def __init__(self, constants):
-        """Dislodgement check."""
-        self.dmt = None
-        self.csf = None
-        self.survival = None
-
-        self.constants = constants
+    constants: Constants = Constants()
+    dmt: Optional[np.ndarray] = None
+    csf: Optional[np.ndarray] = None
+    survival: Optional[np.ndarray] = None
 
     def update(self, coral: Coral, survival_coefficient=1):
         """Update morphology due to storm damage.
@@ -56,7 +56,7 @@ class Dislodgement:
                 self.dmt[dislodged] / self.csf[dislodged]
             )
 
-    def dislodgement_criterion(self, coral):
+    def dislodgement_criterion(self, coral: Coral):
         """Dislodgement criterion. Returns boolean (array).
 
         :param coral: coral animal
@@ -66,11 +66,12 @@ class Dislodgement:
         self.colony_shape_factor(coral)
         return self.dmt <= self.csf
 
-    def dislodgement_mechanical_threshold(self, coral):
-        """Dislodgement Mechanical Threshold.
+    def dislodgement_mechanical_threshold(self, coral: Coral):
+        """
+        Dislodgement Mechanical Threshold.
 
-        :param coral: coral animal
-        :type coral: Coral
+        Args:
+            coral (Coral): Coral animal.
         """
         # # check input
         if not hasattr(coral.um, "__iter__"):
@@ -93,11 +94,12 @@ class Dislodgement:
         """
         return constants.sigma_t / (constants.rho_w * constants.Cd * flow_velocity ** 2)
 
-    def colony_shape_factor(self, coral):
-        """Colony Shape Factor.
+    def colony_shape_factor(self, coral: Coral):
+        """
+        Colony Shape Factor.
 
-        :param coral: coral animal
-        :type coral: Coral
+        Args:
+            coral (Coral): Coral animal.
         """
         self.csf = CoralOnly().in_space(
             coral=coral,
