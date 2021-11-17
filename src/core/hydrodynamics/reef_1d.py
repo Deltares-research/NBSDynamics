@@ -3,8 +3,8 @@ from typing import Any, Optional
 
 import numpy as np
 from scipy.optimize import fsolve
-from src.core.base_model import BaseModel
 
+from src.core.base_model import BaseModel
 from src.core.coral.coral_model import Coral
 
 

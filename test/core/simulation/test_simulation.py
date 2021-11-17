@@ -1,5 +1,4 @@
 from pathlib import Path
-from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from test.utils import TestUtils
 from typing import Any, Callable, Optional, Union
 
@@ -9,6 +8,7 @@ from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
+from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.transect import Transect
 from src.core.simulation.base_simulation import BaseSimulation, Simulation
