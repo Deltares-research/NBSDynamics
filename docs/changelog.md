@@ -1,3 +1,24 @@
+## v0.6.0 (2021-11-17)
+
+### Feat
+
+- **src/core/simulation/base_simulation.py**: Added `vanilla` simulation, adapted reef models to be pydantic
+- **src/core/hydrodynamics/transect.py**: Transect initializes now as a pydantic model. Smaller related refactorings
+- **src/core/hydrodynamics/delft3d.py**: dll_path can be now manually set by the user
+- **src/core/hydrodynamics/delft3d.py**: Now the user can input their own path to the dll to be run
+
+### Fix
+
+- **src/core/simulation/coral_delft3d_simulation.py**: Minor corrections to the outpoint definition
+- **src/core/hydrodynamics/delft3d.py**: Minor fix to xy_coordinates inital values
+- **src/core/output/output_wrapper.py**: Adapted output_wrapper to ensure an output_dir is given for all the output_model instances
+- **src/core/hydrodynamics/delft3d.py**: Renamed method, added explanation of what needs to be done
+
+### Refactor
+
+- **test/core/simulation**: Removed unnecessary class method, adapted tests, fixed failing tests
+- **src/core/simulation/base_simulation.py**: Adapted simulation logic to initate hydrodynamics in a pydantic way
+
 ## v0.5.1 (2021-11-16)
 
 ### Fix
