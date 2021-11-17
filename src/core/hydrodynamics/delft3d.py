@@ -9,6 +9,7 @@ from typing import List, Optional, Union
 import numpy as np
 from bmi.wrapper import BMIWrapper
 from pydantic import Extra
+from pydantic.class_validators import root_validator
 
 from src.core.base_model import BaseModel
 from src.core.coral.coral_model import Coral
@@ -41,7 +42,7 @@ class Delft3D(BaseModel, abc.ABC):
 
     @property
     @abstractmethod
-    def dll_dir(self) -> Path:
+    def dll_path(self) -> Path:
         """
         Returns the path to the model-specific dll of the wrapper class.
 
@@ -235,10 +236,29 @@ class FlowFmModel(Delft3D):
     Based on a FlowFM model configuration.
     """
 
+    dll_path: Optional[str]
+
     _space: Optional[int] = None
     _water_depth: Optional[np.ndarray] = None
     _x_coordinates: Optional[np.array]
     _y_coordinates: Optional[np.array]
+
+    @root_validator
+    @classmethod
+    def check_dll_path(cls, values: dict) -> dict:
+        """
+        Although not mandatory, we need to ensure at least a default value is given to the dll path.
+        This default value is relative to the mandatory d3dhome attribute.
+
+        Args:
+            values (dict): Validated (and formatted) dictionary of values for a Delft3D object.
+
+        Returns:
+            dict: Validated dictionary with a `dll_path`.
+        """
+        if "dll_path" not in values.keys():
+            values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dflowfm.dll"
+        return values
 
     @property
     def settings(self) -> str:
@@ -250,10 +270,6 @@ class FlowFmModel(Delft3D):
             f"\n\tDelft3D home dir.  : {self.d3d_home}"
             f"{files}"
         )
-
-    @property
-    def dll_dir(self) -> Path:
-        return self.d3d_home / "dflowfm" / "bin" / "dflowfm.dll"
 
     @property
     def space(self) -> Optional[int]:
@@ -333,7 +349,7 @@ class FlowFmModel(Delft3D):
         directory into the dimr bin dir.
         """
         self.model_wrapper = BMIWrapper(
-            engine=self.dll_dir.as_posix(), configfile=self.definition_file.as_posix()
+            engine=self.dll_path.as_posix(), configfile=self.definition_file.as_posix()
         )
 
 
@@ -343,6 +359,23 @@ class DimrModel(Delft3D):
     `BMIWrapper` to run its calculations.
     Based on a DIMR model configuration.
     """
+
+    @root_validator
+    @classmethod
+    def verify_dll_path(cls, values: dict) -> dict:
+        """
+        Although not mandatory, we need to ensure at least a default value is given to the dll path.
+        This default value is relative to the mandatory d3dhome attribute.
+
+        Args:
+            values (dict): Validated (and formatted) dictionary of values for a Delft3D object.
+
+        Returns:
+            dict: Validated dictionary with a `dll_path`.
+        """
+        if "dll_path" not in values.keys():
+            values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dimr_dll.dll"
+        return values
 
     def get_environment_variables(self) -> List[str]:
         """
@@ -372,10 +405,6 @@ class DimrModel(Delft3D):
         )
 
     @property
-    def dll_dir(self) -> Path:
-        return self.d3d_home / "dimr" / "bin" / "dimr_dll.dll"
-
-    @property
     def space(self) -> None:
         return None
 
@@ -400,5 +429,5 @@ class DimrModel(Delft3D):
         Initilizes a BMIWrapper instance based on the given DIMR parameters.
         """
         self.model_wrapper = BMIWrapper(
-            engine=self.dll_dir.as_posix(), configfile=self.config_file.as_posix()
+            engine=self.dll_path.as_posix(), configfile=self.config_file.as_posix()
         )
