@@ -75,7 +75,7 @@ class TestHydrodynamicProtocol:
             def finalise(self):
                 raise NotImplementedError
 
-        unbinded_class: HydrodynamicProtocol = TestBaseClass()
+        unbinded_class = TestBaseClass()
         assert isinstance(unbinded_class, HydrodynamicProtocol) is False
         binded_class: HydrodynamicProtocol = TestClass()
         assert isinstance(binded_class, HydrodynamicProtocol)
