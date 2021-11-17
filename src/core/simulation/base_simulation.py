@@ -396,13 +396,13 @@ class Simulation(BaseSimulation):
         """
         This flat Simulation type does not configure anything automatically.
         """
-        return
+        pass
 
     def configure_output(self):
         """
         This flat Simulation type does not configure anything automatically.
         """
-        return
+        pass
 
 
 # TODO: Define folder structure

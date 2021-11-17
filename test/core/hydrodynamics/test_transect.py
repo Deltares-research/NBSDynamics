@@ -45,9 +45,3 @@ class TestTransect:
         with pytest.raises(ValueError) as e_info:
             test_trans.update(coral=None, stormcat=4)
         assert str(e_info.value) == "stormcat = 4, must be either 0,1,2,3"
-
-    def test_update_with_stormcat_4_raises_valueerror(self):
-        test_trans = Transect()
-        with pytest.raises(ValueError) as e_info:
-            test_trans.update(coral=None, stormcat=4)
-        assert str(e_info.value) == "stormcat = 4, must be either 0,1,2,3"
