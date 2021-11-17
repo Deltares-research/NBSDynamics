@@ -20,102 +20,18 @@ class TestAcceptance:
     constants_input_file = "coral_input.txt"
     light_input_file = "TS_PAR.txt"
     temp_input_file = "TS_SST.txt"
-
-    @only_windows
-    def test_given_delft3d_flowfm_case_runs(self):
-        # Test based on interface_D3D.py
-        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        assert test_dir.is_dir()
-        kernels_dir = dll_repo / "kernels"
-        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
-
-        input_dir = test_dir / "input"
-        sim_run = CoralFlowFmSimulation(
-            working_dir=test_dir,
-            constants=input_dir / self.constants_input_file,
-            environment=dict(
-                light=input_dir / self.light_input_file,
-                temperature=input_dir / self.temp_input_file,
-            ),
-            coral=dict(
-                dc=0.1,
-                hc=0.1,
-                bc=0.05,
-                tc=0.05,
-                ac=0.2,
-                species_constant=1,
-            ),
-            hydrodynamics=dict(
-                working_dir=test_dir / "d3d_work",
-                d3d_home=kernels_dir,
-                update_intervals=(300, 300),
-                definition_file=test_case / "fm" / "shallow_wave.mdu",
-            ),
-            output=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict(fme=False)),
-                his_output=dict(
-                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
-                ),
-            ),
-        )
-
-        # Run simulation.
-        with pytest.raises(RuntimeError):
-            # Delft3D dlls not yet available at the repo level.
-            sim_run.initiate()
-            sim_run.run()
-            sim_run.finalise()
-
-    @only_windows
-    @pytest.mark.skip(reason="DIMR Test data not yet available.")
-    def test_given_delft3d_dimr_case_runs(self):
-        # Test based on interface_D3D.py
-        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        assert test_dir.is_dir()
-        kernels_dir = dll_repo / "kernels"
-        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
-
-        input_dir = test_dir / "input"
-        sim_run = CoralDimrSimulation(
-            working_dir=test_dir,
-            constants=input_dir / self.constants_input_file,
-            environment=dict(
-                light=input_dir / self.light_input_file,
-                temperature=input_dir / self.temp_input_file,
-            ),
-            coral=dict(
-                dc=0.1,
-                hc=0.1,
-                bc=0.05,
-                tc=0.05,
-                ac=0.2,
-                species_constant=1,
-            ),
-            hydrodynamics=dict(
-                working_dir=test_dir / "d3d_work",
-                d3d_home=kernels_dir,
-                update_intervals=(300, 300),
-                definition_file=test_case / "fm" / "shallow_wave.mdu",
-                config_file=test_case / "dimr_config.xml",
-            ),
-            output=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict(fme=False)),
-                his_output=dict(
-                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
-                ),
-            ),
-        )
-
-        # Run simulation.
-        with pytest.raises(RuntimeError):
-            # Delft3D dlls not yet available at the repo level.
-            sim_run.initiate()
-            sim_run.run()
-            sim_run.finalise()
+    only_local = pytest.mark.skipif(
+        not (TestUtils.get_external_repo("DimrDllDependencies")).is_dir(),
+        reason="Only to be run using the DimrDllDependencies external repo.",
+    )
+    transect_local = pytest.mark.skipif(
+        not (
+            TestUtils.get_local_test_data_dir("transect_case")
+            / "expected_output"
+            / "nc_files"
+        ).is_dir(),
+        reason="Only to be run to generate expected data from local machines.",
+    )
 
     def test_given_transect_case_runs(self):
         # 1. Define test data.
@@ -202,14 +118,100 @@ class TestAcceptance:
         # 5. Verify plotting can be done.
         plot_output(run_trans.output)
 
-    transect_local = pytest.mark.skipif(
-        not (
-            TestUtils.get_local_test_data_dir("transect_case")
-            / "expected_output"
-            / "nc_files"
-        ).is_dir(),
-        reason="Only to be run to generate expected data from local machines.",
-    )
+    @only_local
+    def test_given_delft3d_flowfm_case_runs(self):
+        # Test based on interface_D3D.py
+        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+        assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
+
+        input_dir = test_dir / "input"
+        sim_run = CoralFlowFmSimulation(
+            working_dir=test_dir,
+            constants=input_dir / self.constants_input_file,
+            environment=dict(
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
+            ),
+            coral=dict(
+                dc=0.1,
+                hc=0.1,
+                bc=0.05,
+                tc=0.05,
+                ac=0.2,
+                species_constant=1,
+            ),
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                update_intervals=(300, 300),
+                definition_file=test_case / "fm" / "shallow_wave.mdu",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict(fme=False)),
+                his_output=dict(
+                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
+                ),
+            ),
+        )
+
+        # Run simulation.
+        with pytest.raises(RuntimeError):
+            # Delft3D dlls not yet available at the repo level.
+            sim_run.initiate()
+            sim_run.run()
+            sim_run.finalise()
+
+    @only_local
+    def test_given_delft3d_dimr_case_runs(self):
+        # Test based on interface_D3D.py
+        test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+        assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
+
+        input_dir = test_dir / "input"
+        sim_run = CoralDimrSimulation(
+            working_dir=test_dir,
+            constants=input_dir / self.constants_input_file,
+            environment=dict(
+                light=input_dir / self.light_input_file,
+                temperature=input_dir / self.temp_input_file,
+            ),
+            coral=dict(
+                dc=0.1,
+                hc=0.1,
+                bc=0.05,
+                tc=0.05,
+                ac=0.2,
+                species_constant=1,
+            ),
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                update_intervals=(300, 300),
+                definition_file=test_case / "fm" / "shallow_wave.mdu",
+                config_file=test_case / "dimr_config.xml",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict(fme=False)),
+                his_output=dict(
+                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
+                ),
+            ),
+        )
+
+        # Run simulation.
+        with pytest.raises(RuntimeError):
+            # Delft3D dlls not yet available at the repo level.
+            sim_run.initiate()
+            sim_run.run()
+            sim_run.finalise()
 
     @transect_local
     @pytest.mark.parametrize(

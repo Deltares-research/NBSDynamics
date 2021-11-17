@@ -1,9 +1,10 @@
 import abc
 import faulthandler
 import os
+import sys
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
@@ -155,11 +156,49 @@ class Delft3D(BaseModel, abc.ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_environment_variables(self):
+    def get_environment_variables(self) -> List[str]:
         """
-        Sets the Python environment to include Delft3D-code.
+        Gets the Python environment variables to include in a Delft3D model run.
         """
         raise NotImplementedError("Implement in concrete class")
+
+    def _get_sys_environment_key(self) -> str:
+        os_key = dict(win32="PATH", linux="LD_LIBRARY_PATH", darwin="DYLD_LIBRARY_PATH")
+        env_key: str = os_key.get(sys.platform, None)
+        if env_key is None:
+            raise NotImplementedError(
+                f"System {sys.platform} not supported for a Delft3D run."
+            )
+        return env_key
+
+    def set_environment_variables(self):
+        """
+        Adds the required environment variables in to the systems path.
+        Windows: PATH
+        Linux: LD_LIBRARY_PATH
+        Os (Darwin): DYLD_LIBRARY_PATH
+        """
+        env_variables = self.get_environment_variables()
+        env_key = self._get_sys_environment_key()
+        # Set variable
+        path_var: str = os.environ[env_key]
+        for env_var in env_variables:
+            if str(env_var) not in path_var:
+                path_var += f";{str(env_var)}"
+        os.environ[env_key] = path_var
+
+    def cleanup_environment_variables(self):
+        """
+        Remove unnecessary environment variables from system.
+        """
+        env_variables = self.get_environment_variables()
+        env_key = self._get_sys_environment_key()
+        # Set variable
+        path_var: str = os.environ[env_key]
+        for env_var in env_variables:
+            if str(env_var) in path_var:
+                path_var.replace(f";{str(env_var)}", "")
+        os.environ[env_key] = path_var
 
     def initiate(self):
         """
@@ -186,6 +225,7 @@ class Delft3D(BaseModel, abc.ABC):
     def finalise(self):
         """Finalize the working model."""
         self.model_wrapper.finalize()
+        self.cleanup_environment_variables()
 
 
 class FlowFmModel(Delft3D):
@@ -279,15 +319,12 @@ class FlowFmModel(Delft3D):
             ]
         )
 
-    def set_environment_variables(self):
-        """Sets the Python environment to include Delft3D-code."""
-        dirs = [
+    def get_environment_variables(self) -> List[str]:
+        """Gets the Python environment variables required to run a FlowFM model."""
+        return [
             self.d3d_home / "share" / "bin",
             self.d3d_home / "dflowfm" / "bin",
         ]
-
-        env = ";".join(map(str, dirs))
-        os.environ["PATH"] = env
 
     def configure_model_wrapper(self):
         """
@@ -307,12 +344,12 @@ class DimrModel(Delft3D):
     Based on a DIMR model configuration.
     """
 
-    def set_environment_variables(self):
+    def get_environment_variables(self) -> List[str]:
         """
-        Sets the Python environment to include Delft3D-code.
+        Gets the Python environment variables required to run a Dimr model.
         """
 
-        dirs = [
+        return [
             self.d3d_home / "share" / "bin",
             self.d3d_home / "dflowfm" / "bin",
             self.d3d_home / "dimr" / "bin",
@@ -320,9 +357,6 @@ class DimrModel(Delft3D):
             self.d3d_home / "esmf" / "scripts",
             self.d3d_home / "swan" / "scripts",
         ]
-
-        env = ";".join(map(str, dirs))
-        os.environ["PATH"] = env
 
     @property
     def settings(self) -> Path:
