@@ -3,6 +3,7 @@ from src.core.coral.coral_model import Coral
 from src.core.utils import CoralOnly
 from src.core.constants import Constants
 
+
 class Recruitment(ExtraModel):
     """Recruitment dynamics."""
 

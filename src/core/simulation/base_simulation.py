@@ -367,7 +367,7 @@ class BaseSimulation(BaseModel, ABC):
                 # # recruitment
                 progress.set_postfix(inner_loop="coral recruitment")
                 # recruitment
-                rec = Recruitment(self.constants)
+                rec = Recruitment(constants=self.constants)
                 rec.update(self.coral)
 
                 # # export results
