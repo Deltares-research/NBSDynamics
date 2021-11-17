@@ -11,19 +11,6 @@ class CoralTransectSimulation(BaseSimulation):
 
     mode = "Transect"
 
-    @classmethod
-    def set_simulation_hydrodynamics(
-        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
-    ):
-        """
-        Sets the specific hydrodynamic attributes for a `CoralTransectSimulation`.
-
-        Args:
-            hydromodel (HydrodynamicProtocol): Hydromodel to configure.
-            dict_values (dict): Dictionary of values available for assignment.
-        """
-        pass
-
     def configure_hydrodynamics(self):
         """
         Initializes the `HydrodynamicsProtocol` model.

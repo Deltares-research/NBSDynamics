@@ -143,8 +143,7 @@ class Transect(ExtraModel):
                 * np.exp(-np.power((3.65 / T * np.sqrt(h / 9.81)), 2.1))
             )
         else:
-            msg = f"stormcat = {stormcat}, must be either 0,1,2,3"
-            raise ValueError(msg)
+            raise ValueError(f"stormcat = {stormcat}, must be either 0,1,2,3")
         if stormcat == 0:
             return mean_current_vel, wave_vel, T
         else:

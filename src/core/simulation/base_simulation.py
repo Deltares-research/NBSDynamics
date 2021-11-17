@@ -128,29 +128,9 @@ class BaseSimulation(BaseModel, ABC):
             field_values["working_dir"] = field_values.get(
                 "working_dir", values["working_dir"]
             )
-            hydrodynamics = model_type(**field_values)
-            cls.set_simulation_hydrodynamics(hydrodynamics, field_values)
-
-            return hydrodynamics
+            return model_type(**field_values)
 
         return field_values
-
-    @classmethod
-    @abstractmethod
-    def set_simulation_hydrodynamics(
-        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
-    ) -> None:
-        """
-        Abstract method that gets triggered during `validate_hydrodynamics_present` so that each `BaseSimulation` can define extra attributes.
-
-        Args:
-            hydromodel (HydrodynamicProtocol): Hydrodynamic model to set up.
-            dict_values (dict): Values given by the user to configure the model.
-
-        Raises:
-            NotImplementedError: When abstract method not defined in concrete class.
-        """
-        raise NotImplementedError
 
     @abstractmethod
     def configure_hydrodynamics(self):

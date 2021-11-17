@@ -62,8 +62,8 @@ class OutputWrapper(BaseModel):
                 out_model["output_dir"] = values["output_dir"]
             return out_model
 
-        values["map_output"] = check_output_model_dir(values["map_output"])
-        values["his_output"] = check_output_model_dir(values["his_output"])
+        values["map_output"] = check_output_model_dir(values.get("map_output", None))
+        values["his_output"] = check_output_model_dir(values.get("his_output", None))
         return values
 
     @property

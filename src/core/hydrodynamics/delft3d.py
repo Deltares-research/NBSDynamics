@@ -25,13 +25,16 @@ class Delft3D(ExtraModel, abc.ABC):
     """
 
     # Define model attributes.
-    time_step: Optional[np.datetime64]
-    model_wrapper: Optional[BMIWrapper]
-    d3d_home: Optional[Path]  # Delft3D binaries home directory.
-    working_dir: Optional[Path]  # Model working directory.
+    time_step: Optional[np.datetime64] = None
+    model_wrapper: Optional[BMIWrapper] = None
+    d3d_home: Optional[Path] = None  # Delft3D binaries home directory.
+    working_dir: Optional[Path] = None  # Model working directory.
     definition_file: Optional[Path] = None
     config_file: Optional[Path] = None
     dll_path: Optional[Path] = None
+
+    update_interval: Optional[int] = None
+    update_interval_storm: Optional[int] = None
 
     def __repr__(self):
         return "Delft3D()"
@@ -75,17 +78,6 @@ class Delft3D(ExtraModel, abc.ABC):
         if getattr(self.model_wrapper, obj) is None:
             msg = f"{obj} undefined (required for Delft3D coupling)"
             raise ValueError(msg)
-
-    def set_update_intervals(self, default: int, storm: Optional[int] = None):
-        """
-        Set update intervals
-
-        Args:
-            default (int): Default value to update.
-            storm (Optional[int], optional): Default value if none given. Defaults to None.
-        """
-        self.update_interval = default
-        self.update_interval_storm = default if storm is None else storm
 
     def reset_counters(self):
         """Reset properties for next model update."""
@@ -234,7 +226,7 @@ class FlowFmModel(Delft3D):
             dict: Validated dictionary with a `dll_path`.
         """
         dll_path_value = values.get("dll_path", None)
-        if dll_path_value is None:
+        if dll_path_value is None and values.get("d3d_home", None) is not None:
             values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dflowfm.dll"
         return values
 
@@ -352,8 +344,8 @@ class DimrModel(Delft3D):
             dict: Validated dictionary with a `dll_path`.
         """
         dll_path_value = values.get("dll_path", None)
-        if dll_path_value is None:
-            values["dll_path"] = values["d3d_home"] / "dflowfm" / "bin" / "dimr_dll.dll"
+        if dll_path_value is None and values.get("d3d_home", None) is not None:
+            values["dll_path"] = values["d3d_home"] / "dimr" / "bin" / "dimr_dll.dll"
         return values
 
     def get_environment_variables(self) -> List[str]:

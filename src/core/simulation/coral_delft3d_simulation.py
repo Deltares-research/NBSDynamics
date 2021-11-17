@@ -1,6 +1,6 @@
 from abc import ABC
+from src.core.hydrodynamics.delft3d import Delft3D
 
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 
@@ -10,20 +10,6 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
     Implements the `SimulationProtocol`
     Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
     """
-
-    @classmethod
-    def set_simulation_hydrodynamics(
-        cls, hydromodel: HydrodynamicProtocol, dict_values: dict
-    ):
-        """
-        Sets the specific hydrodynamic attributes for a `CoralDelft3DSimulation`.
-
-        Args:
-            hydromodel (HydrodynamicProtocol): Hydromodel to configure.
-            dict_values (dict): Dictionary of values available for assignment.
-        """
-        if (upd_intervals := dict_values.get("update_intervals", None)) is not None:
-            hydromodel.set_update_intervals(upd_intervals)
 
     def configure_hydrodynamics(self):
         """
