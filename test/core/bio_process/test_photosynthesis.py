@@ -6,10 +6,11 @@ import pytest
 from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
+from src.core.constants import Constants
 
 
 class TestPhotosynthesis:
-    def test_ini_photoshynthesis(self):
+    def test_init_photoshynthesis(self):
         input_dict = dict(
             constants=None, light_in=None, first_year=None, datareshape=DataReshape()
         )
@@ -56,3 +57,24 @@ class TestPhotosynthesis:
             str(e_info.value)
             == "Only the quasi-steady state solution is currently implemented; use key-word 'qss'."
         )
+
+    @pytest.fixture(autouse=True)
+    def photo_legacy(self) -> Photosynthesis:
+        return Photosynthesis(Constants(), 600, False, DataReshape())
+
+    def test_photosynthetic_light_dependency(
+        self, photo_legacy: Photosynthesis, valid_coral: Coral
+    ):
+        valid_coral.light = 600
+        photo_legacy.light_dependency(valid_coral, "qss")
+        assert float(photo_legacy.pld), pytest.approx(0.90727011)
+
+    def test_photosynthetic_flow_dependency(
+        self, photo_legacy: Photosynthesis, valid_coral: Coral
+    ):
+        valid_coral.ucm = 0.1
+        photo_legacy.flow_dependency(valid_coral)
+        assert float(photo_legacy.pfd), pytest.approx(0.94485915)
+        # core.PROCESSES.pfd = False
+        photo_legacy.flow_dependency(valid_coral)
+        assert float(photo_legacy.pfd) == 1
