@@ -2,6 +2,7 @@ import pytest
 from test.core.bio_process.bio_utils import valid_coral
 from src.core.bio_process.dislodgment import Dislodgement
 from src.core.coral.coral_model import Coral
+from src.core.utils import DataReshape
 
 
 class TestDislodgement:
@@ -45,7 +46,14 @@ class TestDislodgement:
         # TODO: Figure out whether this test is still valid, thus code should be fixed.
         # TODO: Or on the contrary the test has no meaning and therefore should be removed.
         dislodgement = Dislodgement()
-        coral = Coral(dc=[0.2, 0], hc=[0.3, 0], bc=[0.1, 0], tc=[0.15, 0], ac=[0.3, 0])
+        coral = Coral(
+            RESHAPE=DataReshape((1, 1)),
+            dc=[0.2, 0],
+            hc=[0.3, 0],
+            bc=[0.1, 0],
+            tc=[0.15, 0],
+            ac=[0.3, 0],
+        )
         dislodgement.colony_shape_factor(coral)
         answers = [40.1070456591576246, 0]
         for i, ans in enumerate(answers):
