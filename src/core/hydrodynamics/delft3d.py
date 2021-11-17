@@ -39,6 +39,11 @@ class Delft3D(ExtraModel, abc.ABC):
     def __repr__(self):
         return "Delft3D()"
 
+    @property
+    @abstractmethod
+    def space(self) -> Optional[int]:
+        raise NotImplementedError
+
     def get_variable(self, variable: str) -> Optional[WrapperVariable]:
         """
         Get variable from the model wrapper.
@@ -246,13 +251,13 @@ class FlowFmModel(Delft3D):
         """Number of non-boundary boxes; i.e. within-domain boxes."""
         if self.model_wrapper is None:
             return None
-        self._space: Optional[int] = (
+        self._space: Optional[np.ndarray] = (
             self.get_variable("ndxi") if self._space is None else self._space
         )
         return self._space.item()
 
     @property
-    def water_depth(self) -> np.ndarray:
+    def water_depth(self) -> Optional[np.ndarray]:
         """Water depth."""
         if self.model_wrapper is None:
             return None

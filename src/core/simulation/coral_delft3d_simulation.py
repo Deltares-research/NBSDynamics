@@ -19,8 +19,11 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
 
     def configure_output(self):
         first_date = self.environment.get_dates()[0]
-        xy_coordinates = self.hydrodynamics.xy_coordinates
-        outpoint = self.hydrodynamics.outpoint
+        hydromodel: Delft3D = self.hydrodynamics
+        xy_coordinates = hydromodel.xy_coordinates
+        # TODO: There should be an output definition for this model.
+        # TODO: For now just output all the points.
+        outpoint = hydromodel.x_coordinates[:] >= 0
 
         def get_output_wrapper_dict() -> dict:
             return dict(

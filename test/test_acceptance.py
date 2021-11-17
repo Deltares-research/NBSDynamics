@@ -147,8 +147,9 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
-                update_intervals=(300, 300),
                 definition_file=test_case / "fm" / "shallow_wave.mdu",
+                update_interval=300,
+                update_interval_storm=300,
             ),
             output=dict(
                 output_dir=test_dir / "output",
