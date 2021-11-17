@@ -21,14 +21,6 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
             hydromodel (HydrodynamicProtocol): Hydromodel to configure.
             dict_values (dict): Dictionary of values available for assignment.
         """
-        hydromodel.working_dir = dict_values.get("working_dir")
-        # The following assignments can't be done if None
-        if (def_file := dict_values.get("definition_file", None)) is not None:
-            hydromodel.definition_file = def_file
-        if (con_file := dict_values.get("config_file", None)) is not None:
-            hydromodel.config_file = con_file
-        if (d3d_home := dict_values.get("d3d_home", None)) is not None:
-            hydromodel.d3d_home = d3d_home
         if (upd_intervals := dict_values.get("update_intervals", None)) is not None:
             hydromodel.set_update_intervals(upd_intervals)
 

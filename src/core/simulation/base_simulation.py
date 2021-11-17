@@ -121,18 +121,15 @@ class BaseSimulation(BaseModel, ABC):
         if field_values is None:
             field_values = dict()
         if isinstance(field_values, dict):
-            hydrodynamics = HydrodynamicsFactory.get_hydrodynamic_model_type(
+            model_type = HydrodynamicsFactory.get_hydrodynamic_model_type(
                 field_values.get("mode", values["mode"])
-            )()
-            # TODO The following logic should actually be sent as arguments into the constructor
-            # TODO This will imply creating a base class (like the BaseOutput).
-            # Get a merged dictionary.
-            sim_dict = dict(list(field_values.items()) + list(values.items()))
+            )
             # Emphasize working dir from explicit definition takes preference over simulation one.
-            sim_dict["working_dir"] = field_values.get(
+            field_values["working_dir"] = field_values.get(
                 "working_dir", values["working_dir"]
             )
-            cls.set_simulation_hydrodynamics(hydrodynamics, sim_dict)
+            hydrodynamics = model_type(**field_values)
+            cls.set_simulation_hydrodynamics(hydrodynamics, field_values)
 
             return hydrodynamics
 
@@ -142,7 +139,7 @@ class BaseSimulation(BaseModel, ABC):
     @abstractmethod
     def set_simulation_hydrodynamics(
         cls, hydromodel: HydrodynamicProtocol, dict_values: dict
-    ):
+    ) -> None:
         """
         Abstract method that gets triggered during `validate_hydrodynamics_present` so that each `BaseSimulation` can define extra attributes.
 
