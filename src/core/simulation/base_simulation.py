@@ -385,6 +385,26 @@ class BaseSimulation(BaseModel, ABC):
         self.hydrodynamics.finalise()
 
 
+class Simulation(BaseSimulation):
+    """
+    Vanilla definition of the `BaseSimulation` that allows any user
+    to create their flat simulation without pre-defined values.
+    In other words, everything should be built manually.
+    """
+
+    def configure_hydrodynamics(self):
+        """
+        This flat Simulation type does not configure anything automatically.
+        """
+        return
+
+    def configure_output(self):
+        """
+        This flat Simulation type does not configure anything automatically.
+        """
+        return
+
+
 # TODO: Define folder structure
 #  > working directory
 #  > figures directory

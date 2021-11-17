@@ -1,4 +1,5 @@
 from pathlib import Path
+from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from test.utils import TestUtils
 from typing import Any, Callable, Optional, Union
 
@@ -10,7 +11,7 @@ from src.core.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.hydrodynamics.transect import Transect
-from src.core.simulation.base_simulation import BaseSimulation
+from src.core.simulation.base_simulation import BaseSimulation, Simulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
@@ -25,7 +26,7 @@ simulation_cases = [
 ]
 
 
-class TestSimulation:
+class TestBaseSimulation:
     @pytest.mark.parametrize(
         "mode_case, expected_hydro",
         [
@@ -167,3 +168,13 @@ class TestSimulation:
         model_out = BaseSimulation.validate_hydrodynamics_present(model_in, dict())
         assert isinstance(model_out, HydrodynamicProtocol)
         assert model_in == model_out
+
+
+class TestSimulation:
+    @pytest.mark.parametrize("mode", HydrodynamicsFactory.supported_modes)
+    def test_init_simulation(self, mode: HydrodynamicProtocol):
+        test_sim = Simulation(mode=mode.__name__)
+        assert isinstance(test_sim.hydrodynamics, mode)
+        # Verify abstract methods raise nothing.
+        test_sim.configure_hydrodynamics()
+        test_sim.configure_output()
