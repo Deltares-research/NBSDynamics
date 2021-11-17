@@ -1,13 +1,12 @@
+from src.core.base_model import ExtraModel
 from src.core.coral.coral_model import Coral
 from src.core.utils import CoralOnly
+from src.core.constants import Constants
 
-
-class Recruitment:
+class Recruitment(ExtraModel):
     """Recruitment dynamics."""
 
-    def __init__(self, constants):
-        """Recruitment initialize"""
-        self.constants = constants
+    constants: Constants = Constants()
 
     def update(self, coral: Coral):
         """Update coral cover / volume after spawning event.
