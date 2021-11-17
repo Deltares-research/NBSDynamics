@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any, List, Optional, Tuple
 
 import pytest
 
@@ -65,27 +65,24 @@ class TestSpaceTime:
         assert len(spacetime) == 2
         assert isinstance(spacetime, tuple)
 
-    def test_global_raise_type_error(self):
+    @pytest.mark.parametrize("value", [(int(1)), (float(1)), (str(1))])
+    def test_global_raise_type_error(self, value: Any):
         with pytest.raises(TypeError):
-            SpaceTime(int(1))
-        with pytest.raises(TypeError):
-            SpaceTime(float(1))
-        with pytest.raises(TypeError):
-            SpaceTime(str(1))
+            SpaceTime(value)
 
-    def test_global_not_raise_type_error(self):
-        SpaceTime((1, 1))
-        SpaceTime([1, 1])
+    @pytest.mark.parametrize("value", [((1, 1)), ([1, 1])])
+    def test_global_not_raise_type_error(self, value):
+        SpaceTime(value)
 
-    def test_size_error(self):
+    @pytest.mark.parametrize("value", [((1,)), ((1, 1, 1))])
+    def test_size_error(self, value: tuple):
         with pytest.raises(ValueError):
-            SpaceTime((1,))
-        with pytest.raises(ValueError):
-            SpaceTime((1, 1, 1))
+            SpaceTime(value)
 
-    def test_local_raise_type_error(self):
+    @pytest.mark.parametrize("value", [((float(1), 1))])
+    def test_local_raise_type_error(self, value):
         with pytest.raises(TypeError):
-            SpaceTime((float(1), 1))
+            SpaceTime(value)
 
     def test_return_type(self):
         assert isinstance(SpaceTime((1, 1)).spacetime, tuple)
@@ -104,30 +101,19 @@ class TestDataReshape:
         spacetime = SpaceTime().spacetime
         assert isinstance(reshape.spacetime, tuple)
         assert reshape.spacetime == spacetime
-
-    def test_default_space(self):
-        reshape = DataReshape()
-        spacetime = SpaceTime().spacetime
         assert isinstance(reshape.space, int)
         assert reshape.space == spacetime[0]
-
-    def test_default_time(self):
-        reshape = DataReshape()
-        spacetime = SpaceTime().spacetime
         assert isinstance(reshape.time, int)
         assert reshape.time == spacetime[1]
 
-    def test_set_spacetime_raise_type_error(self):
+    @pytest.mark.parametrize("value", [(int(1)), (float(1)), (str(1))])
+    def test_set_spacetime_raise_type_error(self, value: Any):
         with pytest.raises(TypeError):
-            DataReshape(int(1))
-        with pytest.raises(TypeError):
-            DataReshape(float(1))
-        with pytest.raises(TypeError):
-            DataReshape(str(1))
+            DataReshape(value)
 
-    def test_set_spacetime_not_raise_error(self):
-        DataReshape((1, 1))
-        DataReshape([1, 1])
+    @pytest.mark.parametrize("value", [((1, 1)), ([1, 1])])
+    def test_set_spacetime_not_raise_error(self, value: Any):
+        DataReshape(value)
 
     def test_variable2array(self):
         assert isinstance(DataReshape.variable2array(float(1)), np.ndarray)
@@ -137,16 +123,16 @@ class TestDataReshape:
         assert isinstance(DataReshape.variable2array((1, 1)), np.ndarray)
         assert isinstance(DataReshape.variable2array([1, 1]), np.ndarray)
 
-    def test_variable2matrix_shape_space(self):
+    @pytest.mark.parametrize(
+        "dimension, values",
+        [
+            pytest.param("space", [0, 1, 2, 4], id="Space"),
+            pytest.param("time", [0, 1, 2, 4, 8], id="Time"),
+        ],
+    )
+    def test_variable2matrix_shape(self, dimension: str, values: List[float]):
         reshape = DataReshape((4, 5))
-        var = [0, 1, 2, 4]
-        matrix = reshape.variable2matrix(var, "space")
-        assert matrix.shape == (4, 5)
-
-    def test_variable2matrix_shape_time(self):
-        reshape = DataReshape((4, 5))
-        var = [0, 1, 2, 4, 8]
-        matrix = reshape.variable2matrix(var, "time")
+        matrix = reshape.variable2matrix(values, dimension)
         assert matrix.shape == (4, 5)
 
     def test_variable2matrix_value_space(self):
@@ -165,34 +151,38 @@ class TestDataReshape:
             for i, col in enumerate(row):
                 assert col == var[i]
 
-    def test_raise_error_space(self):
+    @pytest.mark.parametrize(
+        "variable, values",
+        [
+            pytest.param("space", [0, 1, 2, 4, 8], id="Space"),
+            pytest.param("time", [0, 1, 2, 4], id="Time"),
+        ],
+    )
+    def test_variable2_matrix_raises_valueerror(
+        self, variable: str, values: List[float]
+    ):
         reshape = DataReshape((4, 5))
-        var = [0, 1, 2, 4, 8]
         with pytest.raises(ValueError):
-            reshape.variable2matrix(var, "space")
+            reshape.variable2matrix(values, variable)
 
-    def test_raise_error_time(self):
-        reshape = DataReshape((4, 5))
-        var = [0, 1, 2, 4]
-        with pytest.raises(ValueError):
-            reshape.variable2matrix(var, "time")
-
-    def test_matrix2array_space_last(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "space", None)
-        answer = [8, 8, 8, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_space_mean(self):
+    @pytest.mark.parametrize(
+        "dimension, conversion, expected_result",
+        [
+            pytest.param("space", None, [8, 8, 8, 8], id="Space-None"),
+            pytest.param("space", "mean", [3, 3, 3, 3], id="Space-Mean"),
+            pytest.param("space", "max", [8, 8, 8, 8], id="Space-Max"),
+            pytest.param("space", "min", [0, 0, 0, 0], id="Space-Min"),
+            pytest.param("space", "sum", [15, 15, 15, 15], id="Space-Sum"),
+            pytest.param("time", None, [0, 1, 2, 4, 8], id="Time-None"),
+            pytest.param("time", "min", [0, 1, 2, 4, 8], id="Time-Min"),
+            pytest.param("time", "max", [0, 1, 2, 4, 8], id="Time-Max"),
+            pytest.param("time", "mean", [0, 1, 2, 4, 8], id="Time-Mean"),
+            pytest.param("time", "sum", [0, 4, 8, 16, 32], id="Time-Sum"),
+        ],
+    )
+    def test_matrix2array(
+        self, dimension: str, conversion: Optional[str], expected_result: List[float]
+    ):
         reshape = DataReshape((4, 5))
         var = np.array(
             [
@@ -202,127 +192,6 @@ class TestDataReshape:
                 [0, 1, 2, 4, 8],
             ]
         )
-        result = reshape.matrix2array(var, "space", "mean")
-        answer = [3, 3, 3, 3]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_space_max(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "space", "max")
-        answer = [8, 8, 8, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_space_min(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "space", "min")
-        answer = [0, 0, 0, 0]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_space_sum(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "space", "sum")
-        answer = [15, 15, 15, 15]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_time_last(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "time", None)
-        answer = [0, 1, 2, 4, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_time_mean(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "time", "mean")
-        answer = [0, 1, 2, 4, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_time_max(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "time", "max")
-        answer = [0, 1, 2, 4, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_time_min(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "time", "min")
-        answer = [0, 1, 2, 4, 8]
-        for i, val in enumerate(answer):
-            assert result[i] == val
-
-    def test_matrix2array_time_sum(self):
-        reshape = DataReshape((4, 5))
-        var = np.array(
-            [
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-                [0, 1, 2, 4, 8],
-            ]
-        )
-        result = reshape.matrix2array(var, "time", "sum")
-        answer = [0, 4, 8, 16, 32]
-        for i, val in enumerate(answer):
+        result = reshape.matrix2array(var, dimension, conversion)
+        for i, val in enumerate(expected_result):
             assert result[i] == val

@@ -2,6 +2,7 @@ import pytest
 
 from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
+from src.core.utils import DataReshape
 
 
 @pytest.fixture(scope="module", autouse=False)
@@ -13,5 +14,14 @@ def valid_coral() -> Coral:
         Coral: Valid Coral object.
     """
     return Coral(
-        **dict(constants=Constants(), dc=0.2, hc=0.3, bc=0.1, tc=0.15, ac=0.3, Csp=1)
+        **dict(
+            RESHAPE=DataReshape(),
+            constants=Constants(),
+            dc=0.2,
+            hc=0.3,
+            bc=0.1,
+            tc=0.15,
+            ac=0.3,
+            Csp=1,
+        )
     )
