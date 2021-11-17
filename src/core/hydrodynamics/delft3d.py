@@ -8,10 +8,9 @@ from typing import List, Optional, Union
 
 import numpy as np
 from bmi.wrapper import BMIWrapper
-from pydantic import Extra
 from pydantic.class_validators import root_validator
 
-from src.core.base_model import BaseModel
+from src.core.base_model import ExtraModel
 from src.core.coral.coral_model import Coral
 
 faulthandler.enable()
@@ -19,18 +18,11 @@ faulthandler.enable()
 WrapperVariable = Union[float, list, tuple, np.ndarray]
 
 
-class Delft3D(BaseModel, abc.ABC):
+class Delft3D(ExtraModel, abc.ABC):
     """
     Implements the `HydrodynamicProtocol`.
     Coupling of coral_model to Delft3D using the BMI wrapper.
     """
-
-    class Config:
-        """
-        Allow this model to have extra fields defined during runtime.
-        """
-
-        extra = Extra.allow
 
     # Define model attributes.
     time_step: Optional[np.datetime64]

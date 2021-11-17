@@ -2,33 +2,30 @@ import faulthandler
 from pathlib import Path
 
 import numpy as np
+from src.core.base_model import ExtraModel
+from typing import Optional
 
 faulthandler.enable()
 
 
-class Transect:
+class Transect(ExtraModel):
     """
     Implements the `HydrodynamicProtocol`.
     Simple 1D depth transect with imposed currents and waves
     """
 
-    _home = None
+    working_dir: Optional[Path] = None
+    definition_file: Optional[Path] = None
+    config_file: Optional[Path] = None
+    time_step: Optional[np.datetime64] = None
 
-    _working_dir = None
-    _mdu = None
-    _config = None
-
-    _space = None
-    _x_coordinates = None
-    _y_coordinates = None
-    _water_depth = None
-
-    def __init__(self):
-        self.time_step = None
+    x_coordinates: Optional[np.ndarray] = None
+    y_coordinates: Optional[np.ndarray] = None
+    water_depth: Optional[np.ndarray] = None
+    outpoint: Optional[np.ndarray] = None  # Coordinates where his output is desired
 
     def __repr__(self):
-        msg = f"Transect()"
-        return msg
+        return "Transect()"
 
     @property
     def settings(self):
@@ -43,54 +40,6 @@ class Transect:
             f"{files}"
         )
         return msg
-
-    @property
-    def working_dir(self) -> Path:
-        """Model working directory."""
-        return self._working_dir
-
-    @working_dir.setter
-    def working_dir(self, folder):
-        """
-        :param folder: working directory
-        :type folder:  str
-        """
-        if not isinstance(folder, Path):
-            self._working_dir = Path(folder)
-            return
-        self._working_dir = folder
-
-    @property
-    def definition_file(self) -> Path:
-        """Delft3D's MDU-file.
-
-        :rtype: str
-        """
-        return self._mdu
-
-    @definition_file.setter
-    def definition_file(self, file_dir):
-        """
-        :param file_dir: file directory of MDU-file
-        :type file_dir: str
-        """
-        self._mdu = self.working_dir / file_dir
-
-    @property
-    def config_file(self) -> Path:
-        """Transect's config-file.
-
-        :rtype: str
-        """
-        return self._config
-
-    @config_file.setter
-    def config_file(self, file_dir):
-        """
-        :param file_dir: file directory of config-file
-        :type file_dir: str, list, tuple
-        """
-        self._config = self.working_dir / file_dir
 
     def input_check(self):
         """Check if all requested content is provided"""
@@ -112,24 +61,16 @@ class Transect:
         """Number of non-boundary boxes; i.e. within-domain boxes."""
         if self.x_coordinates is None:
             return None
-        return len(self._x_coordinates)
+        return len(self.x_coordinates)
 
     @property
-    def x_coordinates(self):
-        """Center of gravity's x-coordinates as part of `space`."""
-        return self._x_coordinates
-
-    @property
-    def y_coordinates(self):
-        """Center of gravity's y-coodinates as part of `space`."""
-        return self._y_coordinates
-
-    @property
-    def xy_coordinates(self):
-        """The (x,y)-coordinates of the model domain,
+    def xy_coordinates(self) -> np.ndarray:
+        """
+        The (x,y)-coordinates of the model domain,
         retrieved from hydrodynamic model; otherwise based on provided definition.
 
-        :rtype: numpy.ndarray
+        Returns:
+            np.ndarray: The (x,y) coordinates.
         """
         if self.x_coordinates is None or self.y_coordinates is None:
             return None
@@ -140,16 +81,6 @@ class Transect:
                 for i in range(len(self.x_coordinates))
             ]
         )
-
-    @property
-    def water_depth(self):
-        """Water depth."""
-        return self._water_depth
-
-    @property
-    def outpoint(self):
-        """coordinates where his output is desired"""
-        return self._outpoint
 
     def reset_counters(self):
         """Reset properties for next model update."""
@@ -164,56 +95,47 @@ class Transect:
         pass
 
     def initiate(self):
-        """Initialize the working model.
+        """
+        Initialize the working model.
         In this case, read the spatial configuration and the forcings
         from files. Set the computing environment.
         """
-        csv = np.genfromtxt(self.config_file, delimiter=",", skip_header=1)
-        self._x_coordinates = csv[:, 0]
-        self._y_coordinates = csv[:, 1]
-        self._water_depth = csv[:, 2]
-        self._outpoint = csv[:, 3] == 1
+        csv: np.ndarray = np.genfromtxt(self.config_file, delimiter=",", skip_header=1)
+        self.x_coordinates = csv[:, 0]
+        self.y_coordinates = csv[:, 1]
+        self.water_depth = csv[:, 2]
+        self.outpoint = csv[:, 3] == 1
 
-        self.forcings = np.genfromtxt(
+        forcings: np.ndarray = np.genfromtxt(
             self.definition_file, delimiter=",", skip_header=1
         )
-        self.stormcat = self.forcings[:, 0]
-        self.return_period = self.forcings[:, 1]
-        self.wave_height = self.forcings[:, 2]
-        self.wave_period = self.forcings[:, 3]
-        self.wave_angle = self.forcings[:, 4]
-        self.max_curr_vel = self.forcings[:, 5]
+        self.stormcat = forcings[:, 0]
+        self.return_period = forcings[:, 1]
+        self.wave_height = forcings[:, 2]
+        self.wave_period = forcings[:, 3]
+        self.wave_angle = forcings[:, 4]
+        self.max_curr_vel = forcings[:, 5]
 
     def update(self, coral, stormcat=0):
-        """Update the model, which is just knowing the waves"""
-        mean_current_vel = 0
-        if stormcat in [0, 1, 2, 3]:
-            Hs = self.wave_height[stormcat]
-            T = self.wave_period[stormcat]
-            max_current_vel = self.max_curr_vel[stormcat]
-            h = self._water_depth
-            wave_vel = (
-                Hs
-                / 4
-                * np.sqrt(9.81 / h)
-                * np.exp(-np.power((3.65 / T * np.sqrt(h / 9.81)), 2.1))
-            )
-        else:
-            msg = f"stormcat = {stormcat}, must be either 0,1,2,3"
-            raise ValueError(msg)
-        if stormcat == 0:
-            return mean_current_vel, wave_vel, T
-        else:
-            return max_current_vel, wave_vel, T
+        """
+        Update the model, which is just knowing the waves
 
-    def update_orbital(self, stormcat=0):
-        """Update the model, which is just knowing the waves"""
+        Args:
+            coral (Coral): Coral morphology to use.
+            stormcat (int, optional): Storm category. Defaults to 0.
+
+        Raises:
+            ValueError: When stormcat not in [0,3] range.
+
+        Returns:
+            Tuple: Tuple containing calculated current velocity, wave velocity and wave period.
+        """
         mean_current_vel = 0
         if stormcat in [0, 1, 2, 3]:
             Hs = self.wave_height[stormcat]
             T = self.wave_period[stormcat]
             max_current_vel = self.max_curr_vel[stormcat]
-            h = self._water_depth
+            h = self.water_depth
             wave_vel = (
                 Hs
                 / 4

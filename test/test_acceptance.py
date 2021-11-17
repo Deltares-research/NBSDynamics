@@ -62,7 +62,6 @@ class TestAcceptance:
                 dates=("2000-01-01", "2100-01-01"),
             ),
             hydrodynamics=dict(
-                mode="Transect",
                 definition_file=input_dir / "TS_waves.txt",
                 config_file=input_dir / "config.csv",
             ),
@@ -155,7 +154,8 @@ class TestAcceptance:
                 output_dir=test_dir / "output",
                 map_output=dict(output_params=dict(fme=False)),
                 his_output=dict(
-                    xy_stations=np.array([0, 0]), output_params=dict(fme=False)
+                    xy_stations=np.array([[0, 0], [1, 1]]),
+                    output_params=dict(fme=False),
                 ),
             ),
         )
