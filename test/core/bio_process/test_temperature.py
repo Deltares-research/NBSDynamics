@@ -1,21 +1,29 @@
+import pytest
 from test.core.bio_process.bio_utils import valid_coral
 
 from src.core.bio_process.temperature import Temperature
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
+from src.core.constants import Constants
 
 
 class TestTemperature:
-    def test_coral_temperature(self, valid_coral: Coral):
-        class TestConstants:
-            tme = 4.2
-            ap = 1
-            k = 2
-            K0 = 3
+    @pytest.fixture(autouse=True)
+    def temp_test(self) -> Temperature:
+        return Temperature(Constants(), 300, DataReshape())
 
-        test_temp = Temperature(TestConstants(), 42, DataReshape())
-        valid_coral.temp = 42
-        valid_coral.delta_t = 2.4
-        valid_coral.light = 4.2
-        test_temp.coral_temperature(valid_coral)
-        assert valid_coral.temp[0][0] == 43.68
+    def test_initiation(self, temp_test: Temperature):
+        assert temp_test.T == 300
+
+    def test_coral_temperature(self, temp_test: Temperature, valid_coral: Coral):
+        valid_coral.delta_t = 0.001
+        valid_coral.light = 600
+        temp_test.coral_temperature(valid_coral)
+        assert float(valid_coral.temp), pytest.approx(300.00492692)
+
+    def test_no_tme(self, temp_test: Temperature, valid_coral: Coral):
+        # core.PROCESSES.tme = False
+        valid_coral.delta_t = 0.001
+        valid_coral.light = 600
+        temp_test.coral_temperature(valid_coral)
+        assert float(valid_coral.temp), pytest.approx(300)
