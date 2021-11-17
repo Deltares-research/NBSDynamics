@@ -41,6 +41,9 @@ class TestDislodgement:
 
     @pytest.mark.skip(reason="Test failing due to difference is sizes.")
     def test_csf2(self):
+        # TODO: This is a legacy test.
+        # TODO: Figure out whether this test is still valid, thus code should be fixed.
+        # TODO: Or on the contrary the test has no meaning and therefore should be removed.
         dislodgement = Dislodgement()
         coral = Coral(dc=[0.2, 0], hc=[0.3, 0], bc=[0.1, 0], tc=[0.15, 0], ac=[0.3, 0])
         dislodgement.colony_shape_factor(coral)
