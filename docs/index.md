@@ -20,22 +20,22 @@ The project is currently being structured as follows:
 Currently versioning is done with the help of [`commitizen`](https://commitizen-tools.github.io/commitizen/) using a tag system of v.Major.Minor.Patch . A the [`changelog.md`](changelog.md) is generated automatically.
 
 ## Project architecture
-At the moment of this edition (version v.0.4.0), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
+At the moment of this edition (version v.0.5.1), the project has undergone several refactorings and is divided in different modules and components as explained in the 'Project layout' section.
 
 A summary of the architecture can be seen in the following 'reduced' class diagram:
-![`Class diagram v.0.4.0`](./diagrams/general_class_diagram.png)
+![`Class diagram`](./diagrams/general_class_diagram-GeneralClassDiagram.png)
 
 ### SimulationProtocol
-![`SimulationProtocol v.0.4.0`](./diagrams/simulation_protocol.png)
+![`SimulationProtocol`](./diagrams/general_class_diagram-SimulationProtocol.png)
 
 ### HydrodynamicProtocol
-![`HydrodynamicProtocol v.0.4.0`](./diagrams/hydrodynamic_protocol.png)
+![`HydrodynamicProtocol`](./diagrams/general_class_diagram-HydrodynamicProtocol.png)
 
 ### CoralProtocol
-![`CoralProtocol v.0.4.0`](./diagrams/coral_protocol.png)
+![`CoralProtocol`](./diagrams/general_class_diagram-CoralProtocol.png)
 
 ### OutputProtocol
-![`OutputProtocol v.0.4.0`](./diagrams/output_protocol.png)
+![`OutputProtocol`](./diagrams/general_class_diagram-OutputProtocol.png)
 
 
 ## CoralModel
