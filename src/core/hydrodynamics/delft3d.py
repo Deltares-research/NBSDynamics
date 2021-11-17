@@ -319,8 +319,9 @@ class FlowFmModel(Delft3D):
 
     def configure_model_wrapper(self):
         """
+        Initilizes a BMIWrapper instance based on the given FlowFM parameters.
         Configures the model wrapper, it is recommended to set the environment variables beforehand.
-        If the PATH variables does not work it is recommended copying all t he contents from the share
+        If the PATH variables does not work it is recommended copying all the contents from the share
         directory into the dimr bin dir.
         """
         self.model_wrapper = BMIWrapper(
@@ -403,6 +404,9 @@ class DimrModel(Delft3D):
     def configure_model_wrapper(self):
         """
         Initilizes a BMIWrapper instance based on the given DIMR parameters.
+        It is recommended to set the environment variables beforehand.
+        If the PATH variables does not work it is recommended copying all the contents from the share
+        directory into the dimr bin dir.
         """
         self.model_wrapper = BMIWrapper(
             engine=self.dll_path.as_posix(), configfile=self.config_file.as_posix()
