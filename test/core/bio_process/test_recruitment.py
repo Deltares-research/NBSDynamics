@@ -1,11 +1,11 @@
 from test.core.bio_process.bio_utils import valid_coral
 
+import numpy as np
 import pytest
 
 from src.core.bio_process.recruitment import Recruitment
-from src.core.coral.coral_model import Coral
 from src.core.constants import Constants
-import numpy as np
+from src.core.coral.coral_model import Coral
 
 
 class TestRecruitment:

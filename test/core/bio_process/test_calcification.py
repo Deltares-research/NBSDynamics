@@ -1,9 +1,11 @@
-import pytest
 from test.core.bio_process.bio_utils import valid_coral
+
+import numpy as np
+import pytest
+
 from src.core.bio_process.calcification import Calcification
 from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
-import numpy as np
 
 
 class TestCalcification:

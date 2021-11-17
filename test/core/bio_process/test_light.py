@@ -1,10 +1,12 @@
+from test.core.bio_process.bio_utils import valid_coral
+
+import numpy as np
 import pytest
+
 from src.core.bio_process.light import Light
+from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
-from src.core.constants import Constants
-import numpy as np
-from test.core.bio_process.bio_utils import valid_coral
 
 tolerance = 0.0000001
 

@@ -1,5 +1,7 @@
-import pytest
 from test.core.bio_process.bio_utils import valid_coral
+
+import pytest
+
 from src.core.bio_process.dislodgment import Dislodgement
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape

@@ -1,10 +1,11 @@
+from typing import Optional
+
 import numpy as np
 
-from src.core.coral.coral_model import Coral
-from src.core.utils import CoralOnly
 from src.core.base_model import ExtraModel
 from src.core.constants import Constants
-from typing import Optional
+from src.core.coral.coral_model import Coral
+from src.core.utils import CoralOnly
 
 
 class Dislodgement(ExtraModel):
