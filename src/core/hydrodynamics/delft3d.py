@@ -225,8 +225,8 @@ class FlowFmModel(Delft3D):
 
     _space: Optional[int] = None
     _water_depth: Optional[np.ndarray] = None
-    _x_coordinates: Optional[np.array]
-    _y_coordinates: Optional[np.array]
+    _x_coordinates: Optional[np.array] = None
+    _y_coordinates: Optional[np.array] = None
 
     @root_validator
     @classmethod

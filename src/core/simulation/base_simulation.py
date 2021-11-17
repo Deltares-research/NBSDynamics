@@ -242,8 +242,7 @@ class BaseSimulation(BaseModel, ABC):
         if self.output.defined:
             self.output.initialize(self.coral)
         else:
-            msg = "WARNING: No output defined, so none exported."
-            print(msg)
+            print("WARNING: No output defined, so none exported.")
 
         xy = self.hydrodynamics.xy_coordinates
 
