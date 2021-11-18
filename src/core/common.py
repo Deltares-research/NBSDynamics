@@ -15,7 +15,7 @@ class CommonConstants(Constants):
 
     _instance: Constants = None
 
-    def __new__(cls: Type[Constants]) -> Constants:
+    def __new__(cls: Type[Constants], **kwargs) -> Constants:
         """
         Overriding new method to ensure this class behaves as s singleton.
 
@@ -26,7 +26,7 @@ class CommonConstants(Constants):
             Constants: Singleton for `CommonConstants`
         """
         if cls._instance == None:
-            cls._instance = Constants().__new__(cls)
+            cls._instance = Constants(**kwargs).__new__(cls)
         return cls._instance
 
 
