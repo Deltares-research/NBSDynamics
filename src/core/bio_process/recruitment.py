@@ -1,8 +1,8 @@
 from src.core import RESHAPE, CommonConstants
 from src.core.base_model import ExtraModel
 from src.core.common.constants import _Constants as Constants
-from src.core.coral.coral_only import CoralOnly
 from src.core.coral.coral_model import Coral
+from src.core.coral.coral_only import CoralOnly
 
 
 class Recruitment(ExtraModel):

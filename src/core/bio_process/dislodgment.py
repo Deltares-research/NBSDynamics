@@ -1,10 +1,11 @@
 from typing import Optional
 
 import numpy as np
+
 from src.core import CommonConstants
 from src.core.base_model import ExtraModel
-from src.core.common.space_time import CoralOnly
 from src.core.common.constants import _Constants as Constants
+from src.core.common.space_time import CoralOnly
 from src.core.coral.coral_model import Coral
 
 
