@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
+from src.core import RESHAPE
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core import RESHAPE
 
 
 class Photosynthesis:
@@ -100,6 +100,7 @@ class Photosynthesis:
         :type env: Environment
         :type year: int
         """
+        _reshape = RESHAPE()
 
         def thermal_acc():
             """Thermal-acclimation."""
@@ -108,18 +109,18 @@ class Photosynthesis:
                     env.tmeMMMmin = (
                         pd.DataFrame(
                             data=pd.concat(
-                                [env.temp_mmm["min"]] * RESHAPE().space, axis=1
+                                [env.temp_mmm["min"]] * _reshape.space, axis=1
                             ).values,
-                            columns=[np.arange(RESHAPE().space)],
+                            columns=[np.arange(_reshape.space)],
                         )
                         + coral.dTc
                     )
                     env.tmeMMMmax = (
                         pd.DataFrame(
                             data=pd.concat(
-                                [env.temp_mmm["max"]] * RESHAPE().space, axis=1
+                                [env.temp_mmm["max"]] * _reshape.space, axis=1
                             ).values,
-                            columns=[np.arange(RESHAPE().space)],
+                            columns=[np.arange(_reshape.space)],
                         )
                         + coral.dTc
                     )

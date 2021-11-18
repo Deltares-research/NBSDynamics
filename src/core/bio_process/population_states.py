@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.core.coral.coral_model import Coral
 from src.core import RESHAPE
+from src.core.coral.coral_model import Coral
 
 
 class PopulationStates:
@@ -24,9 +24,10 @@ class PopulationStates:
         :param coral: coral animal
         :type coral: Coral
         """
-        coral.pop_states = np.zeros((*RESHAPE().spacetime, 4))
-        for n in range(RESHAPE().time):
-            photosynthesis = np.zeros(RESHAPE().space)
+        _reshape = RESHAPE()
+        coral.pop_states = np.zeros((*_reshape.spacetime, 4))
+        for n in range(_reshape.time):
+            photosynthesis = np.zeros(_reshape.space)
             photosynthesis[coral.cover > 0.0] = coral.photo_rate[
                 coral.cover > 0.0, n
             ]  # 21_09 have changed coral.cover>0 to .0.

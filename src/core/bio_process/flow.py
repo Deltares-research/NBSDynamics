@@ -1,16 +1,14 @@
 import numpy as np
 from scipy.optimize import newton
 
-from src.core.common.space_time import CoralOnly, DataReshape
 from src.core import RESHAPE
+from src.core.common.space_time import CoralOnly, DataReshape
 
 
 class Flow:
     """Flow micro-environment."""
 
-    def __init__(
-        self, constants, u_current, u_wave, h, peak_period
-    ):
+    def __init__(self, constants, u_current, u_wave, h, peak_period):
         """
         :param u_current: current flow velocity [m s-1]
         :param u_wave: wave flow velocity [m s-1]
@@ -22,10 +20,11 @@ class Flow:
         :type h: float, list, tuple, numpy.ndarray
         :type peak_period: float, list, tuple, numpy.ndarray
         """
-        self.uc = RESHAPE().variable2array(u_current)
-        self.uw = RESHAPE().variable2array(u_wave)
-        self.h = RESHAPE().variable2matrix(h, "space")
-        self.Tp = RESHAPE().variable2array(peak_period)
+        _reshape = RESHAPE()
+        self.uc = _reshape.variable2array(u_current)
+        self.uw = _reshape.variable2array(u_wave)
+        self.h = _reshape.variable2matrix(h, "space")
+        self.Tp = _reshape.variable2array(peak_period)
         self.active = False if u_current is None and u_wave is None else True
         self.constants = constants
 

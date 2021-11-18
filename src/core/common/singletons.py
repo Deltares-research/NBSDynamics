@@ -3,7 +3,7 @@ This file is intended to contain all the common classes used as unique object
 throughout the `NBSDynamics` project.
 Although these classes are defined elsewhere, here we implement them as singletons.
 """
-from typing import Type, Optional
+from typing import Optional, Type
 
 from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape

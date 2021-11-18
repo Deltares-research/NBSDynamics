@@ -1,8 +1,8 @@
 from test.core.bio_process.bio_utils import (
     coral_2x2,
-    valid_coral,
-    matrix_2x2,
     matrix_1x1,
+    matrix_2x2,
+    valid_coral,
 )
 
 import pytest

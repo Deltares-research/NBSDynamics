@@ -3,10 +3,10 @@ from typing import Dict, Optional, Union
 import numpy as np
 from pydantic import validator
 
+from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly, DataReshape
-from src.core import RESHAPE
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -196,13 +196,14 @@ class Coral(ExtraModel):
         Args:
             cover (Optional[np.ndarray]): Custom coral definition.
         """
+        _reshape = RESHAPE()
         if cover is not None:
-            cover = RESHAPE().variable2array(cover)
-            if not cover.shape[0] == RESHAPE().space:
-                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {RESHAPE().space}."
+            cover = _reshape.variable2array(cover)
+            if not cover.shape[0] == _reshape.space:
+                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {_reshape.space}."
                 raise ValueError(msg)
         else:
-            cover = np.ones(RESHAPE().space)
+            cover = np.ones(_reshape.space)
 
         self.p0 = np.array(
             [

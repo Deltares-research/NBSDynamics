@@ -1,7 +1,8 @@
 import numpy as np
 
-from src.core.coral.coral_model import Coral
 from src.core import RESHAPE
+from src.core.coral.coral_model import Coral
+
 
 class Morphology:
     """Morphological development."""
@@ -22,15 +23,16 @@ class Morphology:
         :type light_in: float, int, list, tuple, numpy.ndarray
         :type dt_year: float, int
         """
+        _reshape = RESHAPE
         try:
             _ = len(calc_sum[0])
         except TypeError:
             self.calc_sum = calc_sum
         else:
-            self.calc_sum = RESHAPE().matrix2array(calc_sum, "space", "sum")
+            self.calc_sum = _reshape.matrix2array(calc_sum, "space", "sum")
         self.dt_year = dt_year
 
-        self.I0 = RESHAPE().variable2matrix(light_in, "time")
+        self.I0 = _reshape.variable2matrix(light_in, "time")
         self.vol_increase = 0
 
         self.constants = constants

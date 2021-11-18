@@ -2,9 +2,10 @@ from typing import Union
 
 import numpy as np
 
+from src.core import RESHAPE
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly, DataReshape
-from src.core import RESHAPE
+
 LightVariable = Union[float, list, tuple, np.ndarray]
 
 
@@ -28,9 +29,10 @@ class Light:
             depth (LightVariable): water depth [m]
             datareshape (DataReshape): Core reshape matrix class.
         """
-        self.I0 = RESHAPE().variable2matrix(light_in, "time")
-        self.Kd = RESHAPE().variable2matrix(lac, "time")
-        self.h = RESHAPE().variable2matrix(depth, "space")
+        _reshape = RESHAPE()
+        self.I0 = _reshape.variable2matrix(light_in, "time")
+        self.Kd = _reshape.variable2matrix(lac, "time")
+        self.h = _reshape.variable2matrix(depth, "space")
         self.constants = constants
 
     def rep_light(self, coral):
