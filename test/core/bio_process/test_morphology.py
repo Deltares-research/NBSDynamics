@@ -3,9 +3,9 @@ from test.core.bio_process.bio_utils import valid_coral, coral_2x2
 import pytest
 
 from src.core.bio_process.morphology import Morphology
+from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
-from src.core.constants import Constants
 
 
 class TestMorphology:
