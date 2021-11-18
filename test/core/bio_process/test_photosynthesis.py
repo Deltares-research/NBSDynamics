@@ -1,4 +1,4 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral, matrix_2x2
+from test.core.bio_process.bio_utils import coral_2x2, matrix_1x1, valid_coral, matrix_2x2
 
 import numpy as np
 import pytest
@@ -10,10 +10,9 @@ from src.core.coral.coral_model import Coral
 
 
 class TestPhotosynthesis:
-    def test_init_photoshynthesis(self):
-        input_dict = dict(
-            constants=None, light_in=None, first_year=None, datareshape=DataReshape()
-        )
+    def test_init_photoshynthesis(self, matrix_1x1: DataReshape):
+        assert matrix_1x1.spacetime == (1,1)
+        input_dict = dict(constants=None, light_in=None, first_year=None)
         test_photo = Photosynthesis(**input_dict)
         assert test_photo.pld == 1
         assert test_photo.ptd == 1
@@ -21,17 +20,16 @@ class TestPhotosynthesis:
         assert test_photo.constants == None
 
     @pytest.fixture(autouse=False)
-    def valid_photosynthesis(self) -> Photosynthesis:
+    def valid_photosynthesis(self, matrix_1x1: DataReshape) -> Photosynthesis:
         class TestConstants:
             pfd = 1
             pfd_min = 0
             ucr = 2
-
+        assert matrix_1x1.spacetime == (1,1)
         input_dict = dict(
             constants=TestConstants(),
             light_in=None,
             first_year=None,
-            datareshape=DataReshape(),
         )
         return Photosynthesis(**input_dict)
 
@@ -59,8 +57,9 @@ class TestPhotosynthesis:
         )
 
     @pytest.fixture(autouse=False)
-    def photo_legacy(self) -> Photosynthesis:
-        return Photosynthesis(Constants(), 600, False, DataReshape())
+    def photo_legacy(self, matrix_1x1: DataReshape) -> Photosynthesis:
+        assert matrix_1x1.spacetime == (1,1)
+        return Photosynthesis(Constants(), 600, False)
 
     def test_photosynthetic_light_dependency(
         self, photo_legacy: Photosynthesis, valid_coral: Coral
@@ -88,12 +87,13 @@ class TestPhotosynthesis2x2:
     """
 
     @pytest.fixture(autouse=False)
-    def photo_2x2(self) -> Photosynthesis:
-        return Photosynthesis(Constants(), [600, 600], False, DataReshape((2, 2)))
+    def photo_2x2(self, matrix_2x2: DataReshape) -> Photosynthesis:
+        assert matrix_2x2.spacetime == (2, 2)
+        return Photosynthesis(Constants(), [600, 600], False)
 
-    def test_initiation(self, photo_2x2: Photosynthesis):
-        for i in range(photo_2x2.datareshape.space):
-            for j in range(photo_2x2.datareshape.time):
+    def test_initiation(self, photo_2x2: Photosynthesis, matrix_2x2: DataReshape):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(photo_2x2.I0[i, j]) == 600
         assert photo_2x2.first_year is False
         assert float(photo_2x2.pld) == 1

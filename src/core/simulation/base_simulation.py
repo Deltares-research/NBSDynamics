@@ -287,7 +287,6 @@ class BaseSimulation(BaseModel, ABC):
                     light_in=time_series_year(self.environment.light, years[i]),
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
-                    datareshape=RESHAPE(),
                 )
                 lme.rep_light(self.coral)
                 # flow micro-environment
@@ -297,7 +296,6 @@ class BaseSimulation(BaseModel, ABC):
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
                     peak_period=wave_per,
-                    datareshape=RESHAPE(),
                 )
                 fme.velocities(self.coral, in_canopy=self.constants.fme)
                 fme.thermal_boundary_layer(self.coral)
@@ -307,7 +305,6 @@ class BaseSimulation(BaseModel, ABC):
                     temperature=time_series_year(
                         self.environment.temp_kelvin, years[i]
                     ),
-                    datareshape=RESHAPE(),
                 )
                 tme.coral_temperature(self.coral)
 
@@ -318,7 +315,6 @@ class BaseSimulation(BaseModel, ABC):
                     constants=self.constants,
                     light_in=time_series_year(self.environment.light, years[i]),
                     first_year=True if i == 0 else False,
-                    datareshape=RESHAPE(),
                 )
                 phd.photo_rate(self.coral, self.environment, years[i])
                 # population states
@@ -336,7 +332,6 @@ class BaseSimulation(BaseModel, ABC):
                     constants=self.constants,
                     calc_sum=self.coral.calc.sum(axis=1),
                     light_in=time_series_year(self.environment.light, years[i]),
-                    datareshape=RESHAPE(),
                 )
                 mor.update(self.coral)
 
@@ -358,7 +353,6 @@ class BaseSimulation(BaseModel, ABC):
                             u_wave=wave_vel,
                             h=self.hydrodynamics.water_depth,
                             peak_period=wave_per,
-                            datareshape=RESHAPE(),
                         )
                         sfe.velocities(self.coral, in_canopy=self.constants.fme)
                         # storm dislodgement criterion

@@ -1,10 +1,9 @@
-from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
 from src.core import RESHAPE
 
 
 class Temperature:
-    def __init__(self, constants, temperature, datareshape: DataReshape):
+    def __init__(self, constants, temperature):
         """
         Thermal micro-environment.
 
@@ -13,7 +12,7 @@ class Temperature:
         temperature : numeric
             Temperature of water [K].
         """
-        self.T = datareshape.variable2matrix(temperature, "time")
+        self.T = RESHAPE().variable2matrix(temperature, "time")
         self.constants = constants
 
     def coral_temperature(self, coral: Coral):

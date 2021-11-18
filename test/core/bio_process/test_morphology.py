@@ -1,4 +1,9 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral, matrix_2x2
+from test.core.bio_process.bio_utils import (
+    coral_2x2,
+    valid_coral,
+    matrix_2x2,
+    matrix_1x1,
+)
 
 import pytest
 
@@ -10,8 +15,9 @@ from src.core.coral.coral_model import Coral
 
 class TestMorphology:
     @pytest.fixture
-    def valid_morphology(self) -> Morphology:
-        return Morphology(2.4, 2.4, 2.4, DataReshape(), 1)
+    def valid_morphology(self, matrix_1x1: DataReshape) -> Morphology:
+        assert matrix_1x1.spacetime == (1,1)
+        return Morphology(2.4, 2.4, 2.4, 1)
 
     def test_set_rf_optimal_raises_typeerror(self, valid_morphology: Morphology):
         with pytest.raises(TypeError) as e_info:
@@ -41,8 +47,9 @@ class TestMorphology:
             valid_morphology.ratio_update(valid_coral, ratio_value)
         assert str(e_info.value) == "notARatio not in ('rf', 'rp', 'rs')."
 
-    def test_initiation(self):
-        morphology = Morphology(Constants(), 1, 600, DataReshape())
+    def test_initiation(self, matrix_1x1: DataReshape):
+        assert matrix_1x1.spacetime == (1, 1)
+        morphology = Morphology(Constants(), 1, 600)
         assert morphology.calc_sum == 1
         assert morphology.I0 == 600
         assert morphology.dt_year == 1
@@ -53,13 +60,11 @@ class TestMorphology:
         assert morphology.rs_optimal is None
 
     @pytest.fixture(autouse=False)
-    def mor_legacy(self) -> Morphology:
-        return Morphology(
-            Constants(), 1, DataReshape().variable2matrix(600, "time"), DataReshape()
-        )
+    def mor_legacy(self, matrix_1x1: DataReshape) -> Morphology:
+        return Morphology(Constants(), 1, matrix_1x1.variable2matrix(600, "time"))
 
     def test_calc_sum(self):
-        morphology = Morphology(Constants(), [1, 1], 600, DataReshape())
+        morphology = Morphology(Constants(), [1, 1], 600)
         answer = [1, 1]
         for i, val in enumerate(answer):
             assert morphology.calc_sum[i] == val
@@ -106,17 +111,14 @@ class TestMorphology2x2:
     """
 
     @pytest.fixture(autouse=False)
-    def reshape_2x2(self) -> DataReshape:
-        return DataReshape((2, 2))
+    def mor_2x2(self, matrix_2x2: DataReshape) -> Morphology:
+        assert matrix_2x2.spacetime == (2, 2)
+        return Morphology(Constants(), [1, 1], [600, 600])
 
-    @pytest.fixture(autouse=False)
-    def mor_2x2(self, reshape_2x2: DataReshape) -> Morphology:
-        return Morphology(Constants(), [1, 1], [600, 600], reshape_2x2)
-
-    def test_initiation(self, mor_2x2: Morphology, reshape_2x2: DataReshape):
-        for i in range(reshape_2x2.space):
+    def test_initiation(self, mor_2x2: Morphology, matrix_2x2: DataReshape):
+        for i in range(matrix_2x2.space):
             assert mor_2x2.calc_sum[i] == 1
-            for j in range(reshape_2x2.time):
+            for j in range(matrix_2x2.time):
                 assert mor_2x2.I0[i, j] == 600
         assert mor_2x2.dt_year == 1
         assert mor_2x2.vol_increase == 0
@@ -125,9 +127,9 @@ class TestMorphology2x2:
         assert mor_2x2.rp_optimal is None
         assert mor_2x2.rs_optimal is None
 
-    def test_calc_sum_init1(self, reshape_2x2: DataReshape):
-        morphology = Morphology(Constants(), [[1, 1], [1, 1]], [600, 600], reshape_2x2)
-        for i in range(reshape_2x2.space):
+    def test_calc_sum_init1(self, matrix_2x2: DataReshape):
+        morphology = Morphology(Constants(), [[1, 1], [1, 1]], [600, 600])
+        for i in range(matrix_2x2.space):
             assert morphology.calc_sum[i] == 2
 
     @pytest.mark.skip(reason="Legacy test.")
