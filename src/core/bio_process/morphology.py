@@ -23,7 +23,7 @@ class Morphology:
         :type light_in: float, int, list, tuple, numpy.ndarray
         :type dt_year: float, int
         """
-        _reshape = RESHAPE
+        _reshape = RESHAPE()
         try:
             _ = len(calc_sum[0])
         except TypeError:

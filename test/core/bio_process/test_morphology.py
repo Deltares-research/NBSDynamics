@@ -17,7 +17,7 @@ class TestMorphology:
     @pytest.fixture
     def valid_morphology(self, matrix_1x1: DataReshape) -> Morphology:
         assert matrix_1x1.spacetime == (1, 1)
-        return Morphology(2.4, 2.4, 2.4, 1)
+        return Morphology(constants=Constants(), calc_sum=2.4, light_in=2.4, dt_year=1)
 
     def test_set_rf_optimal_raises_typeerror(self, valid_morphology: Morphology):
         with pytest.raises(TypeError) as e_info:
@@ -69,9 +69,11 @@ class TestMorphology:
         for i, val in enumerate(answer):
             assert morphology.calc_sum[i] == val
 
-    def test_optimal_ratios(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light = DataReshape().variable2matrix(600, "time")
-        valid_coral.ucm = DataReshape().variable2array(0.1)
+    def test_optimal_ratios(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
+        valid_coral.light = matrix_1x1.variable2matrix(600, "time")
+        valid_coral.ucm = matrix_1x1.variable2array(0.1)
 
         ratios = ("rf", "rp", "rs")
         answers = [
@@ -86,15 +88,17 @@ class TestMorphology:
                 answers[i]
             )
 
-    def test_volume_increase(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light_bc = DataReshape().variable2matrix(0.3, "time")
+    def test_volume_increase(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
+        valid_coral.light_bc = matrix_1x1.variable2matrix(0.3, "time")
         mor_legacy.delta_volume(valid_coral)
         assert float(mor_legacy.vol_increase), pytest.approx(8.4375e-6)
 
-    def test_morphology_update(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light = DataReshape().variable2matrix(600, "time")
-        valid_coral.ucm = DataReshape().variable2array(0.1)
-        valid_coral.light_bc = DataReshape().variable2matrix(0.3, "time")
+    def test_morphology_update(self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1:DataReshape):
+        valid_coral.light = matrix_1x1.variable2matrix(600, "time")
+        valid_coral.ucm = matrix_1x1.variable2array(0.1)
+        valid_coral.light_bc = matrix_1x1.variable2matrix(0.3, "time")
         # morphology.delta_volume(coral)
         for ratio in ("rf", "rp", "rs"):
             setattr(mor_legacy, f"{ratio}_optimal", valid_coral)

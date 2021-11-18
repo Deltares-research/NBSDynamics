@@ -1,3 +1,4 @@
+from _pytest.fixtures import fixture
 from src.core.common.singletons import RESHAPE, CommonConstants
 from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
@@ -17,6 +18,11 @@ class TestCommonConstants:
 
 
 class TestRESHAPE:
+    @fixture(autouse=True)
+    def reset_RESHAPE(self):
+        # Force reshape to initiate.
+        RESHAPE._instance = None
+
     def test_RESHAPE_as_singleton(self):
         const_0 = RESHAPE()
         const_1 = RESHAPE()
