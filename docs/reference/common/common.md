@@ -8,3 +8,6 @@
 
 ### SpaceTime
 ::: src.core.common.space_time
+
+### Singletons
+::: src.core.common.singletons
