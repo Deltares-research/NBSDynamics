@@ -3,7 +3,6 @@ __all__ = [
     "coral",
     "hydrodynamics",
     "simulation",
-    "utils",
     "output",
     "common",
 ]

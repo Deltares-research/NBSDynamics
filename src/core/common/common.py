@@ -28,25 +28,3 @@ class CommonConstants(Constants):
         if cls._instance == None:
             cls._instance = Constants(**kwargs).__new__(cls)
         return cls._instance
-
-
-class CommonEnvironment(Environment):
-    """
-    Environment Singleton.
-    """
-
-    _instance: Environment = None
-
-    def __new__(cls: Type[Environment]) -> Environment:
-        """
-        Overriding new method to ensure this class behaves as s singleton.
-
-        Args:
-            cls (Type[Environment]): Required instance class.
-
-        Returns:
-            Environment: Singleton for `CommonEnvironment`
-        """
-        if cls._instance == None:
-            cls._instance = Environment().__new__(cls)
-        return cls._instance
