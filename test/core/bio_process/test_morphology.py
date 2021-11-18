@@ -95,7 +95,9 @@ class TestMorphology:
         mor_legacy.delta_volume(valid_coral)
         assert float(mor_legacy.vol_increase), pytest.approx(8.4375e-6)
 
-    def test_morphology_update(self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1:DataReshape):
+    def test_morphology_update(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
         valid_coral.light = matrix_1x1.variable2matrix(600, "time")
         valid_coral.ucm = matrix_1x1.variable2array(0.1)
         valid_coral.light_bc = matrix_1x1.variable2matrix(0.3, "time")

@@ -1,6 +1,7 @@
 from _pytest.fixtures import fixture
-from src.core.common.singletons import RESHAPE, CommonConstants
+
 from src.core.common.constants import Constants
+from src.core.common.singletons import RESHAPE, CommonConstants
 from src.core.common.space_time import DataReshape
 
 
