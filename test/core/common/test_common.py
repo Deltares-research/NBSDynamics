@@ -1,4 +1,4 @@
-from src.core.common.constants import Constants
+from src.core.common.constants import _Constants as Constants
 from src.core.common.environment import Environment
 from src.core.common.singletons import CommonConstants
 

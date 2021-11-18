@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from src.core.common.constants import Constants
+from src.core.common.constants import _Constants as Constants
 
 
 class TestConstants:

@@ -3,10 +3,11 @@ from typing import Dict, Optional, Union
 import numpy as np
 from pydantic import validator
 
-from src.core import RESHAPE
+from src.core import RESHAPE, CommonConstants
 from src.core.base_model import ExtraModel
-from src.core.common.constants import Constants
-from src.core.common.space_time import CoralOnly, DataReshape
+from src.core.coral.coral_only import CoralOnly
+from src.core.common.space_time import DataReshape
+from src.core.common.constants import _Constants as Constants
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -17,7 +18,7 @@ class Coral(ExtraModel):
     Coral object, representing one coral type.
     """
 
-    constants: Constants = Constants()
+    constants: Constants = CommonConstants()
     dc: CoralAttribute  # diameter coral plate [m]
     hc: CoralAttribute  # coral height [m]
     bc: CoralAttribute  # diameter coral base [m]

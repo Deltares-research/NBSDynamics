@@ -7,7 +7,7 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
-from src.core import RESHAPE
+from src.core import RESHAPE, CommonConstants
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -18,7 +18,7 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.common.constants import Constants
+from src.core.common.constants import _Constants as Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.coral.coral_model import Coral
@@ -44,7 +44,7 @@ class BaseSimulation(BaseModel, ABC):
     # Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
-    constants: Constants = Constants()
+    constants: Constants = CommonConstants()
     output: Optional[OutputWrapper]
     coral: Optional[Coral]
 
@@ -64,11 +64,13 @@ class BaseSimulation(BaseModel, ABC):
             Constants: Validated constants value.
         """
         if isinstance(field_value, Constants):
+            cc_single = CommonConstants()
+            cc_single._instance = field_value
             return field_value
         if isinstance(field_value, str):
             field_value = Path(field_value)
         if isinstance(field_value, Path):
-            return Constants.from_input_file(field_value)
+            return CommonConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @validator("coral", pre=True)

@@ -5,7 +5,7 @@ Although these classes are defined elsewhere, here we implement them as singleto
 """
 from typing import Optional, Type
 
-from src.core.common.constants import Constants
+from src.core.common.constants import _Constants
 from src.core.common.space_time import DataReshape
 
 
@@ -31,23 +31,23 @@ class RESHAPE(DataReshape):
         return cls._instance
 
 
-class CommonConstants(Constants):
+class CommonConstants(_Constants):
     """
-    Constants Singleton.
+    _Constants Singleton.
     """
 
-    _instance: Optional[Constants] = None
+    _instance: Optional[_Constants] = None
 
-    def __new__(cls: Type[Constants], **kwargs) -> Constants:
+    def __new__(cls: Type[_Constants], **kwargs) -> _Constants:
         """
         Overriding new method to ensure this class behaves as s singleton.
 
         Args:
-            cls (Type[Constants]): Required instance class.
+            cls (Type[_Constants]): Required instance class.
 
         Returns:
-            Constants: Singleton for `CommonConstants`
+            _Constants: Singleton for `CommonConstants`
         """
         if cls._instance == None:
-            cls._instance = Constants(**kwargs).__new__(cls)
+            cls._instance = _Constants(**kwargs).__new__(cls)
         return cls._instance

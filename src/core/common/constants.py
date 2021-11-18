@@ -7,7 +7,7 @@ from pydantic import root_validator, validator
 from src.core.base_model import BaseModel
 
 
-class Constants(BaseModel):
+class _Constants(BaseModel):
     """Object containing all constants used in coral_model simulations."""
 
     # Input file

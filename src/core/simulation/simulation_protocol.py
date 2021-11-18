@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
 
-from src.core.common.constants import Constants
+from src.core.common.constants import _Constants as Constants
 from src.core.common.environment import Environment
 from src.core.coral.coral_model import Coral
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol

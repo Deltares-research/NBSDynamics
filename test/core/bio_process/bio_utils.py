@@ -1,7 +1,7 @@
 import pytest
 
-from src.core import RESHAPE
-from src.core.common.constants import Constants
+from src.core import RESHAPE, CommonConstants
+from src.core.common.constants import _Constants as Constants
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
 
