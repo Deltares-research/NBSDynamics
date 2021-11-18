@@ -1,8 +1,8 @@
 from test.core.bio_process.bio_utils import (
     coral_2x2,
-    valid_coral,
-    matrix_2x2,
     matrix_1x1,
+    matrix_2x2,
+    valid_coral,
 )
 
 import pytest
@@ -16,7 +16,7 @@ from src.core.coral.coral_model import Coral
 class TestMorphology:
     @pytest.fixture
     def valid_morphology(self, matrix_1x1: DataReshape) -> Morphology:
-        assert matrix_1x1.spacetime == (1,1)
+        assert matrix_1x1.spacetime == (1, 1)
         return Morphology(2.4, 2.4, 2.4, 1)
 
     def test_set_rf_optimal_raises_typeerror(self, valid_morphology: Morphology):

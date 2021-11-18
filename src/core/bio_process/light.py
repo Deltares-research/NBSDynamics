@@ -2,9 +2,10 @@ from typing import Union
 
 import numpy as np
 
+from src.core import RESHAPE
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly, DataReshape
-from src.core import RESHAPE
+
 LightVariable = Union[float, list, tuple, np.ndarray]
 
 

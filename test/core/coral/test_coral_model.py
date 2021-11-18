@@ -12,7 +12,7 @@ from src.core.coral.coral_protocol import CoralProtocol
 
 @pytest.fixture(autouse=False)
 def coral_1x1() -> Coral:
-    RESHAPE().spacetime = (1,1)
+    RESHAPE().spacetime = (1, 1)
     input_dict = dict(
         constants=Constants(),
         dc=0.2,
@@ -27,7 +27,7 @@ def coral_1x1() -> Coral:
 
 @pytest.fixture(autouse=False)
 def coral_2x2() -> Coral:
-    RESHAPE().spacetime = (2,2)
+    RESHAPE().spacetime = (2, 2)
     input_dict = dict(
         RESHAPE=DataReshape((2, 2)),
         constants=Constants(),

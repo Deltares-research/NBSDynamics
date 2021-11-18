@@ -3,10 +3,10 @@ from typing import Dict, Optional, Union
 import numpy as np
 from pydantic import validator
 
+from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly, DataReshape
-from src.core import RESHAPE
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 

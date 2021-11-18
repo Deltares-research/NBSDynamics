@@ -1,4 +1,4 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral, matrix_2x2
+from test.core.bio_process.bio_utils import coral_2x2, matrix_2x2, valid_coral
 
 import numpy as np
 import pytest

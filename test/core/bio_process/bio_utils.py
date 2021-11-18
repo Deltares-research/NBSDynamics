@@ -1,9 +1,9 @@
 import pytest
 
+from src.core import RESHAPE
 from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core import RESHAPE
 
 
 @pytest.fixture(scope="module", autouse=False)
@@ -26,9 +26,9 @@ def valid_coral() -> Coral:
     Returns:
         Coral: Valid Coral object.
     """
-    RESHAPE().spacetime = (1,1)
+    RESHAPE().spacetime = (1, 1)
     rs = RESHAPE()
-    assert rs.spacetime == (1,1)
+    assert rs.spacetime == (1, 1)
     return Coral(
         **dict(
             constants=Constants(),
@@ -52,7 +52,7 @@ def coral_2x2() -> Coral:
     """
     RESHAPE().spacetime = (2, 2)
     rs = RESHAPE()
-    assert rs.spacetime == (2,2)
+    assert rs.spacetime == (2, 2)
     return Coral(
         **dict(
             constants=Constants(),

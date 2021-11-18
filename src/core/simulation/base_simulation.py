@@ -7,6 +7,7 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
+from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -24,7 +25,6 @@ from src.core.coral.coral_model import Coral
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
-from src.core import RESHAPE
 
 
 class BaseSimulation(BaseModel, ABC):

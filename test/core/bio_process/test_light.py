@@ -1,9 +1,9 @@
 from test.core.bio_process.bio_utils import (
     coral_2x2,
+    matrix_1x1,
+    matrix_2x2,
     no_base_coral_2x2,
     valid_coral,
-    matrix_2x2,
-    matrix_1x1,
 )
 
 import numpy as np
@@ -128,7 +128,9 @@ class TestLight2x2:
             for j in range(matrix_2x2.time):
                 assert float(no_base_coral_2x2.light_bc[i, j]), pytest.approx(answer)
 
-    def test_base_light(self, light_2x2: Light, coral_2x2: Coral, matrix_2x2: DataReshape):
+    def test_base_light(
+        self, light_2x2: Light, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         # base light
         coral_2x2.initiate_coral_morphology()
         result = light_2x2.base_light(coral_2x2)
@@ -137,7 +139,9 @@ class TestLight2x2:
             for j in range(matrix_2x2.time):
                 assert float(result[i, j]), pytest.approx(answer)
 
-    def test_base_light_no_base(self, light_2x2: Light, no_base_coral_2x2: Coral, matrix_2x2: DataReshape):
+    def test_base_light_no_base(
+        self, light_2x2: Light, no_base_coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         # no base light
         no_base_coral_2x2.initiate_coral_morphology()
         result = light_2x2.base_light(no_base_coral_2x2)

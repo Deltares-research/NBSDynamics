@@ -1,4 +1,9 @@
-from test.core.bio_process.bio_utils import coral_2x2, matrix_1x1, valid_coral, matrix_2x2
+from test.core.bio_process.bio_utils import (
+    coral_2x2,
+    matrix_1x1,
+    matrix_2x2,
+    valid_coral,
+)
 
 import numpy as np
 import pytest
@@ -11,7 +16,7 @@ from src.core.coral.coral_model import Coral
 
 class TestPhotosynthesis:
     def test_init_photoshynthesis(self, matrix_1x1: DataReshape):
-        assert matrix_1x1.spacetime == (1,1)
+        assert matrix_1x1.spacetime == (1, 1)
         input_dict = dict(constants=None, light_in=None, first_year=None)
         test_photo = Photosynthesis(**input_dict)
         assert test_photo.pld == 1
@@ -25,7 +30,8 @@ class TestPhotosynthesis:
             pfd = 1
             pfd_min = 0
             ucr = 2
-        assert matrix_1x1.spacetime == (1,1)
+
+        assert matrix_1x1.spacetime == (1, 1)
         input_dict = dict(
             constants=TestConstants(),
             light_in=None,
@@ -58,7 +64,7 @@ class TestPhotosynthesis:
 
     @pytest.fixture(autouse=False)
     def photo_legacy(self, matrix_1x1: DataReshape) -> Photosynthesis:
-        assert matrix_1x1.spacetime == (1,1)
+        assert matrix_1x1.spacetime == (1, 1)
         return Photosynthesis(Constants(), 600, False)
 
     def test_photosynthetic_light_dependency(
