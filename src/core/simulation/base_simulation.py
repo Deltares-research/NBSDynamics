@@ -64,8 +64,7 @@ class BaseSimulation(BaseModel, ABC):
             Constants: Validated constants value.
         """
         if isinstance(field_value, Constants):
-            cc_single = CommonConstants()
-            cc_single._instance = field_value
+            CommonConstants._instance = field_value
             return field_value
         if isinstance(field_value, str):
             field_value = Path(field_value)

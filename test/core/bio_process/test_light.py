@@ -21,7 +21,7 @@ class TestLight:
     @pytest.fixture(autouse=False)
     def light_test(self, matrix_1x1: DataReshape) -> Light:
         assert matrix_1x1.spacetime == (1, 1)
-        return Light(Constants(), 600, 0.1, 5)
+        return Light(600, 0.1, 5, Constants())
 
     def test_initiation(self, light_test: Light):
         assert light_test.I0, pytest.approx(600, tolerance)
@@ -77,7 +77,7 @@ class TestLight2x2:
 
     @pytest.fixture(autouse=False)
     def light_2x2(self) -> Light:
-        return Light(Constants(), [600, 600], [0.1, 0.1], [5, 5])
+        return Light([600, 600], [0.1, 0.1], [5, 5], Constants())
 
     def test_initiation(self, light_2x2: Light, matrix_2x2: DataReshape):
         for i in range(matrix_2x2.space):
