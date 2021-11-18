@@ -2,7 +2,7 @@ from typing import Dict, Optional, Protocol, Union, runtime_checkable
 
 import numpy as np
 
-from src.core.constants import Constants
+from src.core.common.constants import Constants
 
 
 @runtime_checkable

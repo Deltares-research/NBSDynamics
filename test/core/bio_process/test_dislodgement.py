@@ -2,10 +2,11 @@ from test.core.bio_process.bio_utils import coral_2x2, valid_coral
 
 import pytest
 
+from src.core import RESHAPE
 from src.core.bio_process.dislodgment import Dislodgement
-from src.core.constants import Constants
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class TestDislodgement:
@@ -68,24 +69,27 @@ class TestDislodgement2x2:
     Legacy tests with a DataReshape 2x2 matrix.
     """
 
-    @pytest.fixture(autouse=False)
+    @pytest.fixture(autouse=True)
     def reshape_2x2(self) -> DataReshape:
-        return DataReshape((2, 2))
+        RESHAPE().spacetime = (2, 2)
+        rt = RESHAPE()
+        assert rt.spacetime == (2, 2)
+        return rt
 
-    def test_dmt1(self, coral_2x2: Coral):
+    def test_dmt1(self, coral_2x2: Coral, reshape_2x2: DataReshape):
         dislodgement = Dislodgement()
         coral_2x2.initiate_coral_morphology()
-        coral_2x2.um = coral_2x2.RESHAPE.variable2array([0, 0])
+        coral_2x2.um = reshape_2x2.variable2array([0, 0])
         dislodgement.dislodgement_mechanical_threshold(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
+        for i in range(reshape_2x2.space):
             assert dislodgement.dmt[i] == 1e20
 
-    def test_dmt2(self, coral_2x2: Coral):
+    def test_dmt2(self, coral_2x2: Coral, reshape_2x2: DataReshape):
         dislodgement = Dislodgement()
         coral_2x2.initiate_coral_morphology()
         coral_2x2.um = [0.5, 0.5]
         dislodgement.dislodgement_mechanical_threshold(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
+        for i in range(reshape_2x2.space):
             assert float(dislodgement.dmt[i]), pytest.approx(780.487805, 1e-6)
 
     def test_dmt3(self, coral_2x2: Coral):
@@ -97,21 +101,16 @@ class TestDislodgement2x2:
         for i, ans in enumerate(answers):
             assert float(dislodgement.dmt[i]), pytest.approx(ans, delta=1e-6)
 
-    def test_csf1(self, coral_2x2: Coral):
+    def test_csf1(self, coral_2x2: Coral, reshape_2x2: DataReshape):
         dislodgement = Dislodgement()
         coral_2x2.initiate_coral_morphology()
         dislodgement.colony_shape_factor(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
+        for i in range(reshape_2x2.space):
             assert float(dislodgement.csf[i]), pytest.approx(40.1070456591576246)
 
-    @pytest.mark.skip(reason="Test failing due to difference is sizes.")
-    def test_csf2(self, reshape_2x2: DataReshape):
-        # TODO: This is a legacy test.
-        # TODO: Figure out whether this test is still valid, thus code should be fixed.
-        # TODO: Or on the contrary the test has no meaning and therefore should be removed.
+    def test_csf2(self):
         dislodgement = Dislodgement()
         coral = Coral(
-            RESHAPE=reshape_2x2,
             constants=Constants(),
             dc=[0.2, 0],
             hc=[0.3, 0],
@@ -122,4 +121,4 @@ class TestDislodgement2x2:
         dislodgement.colony_shape_factor(coral)
         answers = [40.1070456591576246, 0]
         for i, ans in enumerate(answers):
-            self.assertAlmostEqual(float(dislodgement.csf[i]), ans)
+            assert float(dislodgement.csf[i]) == pytest.approx(ans, 0.0000001)

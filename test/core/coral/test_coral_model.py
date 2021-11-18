@@ -3,16 +3,17 @@ from typing import Tuple
 import numpy as np
 import pytest
 
-from src.core.constants import Constants
+from src.core.common.constants import Constants
+from src.core.common.singletons import RESHAPE
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
 from src.core.coral.coral_protocol import CoralProtocol
-from src.core.utils import DataReshape
 
 
 @pytest.fixture(autouse=False)
 def coral_1x1() -> Coral:
+    RESHAPE().spacetime = (1, 1)
     input_dict = dict(
-        RESHAPE=DataReshape((1, 1)),
         constants=Constants(),
         dc=0.2,
         hc=0.1,
@@ -26,6 +27,7 @@ def coral_1x1() -> Coral:
 
 @pytest.fixture(autouse=False)
 def coral_2x2() -> Coral:
+    RESHAPE().spacetime = (2, 2)
     input_dict = dict(
         RESHAPE=DataReshape((2, 2)),
         constants=Constants(),
@@ -42,7 +44,6 @@ def coral_2x2() -> Coral:
 class TestCoral1x1:
     @staticmethod
     def _get_coral_model(coral_values: dict, reshape_value: Tuple[int, int]) -> Coral:
-        coral_values["RESHAPE"] = DataReshape(reshape_value)
         return Coral(**coral_values)
 
     def test_init_coral_model(self, coral_1x1: Coral):
@@ -95,6 +96,13 @@ class TestCoral2x2:
     """
     Legacy tests with a 2x2 DataReshape matrix.
     """
+
+    @pytest.fixture(autouse=True)
+    def reshape_2x2(self):
+        RESHAPE().spacetime = (2, 2)
+        rt = RESHAPE()
+        assert rt.spacetime == (2, 2)
+        return rt
 
     @pytest.fixture(autouse=False)
     def mixed_coral(self) -> Coral:

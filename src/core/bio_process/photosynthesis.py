@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
 
+from src.core import RESHAPE
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class Photosynthesis:
     """Photosynthesis."""
 
-    def __init__(self, constants, light_in, first_year, datareshape: DataReshape):
+    def __init__(self, constants, light_in, first_year):
         """
         Photosynthetic efficiency based on photosynthetic dependencies.
 
@@ -18,8 +19,7 @@ class Photosynthesis:
         :type light_in: float, list, tuple, numpy.ndarray
         :type first_year: bool
         """
-        self.datareshape = datareshape
-        self.I0 = datareshape.variable2matrix(light_in, "time")
+        self.I0 = RESHAPE().variable2matrix(light_in, "time")
         self.first_year = first_year
 
         self.pld = 1
@@ -100,6 +100,7 @@ class Photosynthesis:
         :type env: Environment
         :type year: int
         """
+        _reshape = RESHAPE()
 
         def thermal_acc():
             """Thermal-acclimation."""
@@ -108,18 +109,18 @@ class Photosynthesis:
                     env.tmeMMMmin = (
                         pd.DataFrame(
                             data=pd.concat(
-                                [env.temp_mmm["min"]] * coral.RESHAPE.space, axis=1
+                                [env.temp_mmm["min"]] * _reshape.space, axis=1
                             ).values,
-                            columns=[np.arange(coral.RESHAPE.space)],
+                            columns=[np.arange(_reshape.space)],
                         )
                         + coral.dTc
                     )
                     env.tmeMMMmax = (
                         pd.DataFrame(
                             data=pd.concat(
-                                [env.temp_mmm["max"]] * coral.RESHAPE.space, axis=1
+                                [env.temp_mmm["max"]] * _reshape.space, axis=1
                             ).values,
-                            columns=[np.arange(coral.RESHAPE.space)],
+                            columns=[np.arange(_reshape.space)],
                         )
                         + coral.dTc
                     )
@@ -209,6 +210,6 @@ class Photosynthesis:
             pfd = self.constants.pfd_min + (1 - self.constants.pfd_min) * np.tanh(
                 2 * coral.ucm / self.constants.ucr
             )
-            self.pfd = coral.RESHAPE.variable2matrix(pfd, "space")
+            self.pfd = RESHAPE().variable2matrix(pfd, "space")
         else:
             self.pfd = 1

@@ -1,7 +1,7 @@
 import numpy as np
 
+from src.core import RESHAPE
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class Morphology:
@@ -11,9 +11,7 @@ class Morphology:
     __rp_optimal = None
     __rs_optimal = None
 
-    def __init__(
-        self, constants, calc_sum, light_in, datareshape: DataReshape, dt_year=1
-    ):
+    def __init__(self, constants, calc_sum, light_in, dt_year=1):
         """
         Morphological development.
 
@@ -25,15 +23,16 @@ class Morphology:
         :type light_in: float, int, list, tuple, numpy.ndarray
         :type dt_year: float, int
         """
+        _reshape = RESHAPE()
         try:
             _ = len(calc_sum[0])
         except TypeError:
             self.calc_sum = calc_sum
         else:
-            self.calc_sum = datareshape.matrix2array(calc_sum, "space", "sum")
+            self.calc_sum = _reshape.matrix2array(calc_sum, "space", "sum")
         self.dt_year = dt_year
 
-        self.I0 = datareshape.variable2matrix(light_in, "time")
+        self.I0 = _reshape.variable2matrix(light_in, "time")
         self.vol_increase = 0
 
         self.constants = constants

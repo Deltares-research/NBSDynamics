@@ -1,19 +1,23 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral
+from test.core.bio_process.bio_utils import (
+    coral_2x2,
+    matrix_1x1,
+    matrix_2x2,
+    valid_coral,
+)
 
 import numpy as np
 import pytest
 
 from src.core.bio_process.photosynthesis import Photosynthesis
-from src.core.constants import Constants
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class TestPhotosynthesis:
-    def test_init_photoshynthesis(self):
-        input_dict = dict(
-            constants=None, light_in=None, first_year=None, datareshape=DataReshape()
-        )
+    def test_init_photoshynthesis(self, matrix_1x1: DataReshape):
+        assert matrix_1x1.spacetime == (1, 1)
+        input_dict = dict(constants=None, light_in=None, first_year=None)
         test_photo = Photosynthesis(**input_dict)
         assert test_photo.pld == 1
         assert test_photo.ptd == 1
@@ -21,17 +25,17 @@ class TestPhotosynthesis:
         assert test_photo.constants == None
 
     @pytest.fixture(autouse=False)
-    def valid_photosynthesis(self) -> Photosynthesis:
+    def valid_photosynthesis(self, matrix_1x1: DataReshape) -> Photosynthesis:
         class TestConstants:
             pfd = 1
             pfd_min = 0
             ucr = 2
 
+        assert matrix_1x1.spacetime == (1, 1)
         input_dict = dict(
             constants=TestConstants(),
             light_in=None,
             first_year=None,
-            datareshape=DataReshape(),
         )
         return Photosynthesis(**input_dict)
 
@@ -59,8 +63,9 @@ class TestPhotosynthesis:
         )
 
     @pytest.fixture(autouse=False)
-    def photo_legacy(self) -> Photosynthesis:
-        return Photosynthesis(Constants(), 600, False, DataReshape())
+    def photo_legacy(self, matrix_1x1: DataReshape) -> Photosynthesis:
+        assert matrix_1x1.spacetime == (1, 1)
+        return Photosynthesis(Constants(), 600, False)
 
     def test_photosynthetic_light_dependency(
         self, photo_legacy: Photosynthesis, valid_coral: Coral
@@ -88,12 +93,13 @@ class TestPhotosynthesis2x2:
     """
 
     @pytest.fixture(autouse=False)
-    def photo_2x2(self) -> Photosynthesis:
-        return Photosynthesis(Constants(), [600, 600], False, DataReshape((2, 2)))
+    def photo_2x2(self, matrix_2x2: DataReshape) -> Photosynthesis:
+        assert matrix_2x2.spacetime == (2, 2)
+        return Photosynthesis(Constants(), [600, 600], False)
 
-    def test_initiation(self, photo_2x2: Photosynthesis):
-        for i in range(photo_2x2.datareshape.space):
-            for j in range(photo_2x2.datareshape.time):
+    def test_initiation(self, photo_2x2: Photosynthesis, matrix_2x2: DataReshape):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(photo_2x2.I0[i, j]) == 600
         assert photo_2x2.first_year is False
         assert float(photo_2x2.pld) == 1
@@ -101,25 +107,25 @@ class TestPhotosynthesis2x2:
         assert float(photo_2x2.pfd) == 1
 
     def test_photosynthetic_light_dependency(
-        self, photo_2x2: Photosynthesis, coral_2x2: Coral
+        self, photo_2x2: Photosynthesis, coral_2x2: Coral, matrix_2x2: DataReshape
     ):
         coral_2x2.initiate_coral_morphology()
         coral_2x2.light = [600, 600]
         photo_2x2.light_dependency(coral_2x2, "qss")
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(photo_2x2.pld[i, j]), pytest.approx(0.90727011)
 
     def test_photosynthetic_flow_dependency(
-        self, photo_2x2: Photosynthesis, coral_2x2: Coral
+        self, photo_2x2: Photosynthesis, coral_2x2: Coral, matrix_2x2: DataReshape
     ):
         photo_2x2.constants = coral_2x2.constants
         coral_2x2.initiate_coral_morphology()
-        coral_2x2.ucm = coral_2x2.RESHAPE.variable2array([0.1, 0.1])
+        coral_2x2.ucm = matrix_2x2.variable2array([0.1, 0.1])
         coral_2x2.constants.pfd = True
         photo_2x2.flow_dependency(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(photo_2x2.pfd[i, j]), pytest.approx(0.94485915)
         coral_2x2.constants.pfd = False
         photo_2x2.flow_dependency(coral_2x2)

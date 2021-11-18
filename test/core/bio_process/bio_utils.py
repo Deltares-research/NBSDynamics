@@ -1,8 +1,21 @@
 import pytest
 
-from src.core.constants import Constants
+from src.core import RESHAPE
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
+
+
+@pytest.fixture(scope="module", autouse=False)
+def matrix_1x1() -> DataReshape:
+    RESHAPE().spacetime = (1, 1)
+    return RESHAPE()
+
+
+@pytest.fixture(scope="module", autouse=False)
+def matrix_2x2() -> DataReshape:
+    RESHAPE().spacetime = (2, 2)
+    return RESHAPE()
 
 
 @pytest.fixture(scope="module", autouse=False)
@@ -13,9 +26,11 @@ def valid_coral() -> Coral:
     Returns:
         Coral: Valid Coral object.
     """
+    RESHAPE().spacetime = (1, 1)
+    rs = RESHAPE()
+    assert rs.spacetime == (1, 1)
     return Coral(
         **dict(
-            RESHAPE=DataReshape(),
             constants=Constants(),
             dc=0.2,
             hc=0.3,
@@ -35,9 +50,11 @@ def coral_2x2() -> Coral:
     Returns:
         Coral: Coral in a 2x2 matrix.
     """
+    RESHAPE().spacetime = (2, 2)
+    rs = RESHAPE()
+    assert rs.spacetime == (2, 2)
     return Coral(
         **dict(
-            RESHAPE=DataReshape((2, 2)),
             constants=Constants(),
             dc=0.2,
             hc=0.3,

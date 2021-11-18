@@ -7,6 +7,7 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
+from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -17,13 +18,13 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.constants import Constants
+from src.core.common.constants import Constants
+from src.core.common.environment import Environment
+from src.core.common.space_time import time_series_year
 from src.core.coral.coral_model import Coral
-from src.core.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
-from src.core.utils import time_series_year
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -217,7 +218,7 @@ class BaseSimulation(BaseModel, ABC):
         # Load constants and validate environment.
         self.validate_simulation_directories()
         self.validate_environment()
-        self.coral.RESHAPE.space = self.hydrodynamics.space
+        RESHAPE().space = self.hydrodynamics.space
 
         if self.output.defined:
             self.output.initialize(self.coral)
@@ -229,7 +230,7 @@ class BaseSimulation(BaseModel, ABC):
         if value is None:
             value = 1
 
-        cover = value * np.ones(self.coral.RESHAPE.space)
+        cover = value * np.ones(RESHAPE().space)
 
         if x_range is not None:
             x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -268,7 +269,7 @@ class BaseSimulation(BaseModel, ABC):
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 # set dimensions (i.e. update time-dimension)
-                self.coral.RESHAPE.time = len(
+                RESHAPE().time = len(
                     environment_dates.dt.year[environment_dates.dt.year == years[i]]
                 )
 
@@ -286,7 +287,6 @@ class BaseSimulation(BaseModel, ABC):
                     light_in=time_series_year(self.environment.light, years[i]),
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
-                    datareshape=self.coral.RESHAPE,
                 )
                 lme.rep_light(self.coral)
                 # flow micro-environment
@@ -296,7 +296,6 @@ class BaseSimulation(BaseModel, ABC):
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
                     peak_period=wave_per,
-                    datareshape=self.coral.RESHAPE,
                 )
                 fme.velocities(self.coral, in_canopy=self.constants.fme)
                 fme.thermal_boundary_layer(self.coral)
@@ -306,7 +305,6 @@ class BaseSimulation(BaseModel, ABC):
                     temperature=time_series_year(
                         self.environment.temp_kelvin, years[i]
                     ),
-                    datareshape=self.coral.RESHAPE,
                 )
                 tme.coral_temperature(self.coral)
 
@@ -317,7 +315,6 @@ class BaseSimulation(BaseModel, ABC):
                     constants=self.constants,
                     light_in=time_series_year(self.environment.light, years[i]),
                     first_year=True if i == 0 else False,
-                    datareshape=self.coral.RESHAPE,
                 )
                 phd.photo_rate(self.coral, self.environment, years[i])
                 # population states
@@ -335,7 +332,6 @@ class BaseSimulation(BaseModel, ABC):
                     constants=self.constants,
                     calc_sum=self.coral.calc.sum(axis=1),
                     light_in=time_series_year(self.environment.light, years[i]),
-                    datareshape=self.coral.RESHAPE,
                 )
                 mor.update(self.coral)
 
@@ -357,7 +353,6 @@ class BaseSimulation(BaseModel, ABC):
                             u_wave=wave_vel,
                             h=self.hydrodynamics.water_depth,
                             peak_period=wave_per,
-                            datareshape=self.coral.RESHAPE,
                         )
                         sfe.velocities(self.coral, in_canopy=self.constants.fme)
                         # storm dislodgement criterion

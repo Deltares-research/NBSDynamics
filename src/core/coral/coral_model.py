@@ -3,9 +3,10 @@ from typing import Dict, Optional, Union
 import numpy as np
 from pydantic import validator
 
+from src.core import RESHAPE
 from src.core.base_model import ExtraModel
-from src.core.constants import Constants
-from src.core.utils import CoralOnly, DataReshape
+from src.core.common.constants import Constants
+from src.core.common.space_time import CoralOnly, DataReshape
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -16,7 +17,6 @@ class Coral(ExtraModel):
     Coral object, representing one coral type.
     """
 
-    RESHAPE = DataReshape()
     constants: Constants = Constants()
     dc: CoralAttribute  # diameter coral plate [m]
     hc: CoralAttribute  # coral height [m]
@@ -99,32 +99,32 @@ class Coral(ExtraModel):
     @property
     def dc_matrix(self):
         """self.RESHAPEd coral plate diameter."""
-        return self.RESHAPE.variable2matrix(self.dc, "space")
+        return RESHAPE().variable2matrix(self.dc, "space")
 
     @property
     def hc_matrix(self):
         """self.RESHAPEd coral height."""
-        return self.RESHAPE.variable2matrix(self.hc, "space")
+        return RESHAPE().variable2matrix(self.hc, "space")
 
     @property
     def bc_matrix(self):
         """self.RESHAPEd coral base diameter."""
-        return self.RESHAPE.variable2matrix(self.bc, "space")
+        return RESHAPE().variable2matrix(self.bc, "space")
 
     @property
     def tc_matrix(self):
         """self.RESHAPEd coral plate thickness."""
-        return self.RESHAPE.variable2matrix(self.tc, "space")
+        return RESHAPE().variable2matrix(self.tc, "space")
 
     @property
     def ac_matrix(self):
         """self.RESHAPEd axial distance."""
-        return self.RESHAPE.variable2matrix(self.ac, "space")
+        return RESHAPE().variable2matrix(self.ac, "space")
 
     @property
     def dc_rep_matrix(self):
         """self.RESHAPEd representative coral diameter."""
-        return self.RESHAPE.variable2matrix(self.dc_rep, "space")
+        return RESHAPE().variable2matrix(self.dc_rep, "space")
 
     @property
     def as_vegetation_density(self):
@@ -173,7 +173,7 @@ class Coral(ExtraModel):
         Args:
             carrying_capacity (CoralAttribute): Carrying capacity [m2 m-2].
         """
-        carrying_capacity = self.RESHAPE.variable2array(carrying_capacity)
+        carrying_capacity = RESHAPE().variable2array(carrying_capacity)
         if not self.volume.shape == carrying_capacity.shape:
             raise ValueError(
                 f"Shapes do not match: "
@@ -196,13 +196,14 @@ class Coral(ExtraModel):
         Args:
             cover (Optional[np.ndarray]): Custom coral definition.
         """
+        _reshape = RESHAPE()
         if cover is not None:
-            cover = self.RESHAPE.variable2array(cover)
-            if not cover.shape[0] == self.RESHAPE.space:
-                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {self.RESHAPE.space}."
+            cover = _reshape.variable2array(cover)
+            if not cover.shape[0] == _reshape.space:
+                msg = f"Spatial dimension of cover does not match: {cover.shape} =/= {_reshape.space}."
                 raise ValueError(msg)
         else:
-            cover = np.ones(self.RESHAPE.space)
+            cover = np.ones(_reshape.space)
 
         self.p0 = np.array(
             [

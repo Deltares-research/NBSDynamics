@@ -7,8 +7,8 @@ from netCDF4 import Dataset
 from pandas import DataFrame
 
 from src.core.base_model import BaseModel
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class ModelParameters(BaseModel):

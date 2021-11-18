@@ -1,17 +1,23 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral
+from test.core.bio_process.bio_utils import (
+    coral_2x2,
+    matrix_1x1,
+    matrix_2x2,
+    valid_coral,
+)
 
 import pytest
 
 from src.core.bio_process.morphology import Morphology
-from src.core.constants import Constants
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
 
 
 class TestMorphology:
     @pytest.fixture
-    def valid_morphology(self) -> Morphology:
-        return Morphology(2.4, 2.4, 2.4, DataReshape(), 1)
+    def valid_morphology(self, matrix_1x1: DataReshape) -> Morphology:
+        assert matrix_1x1.spacetime == (1, 1)
+        return Morphology(constants=Constants(), calc_sum=2.4, light_in=2.4, dt_year=1)
 
     def test_set_rf_optimal_raises_typeerror(self, valid_morphology: Morphology):
         with pytest.raises(TypeError) as e_info:
@@ -41,8 +47,9 @@ class TestMorphology:
             valid_morphology.ratio_update(valid_coral, ratio_value)
         assert str(e_info.value) == "notARatio not in ('rf', 'rp', 'rs')."
 
-    def test_initiation(self):
-        morphology = Morphology(Constants(), 1, 600, DataReshape())
+    def test_initiation(self, matrix_1x1: DataReshape):
+        assert matrix_1x1.spacetime == (1, 1)
+        morphology = Morphology(Constants(), 1, 600)
         assert morphology.calc_sum == 1
         assert morphology.I0 == 600
         assert morphology.dt_year == 1
@@ -53,20 +60,20 @@ class TestMorphology:
         assert morphology.rs_optimal is None
 
     @pytest.fixture(autouse=False)
-    def mor_legacy(self) -> Morphology:
-        return Morphology(
-            Constants(), 1, DataReshape().variable2matrix(600, "time"), DataReshape()
-        )
+    def mor_legacy(self, matrix_1x1: DataReshape) -> Morphology:
+        return Morphology(Constants(), 1, matrix_1x1.variable2matrix(600, "time"))
 
     def test_calc_sum(self):
-        morphology = Morphology(Constants(), [1, 1], 600, DataReshape())
+        morphology = Morphology(Constants(), [1, 1], 600)
         answer = [1, 1]
         for i, val in enumerate(answer):
             assert morphology.calc_sum[i] == val
 
-    def test_optimal_ratios(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light = DataReshape().variable2matrix(600, "time")
-        valid_coral.ucm = DataReshape().variable2array(0.1)
+    def test_optimal_ratios(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
+        valid_coral.light = matrix_1x1.variable2matrix(600, "time")
+        valid_coral.ucm = matrix_1x1.variable2array(0.1)
 
         ratios = ("rf", "rp", "rs")
         answers = [
@@ -81,15 +88,19 @@ class TestMorphology:
                 answers[i]
             )
 
-    def test_volume_increase(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light_bc = DataReshape().variable2matrix(0.3, "time")
+    def test_volume_increase(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
+        valid_coral.light_bc = matrix_1x1.variable2matrix(0.3, "time")
         mor_legacy.delta_volume(valid_coral)
         assert float(mor_legacy.vol_increase), pytest.approx(8.4375e-6)
 
-    def test_morphology_update(self, mor_legacy: Morphology, valid_coral: Coral):
-        valid_coral.light = DataReshape().variable2matrix(600, "time")
-        valid_coral.ucm = DataReshape().variable2array(0.1)
-        valid_coral.light_bc = DataReshape().variable2matrix(0.3, "time")
+    def test_morphology_update(
+        self, mor_legacy: Morphology, valid_coral: Coral, matrix_1x1: DataReshape
+    ):
+        valid_coral.light = matrix_1x1.variable2matrix(600, "time")
+        valid_coral.ucm = matrix_1x1.variable2array(0.1)
+        valid_coral.light_bc = matrix_1x1.variable2matrix(0.3, "time")
         # morphology.delta_volume(coral)
         for ratio in ("rf", "rp", "rs"):
             setattr(mor_legacy, f"{ratio}_optimal", valid_coral)
@@ -106,17 +117,14 @@ class TestMorphology2x2:
     """
 
     @pytest.fixture(autouse=False)
-    def reshape_2x2(self) -> DataReshape:
-        return DataReshape((2, 2))
+    def mor_2x2(self, matrix_2x2: DataReshape) -> Morphology:
+        assert matrix_2x2.spacetime == (2, 2)
+        return Morphology(Constants(), [1, 1], [600, 600])
 
-    @pytest.fixture(autouse=False)
-    def mor_2x2(self, reshape_2x2: DataReshape) -> Morphology:
-        return Morphology(Constants(), [1, 1], [600, 600], reshape_2x2)
-
-    def test_initiation(self, mor_2x2: Morphology, reshape_2x2: DataReshape):
-        for i in range(reshape_2x2.space):
+    def test_initiation(self, mor_2x2: Morphology, matrix_2x2: DataReshape):
+        for i in range(matrix_2x2.space):
             assert mor_2x2.calc_sum[i] == 1
-            for j in range(reshape_2x2.time):
+            for j in range(matrix_2x2.time):
                 assert mor_2x2.I0[i, j] == 600
         assert mor_2x2.dt_year == 1
         assert mor_2x2.vol_increase == 0
@@ -125,20 +133,22 @@ class TestMorphology2x2:
         assert mor_2x2.rp_optimal is None
         assert mor_2x2.rs_optimal is None
 
-    def test_calc_sum_init1(self, reshape_2x2: DataReshape):
-        morphology = Morphology(Constants(), [[1, 1], [1, 1]], [600, 600], reshape_2x2)
-        for i in range(reshape_2x2.space):
+    def test_calc_sum_init1(self, matrix_2x2: DataReshape):
+        morphology = Morphology(Constants(), [[1, 1], [1, 1]], [600, 600])
+        for i in range(matrix_2x2.space):
             assert morphology.calc_sum[i] == 2
 
     @pytest.mark.skip(reason="Legacy test.")
-    def test_optimal_ratios(self, mor_2x2: Morphology, coral_2x2: Coral):
+    def test_optimal_ratios(
+        self, mor_2x2: Morphology, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         # TODO: Test failing because the var_optimal setters on morphology
         # TODO: do not seem to be handling the variables as 2x2.
         # TODO: It is not clear if some logic was changed before migration.
         mor_2x2.constants = coral_2x2.constants
         coral_2x2.initiate_coral_morphology()
-        coral_2x2.light = coral_2x2.RESHAPE.variable2matrix([600, 600], "time")
-        coral_2x2.ucm = coral_2x2.RESHAPE.variable2array([0.1, 0.1])
+        coral_2x2.light = matrix_2x2.variable2matrix([600, 600], "time")
+        coral_2x2.ucm = matrix_2x2.variable2array([0.1, 0.1])
         ratios = ("rf", "rp", "rs")
         answers = [
             0.2,
@@ -148,28 +158,32 @@ class TestMorphology2x2:
 
         for item, ratio in enumerate(ratios):
             setattr(mor_2x2, f"{ratio}_optimal", coral_2x2)
-            for i in range(coral_2x2.RESHAPE.space):
+            for i in range(matrix_2x2.space):
                 assert float(getattr(mor_2x2, f"{ratio}_optimal")[i]), pytest.approx(
                     answers[item]
                 )
 
-    def test_volume_increase(self, mor_2x2: Morphology, coral_2x2: Coral):
+    def test_volume_increase(
+        self, mor_2x2: Morphology, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         coral_2x2.initiate_coral_morphology()
         coral_2x2.light_bc = DataReshape().variable2matrix(0.3, "time")
         mor_2x2.delta_volume(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
+        for i in range(matrix_2x2.space):
             assert float(mor_2x2.vol_increase[i]), pytest.approx(8.4375e-6)
 
-    def test_morphology_update(self, mor_2x2: Morphology, coral_2x2: Coral):
+    def test_morphology_update(
+        self, mor_2x2: Morphology, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         coral_2x2.initiate_coral_morphology()
-        coral_2x2.light = coral_2x2.RESHAPE.variable2matrix([600, 600], "time")
-        coral_2x2.ucm = coral_2x2.RESHAPE.variable2array([0.1, 0.1])
-        coral_2x2.light_bc = coral_2x2.RESHAPE.variable2matrix([0.3, 0.3], "time")
-        # morphology.delta_volume(coral)
+        coral_2x2.light = matrix_2x2.variable2matrix([600, 600], "time")
+        coral_2x2.ucm = matrix_2x2.variable2array([0.1, 0.1])
+        coral_2x2.light_bc = matrix_2x2.variable2matrix([0.3, 0.3], "time")
+        mor_2x2.delta_volume(coral_2x2)
         for ratio in ("rf", "rp", "rs"):
             setattr(mor_2x2, f"{ratio}_optimal", coral_2x2)
         mor_2x2.update(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
+        for i in range(matrix_2x2.space):
             assert float(coral_2x2.rf[i]), pytest.approx(1.498140551)
             assert float(coral_2x2.rp[i]), pytest.approx(0.499964271)
             assert float(coral_2x2.rs[i]), pytest.approx(0.666145658)

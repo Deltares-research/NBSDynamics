@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.core.environment import Environment
+from src.core.common.environment import Environment
 
 daily_params: List[str] = [
     ("light"),

@@ -1,13 +1,15 @@
+from test.core.bio_process.bio_utils import matrix_1x1, matrix_2x2
+
 import pytest
 
 from src.core.bio_process.flow import Flow
-from src.core.constants import Constants
-from src.core.utils import DataReshape
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 
 
 class TestFlow:
-    def test_init_flow(self):
-        flow = Flow(Constants(), 0.1, 0.1, 5, 4, DataReshape())
+    def test_init_flow(self, matrix_1x1):
+        flow = Flow(Constants(), 0.1, 0.1, 5, 4)
         assert flow.uc[0] == 0.1
         assert flow.uw[0] == 0.1
         assert flow.h == 5
@@ -116,12 +118,11 @@ class TestFlow:
 
 
 class TestFlox2x2:
-    def test_initiation(self):
-        reshape_2x2 = DataReshape((2, 2))
-        flow = Flow(Constants(), [0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4], reshape_2x2)
-        for i in range(reshape_2x2.space):
+    def test_initiation(self, matrix_2x2: DataReshape):
+        flow = Flow(Constants(), [0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4])
+        for i in range(matrix_2x2.space):
             assert float(flow.uc[i]) == 0.1
             assert float(flow.uw[i]) == 0.1
-            for j in range(reshape_2x2.time):
+            for j in range(matrix_2x2.time):
                 assert float(flow.h[i, j]) == 5
             assert float(flow.Tp[i]) == 4

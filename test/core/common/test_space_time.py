@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Tuple
 import numpy as np
 import pytest
 
-from src.core.utils import DataReshape, SpaceTime
+from src.core.common.space_time import DataReshape, SpaceTime
 
 
 class TestSpaceTime:
