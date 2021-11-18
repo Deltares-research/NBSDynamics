@@ -1,10 +1,11 @@
 from src.core import RESHAPE
+from src.core.common.singletons import CommonConstants
 
 
 class Calcification:
     """Calcification rate."""
 
-    def __init__(self, constants):
+    def __init__(self, constants=CommonConstants()):
         """Calcification rate."""
         self.ad = 1
         self.constants = constants

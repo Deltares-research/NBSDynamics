@@ -18,7 +18,7 @@ class Light:
         light_in: LightVariable,
         lac: LightVariable,
         depth: LightVariable,
-        constants: Optional[Constants] = CommonConstants(),
+        constants: Constants = CommonConstants()
     ):
         """
         Light micro-environment.
@@ -28,7 +28,6 @@ class Light:
             lac (LightVariable): light-attenuation coefficient [m-1]
             depth (LightVariable): water depth [m]
             datareshape (DataReshape): Core reshape matrix class.
-            constants (Constants): Constants required for this class.
         """
         _reshape = RESHAPE()
         self.I0 = _reshape.variable2matrix(light_in, "time")

@@ -111,7 +111,6 @@ class TestDislodgement2x2:
     def test_csf2(self):
         dislodgement = Dislodgement()
         coral = Coral(
-            constants=Constants(),
             dc=[0.2, 0],
             hc=[0.3, 0],
             bc=[0.1, 0],

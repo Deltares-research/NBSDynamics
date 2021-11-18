@@ -17,7 +17,7 @@ class TestMorphology:
     @pytest.fixture
     def valid_morphology(self, matrix_1x1: DataReshape) -> Morphology:
         assert matrix_1x1.spacetime == (1, 1)
-        return Morphology(constants=Constants(), calc_sum=2.4, light_in=2.4, dt_year=1)
+        return Morphology(calc_sum=2.4, light_in=2.4, dt_year=1)
 
     def test_set_rf_optimal_raises_typeerror(self, valid_morphology: Morphology):
         with pytest.raises(TypeError) as e_info:
@@ -49,7 +49,7 @@ class TestMorphology:
 
     def test_initiation(self, matrix_1x1: DataReshape):
         assert matrix_1x1.spacetime == (1, 1)
-        morphology = Morphology(Constants(), 1, 600)
+        morphology = Morphology(1, 600)
         assert morphology.calc_sum == 1
         assert morphology.I0 == 600
         assert morphology.dt_year == 1
@@ -61,10 +61,10 @@ class TestMorphology:
 
     @pytest.fixture(autouse=False)
     def mor_legacy(self, matrix_1x1: DataReshape) -> Morphology:
-        return Morphology(Constants(), 1, matrix_1x1.variable2matrix(600, "time"))
+        return Morphology(1, matrix_1x1.variable2matrix(600, "time"))
 
     def test_calc_sum(self):
-        morphology = Morphology(Constants(), [1, 1], 600)
+        morphology = Morphology([1, 1], 600)
         answer = [1, 1]
         for i, val in enumerate(answer):
             assert morphology.calc_sum[i] == val
@@ -119,7 +119,7 @@ class TestMorphology2x2:
     @pytest.fixture(autouse=False)
     def mor_2x2(self, matrix_2x2: DataReshape) -> Morphology:
         assert matrix_2x2.spacetime == (2, 2)
-        return Morphology(Constants(), [1, 1], [600, 600])
+        return Morphology([1, 1], [600, 600])
 
     def test_initiation(self, mor_2x2: Morphology, matrix_2x2: DataReshape):
         for i in range(matrix_2x2.space):
@@ -134,7 +134,7 @@ class TestMorphology2x2:
         assert mor_2x2.rs_optimal is None
 
     def test_calc_sum_init1(self, matrix_2x2: DataReshape):
-        morphology = Morphology(Constants(), [[1, 1], [1, 1]], [600, 600])
+        morphology = Morphology([[1, 1], [1, 1]], [600, 600])
         for i in range(matrix_2x2.space):
             assert morphology.calc_sum[i] == 2
 

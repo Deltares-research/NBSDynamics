@@ -6,6 +6,11 @@ from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
 
 
+@pytest.fixture(scope="module", autouse=True)
+def default_constants() -> Constants:
+    return CommonConstants()
+
+
 @pytest.fixture(scope="module", autouse=False)
 def matrix_1x1() -> DataReshape:
     RESHAPE().spacetime = (1, 1)
@@ -31,7 +36,6 @@ def valid_coral() -> Coral:
     assert rs.spacetime == (1, 1)
     return Coral(
         **dict(
-            constants=Constants(),
             dc=0.2,
             hc=0.3,
             bc=0.1,
@@ -55,7 +59,6 @@ def coral_2x2() -> Coral:
     assert rs.spacetime == (2, 2)
     return Coral(
         **dict(
-            constants=Constants(),
             dc=0.2,
             hc=0.3,
             bc=0.1,
@@ -69,7 +72,6 @@ def coral_2x2() -> Coral:
 @pytest.fixture(scope="module", autouse=False)
 def no_base_coral_2x2() -> Coral:
     return Coral(
-        constants=Constants(),
         RESHAPE=DataReshape((2, 2)),
         dc=0.4,
         hc=0.3,

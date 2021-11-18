@@ -284,7 +284,6 @@ class BaseSimulation(BaseModel, ABC):
                 progress.set_postfix(inner_loop="coral environment")
                 # light micro-environment
                 lme = Light(
-                    constants=self.constants,
                     light_in=time_series_year(self.environment.light, years[i]),
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
@@ -292,11 +291,11 @@ class BaseSimulation(BaseModel, ABC):
                 lme.rep_light(self.coral)
                 # flow micro-environment
                 fme = Flow(
-                    constants=self.constants,
                     u_current=current_vel,
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
                     peak_period=wave_per,
+                    constants=self.constants,
                 )
                 fme.velocities(self.coral, in_canopy=self.constants.fme)
                 fme.thermal_boundary_layer(self.coral)

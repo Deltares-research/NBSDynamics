@@ -4,14 +4,13 @@ import numpy as np
 import pytest
 
 from src.core.bio_process.calcification import Calcification
-from src.core.common.constants import _Constants as Constants
 from src.core.coral.coral_model import Coral
 
 
 class TestCalcification:
     @pytest.fixture(autouse=False)
     def calc_test(self) -> Calcification:
-        return Calcification(Constants())
+        return Calcification()
 
     def test_init_calcification(self, calc_test: Calcification):
         assert calc_test.ad == 1
