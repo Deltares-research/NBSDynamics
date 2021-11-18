@@ -18,7 +18,7 @@ class Light:
         light_in: LightVariable,
         lac: LightVariable,
         depth: LightVariable,
-        constants: Constants = CommonConstants()
+        constants: Constants = CommonConstants(),
     ):
         """
         Light micro-environment.

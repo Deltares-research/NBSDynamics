@@ -2,9 +2,9 @@ import numpy as np
 from scipy.optimize import newton
 
 from src.core import RESHAPE
+from src.core.common.constants import _Constants as Constants
 from src.core.common.singletons import CommonConstants
 from src.core.common.space_time import CoralOnly, DataReshape
-from src.core.common.constants import _Constants as Constants
 
 
 class Flow:

@@ -1,9 +1,10 @@
 import numpy as np
 
 from src.core import RESHAPE
+from src.core.common.constants import _Constants as Constants
 from src.core.common.singletons import CommonConstants
 from src.core.coral.coral_model import Coral
-from src.core.common.constants import _Constants as Constants
+
 
 class Morphology:
     """Morphological development."""
@@ -12,7 +13,9 @@ class Morphology:
     __rp_optimal = None
     __rs_optimal = None
 
-    def __init__(self, calc_sum, light_in, dt_year=1, constants: Constants = CommonConstants()):
+    def __init__(
+        self, calc_sum, light_in, dt_year=1, constants: Constants = CommonConstants()
+    ):
         """
         Morphological development.
 
