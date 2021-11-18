@@ -177,7 +177,7 @@ class TestMorphology2x2:
         coral_2x2.light = matrix_2x2.variable2matrix([600, 600], "time")
         coral_2x2.ucm = matrix_2x2.variable2array([0.1, 0.1])
         coral_2x2.light_bc = matrix_2x2.variable2matrix([0.3, 0.3], "time")
-        # morphology.delta_volume(coral)
+        mor_2x2.delta_volume(coral_2x2)
         for ratio in ("rf", "rp", "rs"):
             setattr(mor_2x2, f"{ratio}_optimal", coral_2x2)
         mor_2x2.update(coral_2x2)
