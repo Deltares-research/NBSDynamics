@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "NBSDynamics"
-version = "0.6.0"
+version = "0.7.0"
 description = "A biophysical model framework written in Python to make simulations on coral development based on four environmental factors: (1) light; (2) flow; (3) temperature; and (4) acidity. For the hydrodynamics, the model can be coupled to Delft3D Flexible Mesh; a hydrodynamic model developed at Deltares."
 authors = ["Jasper Dijkstra <jasper.dijkstra@deltares.nl>"]
 maintainers = ["Carles S. Soriano Perez <carles.sorianoperez@deltares.nl>"]
@@ -43,7 +43,7 @@ pre-commit = "^2.15.0"
 name = "cz_conventional_commits"
 changelog_file = "docs/changelog.md"
 update_changelog_on_bump = true
-version = "0.6.0"
+version = "0.7.0"
 tag_format = "v$major.$minor.$patch"
 version_files = [
     "src/core/__init__.py",
