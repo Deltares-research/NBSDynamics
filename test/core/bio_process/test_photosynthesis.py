@@ -1,4 +1,4 @@
-from test.core.bio_process.bio_utils import valid_coral
+from test.core.bio_process.bio_utils import valid_coral, coral_2x2
 
 import numpy as np
 import pytest
@@ -78,3 +78,47 @@ class TestPhotosynthesis:
         # core.PROCESSES.pfd = False
         photo_legacy.flow_dependency(valid_coral)
         assert float(photo_legacy.pfd) == 1
+
+
+class TestPhotosynthesis2x2:
+    """
+    Legacy tests with a DataReshape 2x2 matrix.
+    """
+
+    @pytest.fixture(autouse=False)
+    def photo_2x2(self) -> Photosynthesis:
+        return Photosynthesis(Constants(), [600, 600], False, DataReshape((2, 2)))
+
+    def test_initiation(self, photo_2x2: Photosynthesis):
+        for i in range(photo_2x2.datareshape.space):
+            for j in range(photo_2x2.datareshape.time):
+                assert float(photo_2x2.I0[i, j]) == 600
+        assert photo_2x2.first_year is False
+        assert float(photo_2x2.pld) == 1
+        assert float(photo_2x2.ptd) == 1
+        assert float(photo_2x2.pfd) == 1
+
+    def test_photosynthetic_light_dependency(
+        self, photo_2x2: Photosynthesis, coral_2x2: Coral
+    ):
+        coral_2x2.initiate_coral_morphology()
+        coral_2x2.light = [600, 600]
+        photo_2x2.light_dependency(coral_2x2, "qss")
+        for i in range(coral_2x2.RESHAPE.space):
+            for j in range(coral_2x2.RESHAPE.time):
+                assert float(photo_2x2.pld[i, j]), pytest.approx(0.90727011)
+
+    def test_photosynthetic_flow_dependency(
+        self, photo_2x2: Photosynthesis, coral_2x2: Coral
+    ):
+        photo_2x2.constants = coral_2x2.constants
+        coral_2x2.initiate_coral_morphology()
+        coral_2x2.ucm = coral_2x2.RESHAPE.variable2array([0.1, 0.1])
+        coral_2x2.constants.pfd = True
+        photo_2x2.flow_dependency(coral_2x2)
+        for i in range(coral_2x2.RESHAPE.space):
+            for j in range(coral_2x2.RESHAPE.time):
+                assert float(photo_2x2.pfd[i, j]), pytest.approx(0.94485915)
+        coral_2x2.constants.pfd = False
+        photo_2x2.flow_dependency(coral_2x2)
+        assert float(photo_2x2.pfd) == 1
