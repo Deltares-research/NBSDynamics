@@ -1,10 +1,11 @@
+from test.core.bio_process.bio_utils import coral_2x2, valid_coral
+
 import pytest
-from test.core.bio_process.bio_utils import valid_coral, coral_2x2
 
 from src.core.bio_process.dislodgment import Dislodgement
+from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 from src.core.utils import DataReshape
-from src.core.constants import Constants
 
 
 class TestDislodgement:

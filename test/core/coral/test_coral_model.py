@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pytest
 
@@ -5,7 +7,6 @@ from src.core.constants import Constants
 from src.core.coral.coral_model import Coral
 from src.core.coral.coral_protocol import CoralProtocol
 from src.core.utils import DataReshape
-from typing import Tuple
 
 
 @pytest.fixture(autouse=False)

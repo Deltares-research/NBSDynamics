@@ -1,5 +1,6 @@
+from test.core.bio_process.bio_utils import coral_2x2, valid_coral
+
 import pytest
-from test.core.bio_process.bio_utils import valid_coral, coral_2x2
 
 from src.core.bio_process.temperature import Temperature
 from src.core.constants import Constants
