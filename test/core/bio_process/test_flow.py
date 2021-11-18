@@ -5,7 +5,7 @@ from src.core.constants import Constants
 from src.core.utils import DataReshape
 
 
-class Testflow:
+class TestFlow:
     def test_init_flow(self):
         flow = Flow(Constants(), 0.1, 0.1, 5, 4, DataReshape())
         assert flow.uc[0] == 0.1
@@ -113,3 +113,15 @@ class Testflow:
                 wac_type="wave",
             )
             assert float(wac), pytest.approx(answer[i], 0.1)
+
+
+class TestFlox2x2:
+    def test_initiation(self):
+        reshape_2x2 = DataReshape((2, 2))
+        flow = Flow(Constants(), [0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4], reshape_2x2)
+        for i in range(reshape_2x2.space):
+            assert float(flow.uc[i]) == 0.1
+            assert float(flow.uw[i]) == 0.1
+            for j in range(reshape_2x2.time):
+                assert float(flow.h[i, j]) == 5
+            assert float(flow.Tp[i]) == 4
