@@ -1,5 +1,6 @@
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
+from src.core import RESHAPE
 
 
 class Temperature:
@@ -22,7 +23,7 @@ class Temperature:
         :type coral: Coral
         """
         if self.constants.tme:
-            delta_t = coral.RESHAPE.variable2matrix(coral.delta_t, "space")
+            delta_t = RESHAPE().variable2matrix(coral.delta_t, "space")
             coral.dTc = (
                 (delta_t * self.constants.ap)
                 / (self.constants.k * self.constants.K0)

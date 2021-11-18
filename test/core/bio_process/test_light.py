@@ -1,4 +1,10 @@
-from test.core.bio_process.bio_utils import coral_2x2, no_base_coral_2x2, valid_coral
+from test.core.bio_process.bio_utils import (
+    coral_2x2,
+    no_base_coral_2x2,
+    valid_coral,
+    matrix_2x2,
+    matrix_1x1,
+)
 
 import numpy as np
 import pytest
@@ -13,8 +19,9 @@ tolerance = 0.0000001
 
 class TestLight:
     @pytest.fixture(autouse=False)
-    def light_test(self) -> Light:
-        return Light(Constants(), 600, 0.1, 5, DataReshape())
+    def light_test(self, matrix_1x1: DataReshape) -> Light:
+        assert matrix_1x1.spacetime == (1, 1)
+        return Light(Constants(), 600, 0.1, 5)
 
     def test_initiation(self, light_test: Light):
         assert light_test.I0, pytest.approx(600, tolerance)
@@ -70,22 +77,24 @@ class TestLight2x2:
 
     @pytest.fixture(autouse=False)
     def light_2x2(self) -> Light:
-        return Light(Constants(), [600, 600], [0.1, 0.1], [5, 5], DataReshape((2, 2)))
+        return Light(Constants(), [600, 600], [0.1, 0.1], [5, 5])
 
-    def test_initiation(self, light_2x2: Light, coral_2x2: Coral):
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+    def test_initiation(self, light_2x2: Light, matrix_2x2: DataReshape):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(light_2x2.I0[i, j]) == 600
                 assert float(light_2x2.Kd[i, j]) == 0.1
                 assert float(light_2x2.h[i, j]) == 5
 
-    def test_representative_light(self, light_2x2: Light, coral_2x2: Coral):
+    def test_representative_light(
+        self, light_2x2: Light, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         # base light
         coral_2x2.initiate_coral_morphology()
         light_2x2.rep_light(coral_2x2)
         answer = 217.0490558
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(coral_2x2.light[i, j]), pytest.approx(answer)
 
     def test_representative_light_no_base(
@@ -98,37 +107,41 @@ class TestLight2x2:
             for j in range(no_base_coral_2x2.RESHAPE.time):
                 assert float(no_base_coral_2x2.light[i, j]), pytest.approx(answer)
 
-    def test_coral_biomass(self, light_2x2: Light, coral_2x2: Coral):
+    def test_coral_biomass(
+        self, light_2x2: Light, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         coral_2x2.initiate_coral_morphology()
         light_2x2.biomass(coral_2x2)
         answer = 0.14287642
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(coral_2x2.light_bc[i, j]), pytest.approx(answer)
 
-    def test_coral_biomass_no_base(self, light_2x2: Light, no_base_coral_2x2: Coral):
+    def test_coral_biomass_no_base(
+        self, light_2x2: Light, no_base_coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         # no base light
         no_base_coral_2x2.initiate_coral_morphology()
         light_2x2.biomass(no_base_coral_2x2)
         answer = 0.314159265
-        for i in range(no_base_coral_2x2.RESHAPE.space):
-            for j in range(no_base_coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(no_base_coral_2x2.light_bc[i, j]), pytest.approx(answer)
 
-    def test_base_light(self, light_2x2: Light, coral_2x2: Coral):
+    def test_base_light(self, light_2x2: Light, coral_2x2: Coral, matrix_2x2: DataReshape):
         # base light
         coral_2x2.initiate_coral_morphology()
         result = light_2x2.base_light(coral_2x2)
         answer = 0.05478977
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(result[i, j]), pytest.approx(answer)
 
-    def test_base_light_no_base(self, light_2x2: Light, no_base_coral_2x2: Coral):
+    def test_base_light_no_base(self, light_2x2: Light, no_base_coral_2x2: Coral, matrix_2x2: DataReshape):
         # no base light
         no_base_coral_2x2.initiate_coral_morphology()
         result = light_2x2.base_light(no_base_coral_2x2)
         answer: float = 0.0
-        for i in range(no_base_coral_2x2.RESHAPE.space):
-            for j in range(no_base_coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(result[i, j]) == float(answer)

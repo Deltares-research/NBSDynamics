@@ -1,6 +1,7 @@
 import numpy as np
 
 from src.core.coral.coral_model import Coral
+from src.core import RESHAPE
 
 
 class PopulationStates:
@@ -23,9 +24,9 @@ class PopulationStates:
         :param coral: coral animal
         :type coral: Coral
         """
-        coral.pop_states = np.zeros((*coral.RESHAPE.spacetime, 4))
-        for n in range(coral.RESHAPE.time):
-            photosynthesis = np.zeros(coral.RESHAPE.space)
+        coral.pop_states = np.zeros((*RESHAPE().spacetime, 4))
+        for n in range(RESHAPE().time):
+            photosynthesis = np.zeros(RESHAPE().space)
             photosynthesis[coral.cover > 0.0] = coral.photo_rate[
                 coral.cover > 0.0, n
             ]  # 21_09 have changed coral.cover>0 to .0.
@@ -41,7 +42,7 @@ class PopulationStates:
         :type coral: Coral
         :type ps: numpy.ndarray
         """
-        p = np.zeros((coral.RESHAPE.space, 4))
+        p = np.zeros((RESHAPE().space, 4))
         # # calculations
         # growing conditions
         # > bleached pop.      # ps>0. here represents ps>tsh that is the value of the bleaching treshold light and 1. where 1.0 is a number, not column reference

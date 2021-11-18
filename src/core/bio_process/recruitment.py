@@ -2,6 +2,7 @@ from src.core.base_model import ExtraModel
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly
 from src.core.coral.coral_model import Coral
+from src.core import RESHAPE
 
 
 class Recruitment(ExtraModel):
@@ -44,7 +45,7 @@ class Recruitment(ExtraModel):
         # recruitment
         averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
         # living cover
-        living_cover = coral.RESHAPE.matrix2array(coral.living_cover, "space")
+        living_cover = RESHAPE().matrix2array(coral.living_cover, "space")
 
         recruited = CoralOnly().in_space(
             coral=coral,

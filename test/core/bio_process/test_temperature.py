@@ -1,4 +1,4 @@
-from test.core.bio_process.bio_utils import coral_2x2, valid_coral
+from test.core.bio_process.bio_utils import coral_2x2, valid_coral, matrix_2x2
 
 import pytest
 
@@ -49,21 +49,25 @@ class TestTemperature2x2:
             for j in range(reshape_2x2.time):
                 assert temp_2x2.T[i, j] == 300
 
-    def test_coral_temperature(self, temp_2x2: Temperature, coral_2x2: Coral):
+    def test_coral_temperature(
+        self, temp_2x2: Temperature, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         coral_2x2.initiate_coral_morphology()
         coral_2x2.delta_t = [0.001, 0.001]
         coral_2x2.light = [600, 600]
         temp_2x2.coral_temperature(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(coral_2x2.temp[i, j]), pytest.approx(300.00492692)
 
-    def test_no_tme(self, temp_2x2: Temperature, coral_2x2: Coral):
+    def test_no_tme(
+        self, temp_2x2: Temperature, coral_2x2: Coral, matrix_2x2: DataReshape
+    ):
         coral_2x2.constants.tme = False
         coral_2x2.initiate_coral_morphology()
         coral_2x2.delta_t = [0.001, 0.001]
         coral_2x2.light = [600, 600]
         temp_2x2.coral_temperature(coral_2x2)
-        for i in range(coral_2x2.RESHAPE.space):
-            for j in range(coral_2x2.RESHAPE.time):
+        for i in range(matrix_2x2.space):
+            for j in range(matrix_2x2.time):
                 assert float(coral_2x2.temp[i, j]), pytest.approx(300)
