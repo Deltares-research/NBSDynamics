@@ -65,23 +65,26 @@ class TestSpaceTime:
         assert len(spacetime) == 2
         assert isinstance(spacetime, tuple)
 
-    @pytest.mark.parametrize("value", [(int(1)), (float(1)), (str(1))])
+    @pytest.mark.parametrize(
+        "value",
+        [
+            pytest.param(int(1), id="Int"),
+            pytest.param(float(1), id="Float"),
+            pytest.param(str(1), id="String"),
+            pytest.param((float(1), 1), id="Tuple"),
+        ],
+    )
     def test_global_raise_type_error(self, value: Any):
         with pytest.raises(TypeError):
             SpaceTime(value)
 
-    @pytest.mark.parametrize("value", [((1, 1)), ([1, 1])])
+    @pytest.mark.parametrize("value", [pytest.param((1, 1)), pytest.param([1, 1])])
     def test_global_not_raise_type_error(self, value):
         SpaceTime(value)
 
-    @pytest.mark.parametrize("value", [((1,)), ((1, 1, 1))])
+    @pytest.mark.parametrize("value", [pytest.param((1,)), pytest.param((1, 1, 1))])
     def test_size_error(self, value: tuple):
         with pytest.raises(ValueError):
-            SpaceTime(value)
-
-    @pytest.mark.parametrize("value", [((float(1), 1))])
-    def test_local_raise_type_error(self, value):
-        with pytest.raises(TypeError):
             SpaceTime(value)
 
     def test_return_type(self):
@@ -106,12 +109,14 @@ class TestDataReshape:
         assert isinstance(reshape.time, int)
         assert reshape.time == spacetime[1]
 
-    @pytest.mark.parametrize("value", [(int(1)), (float(1)), (str(1))])
+    @pytest.mark.parametrize(
+        "value", [pytest.param(int(1)), pytest.param(float(1)), pytest.param(str(1))]
+    )
     def test_set_spacetime_raise_type_error(self, value: Any):
         with pytest.raises(TypeError):
             DataReshape(value)
 
-    @pytest.mark.parametrize("value", [((1, 1)), ([1, 1])])
+    @pytest.mark.parametrize("value", [pytest.param((1, 1)), pytest.param([1, 1])])
     def test_set_spacetime_not_raise_error(self, value: Any):
         DataReshape(value)
 

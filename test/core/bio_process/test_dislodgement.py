@@ -19,7 +19,7 @@ class TestDislodgement:
         dislodgement = Dislodgement()
         valid_coral.um = 0
         dislodgement.dislodgement_mechanical_threshold(valid_coral)
-        dislodgement.dmt == 1e20
+        assert dislodgement.dmt == 1e20
 
     def test_dmt2(self, valid_coral: Coral):
         dislodgement = Dislodgement()

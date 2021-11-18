@@ -72,10 +72,12 @@ class TestPhotosynthesis:
     def test_photosynthetic_flow_dependency(
         self, photo_legacy: Photosynthesis, valid_coral: Coral
     ):
+        photo_legacy.constants = valid_coral.constants
         valid_coral.ucm = 0.1
+        photo_legacy.pfd = True
         photo_legacy.flow_dependency(valid_coral)
         assert float(photo_legacy.pfd), pytest.approx(0.94485915)
-        # core.PROCESSES.pfd = False
+        photo_legacy.pfd = False
         photo_legacy.flow_dependency(valid_coral)
         assert float(photo_legacy.pfd) == 1
 

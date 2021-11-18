@@ -23,7 +23,8 @@ class TestTemperature:
         assert float(valid_coral.temp), pytest.approx(300.00492692)
 
     def test_no_tme(self, temp_test: Temperature, valid_coral: Coral):
-        # core.PROCESSES.tme = False
+        temp_test.constants = valid_coral.constants
+        temp_test.constants.tme = False
         valid_coral.delta_t = 0.001
         valid_coral.light = 600
         temp_test.coral_temperature(valid_coral)
