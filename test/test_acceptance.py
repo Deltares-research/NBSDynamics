@@ -1,5 +1,5 @@
 from pathlib import Path
-from test.utils import TestUtils, only_windows
+from test.utils import TestUtils
 from typing import Callable
 
 import numpy as np

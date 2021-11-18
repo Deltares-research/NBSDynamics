@@ -1,21 +1,33 @@
+from typing import Union
+
 import numpy as np
 
+from src.core.constants import Constants
 from src.core.utils import CoralOnly, DataReshape
+
+LightVariable = Union[float, list, tuple, np.ndarray]
 
 
 class Light:
     """Light micro-environment."""
 
-    def __init__(self, constants, light_in, lac, depth, datareshape: DataReshape):
-        """Light micro-environment.
+    def __init__(
+        self,
+        constants: Constants,
+        light_in: LightVariable,
+        lac: LightVariable,
+        depth: LightVariable,
+        datareshape: DataReshape,
+    ):
+        """
+        Light micro-environment.
 
-        :param light_in: incoming light-intensity at the water-air interface [u mol photons m-2 s-1]
-        :param lac: light-attenuation coefficient [m-1]
-        :param depth: water depth [m]
-
-        :type light_in: float, list, tuple, numpy.ndarray
-        :type lac: float, list, tuple, numpy.ndarray
-        :type depth: float, list, tuple, numpy.ndarray
+        Args:
+            constants (Constants): Constants required for this class.
+            light_in (LightVariable): Incoming light-intensity at the water-air interface [u mol photons m-2 s-1]
+            lac (LightVariable): light-attenuation coefficient [m-1]
+            depth (LightVariable): water depth [m]
+            datareshape (DataReshape): Core reshape matrix class.
         """
         self.I0 = datareshape.variable2matrix(light_in, "time")
         self.Kd = datareshape.variable2matrix(lac, "time")

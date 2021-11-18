@@ -1,9 +1,18 @@
 import pytest
 
 from src.core.bio_process.flow import Flow
+from src.core.constants import Constants
+from src.core.utils import DataReshape
 
 
-class Testflow:
+class TestFlow:
+    def test_init_flow(self):
+        flow = Flow(Constants(), 0.1, 0.1, 5, 4, DataReshape())
+        assert flow.uc[0] == 0.1
+        assert flow.uw[0] == 0.1
+        assert flow.h == 5
+        assert flow.Tp[0] == 4
+
     @pytest.mark.parametrize("wac_type", [pytest.param(None), pytest.param("unknown")])
     def test_wave_attenuation_unknown_type_raises_valueerror(self, wac_type: str):
         input_dict = dict(
@@ -75,3 +84,44 @@ class Testflow:
         )
 
         assert Flow.wave_attenuation(**input_dict) == pytest.approx(0.9888712497166652)
+
+    def test_wave_attenuation(self):
+        # input array
+        diameter = [0.1, 0.2, 0.4]  # [m]
+        height = 0.3  # [m]
+        distance = [0.3, 0.4, 0.6]  # [m]
+        velocity = 0.05  # [m s-1]
+        period = 4  # [s]
+        depth = 0.75  # [m]
+
+        # answers
+        answer = [
+            0.73539733818684030,
+            0.47628599416211803,
+            0.20277038395777466,
+        ]
+
+        for i in range(3):
+            wac = Flow.wave_attenuation(
+                constants=Constants(),
+                diameter=diameter[i],
+                height=height,
+                distance=distance[i],
+                velocity=velocity,
+                period=period,
+                depth=depth,
+                wac_type="wave",
+            )
+            assert float(wac), pytest.approx(answer[i], 0.1)
+
+
+class TestFlox2x2:
+    def test_initiation(self):
+        reshape_2x2 = DataReshape((2, 2))
+        flow = Flow(Constants(), [0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4], reshape_2x2)
+        for i in range(reshape_2x2.space):
+            assert float(flow.uc[i]) == 0.1
+            assert float(flow.uw[i]) == 0.1
+            for j in range(reshape_2x2.time):
+                assert float(flow.h[i, j]) == 5
+            assert float(flow.Tp[i]) == 4

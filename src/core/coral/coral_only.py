@@ -24,17 +24,21 @@ class CoralOnly:
         function: Callable,
         args: Tuple,
         no_cover_value: Optional[float] = 0,
-    ):
-        """Only execute the function when there is coral cover.
+    ) -> np.ndarray:
+        """
+        Only execute the function when there is coral cover.
 
-        :param coral: coral object
-        :param function: function to be executed
-        :param args: input arguments of the function
-        :param no_cover_value: default value in absence of coral cover
+        Args:
+            coral (Coral): Coral object.
+            function (Callable): Function to be executed.
+            args (Tuple): input arguments of the function.
+            no_cover_value (Optional[float], optional): Default value in absence of coral cover. Defaults to 0.
 
-        :type coral: Coral
-        :type args: tuple
-        :type no_cover_value: float, optional
+        Raises:
+            ValueError: When sizes do not match.
+
+        Returns:
+            np.ndarray: Result of the coral function.
         """
         args = list(args)
         for i, arg in enumerate(args):

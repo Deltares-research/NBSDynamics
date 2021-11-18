@@ -53,7 +53,7 @@ class TestReef1D:
             "\n\tPeak wave period [s]         : None"
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=False)
     def reef_1d(self) -> Reef1D:
         """
         Initializes a valid Reef1D to be used in the tests.

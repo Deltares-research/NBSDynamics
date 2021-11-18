@@ -1,14 +1,7 @@
-"""
-coral_model - core
-
-@author: Gijs G. Hendrickx
-@contributor: Peter M.J. Herman
-"""
-
 from typing import Dict, Optional, Union
 
 import numpy as np
-from pydantic import Extra, validator
+from pydantic import validator
 
 from src.core.base_model import ExtraModel
 from src.core.constants import Constants
@@ -24,13 +17,15 @@ class Coral(ExtraModel):
     """
 
     RESHAPE = DataReshape()
-    constants: Constants
+    constants: Constants = Constants()
     dc: CoralAttribute  # diameter coral plate [m]
     hc: CoralAttribute  # coral height [m]
     bc: CoralAttribute  # diameter coral base [m]
     tc: CoralAttribute  # thickness coral plate [m]
     ac: CoralAttribute  # axial distance corals [m]
     Csp: Optional[float] = 1  # species constant [-]
+
+    # other attributes.
     _cover: Optional[CoralAttribute] = None
     # light micro-environment
     light: Optional[CoralAttribute] = None
