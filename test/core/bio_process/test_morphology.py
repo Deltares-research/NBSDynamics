@@ -4,8 +4,8 @@ import pytest
 
 from src.core.bio_process.morphology import Morphology
 from src.core.common.constants import Constants
-from src.core.coral.coral_model import Coral
 from src.core.common.space_time import DataReshape
+from src.core.coral.coral_model import Coral
 
 
 class TestMorphology:
