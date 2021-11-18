@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 
 from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral
 from src.core.coral.coral_protocol import CoralProtocol
-from src.core.common.space_time import DataReshape
 
 
 @pytest.fixture(autouse=False)
