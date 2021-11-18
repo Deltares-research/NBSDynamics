@@ -1,8 +1,8 @@
 import pytest
 
 from src.core.bio_process.flow import Flow
-from src.core.constants import Constants
-from src.core.utils import DataReshape
+from src.core.common.constants import Constants
+from src.core.common.space_time import DataReshape
 
 
 class TestFlow:

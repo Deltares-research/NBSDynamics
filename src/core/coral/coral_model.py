@@ -4,8 +4,8 @@ import numpy as np
 from pydantic import validator
 
 from src.core.base_model import ExtraModel
-from src.core.constants import Constants
-from src.core.utils import CoralOnly, DataReshape
+from src.core.common.constants import Constants
+from src.core.common.space_time import CoralOnly, DataReshape
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 

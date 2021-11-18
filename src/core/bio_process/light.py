@@ -2,8 +2,8 @@ from typing import Union
 
 import numpy as np
 
-from src.core.constants import Constants
-from src.core.utils import CoralOnly, DataReshape
+from src.core.common.constants import Constants
+from src.core.common.space_time import CoralOnly, DataReshape
 
 LightVariable = Union[float, list, tuple, np.ndarray]
 

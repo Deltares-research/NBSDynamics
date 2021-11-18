@@ -1,6 +1,6 @@
-from src.core.common import CommonConstants, CommonEnvironment
-from src.core.constants import Constants
-from src.core.environment import Environment
+from src.core.common.common import CommonConstants, CommonEnvironment
+from src.core.common.constants import Constants
+from src.core.common.environment import Environment
 
 
 class TestCommonConstants:
@@ -14,6 +14,7 @@ class TestCommonConstants:
         assert const_0.tme == const_1.tme
         const_0.tme = not const_0.tme
         assert const_0.tme == const_1.tme
+
 
 class TestCommonEnvironment:
     def test_commonenvironment_singleton(self):

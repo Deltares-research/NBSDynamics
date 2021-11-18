@@ -3,8 +3,8 @@ This file is intended to contain all the common classes used as unique object
 throughout the `NBSDynamics` project.
 Although these classes are defined elsewhere, here we implement them as singletons.
 """
-from src.core.constants import Constants
-from src.core.environment import Environment
+from src.core.common.constants import Constants
+from src.core.common.environment import Environment
 from typing import Type
 
 

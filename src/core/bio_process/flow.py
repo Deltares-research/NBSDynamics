@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import newton
 
-from src.core.utils import CoralOnly, DataReshape
+from src.core.common.space_time import CoralOnly, DataReshape
 
 
 class Flow:

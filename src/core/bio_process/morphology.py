@@ -1,7 +1,7 @@
 import numpy as np
 
 from src.core.coral.coral_model import Coral
-from src.core.utils import DataReshape
+from src.core.common.space_time import DataReshape
 
 
 class Morphology:

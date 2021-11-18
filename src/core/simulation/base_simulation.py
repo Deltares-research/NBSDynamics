@@ -17,13 +17,13 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.constants import Constants
+from src.core.common.constants import Constants
 from src.core.coral.coral_model import Coral
-from src.core.environment import Environment
+from src.core.common.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.output_wrapper import OutputWrapper
-from src.core.utils import time_series_year
+from src.core.common.space_time import time_series_year
 
 
 class BaseSimulation(BaseModel, ABC):
