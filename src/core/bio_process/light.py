@@ -27,7 +27,7 @@ class Light:
             light_in (LightVariable): Incoming light-intensity at the water-air interface [u mol photons m-2 s-1]
             lac (LightVariable): light-attenuation coefficient [m-1]
             depth (LightVariable): water depth [m]
-            datareshape (DataReshape): Core reshape matrix class.
+            constants (Constants): List of constants to be used for this object.
         """
         _reshape = RESHAPE()
         self.I0 = _reshape.variable2matrix(light_in, "time")
