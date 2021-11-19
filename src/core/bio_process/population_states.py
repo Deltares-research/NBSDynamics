@@ -1,9 +1,10 @@
+from typing import Optional
+
 import numpy as np
 
 from src.core import RESHAPE
-from src.core.coral.coral_model import Coral
 from src.core.common.constants import Constants
-from typing import Optional
+from src.core.coral.coral_model import Coral
 
 
 class PopulationStates:
