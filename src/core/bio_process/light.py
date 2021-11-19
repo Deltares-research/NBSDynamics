@@ -1,10 +1,11 @@
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 
 from src.core import RESHAPE
 from src.core.common.constants import Constants
-from src.core.common.space_time import CoralOnly, DataReshape
+from src.core.common.space_time import DataReshape
+from src.core.coral.coral_only import CoralOnly
 
 LightVariable = Union[float, list, tuple, np.ndarray]
 
@@ -14,16 +15,15 @@ class Light:
 
     def __init__(
         self,
-        constants: Constants,
         light_in: LightVariable,
         lac: LightVariable,
         depth: LightVariable,
+        constants: Constants = Constants(),
     ):
         """
         Light micro-environment.
 
         Args:
-            constants (Constants): Constants required for this class.
             light_in (LightVariable): Incoming light-intensity at the water-air interface [u mol photons m-2 s-1]
             lac (LightVariable): light-attenuation coefficient [m-1]
             depth (LightVariable): water depth [m]

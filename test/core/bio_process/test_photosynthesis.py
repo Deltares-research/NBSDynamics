@@ -65,7 +65,7 @@ class TestPhotosynthesis:
     @pytest.fixture(autouse=False)
     def photo_legacy(self, matrix_1x1: DataReshape) -> Photosynthesis:
         assert matrix_1x1.spacetime == (1, 1)
-        return Photosynthesis(Constants(), 600, False)
+        return Photosynthesis(600, False)
 
     def test_photosynthetic_light_dependency(
         self, photo_legacy: Photosynthesis, valid_coral: Coral
@@ -95,7 +95,7 @@ class TestPhotosynthesis2x2:
     @pytest.fixture(autouse=False)
     def photo_2x2(self, matrix_2x2: DataReshape) -> Photosynthesis:
         assert matrix_2x2.spacetime == (2, 2)
-        return Photosynthesis(Constants(), [600, 600], False)
+        return Photosynthesis([600, 600], False)
 
     def test_initiation(self, photo_2x2: Photosynthesis, matrix_2x2: DataReshape):
         for i in range(matrix_2x2.space):

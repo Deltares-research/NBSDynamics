@@ -3,51 +3,27 @@ This file is intended to contain all the common classes used as unique object
 throughout the `NBSDynamics` project.
 Although these classes are defined elsewhere, here we implement them as singletons.
 """
-from typing import Optional, Type
-
-from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
 
 
-class RESHAPE(DataReshape):
+class Singleton(object):
+    """
+    Singleton class representing the design pattern.
+    This class can be used for concepts that are not meant to change state during a simulation
+    such as DataReshape, represented by RESHAPE.
+    """
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls, *args, **kwargs)
+        return cls._instance
+
+
+class RESHAPE(Singleton, DataReshape):
     """
     `DataReshape` Singleton.
     """
 
-    _instance: Optional[DataReshape] = None
-
-    def __new__(cls: Type[DataReshape], **kwargs) -> DataReshape:
-        """
-        Overriding new method to ensure this class behaves as s singleton.
-
-        Args:
-            cls (Type[Constants]): Required instance class.
-
-        Returns:
-            Constants: Singleton for `CommonConstants`
-        """
-        if cls._instance == None:
-            cls._instance = DataReshape(**kwargs).__new__(cls)
-        return cls._instance
-
-
-class CommonConstants(Constants):
-    """
-    Constants Singleton.
-    """
-
-    _instance: Optional[Constants] = None
-
-    def __new__(cls: Type[Constants], **kwargs) -> Constants:
-        """
-        Overriding new method to ensure this class behaves as s singleton.
-
-        Args:
-            cls (Type[Constants]): Required instance class.
-
-        Returns:
-            Constants: Singleton for `CommonConstants`
-        """
-        if cls._instance == None:
-            cls._instance = Constants(**kwargs).__new__(cls)
-        return cls._instance
+    pass

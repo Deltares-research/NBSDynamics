@@ -17,7 +17,7 @@ class TestTemperature:
     @pytest.fixture(autouse=False)
     def temp_test(self, matrix_1x1: DataReshape) -> Temperature:
         assert matrix_1x1.spacetime == (1, 1)
-        return Temperature(Constants(), 300)
+        return Temperature(300)
 
     def test_initiation(self, temp_test: Temperature):
         assert temp_test.T == 300
@@ -45,7 +45,7 @@ class TestTemperature2x2:
     @pytest.fixture(autouse=False)
     def temp_2x2(self, matrix_2x2: DataReshape) -> Temperature:
         assert matrix_2x2.spacetime == (2, 2)
-        return Temperature(Constants(), [300, 300])
+        return Temperature([300, 300])
 
     def test_initiation(self, temp_2x2: Temperature, matrix_2x2: DataReshape):
         for i in range(matrix_2x2.space):

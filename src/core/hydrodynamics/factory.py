@@ -50,3 +50,20 @@ class HydrodynamicsFactory:
             msg = f"{model_name} not in {[x.__name__ for x in HydrodynamicsFactory.supported_modes]}."
             raise ValueError(msg)
         return hydromodel
+
+    @staticmethod
+    def create(model_name: str, *args, **kwargs) -> HydrodynamicProtocol:
+        """
+        Creates a `HydrodynamicProtocol` based on the model_name type and the dictionary of
+        values (if any) given.
+
+        Args:
+            model_name (str): Model type name.
+
+        Returns:
+            HydrodynamicProtocol: Instance of the requested model.
+        """
+        m_type: HydrodynamicProtocol = HydrodynamicsFactory.get_hydrodynamic_model_type(
+            model_name
+        )
+        return m_type(**kwargs)

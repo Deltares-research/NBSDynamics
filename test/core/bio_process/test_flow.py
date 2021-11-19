@@ -9,7 +9,7 @@ from src.core.common.space_time import DataReshape
 
 class TestFlow:
     def test_init_flow(self, matrix_1x1):
-        flow = Flow(Constants(), 0.1, 0.1, 5, 4)
+        flow = Flow(0.1, 0.1, 5, 4)
         assert flow.uc[0] == 0.1
         assert flow.uw[0] == 0.1
         assert flow.h == 5
@@ -119,7 +119,7 @@ class TestFlow:
 
 class TestFlox2x2:
     def test_initiation(self, matrix_2x2: DataReshape):
-        flow = Flow(Constants(), [0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4])
+        flow = Flow([0.1, 0.1], [0.1, 0.1], [5, 5], [4, 4])
         for i in range(matrix_2x2.space):
             assert float(flow.uc[i]) == 0.1
             assert float(flow.uw[i]) == 0.1

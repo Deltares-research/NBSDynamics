@@ -2,13 +2,21 @@ import numpy as np
 from scipy.optimize import newton
 
 from src.core import RESHAPE
+from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly, DataReshape
 
 
 class Flow:
     """Flow micro-environment."""
 
-    def __init__(self, constants, u_current, u_wave, h, peak_period):
+    def __init__(
+        self,
+        u_current,
+        u_wave,
+        h,
+        peak_period,
+        constants: Constants = Constants(),
+    ):
         """
         :param u_current: current flow velocity [m s-1]
         :param u_wave: wave flow velocity [m s-1]

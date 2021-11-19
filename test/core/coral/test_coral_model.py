@@ -14,7 +14,6 @@ from src.core.coral.coral_protocol import CoralProtocol
 def coral_1x1() -> Coral:
     RESHAPE().spacetime = (1, 1)
     input_dict = dict(
-        constants=Constants(),
         dc=0.2,
         hc=0.1,
         bc=0.2,
@@ -30,7 +29,6 @@ def coral_2x2() -> Coral:
     RESHAPE().spacetime = (2, 2)
     input_dict = dict(
         RESHAPE=DataReshape((2, 2)),
-        constants=Constants(),
         dc=[0.2, 0.2],
         hc=[0.3, 0.3],
         bc=[0.1, 0.1],
@@ -108,7 +106,6 @@ class TestCoral2x2:
     def mixed_coral(self) -> Coral:
         input_dict = dict(
             RESHAPE=DataReshape((2, 2)),
-            constants=Constants(),
             dc=0.2,
             hc=0.1,
             bc=0.2,
