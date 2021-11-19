@@ -8,3 +8,4 @@ dependencies:
     - pytest==5.0.1
     - pytest-cov
     - teamcity-messages
+    - poetry
