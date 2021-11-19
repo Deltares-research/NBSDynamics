@@ -1,8 +1,7 @@
 import numpy as np
 
 from src.core import RESHAPE
-from src.core.common.constants import _Constants as Constants
-from src.core.common.singletons import CommonConstants
+from src.core.common.constants import Constants
 from src.core.coral.coral_model import Coral
 
 
@@ -14,7 +13,7 @@ class Morphology:
     __rs_optimal = None
 
     def __init__(
-        self, calc_sum, light_in, dt_year=1, constants: Constants = CommonConstants()
+        self, calc_sum, light_in, dt_year=1, constants: Constants = Constants()
     ):
         """
         Morphological development.

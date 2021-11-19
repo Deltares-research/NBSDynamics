@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 import pytest
 
-from src.core.common.constants import _Constants as Constants
+from src.core.common.constants import Constants
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_model import Coral

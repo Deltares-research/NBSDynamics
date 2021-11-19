@@ -6,4 +6,4 @@ __all__ = [
     "output",
     "common",
 ]
-from src.core.common.singletons import RESHAPE, CommonConstants
+from src.core.common.singletons import RESHAPE

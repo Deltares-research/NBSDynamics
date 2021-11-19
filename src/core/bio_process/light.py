@@ -2,8 +2,8 @@ from typing import Optional, Union
 
 import numpy as np
 
-from src.core import RESHAPE, CommonConstants
-from src.core.common.constants import _Constants as Constants
+from src.core import RESHAPE
+from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_only import CoralOnly
 
@@ -18,7 +18,7 @@ class Light:
         light_in: LightVariable,
         lac: LightVariable,
         depth: LightVariable,
-        constants: Constants = CommonConstants(),
+        constants: Constants = Constants(),
     ):
         """
         Light micro-environment.
