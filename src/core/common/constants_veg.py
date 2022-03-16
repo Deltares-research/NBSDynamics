@@ -18,12 +18,13 @@ class Constants(BaseModel):
     years: float = 30 # number of morphological years of entire simulation(total simulation time * morfac / hydrodynamic time that defines one year)
 
     #Colonization
-    ColMethod: int = 2 # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
+    ColMethod: int = 1 # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
+    #for now only the method 1 is implemented!, mud content in top layer needed from DFM
     etsSeed: int = 2 # Amount of ets seed dispersal = 1
     ColStart: int = 7 # Ecotimestep at which colonisation starts
     ColEnd: int = 8 # Ecotimestep of last colonisation
     random: int = 5 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
-    mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
+    #mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
 
     fl_dr: float = 0.05 # Boundary for flooding/drying threshold used in the vegetation computations [m]
 

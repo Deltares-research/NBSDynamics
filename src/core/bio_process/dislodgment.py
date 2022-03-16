@@ -28,7 +28,7 @@ class Dislodgement(ExtraModel):
         # # partial dislodgement
         Dislodgement.partial_dislodgement(self, coral, survival_coefficient)
         # # update
-        # ulation states
+        # population states
         for s in range(4):
             coral.p0[:, s] *= self.survival
         # morphology
