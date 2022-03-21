@@ -24,7 +24,7 @@ class Constants(BaseModel):
     ColStart: int = 7 # Ecotimestep at which colonisation starts
     ColEnd: int = 8 # Ecotimestep of last colonisation
     random: int = 5 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
-    #mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
+    mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
 
     fl_dr: float = 0.05 # Boundary for flooding/drying threshold used in the vegetation computations [m]
 
