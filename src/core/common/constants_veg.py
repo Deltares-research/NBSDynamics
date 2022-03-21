@@ -20,10 +20,11 @@ class Constants(BaseModel):
     #Colonization
     ColMethod: int = 1 # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
     #for now only the method 1 is implemented!, mud content in top layer needed from DFM
+    ets_per_year: int = 24 #number of ecological time steps per year
     etsSeed: int = 2 # Amount of ets seed dispersal = 1
     ColStart: int = 7 # Ecotimestep at which colonisation starts
     ColEnd: int = 8 # Ecotimestep of last colonisation
-    random: int = 5 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
+    random: int = 30 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
     mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
 
     fl_dr: float = 0.05 # Boundary for flooding/drying threshold used in the vegetation computations [m]
