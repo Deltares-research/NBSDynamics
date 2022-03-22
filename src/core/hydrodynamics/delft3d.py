@@ -12,6 +12,7 @@ from pydantic.class_validators import root_validator
 
 from src.core.base_model import ExtraModel
 from src.core.coral.coral_model import Coral
+from src.core.vegetation.veg_model import Vegetation
 
 faulthandler.enable()
 
@@ -104,6 +105,16 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", coral.dc_rep)
         self.set_variable("stemheight", coral.hc)
 
+    def set_vegetation(self, veg: Vegetation):
+        """Set vegetation dimensions to Delft3D-model.
+
+        :param veg: vegetation
+        :type veg: Vegetation
+        """
+        self.set_variable("rnveg", veg.veg_den)
+        self.set_variable("diaveg", veg.stem_dia)
+        self.set_variable("stemheight", veg.veg_height)
+
     def get_mean_hydrodynamics(self):
         """Get hydrodynamic results; mean values."""
         if self.time_step is None:
@@ -121,6 +132,18 @@ class Delft3D(ExtraModel, abc.ABC):
         wave_vel = self.get_variable("Uorb")[range(self.space)]
         wave_per = self.get_variable("twav")[range(self.space)]
         return current_vel, wave_vel, wave_per
+
+    def get_hydromorphodynamics(self):
+        """Get hydrodynamic results; max. values. And minimum in the future"""
+
+        max_tau = self.get_variable("is_maxvalsnd")[range(self.space), 0]
+        max_vel = self.get_variable("is_maxvalsnd")[range(self.space), 1]
+        max_wl = self.get_variable("is_maxvalsnd")[range(self.space), 2]
+        bed_level = self.get_variable('bl')
+
+        return max_tau, max_wl, max_vel, bed_level
+
+## TODO Add the minimum values when it is implemented in the model as a variable
 
     @abstractmethod
     def configure_model_wrapper(self):
