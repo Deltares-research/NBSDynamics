@@ -143,7 +143,7 @@ class Delft3D(ExtraModel, abc.ABC):
 
         return max_tau, max_wl, max_vel, bed_level
 
-## TODO Add the minimum values when it is implemented in the model as a variable
+    # TODO Add the minimum values when it is implemented in the model as a variable
 
     @abstractmethod
     def configure_model_wrapper(self):
@@ -221,6 +221,15 @@ class Delft3D(ExtraModel, abc.ABC):
             if stormcat > 0
             else self.get_mean_hydrodynamics()
         )
+
+    def update_hydromorphodynamics(self, vegetation):
+        """Update the Delft3D-model."""
+        self.time_step =  self.update_interval
+
+        self.reset_counters() #maybe it will be stored if this is not used
+        self.model_wrapper.update(self.time_step)
+
+        return self.get_hydromorphodynamics()
 
     def finalise(self):
         """Finalize the working model."""

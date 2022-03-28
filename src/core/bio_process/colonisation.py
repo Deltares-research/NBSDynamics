@@ -60,6 +60,10 @@ class Colonization(ExtraModel):
         # find seedling location in cells that have water depth only at max. water level
         # for random establishment extract random selection of seedling locations
         self.seedloc = np.where(Colonization.colonization_criterion(veg) ==True) #all possible locations for seedlings
+
+
+
+
         if constants.random ==0:
             self.settlement = self.seedloc
         else:
@@ -72,6 +76,7 @@ class Colonization(ExtraModel):
 
         :type veg: Vegetation
         """
+
         if Constants.ColMethod == 1:
             self.colonization_inundation_range(veg)
             return self.cir
@@ -94,6 +99,7 @@ class Colonization(ExtraModel):
         # # Calculations
         self.cir = np.ones(veg.max_wl.shape)
         self.cir = (self.cir_formula(veg.max_wl, veg.min_wl) == 1)     #true, false matrix look for cells that are flooded during high anf low water levels
+
     @staticmethod
     def cir_formula(max_water_level, min_water_level)
         """Determine the Dislodgement Mechanical Threshold.
