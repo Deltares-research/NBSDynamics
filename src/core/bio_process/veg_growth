@@ -1,0 +1,20 @@
+from typing import Optional
+import numpy as np
+from src.core.base_model import ExtraModel
+from src.core.vegetation.veg_model import Vegetation
+
+
+class Veg_Growth(ExtraModel):
+    """ Vegetation growth by changing the veg_frac_age matrix"""
+    #constants: Constants = Constants()
+    growth_days_ets: Optional[float] = None
+
+
+    def update(self, veg:Vegetation, ets):
+        """update vegetation depending on growth days in certain ets"""
+        self.growth_days_ets = veg.growth_days[ets]
+        n, m = veg.veg_age_frac.shape
+        new = np.zeros((n, self.growth_days_ets))
+        veg.veg_age_frac.shape = np.hstack((new, veg.veg_age_frac.shape))
+
+        veg.update_vegetation_characteristics(self.veg, veg_age_frac=veg.veg_age_frac)

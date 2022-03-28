@@ -8,6 +8,7 @@ from src.core.common.space_time import CoralOnly
 from src.core.coral.coral_model import Coral
 
 
+
 class Dislodgement(ExtraModel):
     """Dislodgement due to storm conditions."""
 

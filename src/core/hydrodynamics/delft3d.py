@@ -115,6 +115,7 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", veg.stem_dia)
         self.set_variable("stemheight", veg.veg_height)
 
+
     def get_mean_hydrodynamics(self):
         """Get hydrodynamic results; mean values."""
         if self.time_step is None:
@@ -225,7 +226,7 @@ class Delft3D(ExtraModel, abc.ABC):
     def finalise(self):
         """Finalize the working model."""
         self.model_wrapper.finalize()
-        self.cleanup_environment_variables()
+        #self.cleanup_environment_variables()
 
 
 class FlowFmModel(Delft3D):

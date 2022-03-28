@@ -11,8 +11,8 @@ from src.core.coral.coral_only import CoralOnly
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
-
 class Coral(ExtraModel):
+
     """
     Implements the `CoralProtocol`.
     Coral object, representing one coral type.
