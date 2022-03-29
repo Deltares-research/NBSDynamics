@@ -111,10 +111,9 @@ class Delft3D(ExtraModel, abc.ABC):
         :param veg: vegetation
         :type veg: Vegetation
         """
-        ## TODO we need to reshape these variables for DFM! and avergae for every grid cell!
-        self.set_variable("rnveg", veg.veg_den)
-        self.set_variable("diaveg", veg.stem_dia)
-        self.set_variable("stemheight", veg.veg_height)
+        self.set_variable("rnveg", veg.veg_den)  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+        self.set_variable("diaveg", veg.av_stemdia)  # [m] 3D plant diameter, 2D part is basis input (m)
+        self.set_variable("stemheight", veg.av_height)  # [m] 2D plant heights (m)
 
 
     def get_mean_hydrodynamics(self):
@@ -137,7 +136,7 @@ class Delft3D(ExtraModel, abc.ABC):
 
     def get_hydromorphodynamics(self):
         """Get hydrodynamic results; max. values. And minimum in the future"""
-
+        # TODO Add the minimum values when it is implemented in the model as a variable
         max_tau = self.get_variable("is_maxvalsnd")[range(self.space), 0]
         max_vel = self.get_variable("is_maxvalsnd")[range(self.space), 1]
         max_wl = self.get_variable("is_maxvalsnd")[range(self.space), 2]
@@ -145,7 +144,16 @@ class Delft3D(ExtraModel, abc.ABC):
 
         return max_tau, max_wl, max_vel, bed_level
 
-    # TODO Add the minimum values when it is implemented in the model as a variable
+    def get_current_hydromorphodynamics(self, time_step): # only needed as long as we cannot get minval from the wrapper
+        """Get hydrodynamic results; max. values. And minimum in the future"""
+        self.time_step = time_step
+        cur_tau = self.get_variable("is_sumvalsnd")[range(self.space), 0]/ self.time_step
+        cur_vel = self.get_variable("is_sumvalsnd")[range(self.space), 1]/ self.time_step
+        cur_wl = self.get_variable("is_sumvalsnd")[range(self.space), 2]/ self.time_step
+        bed_level = self.get_variable('bl')
+
+        return cur_tau, cur_wl, cur_vel, bed_level
+
 
     @abstractmethod
     def configure_model_wrapper(self):
@@ -231,7 +239,7 @@ class Delft3D(ExtraModel, abc.ABC):
         self.reset_counters() #maybe it will be stored if this is not used
         self.model_wrapper.update(self.time_step)
 
-        return self.get_hydromorphodynamics()
+        return self.get_current_hydromorphodynamics(time_step=self.time_step)
 
 
     def finalise(self):

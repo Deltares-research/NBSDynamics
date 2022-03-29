@@ -46,10 +46,12 @@ class Vegetation(ExtraModel):
     growth_days: VegAttribute = list()
     col_days: VegAttribute = list()
 
-    # # flow micro environment
-    # ucm: Optional[VegAttribute] = None
-    # um: Optional[VegAttribute] = None
-    # delta_t: Optional[VegAttribute] = None
+    # # hydromorpho environment
+    max_tau: Optional[VegAttribute] = None
+    max_u: Optional[VegAttribute] = None
+    max_wl: Optional[VegAttribute] = None
+    min_wl: Optional[VegAttribute] = None
+    bl: Optional[VegAttribute] = None
 
 
     # @validator("veg_height", "stem_dia", "veg_den", "root_len", "veg_ls", "stem_num")
@@ -72,10 +74,22 @@ class Vegetation(ExtraModel):
             f"veg_den = {self.veg_den} m; veg_root = {self.root_len} m; veg_ls = {self.veg_ls} ;veg_age = {self.veg_age} yrs; stem_num = {self.stem_num} "
         )
 
+
+
     @property
-    def veg_den(self):
-        """density (stem diameter * number of stems) for Baptist formula"""
-        return self.stem_dia * self.stem_num
+    def veg_den(self):  # as input for DFM
+        """stem density in number of stems per m2, according to area fraction of veg age"""
+        return (self.stem_num * self.veg_age_frac).sum(axis=1)
+
+    @property
+    def av_stemdia(self):  # as input for DFM
+        """average stem diameter of the different vegetation in one grid cell"""
+        return (self.stem_dia * self.veg_age_frac).sum(axis=1)
+
+    @property
+    def av_height(self):  # as input for DFM
+        """average shoot height of the different vegetation in one grid cell"""
+        return (self.veg_height * self.veg_age_frac).sum(axis=1)
 
     @property
     def duration_growth(self):
@@ -199,13 +213,13 @@ class Vegetation(ExtraModel):
         self.veg_ls[:, 0] = cover
         self.stem_num = np.zeros(self.veg_age_frac.shape)
         self.stem_num[:, 0][cover > 0] = Constants.numStem[0]
-        self.growth_days = self.get_GrowthDays(self)
+        self.growth_days = self.get_GrowthDays()
 
 
         ## growth slopes of LS
-        self.dt_height= np.zeros((Constants.num_ls, Constants.num_ls))
-        self.dt_stemdia=  np.zeros((Constants.num_ls, Constants.num_ls))
-        self.dt_root=  np.zeros((Constants.num_ls, Constants.num_ls))
+        self.dt_height = np.zeros((Constants.num_ls, Constants.num_ls))
+        self.dt_stemdia = np.zeros((Constants.num_ls, Constants.num_ls))
+        self.dt_root = np.zeros((Constants.num_ls, Constants.num_ls))
         ## TODO CHECK If this is right!!
         for ls in range(0, Constants.num_ls):
             if ls == 0:
@@ -229,38 +243,38 @@ class Vegetation(ExtraModel):
 
         for i in range(0, Constants.num_ls): #loop over life stages
             if i == 0:
-                self.veg_ls[:, i] = veg_age_frac[:, 0:Constants.maxYears_LS[i]*sum(self.growth_days)]
+                self.veg_ls[:, i] = veg_age_frac[:, 0:self.constants.maxYears_LS[i]*sum(self.growth_days)]
             else:
-                self.veg_ls[:, i] = veg_age_frac[:, sum(Constants.maxYears_LS[0:i])*sum(self.growth_days):Constants.maxYears_LS[i]*sum(self.growth_days)].sum(axis= 1)
+                self.veg_ls[:, i] = veg_age_frac[:, sum(self.constants.maxYears_LS[0:i])*sum(self.growth_days):Constants.maxYears_LS[i]*sum(self.growth_days)].sum(axis=1)
 
-            self.stem_num[:, i][self.veg_ls[:, i] > 0] = Constants.numStem[i] #fraction of ls in cell * stem number of ls
             y = 0
             for j in range(0, Constants.maxYears_LS[i]*sum(self.growth_days)): #loop over all possible days of growth
             # update height, stem diameter, root length based on ets in life stage
+                self.stem_num[:, j][self.veg_age_frac[:, j] > 0] = self.constants.numStem[i]  # fraction of ls in cell * stem number of ls
 
                 if j % sum(self.growth_days) == 0: # count years within every life stage
                     y = y+1
 
                 if j == 0 and i == 0: #first column is new vegetation --> ini conditions
-                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = Constants.iniShoot
-                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = Constants.iniDia
-                    self.root_len[:, j][veg_age_frac[:, j] > 0] = Constants.iniRoot
+                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.iniShoot
+                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia
+                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot
 
                 elif i == 0 and 0 < j <= sum(self.growth_days): #first year growth starts from ini
-                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = Constants.iniShoot* self.dt_height[0,i]*j
-                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = Constants.iniDia*self.dt_stemdia[0,i]*j
-                    self.root_len[:, j][veg_age_frac[:, j] > 0] = Constants.iniRoot*self.dt_root[0,i]*j
+                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.iniShoot* self.dt_height[0, i]*j
+                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia*self.dt_stemdia[0, i]*j
+                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot*self.dt_root[0, i]*j
 
-                elif i == 0 and sum(self.growth_days) < j <= sum(self.growth_days)*Constants.maxYears_LS[i]:
-                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = Constants.maxH_winter * self.dt_height[1, i]*(j-y*sum(self.growth_days))
-                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = Constants.iniDia * self.dt_stemdia[0, i]*j
-                    self.root_len[:, j][veg_age_frac[:, j] > 0] = Constants.iniRoot * self.dt_root[0, i]*j
+                elif i == 0 and sum(self.growth_days) < j <= sum(self.growth_days)*self.constants.maxYears_LS[i]:
+                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.maxH_winter * self.dt_height[1, i]*(j- y*sum(self.growth_days))
+                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia * self.dt_stemdia[0, i]*j
+                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot * self.dt_root[0, i]*j
 
                 elif i > 0:
                     k = j + sum(Constants.maxYears_LS[0:i])*sum(self.growth_days)
-                    self.veg_height[:, k][veg_age_frac[:, k] > 0] = Constants.maxH_winter * self.dt_height[0, i]*(j-y*sum(self.growth_days))
-                    self.stem_dia[:, k][veg_age_frac[:, k] > 0] = Constants.iniDia * self.dt_stemdia[0, i]*k
-                    self.root_len[:, k][veg_age_frac[:, k] > 0] = Constants.iniRoot * self.dt_root[0, i] * k
+                    self.veg_height[:, k][veg_age_frac[:, k] > 0] = self.constants.maxH_winter * self.dt_height[0, i]*(j- y*sum(self.growth_days))
+                    self.stem_dia[:, k][veg_age_frac[:, k] > 0] = self.constants.iniDia * self.dt_stemdia[0, i]*k
+                    self.root_len[:, k][veg_age_frac[:, k] > 0] = self.constants.iniRoot * self.dt_root[0, i] * k
                 else:
                     print("Check growth function, there is a further case")
 

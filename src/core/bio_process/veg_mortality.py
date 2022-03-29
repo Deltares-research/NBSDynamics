@@ -15,11 +15,11 @@ from src.core.hydrodynamics.delft3d import FlowFmModel
 class Veg_Mortaility(ExtraModel):
     """Mortality"""
 
-    drown: Optional[np.array] = None
-    uproot: Optional[np.array] = None
-    burial_scour: Optional[np.array] = None
-    loc_mortality: Optional[np.array] = None
-    constants: Constants = Constants()
+    # drown: Optional[np.array] = None
+    # uproot: Optional[np.array] = None
+    # burial_scour: Optional[np.array] = None
+    # loc_mortality: Optional[np.array] = None
+    # constants: Constants = Constants()
 
     def update(self, veg:Vegetation, constants):
         """Update vegetation characteristics after mortality"""

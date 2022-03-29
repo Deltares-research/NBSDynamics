@@ -12,7 +12,7 @@ from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
 from src.core.bio_process.veg_mortality import Veg_Mortaility
-from src.core.bio_process.veg_growth import Veg_Growth
+#from src.core.bio_process.veg_growth import Veg_Growth
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.common.constants_veg import Constants
 from src.core.common.environment import Environment
@@ -254,18 +254,17 @@ class BaseSimulation(BaseModel, ABC):
                         period
                      )
 
-                    for ts in range(len(period)): #call hydromorphodynamics every time step and store values to get min
+                    for ts in range(len(period)*24*60*60): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
                         ## TODO what is the unit of the time_step? period is in days! multiply by factor to fit the unit!
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        max_tau, max_vel, max_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
+                        cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
                             self.veg, time_step=1
                         )
 
-
                         # # environment
-                        progress.set_postfix(inner_loop="vegetation environment")
-                        # flow micro-environment
+                        progress.set_postfix(inner_loop="hydromorpho environment")
+                        # hydromorpho environment
                         ## TODO update this according to veg_hydro_morphodynamics (this might need to be done every timestep?)
                         hydro_mor = Hydro_Morphodynamics(
                             u_current=current_vel,
@@ -274,7 +273,7 @@ class BaseSimulation(BaseModel, ABC):
                             peak_period=wave_per,
                             constants=self.constants,
                         )
-                        hydro_mor.velocities(self.veg, in_canopy=self.constants.fme)
+                    hydro_mor.get_hydromorph_values(self.veg)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -306,6 +305,9 @@ class BaseSimulation(BaseModel, ABC):
                         self.veg,
                         period,
                     )
+
+                    #clean up values
+                    hydro_mor.clean_hyromorph_matrixes()
 
     def finalise(self):
         """Finalise simulation."""
