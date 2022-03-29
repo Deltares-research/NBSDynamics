@@ -12,3 +12,4 @@ from src.core.output.output_protocol import OutputProtocol
 
 
 class VegOutputWrapper(BaseModel):
+

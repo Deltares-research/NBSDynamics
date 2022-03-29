@@ -36,8 +36,8 @@ class Vegetation(ExtraModel):
     # other attributes.
     _cover: Optional[VegAttribute] = None # sum of fraction of area coverage in each cell (for all ages)
     dt_height: VegAttribute = list()
-    dt_root: VegAttribute= list()
-    dt_stemdia: VegAttribute= list()
+    dt_root: VegAttribute = list()
+    dt_stemdia: VegAttribute = list()
 
     #time related values
     growth_duration: pd.Timedelta
