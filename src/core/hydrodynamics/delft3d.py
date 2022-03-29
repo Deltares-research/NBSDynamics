@@ -111,6 +111,7 @@ class Delft3D(ExtraModel, abc.ABC):
         :param veg: vegetation
         :type veg: Vegetation
         """
+        ## TODO we need to reshape these variables for DFM! and avergae for every grid cell!
         self.set_variable("rnveg", veg.veg_den)
         self.set_variable("diaveg", veg.stem_dia)
         self.set_variable("stemheight", veg.veg_height)
@@ -222,15 +223,16 @@ class Delft3D(ExtraModel, abc.ABC):
             if stormcat > 0
             else self.get_mean_hydrodynamics()
         )
-
-    def update_hydromorphodynamics(self, vegetation):
+## TODO input timestep is in days! what is the unit here?
+    def update_hydromorphodynamics(self, veg, time_step):
         """Update the Delft3D-model."""
-        self.time_step =  self.update_interval
+        self.time_step = time_step
 
         self.reset_counters() #maybe it will be stored if this is not used
         self.model_wrapper.update(self.time_step)
 
         return self.get_hydromorphodynamics()
+
 
     def finalise(self):
         """Finalize the working model."""

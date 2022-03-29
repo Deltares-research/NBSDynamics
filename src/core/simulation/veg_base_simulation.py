@@ -181,6 +181,7 @@ class BaseSimulation(BaseModel, ABC):
         :return: vegetation characteristics initiated
         :rtype: Vegetation
         """
+        ## TODO check those and see if they need change
         self.configure_hydrodynamics()
         self.configure_output()
         # Load constants and validate environment.
@@ -227,7 +228,7 @@ class BaseSimulation(BaseModel, ABC):
             duration = int(
                 self.constants.sim_duration
             )
-        start_date =  pd.to_datetime(self.constants.start_date)
+        start_date = pd.to_datetime(self.constants.start_date)
         years = range(
             int(start_date.year),
             int(start_date.year + duration),
@@ -238,40 +239,42 @@ class BaseSimulation(BaseModel, ABC):
                 current_year = years[i]
                 for ets in self.constants.ets_per_year:
 
-                    # # TODO: determine current time period it is in depending on year and ets within year
                     ets_duration = 365/ets # duration of each ets in days
                     if ets == 0:
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
                         begin_date = end_date + timedelta(days=1)
                     end_date = begin_date + timedelta(days=ets_duration)
-
+                    period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
+                    period = pd.DataFrame(period)
 
                     # # set dimensions (i.e. update time-dimension)
                     ## TODO Do I need this?
-                    # RESHAPE().time = len(
-                    #      environment_dates.dt.year[environment_dates.dt.year == years[i]]
-                    #  )
+                    RESHAPE().time = len(
+                        period
+                     )
 
-                    # if-statement that encompasses all for which the hydrodynamic should be used
-                    ## TODO update this with values actually needed
-                    progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                    bed_level, wave_vel, wave_per = self.hydrodynamics.update(
-                        self.veg
-                    )
+                    for ts in range(len(period)): #call hydromorphodynamics every time step and store values to get min
+                        # if-statement that encompasses all for which the hydrodynamic should be used
+                        ## TODO what is the unit of the time_step? period is in days! multiply by factor to fit the unit!
+                        progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
+                        max_tau, max_vel, max_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
+                            self.veg, time_step=1
+                        )
 
-                    # # environment
-                    progress.set_postfix(inner_loop="vegetation environment")
-                    # flow micro-environment
-                    ## ToDO update this according to veg_hydro_morphodynamics
-                    fme = Flow(
-                        u_current=current_vel,
-                        u_wave=wave_vel,
-                        h=self.hydrodynamics.water_depth,
-                        peak_period=wave_per,
-                        constants=self.constants,
-                    )
-                    fme.velocities(self.coral, in_canopy=self.constants.fme)
+
+                        # # environment
+                        progress.set_postfix(inner_loop="vegetation environment")
+                        # flow micro-environment
+                        ## TODO update this according to veg_hydro_morphodynamics (this might need to be done every timestep?)
+                        hydro_mor = Hydro_Morphodynamics(
+                            u_current=current_vel,
+                            u_wave=wave_vel,
+                            h=self.hydrodynamics.water_depth,
+                            peak_period=wave_per,
+                            constants=self.constants,
+                        )
+                        hydro_mor.velocities(self.veg, in_canopy=self.constants.fme)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -291,17 +294,17 @@ class BaseSimulation(BaseModel, ABC):
                     if self.veg.col_days[ets] > 0:
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization(constants=self.constants)
-                        col.update(self.vegetation, )
+                        col.update(self.veg, )
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
                     ## TODO check this when finishing the output files!
                     # map-file
-                    self.output.map_output.update(self.coral, years[i])
+                    self.output.map_output.update(self.veg, years[i]) #change to
                     # his-file
                     self.output.his_output.update(
-                        self.coral,
-                        environment_dates[environment_dates.dt.year == years[i]],
+                        self.veg,
+                        period,
                     )
 
     def finalise(self):
