@@ -46,7 +46,7 @@ class Vegetation(ExtraModel):
     growth_days: VegAttribute = list()
     col_days: VegAttribute = list()
 
-    # # hydromorpho environment
+    # # hydromorphodynamic environment
     max_tau: Optional[VegAttribute] = None
     max_u: Optional[VegAttribute] = None
     max_wl: Optional[VegAttribute] = None

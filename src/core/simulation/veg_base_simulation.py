@@ -256,7 +256,7 @@ class BaseSimulation(BaseModel, ABC):
 
                     for ts in range(len(period)*24*60*60): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
-                        ## TODO what is the unit of the time_step? period is in days! multiply by factor to fit the unit!
+                        ## TODO what is the unit of the time_step? input is in s now!
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
                             self.veg, time_step=1
@@ -265,13 +265,12 @@ class BaseSimulation(BaseModel, ABC):
                         # # environment
                         progress.set_postfix(inner_loop="hydromorpho environment")
                         # hydromorpho environment
-                        ## TODO update this according to veg_hydro_morphodynamics (this might need to be done every timestep?)
                         hydro_mor = Hydro_Morphodynamics(
-                            u_current=current_vel,
-                            u_wave=wave_vel,
-                            h=self.hydrodynamics.water_depth,
-                            peak_period=wave_per,
-                            constants=self.constants,
+                            tau_cur=cur_tau,
+                            u_cur=cur_vel,
+                            wl_cur=cur_wl,
+                            bl_cur=bed_level,
+                            ts=ts
                         )
                     hydro_mor.get_hydromorph_values(self.veg)
 

@@ -1,8 +1,5 @@
 import numpy as np
-from scipy.optimize import newton
 
-from src.core import RESHAPE
-from src.core.common.constants import Constants
 
 class Hydro_Morphodynamics:
     """hydromorphodynamic environment"""
@@ -13,18 +10,19 @@ class Hydro_Morphodynamics:
             u_cur,
             wl_cur,
             bl_cur,
-            constants: Constants = Constants(),
+            ts
     ):
-            if self.tau is None:
-                self.tau = tau_cur
-                self.u = u_cur
-                self.wl = wl_cur
-                self.bl = bl_cur
-            else:
-                self.tau = np.column_stack((self.tau, tau_cur))
-                self.u = np.column_stack((self.u, u_cur))
-                self.wl = np.column_stack((self.wl, wl_cur))
-                self.bl = np.column_stack((self.bl, bl_cur))
+        ## TODO does this work??
+        if ts == 0:
+            self.tau = tau_cur
+            self.u = u_cur
+            self.wl = wl_cur
+            self.bl = bl_cur
+        else:
+            self.tau = np.column_stack((self.tau, tau_cur))
+            self.u = np.column_stack((self.u, u_cur))
+            self.wl = np.column_stack((self.wl, wl_cur))
+            self.bl = np.column_stack((self.bl, bl_cur))
 
     def get_hydromorph_values(self, veg):
         veg.max_tau = np.zeros(len(self.tau))
@@ -38,13 +36,10 @@ class Hydro_Morphodynamics:
             veg.max_u[i] = max(self.u[i, :])
             veg.max_wl[i] = max(self.wl[i, :])
             veg.min_wl[i] = min(self.wl[i, :])
-        veg.bl[:] = self.wl[:, -1] #last values in bed level to get 'current' value
+        veg.bl[:] = self.wl[:, -1]  # last values in bed level to get 'current' value
 
     def clean_hyromorph_matrixes(self):
         self.tau = []
         self.u = []
         self.wl = []
         self.bl = []
-
-
-
