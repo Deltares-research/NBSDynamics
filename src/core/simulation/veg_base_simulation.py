@@ -273,11 +273,11 @@ class BaseSimulation(BaseModel, ABC):
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality (ALWAYS HAPPEN)
-                    ## TODO update this!
+                    ## TODO finalize this!
                     mort = Veg_Mortality(
                         constants=self.constants,
                     )
-                    mort.update(self.veg)
+                    mort.update(self.veg, hydro_mor, ets)
 
                     # # vegetation growth (only when season right for growth)
                     if self.veg.growth_days[ets] > 0: #if there is growth days, do growth function

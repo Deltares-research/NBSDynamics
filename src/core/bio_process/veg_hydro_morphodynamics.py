@@ -16,8 +16,10 @@ class Hydro_Morphodynamics:
         if ts == 0:
             self.tau = tau_cur
             self.u = u_cur
+            self.wl_prev = self.wl
             self.wl = wl_cur
             self.bl = bl_cur
+
         else:
             self.tau = np.column_stack((self.tau, tau_cur))
             self.u = np.column_stack((self.u, u_cur))
@@ -44,6 +46,7 @@ class Hydro_Morphodynamics:
         veg.max_wl_prev = veg.max_wl
         veg.min_wl_prev = veg.min_wl
         veg.bl_prev = veg.bl
+        self.wl_prev = self.wl
 
     # def clean_hyromorph_matrixes(self):
     #     self.tau = []
