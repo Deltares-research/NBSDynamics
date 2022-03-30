@@ -294,7 +294,8 @@ class BaseSimulation(BaseModel, ABC):
                     progress.set_postfix(inner_loop="export results")
                     ## TODO check this when finishing the output files!
                     # map-file
-                    self.output.map_output.update(self.veg, years[i]) #change to period we are in in current ets
+                    # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
+                    self.output.map_output.update(self.veg, period) #change to period we are in current ets
                     # his-file
                     self.output.his_output.update(
                         self.veg,
