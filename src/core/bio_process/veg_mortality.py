@@ -12,7 +12,7 @@ from src.core.common.space_time import VegOnly, DataReshape
 from src.core.vegetation.veg_only import VegOnly
 from src.core.hydrodynamics.delft3d import FlowFmModel
 
-class Veg_Mortaility(ExtraModel):
+class Veg_Mortality(ExtraModel):
     """Mortality"""
 
     # drown: Optional[np.array] = None

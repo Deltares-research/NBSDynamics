@@ -44,6 +44,7 @@ class Vegetation(ExtraModel):
     col_duration: pd.Timedelta
     winter_duration: pd.Timedelta
     growth_days: VegAttribute = list()
+    growth_Day: VegAttribute = list()
     col_days: VegAttribute = list()
 
     # # hydromorphodynamic environment
@@ -52,6 +53,11 @@ class Vegetation(ExtraModel):
     max_wl: Optional[VegAttribute] = None
     min_wl: Optional[VegAttribute] = None
     bl: Optional[VegAttribute] = None
+    max_tau_prev: Optional[VegAttribute] = None
+    max_u_prev: Optional[VegAttribute] = None
+    max_wl_prev: Optional[VegAttribute] = None
+    min_wl_prev: Optional[VegAttribute] = None
+    bl_prev: Optional[VegAttribute] = None
 
 
     # @validator("veg_height", "stem_dia", "veg_den", "root_len", "veg_ls", "stem_num")
@@ -84,12 +90,12 @@ class Vegetation(ExtraModel):
     @property
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of the different vegetation in one grid cell"""
-        return (self.stem_dia * self.veg_age_frac).sum(axis=1)
+        return (self.stem_dia * self.veg_age_frac).sum(axis=1)/self._cover
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of the different vegetation in one grid cell"""
-        return (self.veg_height * self.veg_age_frac).sum(axis=1)
+        return (self.veg_height * self.veg_age_frac).sum(axis=1)/self._cover
 
     @property
     def duration_growth(self):
@@ -142,18 +148,29 @@ class Vegetation(ExtraModel):
         find number of growth days in current ets depending on start and end of growth period
         """
         days_ets = 365 / Constants.t_eco_year
-        current_date = pd.to_datetime("2022-01-01")
+        current_date = pd.to_datetime(Constants.start_date)
         growth_days = []
         for x in range(0, Constants.t_eco_year):
-            growth_day = []
+            growth_Day = []
             for y in range(0, round(days_ets)):
-                if pd.to_datetime(Constants.growth_start) <= current_date <= pd.to_datetime(Constants.growth_end):
-                    growth_day.append(1)
+                if pd.to_datetime(Constants.growth_start).month <= current_date.month <= pd.to_datetime(Constants.growth_end).month:
+                    if pd.to_datetime(Constants.growth_start).month == current_date.month:
+                        if pd.to_datetime(Constants.growth_start).day <= current_date.day:
+                            growth_Day.append(1)
+                        else:
+                            growth_Day.append(0)
+                    if pd.to_datetime(Constants.growth_end).month == current_date.month:
+                        if current_date.day <= pd.to_datetime(Constants.growth_end).day:
+                            growth_Day.append(1)
+                        else:
+                            growth_Day.append(0)
+                    else:
+                        growth_Day.append(1)
                 else:
-                    growth_day.append(0)
+                    growth_Day.append(0)
                 current_date = current_date + timedelta(days=1)
 
-            growth_days.append(sum(growth_day))
+            growth_days.append(sum(growth_Day))
         return growth_days
 
     def get_ColWindow(self):
@@ -161,18 +178,30 @@ class Vegetation(ExtraModel):
         find ets where colonization happens
         """
         days_ets = 365 / self.constants.t_eco_year
-        current_date = pd.to_datetime("2022-01-01")
+        current_date = pd.to_datetime(Constants.start_date)
         col_days = []
         for x in range(0, self.constants.t_eco_year):
-            col_day = []
+            col_Day = []
             for y in range(0, round(days_ets)):
-                if pd.to_datetime(self.constants.ColStart) <= current_date <= pd.to_datetime(self.constants.ColEnd):
-                    col_day.append(1)
+                if pd.to_datetime(self.constants.ColStart).month <= current_date.month <= pd.to_datetime(self.constants.ColEnd).month:
+                    if pd.to_datetime(Constants.ColStart).month == current_date.month:
+                        if pd.to_datetime(Constants.ColStart).day <= current_date.day:
+                            col_Day.append(1)
+                        else:
+                            col_Day.append(0)
+                    if pd.to_datetime(Constants.ColEnd).month == current_date.month:
+                        if current_date.day <= pd.to_datetime(Constants.ColEnd).day:
+                            col_Day.append(1)
+                        else:
+                            col_Day.append(0)
+                    else:
+                        col_Day.append(1)
+                    col_Day.append(1)
                 else:
-                    col_day.append(0)
+                    col_Day.append(0)
                 current_date = current_date + timedelta(days=1)
 
-            col_days.append(sum(col_day))
+            col_days.append(sum(col_Day))
         return col_days
 
 
@@ -213,7 +242,6 @@ class Vegetation(ExtraModel):
         self.veg_ls[:, 0] = cover
         self.stem_num = np.zeros(self.veg_age_frac.shape)
         self.stem_num[:, 0][cover > 0] = Constants.numStem[0]
-        self.growth_days = self.get_GrowthDays()
 
 
         ## growth slopes of LS
@@ -242,54 +270,43 @@ class Vegetation(ExtraModel):
         self._cover = veg_age_frac.sum(axis=1) #if this is bigger than one raise an error?!
 
         for i in range(0, Constants.num_ls): #loop over life stages
-            if i == 0:
-                self.veg_ls[:, i] = veg_age_frac[:, 0:self.constants.maxYears_LS[i]*sum(self.growth_days)]
+            if i == 0: ## TODO how to get sum from several columns
+                self.veg_ls[:, i] = veg_age_frac[:, 0:(self.constants.maxYears_LS[i]*sum(self.growth_days)+1)].sum(axis=1)
             else:
-                self.veg_ls[:, i] = veg_age_frac[:, sum(self.constants.maxYears_LS[0:i])*sum(self.growth_days):Constants.maxYears_LS[i]*sum(self.growth_days)].sum(axis=1)
+                self.veg_ls[:, i] = veg_age_frac[:, sum(self.constants.maxYears_LS[0:i])*sum(self.growth_days):self.constants.maxYears_LS[i]*sum(self.growth_days)].sum(axis=1)
 
             y = 0
             for j in range(0, Constants.maxYears_LS[i]*sum(self.growth_days)): #loop over all possible days of growth
             # update height, stem diameter, root length based on ets in life stage
-                self.stem_num[:, j][self.veg_age_frac[:, j] > 0] = self.constants.numStem[i]  # fraction of ls in cell * stem number of ls
-
-                if j % sum(self.growth_days) == 0: # count years within every life stage
-                    y = y+1
+                if j % sum(self.growth_days) == 0:
+                    y = y + 1 # count years within every life stage
 
                 if j == 0 and i == 0: #first column is new vegetation --> ini conditions
+                    self.stem_num[:, j] = self.constants.numStem[i] * self.veg_age_frac[:, j]  # fraction of ls in cell * stem number of l
                     self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.iniShoot
                     self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia
                     self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot
 
-                elif i == 0 and 0 < j <= sum(self.growth_days): #first year growth starts from ini
-                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.iniShoot* self.dt_height[0, i]*j
-                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia*self.dt_stemdia[0, i]*j
-                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot*self.dt_root[0, i]*j
+                elif i == 0 and 0 < j <= sum(self.growth_days): #first year growth starts from ini (seedling)
+                    self.stem_num[:, j] = self.constants.numStem[i] * self.veg_age_frac[:, j]  # fraction of ls in cell * stem number of ls
+                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.iniShoot + self.dt_height[0, i] * j
+                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia + self.dt_stemdia[0, i] * j
+                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot + self.dt_root[0, i] * j
 
-                elif i == 0 and sum(self.growth_days) < j <= sum(self.growth_days)*self.constants.maxYears_LS[i]:
-                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.maxH_winter * self.dt_height[1, i]*(j- y*sum(self.growth_days))
-                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia * self.dt_stemdia[0, i]*j
-                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot * self.dt_root[0, i]*j
+                elif i == 0 and sum(self.growth_days) < j <= sum(self.growth_days)*self.constants.maxYears_LS[i]: #if first life stage (seedling) is longer than 1 year
+                    self.stem_num[:, j] = self.constants.numStem[i] * self.veg_age_frac[:, j]  # fraction of ls in cell * stem number of ls
+                    self.veg_height[:, j][veg_age_frac[:, j] > 0] = self.constants.maxH_winter + self.dt_height[1, i]*(j - y*sum(self.growth_days))
+                    self.stem_dia[:, j][veg_age_frac[:, j] > 0] = self.constants.iniDia + self.dt_stemdia[0, i]*j
+                    self.root_len[:, j][veg_age_frac[:, j] > 0] = self.constants.iniRoot + self.dt_root[0, i]*j
 
                 elif i > 0:
                     k = j + sum(Constants.maxYears_LS[0:i])*sum(self.growth_days)
-                    self.veg_height[:, k][veg_age_frac[:, k] > 0] = self.constants.maxH_winter * self.dt_height[0, i]*(j- y*sum(self.growth_days))
-                    self.stem_dia[:, k][veg_age_frac[:, k] > 0] = self.constants.iniDia * self.dt_stemdia[0, i]*k
-                    self.root_len[:, k][veg_age_frac[:, k] > 0] = self.constants.iniRoot * self.dt_root[0, i] * k
+                    self.stem_num[:, k] = self.constants.numStem[i] * self.veg_age_frac[:, k]  # fraction of ls in cell * stem number of ls
+                    self.veg_height[:, k][veg_age_frac[:, k] > 0] = self.constants.maxH_winter + self.dt_height[0, i]* (j - y*sum(self.growth_days))
+                    self.stem_dia[:, k][veg_age_frac[:, k] > 0] = self.constants.maxDia[i-1] + self.dt_stemdia[0, i] * j
+                    self.root_len[:, k][veg_age_frac[:, k] > 0] = self.constants.maxRoot[i-1] + self.dt_root[0, i] * j
+
                 else:
-                    print("Check growth function, there is a further case")
-
-        #update age
-        #update fraction
-        #update drag coefficient ?
-
-        # USE THIS FUNCTION IN THE MORTALITY, GROWTH & Settlement
-        # to determine new vegetation characteristics!
-        #     add the new vegetation coming due to colonization
-        #     remove vegetation which dies due to mortality
-
-
-    #def update_lifestage(self):
-        #will get values 0 and 1
-    #change to 1 in second year
+                    print("NO, something went wrong! Check growth function, there is a further case")
 
 

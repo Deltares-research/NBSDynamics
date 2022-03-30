@@ -19,7 +19,8 @@ class Constants(BaseModel):
 
     # User - Define time - scales
     t_eco_year: int = 24 # number ecological time - steps per year(meaning couplings)
-    sim_duration: float = 30 # number of morphological years of entire simulation(total simulation time * morfac / hydrodynamic time that defines one year)
+    ## TODO check with MorFac, what years is this then?
+    sim_duration: float = 30 # number of morphological years of entire simulation
     start_date: str = "2022-01-01" #Start date of the simulation
     #Colonization
     ColMethod: int = 1 # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
@@ -133,7 +134,7 @@ class Constants(BaseModel):
 
     ColStart: str = "2022-04-01" # Date at which colonisation starts (year,month,day)
     ColEnd: str = "2022-05-31" # Date of last colonisation (year,month,day)
-    ## TODO make this dates!
+
     random: int = 30 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
     mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
 
@@ -147,7 +148,7 @@ class Constants(BaseModel):
     iniRoot: float = 0.05 # 1.7. initial root length in m
     iniShoot: float = 0.015 # 1.8. initial shoot length in m
     iniDia: float = 0.003 # 1.9. initial stem diameter in m
-    ## TODO make this dates!
+
     growth_start: str = "2022-04-01" # 1.14 Date start growth shoot
     growth_end: str = "2022-10-31" # 1.15 Date end growth shoot (year, month, day)
     winter_start: str = "2022-11-30" # 1.16 Date start winter period

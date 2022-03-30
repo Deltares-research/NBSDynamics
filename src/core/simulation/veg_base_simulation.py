@@ -11,7 +11,7 @@ from datetime import timedelta
 from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
-from src.core.bio_process.veg_mortality import Veg_Mortaility
+from src.core.bio_process.veg_mortality import Veg_Mortality
 #from src.core.bio_process.veg_growth import Veg_Growth
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.common.constants_veg import Constants
@@ -20,7 +20,7 @@ from src.core.common.space_time import time_series_year
 from src.core.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.veg_output_wrapper import ...
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -164,7 +164,6 @@ class BaseSimulation(BaseModel, ABC):
         self,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
-        value: Optional[float] = None,
     ) -> Vegetation:
         """Initiate the vegetation distribution.
         The default vegetation distribution is no initial vegetation cover.
@@ -211,7 +210,7 @@ class BaseSimulation(BaseModel, ABC):
 
         self.veg.initiate_vegetation_characteristics(cover)
 
-        ## TODO create new output model for vegetation!
+        ## TODO create new output class for vegetation!
         self.output.initialize(self.veg)
 
     def run(self, duration: Optional[int] = None):
@@ -233,33 +232,30 @@ class BaseSimulation(BaseModel, ABC):
             int(start_date.year),
             int(start_date.year + duration),
         )   # takes the starting year from the start date defined in the Constants class.
+        ets_duration = 365 / self.constants.ets_per_year  # duration of each ets in days
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 current_year = years[i]
                 for ets in self.constants.ets_per_year:
-
-                    ets_duration = 365/ets # duration of each ets in days
                     if ets == 0:
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
                         begin_date = end_date + timedelta(days=1)
                     end_date = begin_date + timedelta(days=ets_duration)
                     period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
-                    period = pd.DataFrame(period)
 
                     # # set dimensions (i.e. update time-dimension)
-                    ## TODO Do I need this?
                     RESHAPE().time = len(
-                        period
+                        pd.DataFrame(period)
                      )
 
-                    for ts in range(len(period)*24*60*60): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
+                    for ts in range(len(period)): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
-                        ## TODO what is the unit of the time_step? input is in s now!
+                        ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=1
+                            self.veg, time_step=86400 #daily values
                         )
 
                         # # environment
@@ -277,8 +273,8 @@ class BaseSimulation(BaseModel, ABC):
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality (ALWAYS HAPPEN)
-                    ## TODO update this when known what needed in mortality class!
-                    mort = Veg_Mortaility(
+                    ## TODO update this!
+                    mort = Veg_Mortality(
                         constants=self.constants,
                     )
                     mort.update(self.veg)
@@ -298,15 +294,13 @@ class BaseSimulation(BaseModel, ABC):
                     progress.set_postfix(inner_loop="export results")
                     ## TODO check this when finishing the output files!
                     # map-file
-                    self.output.map_output.update(self.veg, years[i]) #change to
+                    self.output.map_output.update(self.veg, years[i]) #change to period we are in in current ets
                     # his-file
                     self.output.his_output.update(
                         self.veg,
                         period,
                     )
-
-                    #clean up values
-                    hydro_mor.clean_hyromorph_matrixes()
+                    hydro_mor.store_hydromorph_values(self.veg)
 
     def finalise(self):
         """Finalise simulation."""

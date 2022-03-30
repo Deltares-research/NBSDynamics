@@ -36,10 +36,17 @@ class Hydro_Morphodynamics:
             veg.max_u[i] = max(self.u[i, :])
             veg.max_wl[i] = max(self.wl[i, :])
             veg.min_wl[i] = min(self.wl[i, :])
-        veg.bl[:] = self.wl[:, -1]  # last values in bed level to get 'current' value
+        veg.bl[:] = self.bl[:, -1]  # last values in bed level to get 'current' value
 
-    def clean_hyromorph_matrixes(self):
-        self.tau = []
-        self.u = []
-        self.wl = []
-        self.bl = []
+    def store_hydromorph_values(self, veg):
+        veg.max_tau_prev = veg.max_tau
+        veg.max_u_prev = veg.max_u
+        veg.max_wl_prev = veg.max_wl
+        veg.min_wl_prev = veg.min_wl
+        veg.bl_prev = veg.bl
+
+    # def clean_hyromorph_matrixes(self):
+    #     self.tau = []
+    #     self.u = []
+    #     self.wl = []
+    #     self.bl = []
