@@ -76,8 +76,8 @@ class MapOutput(BaseOutput):
         """
         return len(self.xy_coordinates)
 
-    def initialize(self, veg_model: Vegetation):
-        """Initiate mapping output file in which annual output covering the whole model domain is stored.
+    def initialize(self, veg : Vegetation):
+        """Initiate mapping output file in which output covering the whole model domain is stored every period of running.
 
         """
         if not self.valid_output():
@@ -144,9 +144,9 @@ class MapOutput(BaseOutput):
             def init_bl():
                 bedlevel = _map_data.createVariable("bedlevel", "f8", ("time", "nmesh2d_face"))
                 bedlevel.long_name = (
-                    "plant density"
+                    "bedlevel"
                 )
-                bedlevel.units = "1/m2"
+                bedlevel.units = "m"
                 bedlevel[:, :] = 0
 
             conditions_funct = dict(
@@ -161,7 +161,7 @@ class MapOutput(BaseOutput):
                 if self.output_params.dict()[key]:
                     v_func()
 
-    def update(self, veg: Vegetation, period: int): ##TODO why not found?
+    def update(self, veg: Vegetation, period: int):
         """Write data every period ran covering the whole model domain.
 
         :param veg: Vegetation
@@ -181,13 +181,16 @@ class MapOutput(BaseOutput):
                 _map_data["cover"][-1, :] = veg._cover[:, -1]
 
             def update_height():
-                _map_data["sheight"][-1, :] = veg.veg_height
+                _map_data["sheight"][-1, :] = veg.veg_height[:, -1]
 
             def update_diaveg():
                 _map_data["diaveg"][-1, :] = veg.veg_dia[:, -1]
 
             def update_rnveg():
-                _map_data["rnveg"][-1, :] = veg.veg_dia[:, -1] ##TODO should it be stem_num?
+                _map_data["rnveg"][-1, :] = veg.veg_den[:, -1]
+
+            def update_bl():
+                _map_data["bedlevel"][-1, :] = veg.bl[:, -1]
 
 
             conditions_funct = dict(
@@ -207,7 +210,7 @@ class HisOutput(BaseOutput):
     Object representing a His output. Implements the 'OutputProtocol'.
     """
 
-    output_filename = "CoralModel_his.nc"
+    output_filename = "VegModel_his.nc"
     xy_stations: Optional[np.ndarray]
     idx_stations: Optional[np.ndarray]
     first_date: Optional[Union[np.datetime64, datetime]]
@@ -245,7 +248,7 @@ class HisOutput(BaseOutput):
 
             def init_height():
                 sheight = _map_data.createVariable(
-                    "stemheight", "f8", ("time", "nmesh2d_face")
+                    "stem height", "f8", ("time", "nmesh2d_face")
                 )
                 sheight.long_name = "stem height"
                 sheight.units = "m"
@@ -270,9 +273,9 @@ class HisOutput(BaseOutput):
             def init_bl():
                 bedlevel = _map_data.createVariable("bedlevel", "f8", ("time", "nmesh2d_face"))
                 bedlevel.long_name = (
-                    "plant density"
+                    "bed level"
                 )
-                bedlevel.units = "1/m2"
+                bedlevel.units = "m"
                 bedlevel[:, :] = 0
 
             #initial conditions
@@ -305,55 +308,19 @@ class HisOutput(BaseOutput):
             _his_data["time"][ti] = y_dates.values
 
             def update_cover():
-                _his_data["Iz"][ti, :] = coral.light[self.idx_stations, :].transpose()
+                _his_data["cover"][ti, :] = veg._cover[self.idx_stations, :].transpose()
 
-            def update_fme():
-                _his_data["ucm"][ti, :] = np.tile(coral.ucm, (len(y_dates), 1))[
-                    :, self.idx_stations
-                ]
+            def update_height():
+                _his_data["sheight"][ti, :] = veg.veg_height[self.idx_stations, :].transpose()
 
-            def update_tme():
-                _his_data["Tc"][ti, :] = coral.temp[self.idx_stations, :].transpose()
-                if (
-                    len(DataReshape.variable2array(coral.Tlo)) > 1
-                    and len(DataReshape.variable2array(coral.Thi)) > 1
-                ):
-                    _his_data["Tlo"][ti, :] = np.tile(coral.Tlo, (len(y_dates), 1))[
-                        :, self.idx_stations
-                    ]
-                    _his_data["Thi"][ti, :] = np.tile(coral.Thi, (len(y_dates), 1))[
-                        :, self.idx_stations
-                    ]
-                else:
-                    _his_data["Tlo"][ti, :] = coral.Tlo * np.ones(
-                        (len(y_dates), len(self.idx_stations))
-                    )
-                    _his_data["Thi"][ti, :] = coral.Thi * np.ones(
-                        (len(y_dates), len(self.idx_stations))
-                    )
+            def update_diaveg():
+                _his_data["diaveg"][ti, :] = veg.veg_dia[self.idx_stations, :].transpose()
 
-            def update_pd():
-                _his_data["PD"][ti, :] = coral.photo_rate[
-                    self.idx_stations, :
-                ].transpose()
+            def update_rnveg():
+                _his_data["rnveg"][ti, :] = veg.veg_den[self.idx_stations, :].transpose()
 
-            def update_ps():
-                _his_data["PT"][ti, :] = (
-                    coral.pop_states[self.idx_stations, :, :].sum(axis=2).transpose()
-                )
-                _his_data["PH"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 0
-                ].transpose()
-                _his_data["PR"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 1
-                ].transpose()
-                _his_data["PP"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 2
-                ].transpose()
-                _his_data["PB"][ti, :] = coral.pop_states[
-                    self.idx_stations, :, 3
-                ].transpose()
-
+            def update_bl():
+                _his_data["bedlevel"][ti, :] = veg.bl[self.idx_stations, :].transpose()
 
 
             conditions_funct = dict(
@@ -363,6 +330,7 @@ class HisOutput(BaseOutput):
                 rnveg=update_rnveg,
                 bedlevel=update_bl
             )
+
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
                     v_func()

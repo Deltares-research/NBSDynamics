@@ -12,22 +12,22 @@ from src.core.output.output_protocol import OutputProtocol
 
 
 class VegOutputWrapper(BaseModel):
-    from datetime import datetime
-    from pathlib import Path
-    from typing import Optional, Tuple, Union
+    # from datetime import datetime
+    # from pathlib import Path
+    # from typing import Optional, Tuple, Union
+    #
+    # import numpy as np
+    # from pydantic.class_validators import root_validator
+    #
+    # from src.core.base_model import BaseModel
+    # from src.core.coral.coral_model import Coral
+    # from src.core.output.output_model import HisOutput, MapOutput
+    # from src.core.output.output_protocol import OutputProtocol
 
-    import numpy as np
-    from pydantic.class_validators import root_validator
-
-    from src.core.base_model import BaseModel
-    from src.core.coral.coral_model import Coral
-    from src.core.output.output_model import HisOutput, MapOutput
-    from src.core.output.output_protocol import OutputProtocol
-
-    class OutputWrapper(BaseModel):
+    # class OutputWrapper(BaseModel):
         """
         Output files based on predefined output content.
-        Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
+        Generate output files of VegetationModel simulation. Output files are formatted as NetCDF4-files.
         """
 
         output_dir: Path = Path.cwd() / "output"  # directory to write the output to
