@@ -243,6 +243,7 @@ class BaseSimulation(BaseModel, ABC):
                         begin_date = end_date + timedelta(days=1)
                     end_date = begin_date + timedelta(days=self.constants.ets_duration)
                     period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
+                    ## TODO convert period to integer!
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(
