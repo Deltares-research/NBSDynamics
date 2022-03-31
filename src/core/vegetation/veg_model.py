@@ -147,12 +147,11 @@ class Vegetation(ExtraModel):
         """
         find number of growth days in current ets depending on start and end of growth period
         """
-        days_ets = 365 / Constants.t_eco_year
         current_date = pd.to_datetime(Constants.start_date)
         growth_days = []
         for x in range(0, Constants.t_eco_year):
             growth_Day = []
-            for y in range(0, round(days_ets)):
+            for y in range(0, round(self.constants.ets_duration)):
                 if pd.to_datetime(Constants.growth_start).month <= current_date.month <= pd.to_datetime(Constants.growth_end).month:
                     if pd.to_datetime(Constants.growth_start).month == current_date.month:
                         if pd.to_datetime(Constants.growth_start).day <= current_date.day:
