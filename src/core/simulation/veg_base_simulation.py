@@ -232,7 +232,6 @@ class BaseSimulation(BaseModel, ABC):
             int(start_date.year),
             int(start_date.year + duration),
         )   # takes the starting year from the start date defined in the Constants class.
-        ets_duration = 365 / self.constants.ets_per_year  # duration of each ets in days
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
@@ -242,7 +241,7 @@ class BaseSimulation(BaseModel, ABC):
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
                         begin_date = end_date + timedelta(days=1)
-                    end_date = begin_date + timedelta(days=ets_duration)
+                    end_date = begin_date + timedelta(days=self.constants.ets_duration)
                     period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
 
                     # # set dimensions (i.e. update time-dimension)
@@ -273,11 +272,11 @@ class BaseSimulation(BaseModel, ABC):
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality (ALWAYS HAPPEN)
-                    ## TODO update this!
+                    ## TODO finalize this!
                     mort = Veg_Mortality(
                         constants=self.constants,
                     )
-                    mort.update(self.veg)
+                    mort.update(self.veg, hydro_mor, ets)
 
                     # # vegetation growth (only when season right for growth)
                     if self.veg.growth_days[ets] > 0: #if there is growth days, do growth function
