@@ -11,8 +11,8 @@ class Veg_Mortality(ExtraModel):
     """Mortality"""
     constants: Constants = Constants()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+    def __init__(self):
+        super().__init__()
         self.burial_scour = None
         self.scour = None
         self.burial = None
@@ -31,33 +31,34 @@ class Veg_Mortality(ExtraModel):
 
     def update(self, veg:Vegetation, constants, ets):
         """Update vegetation characteristics after mortality"""
-        self.drowning_hydroperiod(veg, constants)
-        self.uprooting(veg, constants)
-        self.erosion_sedimentation(veg, constants)
+        self.drowning_hydroperiod(self, veg, constants, ets)
+        self.uprooting(self, veg, constants)
+        self.erosion_sedimentation(self, veg, constants, ets)
 
         veg.veg_age_frac = veg.veg_age_frac - self.fraction_dead_flood -self.fraction_dead_des - self.fraction_dead_flood - self.burial_scour #update fractions due to mortality
         veg.veg_age_frac[veg.veg_age_frac < 0] = 0 #replace negative values with 0
-        veg.update_vegetation_characteristics(veg.veg_age_frac)
+        veg.update_vegetation_characteristics(Vegetation, veg.veg_age_frac, constants)
 
-    def drowning_hydroperiod(self, veg: Vegetation, constants):
-        flooding_current, drying_current = self.compute_hydroperiod(Hydro_Morphodynamics.wl, constants)
+    def drowning_hydroperiod(self, veg: Vegetation, constants, ets):
+        flooding_current, drying_current = self.compute_hydroperiod(veg.wl_ts, constants)
 
         wet = np.zeros(flooding_current.shape)
         dry = np.zeros(drying_current.shape)
         wet[flooding_current > 0] = 1
         dry[drying_current > 0] = 1
-        flooding_prev, drying_prev = self.compute_hydroperiod(Hydro_Morphodynamics.wl_prev, constants)
+        if ets == 0:
+            veg.wl_prev = np.zeros(veg.wl_ts.shape)
+        flooding_prev, drying_prev = self.compute_hydroperiod(veg.wl_prev, constants)
 
         dry = drying_prev*dry #deleting all cells that have fallen wet during this ETS
         wet = flooding_prev*wet #deleting all cells that have fallen dry during this ETS
-        new_wet = np.where(flooding_prev == 0 and flooding_current > 0) #find cells that are newly wet during this ETS
-        new_dry = np.where(drying_prev == 0 and drying_current > 0) #find cells that are newly dry during this ETS
+        new_wet = np.where(flooding_prev.all() == 0 and flooding_current.all() > 0) #find cells that are newly wet during this ETS
+        new_dry = np.where(drying_prev.all() == 0 and drying_current.all() > 0) #find cells that are newly dry during this ETS
+        wet = np.repeat(wet.reshape(len(wet), 1), len(veg.veg_age_frac[0]), axis=1)
+        dry = np.repeat(dry.reshape(len(wet), 1), len(veg.veg_age_frac[0]), axis=1)
         for i in range(len(veg.veg_age_frac[0])):
-            if i > 0:
-                wet = np.column_stack((wet, wet))
-                dry = np.column_stack((dry, dry))
-            wet[new_wet] = veg.veg_age_frac[:, i][new_wet]  #add initial fractions in cells that are newly wet in matrix
-            dry[new_dry] = veg.veg_age_frac[:, i][new_dry] #add initial fractions in cells that are newly dry in matrix
+            wet[:, i][new_wet] = veg.veg_age_frac[:, i][new_wet]  #add initial fractions in cells that are newly wet in matrix
+            dry[:, i][new_dry] = veg.veg_age_frac[:, i][new_dry] #add initial fractions in cells that are newly dry in matrix
 
         # determine flooding mortalities based on linear relationship
         mort_flood = np.zeros(veg.veg_age_frac.shape)
@@ -111,9 +112,9 @@ class Veg_Mortality(ExtraModel):
         fct = (sl*fl+b)  #determines all mortality values over the grid
 
         out_fl = np.zeros(fl.shape)
-        B = np.where(fl>dmax) #cells with 100% mortality
+        B = np.where(fl > dmax) #cells with 100% mortality
         out_fl[B] = 1
-        C = np.where(dmax>fl>th) #cells where fct applies to determine mortality
+        C = np.where(dmax > fl.all() > th) #cells where fct applies to determine mortality
         out_fl[C] = fct[C]
         return out_fl
 
@@ -141,12 +142,12 @@ class Veg_Mortality(ExtraModel):
         the fraction is set to 0. We assume that the plants adapt to the deposition and erosion rates within one
         ETS by resetting them each ETS.
         """
-        self.BedLevel_Dif(veg, ets)
+        self.BedLevel_Dif(self, veg, ets)
         fract_scour = np.zeros(veg.root_len.shape)
-        fract_burial = np.zeros(veg.veg_height)
+        fract_burial = np.zeros(veg.veg_height.shape)
         for i in range(len(veg.root_len[0])):
-            fract_scour[:, i][abs(self.scour) > veg.root_len[:, i]] = 1  #find cells with mortality (scour > rootlength)
-            fract_burial[:, i][abs(self.burial) > veg.veg_height[:, i]] = 1
+            fract_scour[:, i][self.scour[:,i] > veg.root_len[:, i]] = 1  #find cells with mortality (scour > rootlength)
+            fract_burial[:, i][self.scour[:,i] > veg.veg_height[:, i]] = 1
 
         self.burial_scour = fract_scour + fract_burial  # array with cells where vegetation dies and the fraction of death due to burial and scour
 
@@ -158,14 +159,15 @@ class Veg_Mortality(ExtraModel):
             else:
                 depth_dts = veg.bl - veg.bl_prev
                 self.Bl_diff = depth_dts = self.Bl_diff
+## TODO something wrong here!
 
             loc_b = np.where(self.Bl_diff < 0)
-            self.burial[loc_b] = self.Bl_diff[loc_b]
+            self.burial[loc_b] = np.repeat(self.Bl_diff[0:len(self.burial[0])].reshape(len(self.burial[0]), 1), len(self.burial[0]), axis=1)[loc_b]
             loc_s = np.where(self.Bl_diff > 0)
-            self.scour[loc_s] = self.Bl_diff[loc_s]
+            self.scour[loc_s] = np.repeat(self.Bl_diff[0:len(self.scour[0])].reshape(len(self.scour[0]), 1), len(self.scour[0]), axis=1)[loc_b]
         else:
-            self.burial = np.zeros(veg.bl.shape)
-            self.scour = np.zeros(veg.bl.shape)
+            self.burial = np.zeros(veg.veg_height.shape)
+            self.scour = np.zeros(veg.root_len.shape)
 
 
 

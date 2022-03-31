@@ -1,4 +1,5 @@
 import numpy as np
+from src.core.vegetation.veg_model import Vegetation
 
 
 class Hydro_Morphodynamics:
@@ -10,35 +11,39 @@ class Hydro_Morphodynamics:
             u_cur,
             wl_cur,
             bl_cur,
-            ts
+            ts,
     ):
         ## TODO does this work??
-        if ts == 0:
-            self.tau = tau_cur
-            self.u = u_cur
-            self.wl_prev = self.wl
-            self.wl = wl_cur
-            self.bl = bl_cur
 
+        self.tau = tau_cur
+        self.u = u_cur
+        self.wl = wl_cur
+        self.bl = bl_cur
+        self.ts = ts
+        if ts ==0:
+            Vegetation.tau_ts = self.tau
+            Vegetation.u_ts = self.u
+            Vegetation.wl_ts = self.wl
+            Vegetation.bl_ts = self.bl
         else:
-            self.tau = np.column_stack((self.tau, tau_cur))
-            self.u = np.column_stack((self.u, u_cur))
-            self.wl = np.column_stack((self.wl, wl_cur))
-            self.bl = np.column_stack((self.bl, bl_cur))
+            Vegetation.tau_ts = np.column_stack((Vegetation.tau_ts, self.tau))
+            Vegetation.u_ts = np.column_stack((Vegetation.u_ts, self.u))
+            Vegetation.wl_ts = np.column_stack((Vegetation.wl_ts, self.wl))
+            Vegetation.bl_ts = np.column_stack((Vegetation.bl_ts, self.bl))
 
     def get_hydromorph_values(self, veg):
-        veg.max_tau = np.zeros(len(self.tau))
-        veg.max_u = np.zeros(len(self.u))
-        veg.max_wl = np.zeros(len(self.wl))
-        veg.min_wl = np.zeros(len(self.wl))
-        veg.bl = np.zeros(len(self.bl))
+        veg.max_tau = np.zeros(len(veg.tau_ts))
+        veg.max_u = np.zeros(len(veg.u_ts))
+        veg.max_wl = np.zeros(len(veg.wl_ts))
+        veg.min_wl = np.zeros(len(veg.wl_ts))
+        veg.bl = np.zeros(len(veg.bl_ts))
 
-        for i in range(len(self.wl)):
-            veg.max_tau[i] = max(self.tau[i, :])
-            veg.max_u[i] = max(self.u[i, :])
-            veg.max_wl[i] = max(self.wl[i, :])
-            veg.min_wl[i] = min(self.wl[i, :])
-        veg.bl[:] = self.bl[:, -1]  # last values in bed level to get 'current' value
+        for i in range(0, len(veg.wl_ts)):
+            veg.max_tau[i] = max(veg.tau_ts[i, :])
+            veg.max_u[i] = max(veg.u_ts[i, :])
+            veg.max_wl[i] = max(veg.wl_ts[i, :])
+            veg.min_wl[i] = min(veg.wl_ts[i, :])
+        veg.bl[:] = veg.bl_ts[:, -1]  # last values in bed level to get 'current' value
 
     def store_hydromorph_values(self, veg):
         veg.max_tau_prev = veg.max_tau
@@ -46,10 +51,5 @@ class Hydro_Morphodynamics:
         veg.max_wl_prev = veg.max_wl
         veg.min_wl_prev = veg.min_wl
         veg.bl_prev = veg.bl
-        self.wl_prev = self.wl
+        veg.wl_prev = veg.wl_ts
 
-    # def clean_hyromorph_matrixes(self):
-    #     self.tau = []
-    #     self.u = []
-    #     self.wl = []
-    #     self.bl = []

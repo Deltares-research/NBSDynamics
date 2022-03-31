@@ -136,7 +136,7 @@ class Constants(BaseModel):
     ColEnd: str = "2022-05-31" # Date of last colonisation (year,month,day)
 
     random: int = 30 # random colonization as described in Bij de Vaate et al., 2020 with n number of cells colonized as fraction: n = SeedlingLocations/random
-    mud_colonization: tuple = (0.0, 0.0) # 3.8. mud percentage for colonization dependent on life stage
+    mud_colonization: float = [0.0, 0.0] # 3.8. mud percentage for colonization dependent on life stage
 
     fl_dr: float = 0.05  # Boundary for flooding/drying threshold used in the vegetation computations [m]
 
@@ -154,20 +154,20 @@ class Constants(BaseModel):
     winter_start: str = "2022-11-30" # 1.16 Date start winter period
 
     # LIFE STAGE CHARACTERISTICS (dependent on nls above): here 2
-    maxGrowth_H: float = (0.8, 1.3) # 3.1. maximum plant height growth [m]
-    maxDia: float = (0.003, 0.005) # 3.2. max stem diameter at "end growth shoot"
-    maxRoot: float = (0.2, 1) # 3.3. max root length [m] at "end growth root"
-    maxYears_LS: float = (1, 19) # 3.4. maximum number of years in lifestage
-    numStem: float = (700, 700) # 3.5. number of stems per m2
+    maxGrowth_H: float = [0.8, 1.3] # 3.1. maximum plant height growth [m]
+    maxDia: float = [0.003, 0.005] # 3.2. max stem diameter at "end growth shoot"
+    maxRoot: float = [0.2, 1] # 3.3. max root length [m] at "end growth root"
+    maxYears_LS: float = [1, 19] # 3.4. maximum number of years in lifestage
+    numStem: float = [700, 700] # 3.5. number of stems per m2
     iniCol_frac: float = 0.6 # 3.6. initial colonization fraction (0-1)
-    Cd: float = (1.1, 1.15) # 3.7. drag coefficient
-    desMort_thres: float = (400, 400) # 3.9. dessication mortality threshold
-    desMort_slope: float = (0.75, 0.75) # 3.10. dessication mortality slope
-    floMort_thres: float = (0.4, 0.4) # 3.11. flooding mortality threshold
-    floMort_slope: float = (0.25, 0.25)# 3.12. flooding mortality slope
-    vel_thres: float = (0.15, 0.25)   # 3.13. flow velocity threshold
-    vel_slope: float = (3, 3)  # 3.14. flow velocity slope
-    maxH_winter: float = (0.4, 0.4)  # 3.15  max height during winter time
+    Cd: float = [1.1, 1.15] # 3.7. drag coefficient
+    desMort_thres: float = [400, 400] # 3.9. dessication mortality threshold
+    desMort_slope: float = [0.75, 0.75] # 3.10. dessication mortality slope
+    floMort_thres: float = [0.4, 0.4] # 3.11. flooding mortality threshold
+    floMort_slope: float = [0.25, 0.25]# 3.12. flooding mortality slope
+    vel_thres: float = [0.15, 0.25]   # 3.13. flow velocity threshold
+    vel_slope: float = [3, 3]  # 3.14. flow velocity slope
+    maxH_winter: float = [0.4, 0.4]  # 3.15  max height during winter time
     # 3.16  Salinity tolerance placeholder (excluded here)
 
     @classmethod
