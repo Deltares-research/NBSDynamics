@@ -1,30 +1,33 @@
-from pathlib import Path
+
 from typing import Optional
 import numpy as np
-import pandas as pd
-from scipy.optimize import newton
-from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.core.common.constants_veg import Constants
 from src.core.vegetation.veg_model import Vegetation
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
-from random import sample
-from src.core.common.space_time import VegOnly, DataReshape
-from src.core.vegetation.veg_only import VegOnly
-from src.core.hydrodynamics.delft3d import FlowFmModel
+
 
 class Veg_Mortality(ExtraModel):
     """Mortality"""
-
-    burial_scour: Optional[np.array] = None
-    loc_mortality: Optional[np.array] = None
-    scour: Optional[np.array] = None
-    burial: Optional[np.array] = None
     constants: Constants = Constants()
-    BL_diff: Optional[np.array] = None
-    fraction_dead_flood: Optional[np.array] = None
-    fraction_dead_des: Optional[np.array] = None
-    fraction_dead_upr: Optional[np.array] = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.burial_scour = None
+        self.scour = None
+        self.burial = None
+        self.Bl_diff = None
+        self.fraction_dead_flood = None
+        self.fraction_dead_des = None
+        self.fraction_dead_upr = None
+
+    # burial_scour: Optional[np.array] = None
+    # scour: Optional[np.array] = None
+    # burial: Optional[np.array] = None
+    # BL_diff: Optional[np.array] = None
+    # fraction_dead_flood: Optional[np.array] = None
+    # fraction_dead_des: Optional[np.array] = None
+    # fraction_dead_upr: Optional[np.array] = None
 
     def update(self, veg:Vegetation, constants, ets):
         """Update vegetation characteristics after mortality"""
