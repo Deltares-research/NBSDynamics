@@ -17,9 +17,8 @@ class Veg_Growth(ExtraModel):
         new = np.zeros((n, self.growth_days_ets))
         veg.veg_age_frac = np.hstack((new, veg.veg_age_frac))
         # sum up all vegetation that is older than maxAge and the left over columns
-        veg.veg_age_frac[:, Constants.maxAge*sum(veg.growth_days)] = veg.veg_age_frac[:,Constants.maxAge*sum(veg.growth_days):-1].sum(axis=1)
-        veg.veg_age_frac = np.delete(veg.veg_age_frac, np.s_[Constants.maxAge*sum(veg.growth_days):-1], axis=1)
-        veg.veg_age_frac = np.delete(veg.veg_age_frac, -1, axis=1)
+        veg.veg_age_frac[:, Constants.maxAge*sum(veg.growth_days)] = veg.veg_age_frac[:,Constants.maxAge*sum(veg.growth_days):len(veg.veg_age_frac[0])+1].sum(axis=1)
+        veg.veg_age_frac = np.delete(veg.veg_age_frac, np.s_[Constants.maxAge*sum(veg.growth_days):len(veg.veg_age_frac[0])+1], axis=1)
         #veg.veg_age_frac[veg.veg_age_frac[:, Constants.maxAge*sum(veg.growth_days)+1:-1]>0] = 0
 
         veg.update_vegetation_characteristics(veg.veg_age_frac)

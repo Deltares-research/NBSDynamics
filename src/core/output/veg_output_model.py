@@ -149,19 +149,28 @@ class MapOutput(BaseOutput):
                 bedlevel.units = "m"
                 bedlevel[:, :] = 0
 
+            def init_veg_frac():
+                veg_frac = _map_data.createVariable("veg_frac", "f8", ("time", "nmesh2d_face"))
+                veg_frac.long_name = (
+                    "Vegetation fraction in each growth day"
+                )
+                veg_frac.units = "-"
+                veg_frac[:, :] = 0
+
+
             conditions_funct = dict(
                 cover=init_cover,
                 sheight=init_height,
                 diaveg=init_diaveg,
                 rnveg=init_rnveg,
-                bedlevel=init_bl
-
+                bedlevel=init_bl,
+                veg_frac=init_veg_frac
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
                     v_func()
 
-    def update(self, veg: Vegetation, period: int):
+    def update(self, veg: Vegetation, end_time: int):
         """Write data every period ran covering the whole model domain.
 
         :param veg: Vegetation
@@ -174,23 +183,26 @@ class MapOutput(BaseOutput):
             return
         with Dataset(self.output_filepath, mode="a") as _map_data:
             # i = int(year - self.first_year)
-            i = int(period)
-            _map_data["time"][i] = period
+            i = int(end_time)
+            _map_data["time"][i] = end_time
 
             def update_cover():
-                _map_data["cover"][-1, :] = veg._cover[:, -1]
+                _map_data["cover"][-1, :] = veg._cover[0, :]
 
             def update_height():
-                _map_data["sheight"][-1, :] = veg.veg_height[:, -1]
+                _map_data["sheight"][-1, :] = veg.av_height[0, :]
 
             def update_diaveg():
-                _map_data["diaveg"][-1, :] = veg.veg_dia[:, -1]
+                _map_data["diaveg"][-1, :] = veg.av_dia[0, :]
 
             def update_rnveg():
-                _map_data["rnveg"][-1, :] = veg.veg_den[:, -1]
+                _map_data["rnveg"][-1, :] = veg.veg_den[0, :]
 
             def update_bl():
-                _map_data["bedlevel"][-1, :] = veg.bl[:, -1]
+                _map_data["bedlevel"][-1, :] = veg.bl[:,0]
+
+            def update_veg_frac():
+                _map_data["veg_frac"][:, :] = veg.veg_age_frac[:,:]
 
 
             conditions_funct = dict(
@@ -198,7 +210,8 @@ class MapOutput(BaseOutput):
                 sheight=update_height,
                 diaveg=update_diaveg,
                 rnveg=update_rnveg,
-                bedlevel=update_bl
+                bedlevel=update_bl,
+                veg_frac=update_veg_frac,
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
@@ -220,7 +233,7 @@ class HisOutput(BaseOutput):
         if not self.valid_output():
             return
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
-            _his_data.description = "Historic simulation data of the CoralModel"
+            _his_data.description = "Historic simulation data of the VegetaionModel"
 
             # dimensions
             _his_data.createDimension("time", None)
@@ -278,20 +291,28 @@ class HisOutput(BaseOutput):
                 bedlevel.units = "m"
                 bedlevel[:, :] = 0
 
+            def init_veg_frac():
+                veg_frac = _map_data.createVariable("veg_frac", "f8", ("time", "nmesh2d_face"))
+                veg_frac.long_name = (
+                    "Vegetation fraction in each growth day"
+                )
+                veg_frac.units = "-"
+                veg_frac[:, :] = 0
+
             #initial conditions
             conditions_funct = dict(
                 cover=init_cover,
                 sheight=init_height,
                 diaveg=init_diaveg,
                 rnveg=init_rnveg,
-                bedlevel=init_bl
-
+                bedlevel=init_bl,
+                veg_frac=init_veg_frac
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
                     v_func()
 
-    def update(self, veg: Vegetation, dates: DataFrame): ##TODO leave as DataFrame? Finish the parameters
+    def update(self, veg: Vegetation, dates: DataFrame):
         """Write data as daily output at predefined locations within the model domain.
 
         :param vegetation: Vegetation
@@ -322,13 +343,16 @@ class HisOutput(BaseOutput):
             def update_bl():
                 _his_data["bedlevel"][ti, :] = veg.bl[self.idx_stations, :].transpose()
 
+            def update_veg_frac():
+                _his_data["veg_frac"][ti, :] = veg.veg_age_frac[self.idx_stations, :].transpose()
 
             conditions_funct = dict(
                 cover=update_cover,
                 sheight=update_height,
                 diaveg=update_diaveg,
                 rnveg=update_rnveg,
-                bedlevel=update_bl
+                bedlevel=update_bl,
+                veg_frac=update_veg_frac
             )
 
             for key, v_func in conditions_funct.items():

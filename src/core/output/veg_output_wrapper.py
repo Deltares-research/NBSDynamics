@@ -127,7 +127,7 @@ class VegOutputWrapper(BaseModel):
             idx_stations = idx.astype(int)
             return xy_coordinates[idx_stations, :], idx_stations
 
-        def initialize(self, veg_model: Vegetation):
+        def initialize(self, veg : Vegetation):
             """
             Initializes all available output models (His and Map).
 
@@ -138,6 +138,6 @@ class VegOutputWrapper(BaseModel):
             self.output_dir.mkdir(parents=True, exist_ok=True)
 
             # Initialize output models.
-            self.his_output.initialize(Vegetation)
-            self.map_output.initialize(Vegetation)
+            self.his_output.initialize(veg)
+            self.map_output.initialize(veg)
 

@@ -243,7 +243,7 @@ class BaseSimulation(BaseModel, ABC):
                         begin_date = end_date + timedelta(days=1)
                     end_date = begin_date + timedelta(days=self.constants.ets_duration())
                     period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
-                    ## TODO convert period to integer!
+                    period = int(period)## TODO convert period to integer!
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(
@@ -295,11 +295,11 @@ class BaseSimulation(BaseModel, ABC):
                     ## TODO check this when finishing the output files!
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
-                    self.output.map_output.update(self.veg, period) #change to period we are in current ets
+                    self.output.map_output.update(self.veg, int(period[-1].strftime("%Y%m%d%H%M%S"))) #change to period we are in current ets
                     # his-file
                     self.output.his_output.update(
                         self.veg,
-                        period,
+                        pd.DataFrame(period),
                     )
                     hydro_mor.store_hydromorph_values(self.veg)
 
