@@ -12,7 +12,7 @@ from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
 from src.core.bio_process.veg_mortality import Veg_Mortality
-#from src.core.bio_process.veg_growth import Veg_Growth
+from src.core.bio_process.veg_growth import Veg_Growth
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.common.constants_veg import Constants
 from src.core.common.environment import Environment
@@ -20,7 +20,7 @@ from src.core.common.space_time import time_series_year
 from src.core.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.veg_output_wrapper import ...
+from src.core.output.veg_output_wrapper import VegOutputWrapper
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -32,13 +32,13 @@ class BaseSimulation(BaseModel, ABC):
 
     mode: str
 
-    # Directories related to working dir
+    #Directories related to working dir
     working_dir: Optional[Path] = Path.cwd()
     figures_dir: Path = working_dir / "figures"
     output_dir: Path = working_dir / "output"
     input_dir: Path = working_dir / "input"
 
-    # Other fields.
+    #Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
     constants: Constants = Constants()
@@ -241,7 +241,7 @@ class BaseSimulation(BaseModel, ABC):
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
                         begin_date = end_date + timedelta(days=1)
-                    end_date = begin_date + timedelta(days=self.constants.ets_duration)
+                    end_date = begin_date + timedelta(days=self.constants.ets_duration())
                     period = [start_date + timedelta(n) for n in range(int((end_date - start_date).days))]
                     ## TODO convert period to integer!
 
