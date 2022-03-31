@@ -21,7 +21,6 @@ class Veg_Mortality(ExtraModel):
     scour: Optional[np.array] = None
     burial: Optional[np.array] = None
     constants: Constants = Constants()
-    morph_hydro: Hydro_Morphodynamics = Hydro_Morphodynamics()
     BL_diff: Optional[np.array] = None
     fraction_dead_flood: Optional[np.array] = None
     fraction_dead_des: Optional[np.array] = None
@@ -38,13 +37,13 @@ class Veg_Mortality(ExtraModel):
         veg.update_vegetation_characteristics(veg.veg_age_frac)
 
     def drowning_hydroperiod(self, veg: Vegetation, constants):
-        flooding_current, drying_current = self.compute_hydroperiod(self.morph_hydro.wl, constants)
+        flooding_current, drying_current = self.compute_hydroperiod(Hydro_Morphodynamics.wl, constants)
 
         wet = np.zeros(flooding_current.shape)
         dry = np.zeros(drying_current.shape)
         wet[flooding_current > 0] = 1
         dry[drying_current > 0] = 1
-        flooding_prev, drying_prev = self.compute_hydroperiod(self.morph_hydro.wl_prev, constants)
+        flooding_prev, drying_prev = self.compute_hydroperiod(Hydro_Morphodynamics.wl_prev, constants)
 
         dry = drying_prev*dry #deleting all cells that have fallen wet during this ETS
         wet = flooding_prev*wet #deleting all cells that have fallen dry during this ETS
@@ -149,7 +148,7 @@ class Veg_Mortality(ExtraModel):
         self.burial_scour = fract_scour + fract_burial  # array with cells where vegetation dies and the fraction of death due to burial and scour
 
     ## TODO make this static method?
-    def BedLevel_Dif(self, veg:Vegetation, ets):
+    def BedLevel_Dif(self, veg: Vegetation, ets):
         if ets >= 2:        # from second time step onward in each ets
             if ets == 2:
                 self.Bl_diff = veg.bl - veg.bl_prev
