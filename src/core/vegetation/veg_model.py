@@ -67,9 +67,9 @@ class Vegetation(ExtraModel):
     #    return DataReshape.variable2array(value)
     @property
     def cover(self):  # as input for DFM
-##TODO put it  inside LifeStage?
+        """average shoot height of the different vegetation in one grid cell"""
+
         #take cover as sum of all the ages and life stages
-        _cover = veg_frac.sum(axis=1)
 
         return self._cover
 
@@ -163,27 +163,24 @@ class Vegetation(ExtraModel):
 
     @staticmethod
     def update_lifestages(ls0, ls1, ls2=None):
-        ##TODO CHECK
         #take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
-        ls1 = np.append(ls0[-1], axis=1)
-        ls0 = np.zeros(RESHAPE().space)
 
 
 class LifeStages(Vegetation):
 
     def __init__(self, ls):
 
-        veg_height: VegAttribute  # vegetation height [m]
-        stem_dia: VegAttribute  # stem diameter [m]
-        root_len: VegAttribute  # root length [m]
-        veg_age: VegAttribute  # vegetation life stage (0 or 1 or more), number defined in Constants.num_ls
-        veg_frac: VegAttribute  # vegetation age [yrs]
-        stem_num: VegAttribute  # number of stems
-        # constants: Constants = Constants()
+    veg_height: VegAttribute  # vegetation height [m]
+    stem_dia: VegAttribute  # stem diameter [m]
+    root_len: VegAttribute  # root length [m]
+    veg_age: VegAttribute  # vegetation life stage (0 or 1 or more), number defined in Constants.num_ls
+    veg_frac: VegAttribute  # vegetation age [yrs]
+    stem_num: VegAttribute  # number of stems
+    constants: Constants = Constants()
 
-        dt_height: VegAttribute = list()
-        dt_root: VegAttribute = list()
-        dt_stemdia: VegAttribute = list()
+    dt_height: VegAttribute = list()
+    dt_root: VegAttribute = list()
+    dt_stemdia: VegAttribute = list()
 
     #
     # def __repr__(self):
@@ -252,15 +249,15 @@ class LifeStages(Vegetation):
         self.stem_num = np.zeros(_reshape.space)
 
         if ls == 0:
-            self.dt_height[ls] = (LifeStages.constants.maxGrowth_H[ls] - LifeStages.constants.iniShoot)/(self.duration_growth(self, constants))
-            self.dt_height[ls] = (LifeStages.constants.maxGrowth_H[ls] - LifeStages.constants.maxH_winter[ls]) / (self.duration_growth(self, constants))
-            self.dt_stemdia = (LifeStages.constants.maxDia[ls] - LifeStages.constants.iniDia) / ((self.duration_growth(self, constants)) * constants.maxYears_LS[ls])
-            self.dt_root = (LifeStages.constants.maxRoot[ls] - LifeStages.constants.iniRoot) / ((self.duration_growth(self, constants)) * constants.maxYears_LS[ls])
+            self.dt_height[ls] = (LifeStages.constants.maxGrowth_H[ls] - constants.iniShoot)/(self.duration_growth(self, constants))
+            self.dt_height[ls] = (constants.maxGrowth_H[ls] - constants.maxH_winter[ls]) / (self.duration_growth(self, constants))
+            self.dt_stemdia = (constants.maxDia[ls] - constants.iniDia) / ((self.duration_growth(self, constants)) * constants.maxYears_LS[ls])
+            self.dt_root = (constants.maxRoot[ls] - constants.iniRoot) / ((self.duration_growth(self, constants)) * constants.maxYears_LS[ls])
         else:
-            self.dt_height[ls] = (LifeStages.constants.maxGrowth_H[ls] - constants.maxH_winter[ls]) / (self.duration_growth(self, constants))  # growth per day of growing season
-            self.dt_height[ls] = (LifeStages.constants.maxGrowth_H[ls] - constants.maxH_winter[ls]) / self.duration_growth(self, constants)  # growth per day of growing season
-            self.dt_stemdia = (LifeStages.constants.maxDia[ls] - constants.maxDia[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
-            self.dt_root = (LifeStages.constants.maxRoot[ls] - constants.maxRoot[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
+            self.dt_height[ls] = (constants.maxGrowth_H[ls] - constants.maxH_winter[ls]) / (self.duration_growth(self, constants))  # growth per day of growing season
+            self.dt_height[ls] = (constants.maxGrowth_H[ls] - constants.maxH_winter[ls]) / self.duration_growth(self, constants)  # growth per day of growing season
+            self.dt_stemdia = (constants.maxDia[ls] - constants.maxDia[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
+            self.dt_root = (constants.maxRoot[ls] - constants.maxRoot[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
 
     def update_growth(self, veg_frac):
 

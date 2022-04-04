@@ -43,7 +43,7 @@ class BaseSimulation(BaseModel, ABC):
     environment: Environment = Environment()
     constants: Constants = Constants()
     output: Optional[VegOutputWrapper]
-    veg: Optional[Vegetation]
+    veg: Optional[Vegetation(species="Spartina anglica")]
 
     @validator("constants", pre=True)
     @classmethod
@@ -207,7 +207,7 @@ class BaseSimulation(BaseModel, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        Vegetation.initiate_vegetation_characteristics(Vegetation,self.constants, cover)
+        Vegetation.initiate_vegetation_characteristics(Vegetation, self.constants, cover)
 
         self.output.initialize(self.veg)
 
