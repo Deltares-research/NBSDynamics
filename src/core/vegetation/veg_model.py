@@ -23,8 +23,10 @@ class Vegetation(ExtraModel):
     Implements the `VegProtocol`.
     Vegetation object, representing one plant.
     """
-
-    constants: Constants = Constants()
+    def __init__(self, species):
+        super().__init__()
+        self.species = species
+        self.constants: Constants = Constants(species= self.species)
 
     # other attributes.
     _cover: Optional[VegAttribute] = list() # sum of fraction of area coverage in each cell (for all ages)
@@ -67,9 +69,11 @@ class Vegetation(ExtraModel):
     #    return DataReshape.variable2array(value)
     @property
     def cover(self):  # as input for DFM
-##TODO put it  inside LifeStage?
         #take cover as sum of all the ages and life stages
-        _cover = veg_frac.sum(axis=1)
+        _cover = np.zeros(RESHAPE().space)
+        cover1 = self.juvenile.veg_frac.sum(axis=1)
+        cover2 = self.mature.veg_frac.sum(axis=1)
+        self._cover = cover1 + cover2
 
         return self._cover
 
