@@ -232,4 +232,4 @@ class Constants(BaseModel):
 
     @property
     def ets_duration(self):
-        return 365 / self.ets_per_year
+        return round(365 / self.ets_per_year)
