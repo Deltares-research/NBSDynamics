@@ -12,6 +12,7 @@ class Hydro_Morphodynamics:
             wl_cur,
             bl_cur,
             ts,
+            veg: Vegetation
     ):
         ## TODO does this work??
 
@@ -20,16 +21,16 @@ class Hydro_Morphodynamics:
         self.wl = wl_cur
         self.bl = bl_cur
         self.ts = ts
-        if ts ==0:
-            Vegetation.tau_ts = self.tau
-            Vegetation.u_ts = self.u
-            Vegetation.wl_ts = self.wl
-            Vegetation.bl_ts = self.bl
+        if ts == 0:
+            veg.tau_ts = self.tau
+            veg.u_ts = self.u
+            veg.wl_ts = self.wl
+            veg.bl_ts = self.bl
         else:
-            Vegetation.tau_ts = np.column_stack((Vegetation.tau_ts, self.tau))
-            Vegetation.u_ts = np.column_stack((Vegetation.u_ts, self.u))
-            Vegetation.wl_ts = np.column_stack((Vegetation.wl_ts, self.wl))
-            Vegetation.bl_ts = np.column_stack((Vegetation.bl_ts, self.bl))
+            veg.tau_ts = np.column_stack((veg.tau_ts, self.tau))
+            veg.u_ts = np.column_stack((veg.u_ts, self.u))
+            veg.wl_ts = np.column_stack((veg.wl_ts, self.wl))
+            veg.bl_ts = np.column_stack((veg.bl_ts, self.bl))
 
     def get_hydromorph_values(self, veg):
         veg.max_tau = np.zeros(len(veg.tau_ts))

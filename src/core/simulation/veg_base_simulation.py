@@ -12,7 +12,6 @@ from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
 from src.core.bio_process.veg_mortality import Veg_Mortality
-from src.core.bio_process.veg_growth import Veg_Growth
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.common.constants_veg import Constants
 from src.core.common.environment import Environment
@@ -41,9 +40,9 @@ class BaseSimulation(BaseModel, ABC):
     #Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
-    constants: Constants = Constants()
+    constants: Constants = Constants("Spartina anglica")
     output: Optional[VegOutputWrapper]
-    veg: Optional[Vegetation(species="Spartina anglica")]
+    veg: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -207,7 +206,10 @@ class BaseSimulation(BaseModel, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        Vegetation.initiate_vegetation_characteristics(Vegetation, self.constants, cover)
+        self.veg.initial.initiate_vegetation_characteristics()
+        self.veg.juvenile.initiate_vegetation_characteristics()
+        self.veg.mature.initiate_vegetation_characteristics()
+
 
         self.output.initialize(self.veg)
 
@@ -264,27 +266,27 @@ class BaseSimulation(BaseModel, ABC):
                             u_cur=cur_vel,
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
-                            ts=ts
+                            ts=ts,
+                            veg=self.veg
                         )
-                    hydro_mor.get_hydromorph_values(Vegetation)
+                    hydro_mor.get_hydromorph_values(self.veg)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality (ALWAYS HAPPEN)
                     ## TODO finalize this!
                     mort = Veg_Mortality
-                    mort.update(mort, Vegetation, self.constants, ets)
+                    mort.update(mort, self.veg, self.constants, ets, begin_date, end_date)
 
-                    # # vegetation growth (only when season right for growth)
-                    if Vegetation.growth_days[ets] > 0: #if there is growth days, do growth function
-                        growth = Veg_Growth(constants=self.constants)
-                        growth.update(self.veg, ets)
 
                     # # colonization (only in colonization period)
-                    if Vegetation.col_days[ets] > 0:
+                    if self.constants.col_days[ets] > 0:
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization(constants=self.constants)
-                        col.update(self.veg, )
+                        col.update(self.veg, constants=self.constants)
+
+                    #update lifestages, initial to juvenile and juvenile to mature
+                    self.veg.update_lifestages(self.veg)
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")

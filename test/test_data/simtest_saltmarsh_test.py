@@ -24,7 +24,7 @@ input_dir = test_dir  # / "input"
 
 sim_run = VegFlowFmSimulation(
     working_dir=test_dir,
-    constants=Constants(),
+    constants=Constants(species="Spartina anglica"),
     # constants=input_dir/ "MinFiles" / "fm" / "veg.ext",
 
     hydrodynamics=dict(
@@ -44,6 +44,7 @@ sim_run = VegFlowFmSimulation(
         ),
 
     ),
+    veg=Vegetation(species="Spartina anglica")
 )
 
 # Run simulation.

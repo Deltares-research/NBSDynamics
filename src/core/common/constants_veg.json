@@ -1,7 +1,7 @@
 {
     "Spartina anglica": {
-        "ColStart": "0000-04-01",
-        "ColEnd": "0000-05-31",
+        "ColStart": "2000-04-01",
+        "ColEnd": "2000-05-31",
         "random": 7,
         "mud_colonization": [
             0.0,
@@ -13,9 +13,9 @@
         "initial root length": 0.05,
         "initial shoot length": 0.015,
         "initial diameter": 0.003,
-        "start growth period": "0000-04-01",
-        "end growth period": "0000-10-31",
-        "start winter period": "0000-11-30",
+        "start growth period": "2000-04-01",
+        "end growth period": "2000-10-31",
+        "start winter period": "2000-11-30",
         "maximum plant height": [
             0.8,
             1.3

@@ -5,21 +5,25 @@ from src.core.base_model import ExtraModel
 from src.core.common.constants_veg import Constants
 from src.core.vegetation.veg_model import Vegetation
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
-
+from src.core.vegetation.veg_lifestages import LifeStages
 
 class Veg_Mortality(ExtraModel):
     """Mortality"""
-    constants: Constants = Constants()
+    #constants: Constants = Constants()
 
     def __init__(self):
         super().__init__()
-        self.burial_scour = None
+        self.burial_scour_j = None
+        self.burial_scour_m = None
         self.scour = None
         self.burial = None
         self.Bl_diff = None
-        self.fraction_dead_flood = None
-        self.fraction_dead_des = None
-        self.fraction_dead_upr = None
+        self.fraction_dead_flood_j = None
+        self.fraction_dead_des_j = None
+        self.fraction_dead_upr_j = None
+        self.fraction_dead_flood_m = None
+        self.fraction_dead_des_m = None
+        self.fraction_dead_upr_m = None
 
     # burial_scour: Optional[np.array] = None
     # scour: Optional[np.array] = None
@@ -29,15 +33,19 @@ class Veg_Mortality(ExtraModel):
     # fraction_dead_des: Optional[np.array] = None
     # fraction_dead_upr: Optional[np.array] = None
 
-    def update(self, veg:Vegetation, constants, ets):
+    def update(self, veg: Vegetation, constants, ets, begin_date, end_date):
         """Update vegetation characteristics after mortality"""
         self.drowning_hydroperiod(self, veg, constants, ets)
         self.uprooting(self, veg, constants)
         self.erosion_sedimentation(self, veg, constants, ets)
 
-        veg.veg_age_frac = veg.veg_age_frac - self.fraction_dead_flood -self.fraction_dead_des - self.fraction_dead_flood - self.burial_scour #update fractions due to mortality
-        veg.veg_age_frac[veg.veg_age_frac < 0] = 0 #replace negative values with 0
-        veg.update_vegetation_characteristics(Vegetation, veg.veg_age_frac, constants)
+        veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_flood_j -self.fraction_dead_des_j - self.fraction_dead_flood_j - self.burial_scour_j #update fractions due to mortality
+        veg.juvenile.veg_frac[veg.mature.veg_frac < 0] = 0 #replace negative values with 0
+        veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_flood_m - self.fraction_dead_des_m - self.fraction_dead_flood_m - self.burial_scour_m  # update fractions due to mortality
+        veg.mature.veg_frac[veg.mature.veg_frac < 0] = 0  # replace negative values with 0
+
+        veg.juvenile.update_growth(veg.juvenile.veg_frac, ets, begin_date, end_date)
+        veg.mature.update_growth(veg.mature.veg_frac, ets, begin_date, end_date)
 
     def drowning_hydroperiod(self, veg: Vegetation, constants, ets):
         flooding_current, drying_current = self.compute_hydroperiod(veg.wl_ts, constants)
@@ -54,45 +62,36 @@ class Veg_Mortality(ExtraModel):
         wet = flooding_prev*wet #deleting all cells that have fallen dry during this ETS
         new_wet = np.where(flooding_prev.all() == 0 and flooding_current.all() > 0) #find cells that are newly wet during this ETS
         new_dry = np.where(drying_prev.all() == 0 and drying_current.all() > 0) #find cells that are newly dry during this ETS
-        wet = np.repeat(wet.reshape(len(wet), 1), len(veg.veg_age_frac[0]), axis=1)
-        dry = np.repeat(dry.reshape(len(wet), 1), len(veg.veg_age_frac[0]), axis=1)
-        for i in range(len(veg.veg_age_frac[0])):
-            wet[:, i][new_wet] = veg.veg_age_frac[:, i][new_wet]  #add initial fractions in cells that are newly wet in matrix
-            dry[:, i][new_dry] = veg.veg_age_frac[:, i][new_dry] #add initial fractions in cells that are newly dry in matrix
 
-        # determine flooding mortalities based on linear relationship
-        mort_flood = np.zeros(veg.veg_age_frac.shape)
-        # determine flooding mortalities based on linear relationship
-        mort_des =np.zeros(veg.veg_age_frac.shape)
+        wet_j = np.repeat(wet.reshape(len(wet), 1), len(veg.juvenile.veg_frac), axis=1)
+        dry_j = np.repeat(dry.reshape(len(wet), 1), len(veg.juvenile.veg_frac), axis=1)
+        wet_j[new_wet] = veg.juvenile.veg_frac[new_wet]  #add initial fractions in cells that are newly wet in matrix
+        dry_j[new_dry] = veg.juvenile.veg_frac[new_dry] #add initial fractions in cells that are newly dry in matrix
+        # determine flooding/drying mortalities based on linear relationship
+        mort_flood_j = self.mortality_flood_frequency(flooding_current, constants.floMort_thres[0], constants.floMort_slope[0])
+        mort_des_j = self.mortality_flood_frequency(drying_current, constants.desMort_thres[0], constants.desMort_slope[0])
+        self.fraction_dead_flood_j = wet_j * mort_flood_j
+        self.fraction_dead_des_j = dry_j * mort_des_j
 
-        for ls in range(0, constants.num_ls):
-            for d in range(0, constants.maxYears_LS[ls]*sum(veg.growth_days)):
-                if d == 0:
-                    mort_flood[:, d] = self.mortality_flood_frequency(flooding_current, constants.floMort_thres[ls], constants.floMort_slope[ls])
-                    mort_des[:, d] = self.mortality_flood_frequency(drying_current, constants.desMort_thres[ls], constants.desMort_slope[ls])
-                else:
-                    k = d + sum(constants.maxYears_LS[0:ls]) * sum(veg.growth_days)
-                    mort_flood[:, k] = self.mortality_flood_frequency(flooding_current, constants.floMort_thres[ls],
-                                                                      constants.floMort_slope[ls])
-                    mort_des[:, k] = self.mortality_flood_frequency(drying_current, constants.desMort_thres[ls],
-                                                                    constants.desMort_slope[ls])
-
-        self.fraction_dead_flood = mort_flood*wet
-        self.fraction_dead_des = mort_des*dry
-
+        wet_m = np.repeat(wet.reshape(len(wet), 1), len(veg.mature.veg_frac[0]), axis=1)
+        dry_m = np.repeat(dry.reshape(len(wet), 1), len(veg.mature.veg_frac[0]), axis=1)
+        wet_m[new_wet] = veg.mature.veg_frac[new_wet]  #add initial fractions in cells that are newly wet in matrix
+        dry_m[new_dry] = veg.mature.veg_frac[new_dry] #add initial fractions in cells that are newly dry in matrix
+        # determine flooding/drying mortalities based on linear relationship
+        mort_flood_m = self.mortality_flood_frequency(flooding_current, constants.floMort_thres[1], constants.floMort_slope[1])
+        mort_des_m = self.mortality_flood_frequency(drying_current, constants.desMort_thres[1], constants.desMort_slope[1])
+        self.fraction_dead_flood_m = wet_m * mort_flood_m
+        self.fraction_dead_des_m = dry_m * mort_des_m
 
     @staticmethod
     def compute_hydroperiod(wl_time, constants):
         #determiine cells with water depth > flooding/drying threshold
-        fl = np.zeros(wl_time.shape)
         fl = np.where(wl_time > constants.fl_dr)
         flood = np.zeros(wl_time.shape)
         flood[fl] = 1
         flood = flood.sum(axis=1) #sum up for all time steps in the ets
 
         # compute average flooding and drying period
-        flooding_current = np.zeros(flood.shape)
-        drying_current = np.zeros(flood.shape)
         flooding_current = flood/constants.ets_duration
         drying_current = (constants.ets_duration-flood)/constants.ets_duration
 
@@ -122,34 +121,33 @@ class Veg_Mortality(ExtraModel):
         """
         Mortality through velocity is determined by lin. Function and multiplied with current fraction.
         """
-        mort_flow = np.zeros(veg.veg_age_frac.shape)
-        for ls in range(0, constants.num_ls):
-            for d in range(0, constants.maxYears_LS[ls]*sum(veg.growth_days)):
-                if d == 0:
-                    mort_flow[:, d] = self.mortality_flood_frequency(veg.max_u, constants.vel_thres[ls], constants.vel_slope[ls])
+        mort_flow_j = self.mortality_flood_frequency(veg.max_u, constants.vel_thres[0], constants.vel_slope[0])
+        self.fraction_dead_upr_j = mort_flow_j*veg.juvenile.veg_frac
 
-                else:
-                    k = d + sum(constants.maxYears_LS[0:ls]) * sum(veg.growth_days)
-                    mort_flow[:, k] = self.mortality_flood_frequency(veg.max_u, constants.vel_thres[ls],
-                                                                     constants.vel_slope[ls])
-
-        self.fraction_dead_upr = mort_flow*veg.veg_age_frac
+        mort_flow_m = self.mortality_flood_frequency(veg.max_u, constants.vel_thres[1], constants.vel_slope[1])
+        self.fraction_dead_upr_m = mort_flow_m * veg.mature.veg_frac
 
 
-    def erosion_sedimentation(self, veg: Vegetation, constants, ets):
+    def erosion_sedimentation(self, veg: Vegetation,ls, constants, ets):
         """
         For burial/erosion the length of stem/root is compared with sedimentation/erosion. In case of mortality
         the fraction is set to 0. We assume that the plants adapt to the deposition and erosion rates within one
         ETS by resetting them each ETS.
         """
         self.BedLevel_Dif(self, veg, ets)
-        fract_scour = np.zeros(veg.root_len.shape)
-        fract_burial = np.zeros(veg.veg_height.shape)
-        for i in range(len(veg.root_len[0])):
-            fract_scour[:, i][self.scour[:,i] > veg.root_len[:, i]] = 1  #find cells with mortality (scour > rootlength)
-            fract_burial[:, i][self.scour[:,i] > veg.veg_height[:, i]] = 1
+        fract_scour_j = np.zeros(veg.juvenile.root_len.shape)
+        fract_burial_j = np.zeros(veg.juvenile.veg_height.shape)
+        fract_scour_j[self.scour > veg.juvenile.root_len] = 1  #find cells with mortality (scour > rootlength)
+        fract_burial_j[self.scour > veg.juvenile.veg_height] = 1
 
-        self.burial_scour = fract_scour + fract_burial  # array with cells where vegetation dies and the fraction of death due to burial and scour
+        self.burial_scour_j = fract_scour_j + fract_burial_j  # array with cells where vegetation dies and the fraction of death due to burial and scour
+
+        fract_scour_m = np.zeros(veg.mature.root_len.shape)
+        fract_burial_m = np.zeros(veg.mature.veg_height.shape)
+        fract_scour_m[self.scour > veg.mature.root_len] = 1  #find cells with mortality (scour > rootlength)
+        fract_burial_m[self.scour > veg.mature.veg_height] = 1
+
+        self.burial_scour_m = fract_scour_m + fract_burial_m
 
     ## TODO make this static method?
     def BedLevel_Dif(self, veg: Vegetation, ets):
@@ -159,8 +157,6 @@ class Veg_Mortality(ExtraModel):
             else:
                 depth_dts = veg.bl - veg.bl_prev
                 self.Bl_diff = depth_dts = self.Bl_diff
-## TODO something wrong here!
-
             loc_b = np.where(self.Bl_diff < 0)
             self.burial[loc_b] = np.repeat(self.Bl_diff[0:len(self.burial[0])].reshape(len(self.burial[0]), 1), len(self.burial[0]), axis=1)[loc_b]
             loc_s = np.where(self.Bl_diff > 0)

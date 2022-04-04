@@ -236,7 +236,7 @@ class Delft3D(ExtraModel, abc.ABC):
         """Update the Delft3D-model."""
         self.time_step = time_step
 
-        self.reset_counters() #maybe it will be stored if this is not used
+#        self.reset_counters() #maybe it will be stored if this is not used
         self.model_wrapper.update(self.time_step)
 
         return self.get_current_hydromorphodynamics(time_step=self.time_step)

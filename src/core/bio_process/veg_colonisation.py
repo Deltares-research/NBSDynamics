@@ -19,13 +19,13 @@ class Colonization(ExtraModel):
 
     cir: Optional[np.ndarray] = None
     ma: Optional[np.ndarray] = None
-    constants: Constants = Constants()
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.seed_loc = None
 
-    def update(self, veg: Vegetation):
+    def update(self, veg: Vegetation, constants):
         """Update marsh cover after colonization (settlement)
         ONLY IF WE ARE IN THE RIGHT ETS!
 
@@ -34,17 +34,16 @@ class Colonization(ExtraModel):
         """
 
         # # available locations for settlement
-        Colonization.col_location(self, veg)
+        Colonization.col_location(self, veg, constants)
         # TODO check this!
-        for loc in range(len(self.seed_loc)):
-            if veg._cover[self.seed_loc[loc]] <= (1 - self.constants.iniCol_frac):
-                veg.veg_age_frac[loc, 0] = self.constants.iniCol_frac
-            else:
-                pass
+        veg.initial.veg_frac[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniCol_frac
+        veg.initial.veg_height[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniShoot
+        veg.initial.stem_dia[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniDia
+        veg.initial.root_len[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniRoot
+        veg.initial.stem_num[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.num_stem[0]
 
-        veg.update_vegetation_characteristics(veg, veg_age_frac=veg.veg_age_frac)
 
-    def col_location(self, veg):
+    def col_location(self, veg, constants):
         """new vegetation settlement
 
         :param veg: vegetation
@@ -53,13 +52,13 @@ class Colonization(ExtraModel):
         # find seedling location in cells that have water depth only at max. water level
         # for random establishment extract random selection of seedling locations
         self.seed_loc = np.where(self.colonization_criterion(veg) == True)  # all possible locations for seedlings
-        if self.constants.random == 0:
+        if constants.random == 0:
             self.seed_loc = self.seed_loc
         else:
             self.seed_loc = np.random.choice(self.seed_loc, round(
-                len(self.seed_loc) / self.constants.random))  # locations where random settlement can occur
+                len(self.seed_loc) / constants.random))  # locations where random settlement can occur
 
-    def colonization_criterion(self, veg: Vegetation):
+    def colonization_criterion(self, veg: Vegetation, constants):
         """determine areas which are available for colonization
 
         :param veg: vegetation
@@ -71,7 +70,7 @@ class Colonization(ExtraModel):
         return self.cir
         # elif self.constants.ColMethod == 2:
         #     self.colonization_inundation_range(veg)
-        #     self.mud_availability(veg)
+        #     self.mud_availability(veg, constants)
         #     return np.logical_and(self.cir, self.ma) #matrix with true everywhere where vegetation is possible according to mud content and inundation
 
     def colonization_inundation_range(self, veg: Vegetation):
@@ -91,10 +90,10 @@ class Colonization(ExtraModel):
         return (max_water_level[max_water_level > 0] == 1) - (min_water_level[min_water_level > 0] == 1)
 
 ##TODO get information on mud in top layer from DFM
-# def mud_availability(self, veg: Vegetation):
+# def mud_availability(self, veg: Vegetation, constants):
 #     """ Colonization criterion for mud availability
 #            Args:
 #                veg (Vegetation): Vegetation
 #     """
 #     self.ma = np.ones(FlowFmModel.space.shape)
-#     self.ma = veg.mud_fract > self.constants.mud_colonization(veg.veg_ls) #matrix with false and true
+#     self.ma = veg.mud_fract > constants.mud_colonization(veg.veg_ls) #matrix with false and true

@@ -36,12 +36,13 @@ class Vegetation(ExtraModel):
         self.mature = LifeStages(ls=2, constants=self.constants)
 
     #time related values
-    growth_duration: pd.Timedelta
-    col_duration: pd.Timedelta
-    winter_duration: pd.Timedelta
-    growth_days: VegAttribute = list()
-    growth_Day: VegAttribute = list()
-    col_days: VegAttribute = list()
+    growth_duration: pd.Timedelta = None
+    col_duration: pd.Timedelta = None
+    winter_duration: pd.Timedelta = None
+    # growth_days: VegAttribute = list()
+    # growth_Day: VegAttribute = list()
+    # col_days: VegAttribute = list()
+    # winter_days: VegAttribute = list()
 
     # # hydromorphodynamic environment
     max_tau: Optional[VegAttribute] = None
@@ -60,7 +61,7 @@ class Vegetation(ExtraModel):
     wl_ts: Optional[VegAttribute] = None
     bl_ts: Optional[VegAttribute] = None
 
-    # @validator("_cover")
+# @validator("_cover")
     # @classmethod
     # def validate_vegetation_attribute(
     #    cls, value: Optional[VegAttribute]
@@ -73,7 +74,7 @@ class Vegetation(ExtraModel):
     def cover(self):  # as input for DFM
         #take cover as sum of all the ages and life stages
         self._cover = self.juvenile.cover + self.mature.cover
-        return self._cover
+        return self.juvenile.cover + self.mature.cover
 
     @property
     def veg_den(self):  # as input for DFM
@@ -102,74 +103,11 @@ class Vegetation(ExtraModel):
     #     """duration of the colonization period from start, end growth from Constants"""
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
 
-    def get_GrowthDays(self, constants):
-        """
-        find number of growth days in current ets depending on start and end of growth period
-        """
-        ##TODO get rid of loops
-        current_date = pd.to_datetime(constants.start_date)
-        growth_days = []
-        for x in range(0, constants.t_eco_year):
-            growth_Day = []
-            for y in range(0, round(constants.ets_duration)):
-                if pd.to_datetime(constants.growth_start).month <= current_date.month <= pd.to_datetime(
-                        constants.growth_end).month:
-                    if pd.to_datetime(constants.growth_start).month == current_date.month:
-                        if pd.to_datetime(constants.growth_start).day <= current_date.day:
-                            growth_Day.append(1)
-                        else:
-                            growth_Day.append(0)
-                    elif pd.to_datetime(constants.growth_end).month == current_date.month:
-                        if current_date.day <= pd.to_datetime(constants.growth_end).day:
-                            growth_Day.append(1)
-                        else:
-                            growth_Day.append(0)
-                    else:
-                        growth_Day.append(1)
-                else:
-                    growth_Day.append(0)
-                current_date = current_date + timedelta(days=1)
-
-            growth_days.append(sum(growth_Day))
-        return np.array(growth_days)
-
-    def get_ColWindow(self, constants):
-        """
-        find ets where colonization happens
-        """
-        ##TODO get rid of loops
-        days_ets = 365 / constants.t_eco_year
-        current_date = pd.to_datetime(constants.start_date)
-        col_days = []
-        for x in range(0, constants.t_eco_year):
-            col_Day = []
-            for y in range(0, round(days_ets)):
-                if pd.to_datetime(constants.ColStart).month <= current_date.month <= pd.to_datetime(
-                        constants.ColEnd).month:
-                    if pd.to_datetime(constants.ColStart).month == current_date.month:
-                        if pd.to_datetime(constants.ColStart).day <= current_date.day:
-                            col_Day.append(1)
-                        else:
-                            col_Day.append(0)
-                    elif pd.to_datetime(constants.ColEnd).month == current_date.month:
-                        if current_date.day <= pd.to_datetime(constants.ColEnd).day:
-                            col_Day.append(1)
-                        else:
-                            col_Day.append(0)
-                    else:
-                        col_Day.append(1)
-                else:
-                    col_Day.append(0)
-                current_date = current_date + timedelta(days=1)
-
-            col_days.append(sum(col_Day))
-        return np.array(col_days)
-
 
     def update_lifestages(self):
         ##TODO CHECK
         #take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
-        if self.initial.veg_frac > 0:
+        if self.initial.veg_frac.all() > 0:
             self.juvenile.veg_frac = np.append(self.initial.veg_frac, self.juvenile.veg_frac, axis=1)
             self.juvenile.veg_height = np.append(self.initial.veg_height, self.juvenile.veg_height, axis=1)
             self.juvenile.stem_dia = np.append(self.initial.stem_dia, self.juvenile.stem_dia, axis=1)
