@@ -273,9 +273,28 @@ class LifeStages(Vegetation):
             self.dt_stemdia = (LifeStages.constants.maxDia[ls] - constants.maxDia[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
             self.dt_root = (LifeStages.constants.maxRoot[ls] - constants.maxRoot[ls-1]) / (self.duration_growth(self, constants) * constants.maxYears_LS[ls])
 
-    def update_growth(self, veg_frac):
+    def update_growth(self, veg_frac, ets):
 
-    def update_nogrowth(self, veg_frac):
+        growth_days_ets: Optional[float] = None
+
+        """update vegetation depending on growth days in certain ets"""
+        self.growth_days_ets = veg.growth_days[ets]
+        n, m = LifeStages.veg_age_frac.shape
+        new = np.zeros((n, self.growth_days_ets))
+        LifeStages.veg_age_frac = np.hstack((new, veg.veg_age_frac))
+        # sum up all vegetation that is older than maxAge and the left over columns
+        LifeStages.veg_age_frac[:, Constants.maxAge * sum(veg.growth_days)] = veg.veg_age_frac[:,
+                                                                       Constants.maxAge * sum(veg.growth_days):len(
+                                                                           veg.veg_age_frac[0]) + 1].sum(axis=1)
+        LifeStages.veg_age_frac = np.delete(veg.veg_age_frac,
+                                     np.s_[Constants.maxAge * sum(veg.growth_days):len(LifeStages.veg_age_frac[0]) + 1],
+                                     axis=1)
+        # veg.veg_age_frac[veg.veg_age_frac[:, Constants.maxAge*sum(veg.growth_days)+1:-1]>0] = 0
+
+        LifeStages.update_vegetation_characteristics(LifeStages.veg_age_frac)
+
+    def update_nogrowth(self, veg_frac, ets):
+        LifeStages.veg_age_frac = LifeStages.veg_age_frac
 
 
 
