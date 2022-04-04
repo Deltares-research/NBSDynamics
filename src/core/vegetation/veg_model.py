@@ -69,10 +69,11 @@ class Vegetation(ExtraModel):
     #    return DataReshape.variable2array(value)
     @property
     def cover(self):  # as input for DFM
-##TODO put it  inside LifeStage?
-        #take cover as sum of all the ages and life stages
-        _cover = veg_frac.sum(axis=1)
 
+        #take cover as sum of all the ages and life stages
+        cover1 = self.juvenile.veg_frac.sum(axis=1)
+        cover2 = self.mature.veg_frac.sum(axis=1)
+        self._cover = cover1 + cover2
         return self._cover
 
     @property
