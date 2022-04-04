@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Optional, Union
 
 import numpy as np
@@ -23,8 +22,11 @@ class Vegetation(ExtraModel):
     Implements the `VegProtocol`.
     Vegetation object, representing one plant.
     """
+    def __init__(self, species):
+        super().__init__()
+        self.species = species
 
-    constants: Constants = Constants()
+        self.constants: Constants = Constants(species= self.species)
 
     # other attributes.
     _cover: Optional[VegAttribute] = list() # sum of fraction of area coverage in each cell (for all ages)
@@ -176,7 +178,6 @@ class LifeStages(Vegetation):
     veg_age: VegAttribute  # vegetation life stage (0 or 1 or more), number defined in Constants.num_ls
     veg_frac: VegAttribute  # vegetation age [yrs]
     stem_num: VegAttribute  # number of stems
-    constants: Constants = Constants()
 
     dt_height: VegAttribute = list()
     dt_root: VegAttribute = list()

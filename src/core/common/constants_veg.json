@@ -1,0 +1,114 @@
+{
+    "Spartina anglica": {
+        "ColStart": "0000-04-01",
+        "ColEnd": "0000-05-31",
+        "random": 7,
+        "mud_colonization": [
+            0.0,
+            0.0
+        ],
+        "fl_dr": 0.05,
+        "Maximum age": 20,
+        "Number LifeStages": 2,
+        "initial root length": 0.05,
+        "initial shoot length": 0.015,
+        "initial diameter": 0.003,
+        "start growth period": "0000-04-01",
+        "end growth period": "0000-10-31",
+        "start winter period": "0000-11-30",
+        "maximum plant height": [
+            0.8,
+            1.3
+        ],
+        "maximum diameter": [
+            0.003,
+            0.005
+        ],
+        "maximum root length": [
+            0.2,
+            1
+        ],
+        "maximum years in LifeStage": [
+            1,
+            19
+        ],
+        "numStem": [
+            700,
+            700
+        ],
+        "iniCol_frac": [
+            0.6,
+            0.6
+        ],
+        "Cd": [
+            1.1,
+            1.15
+        ],
+        "desMort_thres": [
+            400,
+            400
+        ],
+        "desMort_slope": [
+            0.75,
+            0.75
+        ],
+        "floMort_thres": [
+            0.4,
+            0.4
+        ],
+        "floMort_slope": [
+            0.25,
+            0.25
+        ],
+        "vel_thres": [
+            0.15,
+            0.25
+        ],
+        "vel_slope": [
+            3,
+            3
+        ],
+        "maxH_winter": [
+            0.4,
+            0.4
+        ]
+    },
+    "Salicornia": {
+        "ColStart": "0000-02-15",
+        "ColEnd": "0000-04-30",
+        "random": 20,
+        "mud_colonization": [
+            0.0,
+            0.0
+        ],
+        "fl_dr": 0.05,
+        "Maximum age": 20,
+        "Number LifeStages": 1,
+        "initial root length": 0.02,
+        "initial shoot length": 0.05,
+        "initial diameter": 0.01,
+        "start growth period": "0000-02-15",
+        "end growth period": "0000-10-15",
+        "start winter period": "0000-11-01",
+        "maximum plant height": 0.4,
+        "maximum diameter": 0.015,
+        "maximum root length": 0.05,
+        "maximum years in LifeStage": 20,
+        "numStem": 190,
+        "iniCol_frac": 0.2,
+        "Cd": 0.7,
+        "desMort_thres": [
+            400,
+            400
+        ],
+        "desMort_slope": [
+            0.75,
+            0.75
+        ],
+        "floMort_thres": 0.5,
+        "floMort_slope": 0.12,
+        "vel_thres": 0.15,
+        "vel_slope": 3,
+        "maxH_winter": 0.05
+    }
+}
