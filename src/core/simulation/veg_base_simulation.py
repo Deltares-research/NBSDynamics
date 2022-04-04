@@ -282,11 +282,11 @@ class BaseSimulation(BaseModel, ABC):
                     # # colonization (only in colonization period)
                     if self.constants.col_days[ets] > 0:
                         progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization(constants=self.constants)
+                        col = Colonization()
                         col.update(self.veg, constants=self.constants)
 
                     #update lifestages, initial to juvenile and juvenile to mature
-                    self.veg.update_lifestages(self.veg)
+                    self.veg.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
@@ -299,7 +299,7 @@ class BaseSimulation(BaseModel, ABC):
                         self.veg,
                         pd.DataFrame(period),
                     )
-                    hydro_mor.store_hydromorph_values(Vegetation)
+                    hydro_mor.store_hydromorph_values(self.veg)
 
     def finalise(self):
         """Finalise simulation."""

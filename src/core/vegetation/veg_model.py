@@ -23,19 +23,20 @@ class Vegetation(ExtraModel):
     Implements the `VegProtocol`.
     Vegetation object, representing one plant.
     """
+
     def __init__(self, species):
         super().__init__()
         self.species = species
 
         self.constants = Constants(species=self.species)
 
-    # other attributes.
-        self._cover: Optional[VegAttribute] = list() # sum of fraction of area coverage in each cell (for all ages)
+        # other attributes.
+        self._cover: Optional[VegAttribute] = list()  # sum of fraction of area coverage in each cell (for all ages)
         self.initial = LifeStages(ls=0, constants=self.constants)
         self.juvenile = LifeStages(ls=1, constants=self.constants)
         self.mature = LifeStages(ls=2, constants=self.constants)
 
-    #time related values
+    # time related values
     growth_duration: pd.Timedelta = None
     col_duration: pd.Timedelta = None
     winter_duration: pd.Timedelta = None
@@ -61,7 +62,7 @@ class Vegetation(ExtraModel):
     wl_ts: Optional[VegAttribute] = None
     bl_ts: Optional[VegAttribute] = None
 
-# @validator("_cover")
+    # @validator("_cover")
     # @classmethod
     # def validate_vegetation_attribute(
     #    cls, value: Optional[VegAttribute]
@@ -72,24 +73,27 @@ class Vegetation(ExtraModel):
 
     @property
     def cover(self):  # as input for DFM
-        #take cover as sum of all the ages and life stages
+        # take cover as sum of all the ages and life stages
         self._cover = self.juvenile.cover + self.mature.cover
         return self.juvenile.cover + self.mature.cover
 
     @property
     def veg_den(self):  # as input for DFM
         """stem density in number of stems per m2, according to area fraction of veg age"""
-        return (self.juvenile.stem_num * self.juvenile.veg_frac).sum(axis=1) + (self.mature.stem_num * self.mature.veg_frac).sum(axis=1)
+        return (self.juvenile.stem_num * self.juvenile.veg_frac).sum(axis=1) + (
+                    self.mature.stem_num * self.mature.veg_frac).sum(axis=1)
 
     @property
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of the different vegetation in one grid cell"""
-        return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1) / self.juvenile.cover + (self.mature.stem_dia * self.mature.veg_frac).sum(axis=1) / self.mature.cover
+        return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1) / self.juvenile.cover + (
+                    self.mature.stem_dia * self.mature.veg_frac).sum(axis=1) / self.mature.cover
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of the different vegetation in one grid cell"""
-        return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1) / self.juvenile.cover + (self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / self.mature.cover
+        return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1) / self.juvenile.cover + (
+                    self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / self.mature.cover
 
     # def duration_growth(self, constants):
     #     """duration of the growth period from start, end growth from Constants"""
@@ -103,10 +107,9 @@ class Vegetation(ExtraModel):
     #     """duration of the colonization period from start, end growth from Constants"""
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
 
-
     def update_lifestages(self):
         ##TODO CHECK
-        #take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
+        # take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
         if self.initial.veg_frac.all() > 0:
             self.juvenile.veg_frac = np.append(self.initial.veg_frac, self.juvenile.veg_frac, axis=1)
             self.juvenile.veg_height = np.append(self.initial.veg_height, self.juvenile.veg_height, axis=1)
@@ -117,6 +120,12 @@ class Vegetation(ExtraModel):
             self.juvenile.cover = self.juvenile.veg_frac.sum(axis=1)
             self.initial.veg_frac = np.zeros(RESHAPE().space)
 
-        if self.juvenile.veg_age > self.constants.maxYears_LS[0]:
-            pass
-
+        if self.juvenile.veg_age.all() > self.constants.maxYears_LS[0] * 365:
+            self.mature.veg_frac = np.append(self.juvenile.veg_frac[:, -1], self.mature.veg_frac, axis=1)
+            self.mature.veg_height = np.append(self.juvenile.veg_height[:, -1], self.mature.veg_height, axis=1)
+            self.mature.stem_dia = np.append(self.juvenile.stem_dia[:, -1], self.mature.stem_dia, axis=1)
+            self.mature.root_len = np.append(self.juvenile.root_len[:, -1], self.mature.root_len, axis=1)
+            self.mature.stem_num = np.append(self.juvenile.stem_num[:, -1], self.mature.stem_num, axis=1)
+            self.mature.veg_age = np.append(self.juvenile.veg_age[:, -1], self.mature.veg_age, axis=1)
+            self.mature.cover = self.mature.veg_frac.sum(axis=1)
+            self.juvenile.veg_frac[:, -1] = []

@@ -21,8 +21,8 @@ class Colonization(ExtraModel):
     ma: Optional[np.ndarray] = None
 
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+    def __init__(self):
+        super().__init__()
         self.seed_loc = None
 
     def update(self, veg: Vegetation, constants):
@@ -51,7 +51,7 @@ class Colonization(ExtraModel):
         """
         # find seedling location in cells that have water depth only at max. water level
         # for random establishment extract random selection of seedling locations
-        self.seed_loc = np.where(self.colonization_criterion(veg) == True)  # all possible locations for seedlings
+        self.seed_loc = np.where(self.colonization_criterion(veg, constants) == True)  # all possible locations for seedlings
         if constants.random == 0:
             self.seed_loc = self.seed_loc
         else:
