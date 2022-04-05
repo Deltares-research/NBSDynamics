@@ -48,8 +48,8 @@ schema = {
         'maximum diameter': 0.015,
         'maximum root length': 0.05,
         'maximum years in LifeStage': [1, 0],
-        'numStem': [190,0] # 3.5. number of stems per m2
-        'iniCol_frac': 0.2, # 3.6. initial colonization fraction (0-1)
+        'numStem': [190,0], # 3.5. number of stems per m2
+        'iniCol_frac': 0.6, # 3.6. initial colonization fraction (0-1)
         'Cd': 0.7, # 3.7. drag coefficient
         'desMort_thres': [400, 0], # 3.9. dessication mortality threshold
         'desMort_slope': [0.75, 0], # 3.10. dessication mortality slope
