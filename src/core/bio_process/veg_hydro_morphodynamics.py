@@ -39,7 +39,7 @@ class Hydro_Morphodynamics:
         veg.min_wl = np.zeros(len(veg.wl_ts))
         veg.bl = np.zeros(len(veg.bl_ts))
 
-        for i in range(0, len(veg.wl_ts)):
+        for i in range(0, len(veg.tau_ts)):
             veg.max_tau[i] = max(veg.tau_ts[i, :])
             veg.max_u[i] = max(veg.u_ts[i, :])
             veg.max_wl[i] = max(veg.wl_ts[i, :])

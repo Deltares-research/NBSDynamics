@@ -147,10 +147,16 @@ class Delft3D(ExtraModel, abc.ABC):
     def get_current_hydromorphodynamics(self, time_step): # only needed as long as we cannot get minval from the wrapper
         """Get hydrodynamic results; max. values. And minimum in the future"""
         self.time_step = time_step
+        bed_level = self.get_variable('bl')
+        # cur_tau = self.get_variable('taus')
+        # cur_vel = self.get_variable('u1')
+        # cur1_vel = self.get_variable('ucx')
+        # cur2_vel = self.get_variable('ucy')
+        # cur_wl = self.get_variable('s1')
+        dt_int = self.get_variable('is_dtint')
         cur_tau = self.get_variable("is_sumvalsnd")[range(self.space), 0]/ self.time_step
         cur_vel = self.get_variable("is_sumvalsnd")[range(self.space), 1]/ self.time_step
         cur_wl = self.get_variable("is_sumvalsnd")[range(self.space), 2]/ self.time_step
-        bed_level = self.get_variable('bl')
 
         return cur_tau, cur_wl, cur_vel, bed_level
 
@@ -236,7 +242,7 @@ class Delft3D(ExtraModel, abc.ABC):
         """Update the Delft3D-model."""
         self.time_step = time_step
 
-#        self.reset_counters() #maybe it will be stored if this is not used
+        self.reset_counters()
         self.model_wrapper.update(self.time_step)
 
         return self.get_current_hydromorphodynamics(time_step=self.time_step)
