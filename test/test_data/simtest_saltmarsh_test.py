@@ -49,5 +49,5 @@ sim_run = VegFlowFmSimulation(
 
 # Run simulation.
 sim_run.initiate()
-sim_run.run(10)
+sim_run.run(5)
 sim_run.finalise()

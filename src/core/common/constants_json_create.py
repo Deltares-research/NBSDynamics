@@ -2,8 +2,8 @@ import json
 
 schema = {
     'Spartina anglica': {
-        'ColStart': "0000-04-01",
-        'ColEnd': "0000-05-31",
+        'ColStart': "2000-04-01",
+        'ColEnd': "2000-05-31",
         'random': 7,
         'mud_colonization': [0.0, 0.0],
         'fl_dr': 0.05,
@@ -12,15 +12,15 @@ schema = {
         'initial root length': 0.05,
         'initial shoot length': 0.015,
         'initial diameter': 0.003,
-        'start growth period': "0000-04-01",
-        'end growth period': "0000-10-31",
-        'start winter period': "0000-11-30",
+        'start growth period': "2000-04-01",
+        'end growth period': "2000-10-31",
+        'start winter period': "2000-11-30",
         'maximum plant height': [0.8, 1.3],
         'maximum diameter': [0.003, 0.005],
         'maximum root length': [0.2, 1],
         'maximum years in LifeStage': [1, 19],
         'numStem' : [700, 700], # 3.5. number of stems per m2
-        'iniCol_frac': [0.6, 0.6], # 3.6. initial colonization fraction (0-1)
+        'iniCol_frac': 0.6, # 3.6. initial colonization fraction (0-1)
         'Cd': [1.1, 1.15], # 3.7. drag coefficient
         'desMort_thres': [400, 400], # 3.9. dessication mortality threshold
         'desMort_slope': [0.75, 0.75], # 3.10. dessication mortality slope
@@ -31,33 +31,33 @@ schema = {
         'maxH_winter': [0.4, 0.4]  # 3.15  max height during winter time
     },
     'Salicornia': {
-        'ColStart': "0000-02-15",
-        'ColEnd': "0000-04-30",
+        'ColStart': "2000-02-15",
+        'ColEnd': "2000-04-30",
         'random': 20,
         'mud_colonization': [0.0, 0.0],
         'fl_dr': 0.05,
-        'Maximum age': 20,
+        'Maximum age': 1,
         'Number LifeStages': 1,
         'initial root length': 0.02,
         'initial shoot length': 0.05,
         'initial diameter': 0.01,
-        'start growth period': "0000-02-15",
-        'end growth period': "0000-10-15",
-        'start winter period': "0000-11-01",
+        'start growth period': "2000-02-15",
+        'end growth period': "2000-10-15",
+        'start winter period': "2000-11-01",
         'maximum plant height': 0.4,
         'maximum diameter': 0.015,
         'maximum root length': 0.05,
-        'maximum years in LifeStage': 20,
-        'numStem' : 190, # 3.5. number of stems per m2
+        'maximum years in LifeStage': [1, 0],
+        'numStem': [190,0] # 3.5. number of stems per m2
         'iniCol_frac': 0.2, # 3.6. initial colonization fraction (0-1)
         'Cd': 0.7, # 3.7. drag coefficient
-        'desMort_thres': [400, 400], # 3.9. dessication mortality threshold
-        'desMort_slope': [0.75, 0.75], # 3.10. dessication mortality slope
+        'desMort_thres': [400, 0], # 3.9. dessication mortality threshold
+        'desMort_slope': [0.75, 0], # 3.10. dessication mortality slope
         'floMort_thres': 0.5, # 3.11. flooding mortality threshold
         'floMort_slope': 0.12, # 3.12. flooding mortality slope
         'vel_thres': 0.15,   # 3.13. flow velocity threshold
         'vel_slope': 3,  # 3.14. flow velocity slope
-        'maxH_winter': 0.05  # 3.15  max height during winter time
+        'maxH_winter': 0.0  # 3.15  max height during winter time
     }
 }
 

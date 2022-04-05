@@ -36,10 +36,7 @@
             700,
             700
         ],
-        "iniCol_frac": [
-            0.6,
-            0.6
-        ],
+        "iniCol_frac": 0.6,
         "Cd": [
             1.1,
             1.15
@@ -74,8 +71,8 @@
         ]
     },
     "Salicornia": {
-        "ColStart": "0000-02-15",
-        "ColEnd": "0000-04-30",
+        "ColStart": "2000-02-15",
+        "ColEnd": "2000-04-30",
         "random": 20,
         "mud_colonization": [
             0.0,
@@ -87,13 +84,16 @@
         "initial root length": 0.02,
         "initial shoot length": 0.05,
         "initial diameter": 0.01,
-        "start growth period": "0000-02-15",
-        "end growth period": "0000-10-15",
-        "start winter period": "0000-11-01",
+        "start growth period": "2000-02-15",
+        "end growth period": "2000-10-15",
+        "start winter period": "2000-11-01",
         "maximum plant height": 0.4,
         "maximum diameter": 0.015,
         "maximum root length": 0.05,
-        "maximum years in LifeStage": 20,
+        "maximum years in LifeStage": [
+            20,
+            0
+        ],
         "numStem": 190,
         "iniCol_frac": 0.2,
         "Cd": 0.7,

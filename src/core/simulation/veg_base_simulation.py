@@ -255,7 +255,7 @@ class BaseSimulation(BaseModel, ABC):
                         ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=2 #daily values
+                            self.veg, time_step=300 #daily values
                         )
 
                         # # environment
@@ -274,7 +274,6 @@ class BaseSimulation(BaseModel, ABC):
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality (ALWAYS HAPPEN)
-                    ## TODO finalize this!
                     mort = Veg_Mortality
                     mort.update(mort, self.veg, self.constants, ets, begin_date, end_date)
 

@@ -76,13 +76,14 @@ class LifeStages(ExtraModel):
 
         # intialization of the vegetation with initial values
         ## TODO change this for other input cases with initial cover!
-        self.veg_height = np.zeros(_reshape.space)
-        self.stem_dia = np.zeros(_reshape.space)
-        self.root_len = np.zeros(_reshape.space)
-        self.stem_num = np.zeros(_reshape.space)
-        self.cover = np.zeros(_reshape.space)
         self.veg_frac = np.zeros(_reshape.space)
-        self.veg_age = np.zeros(_reshape.space)
+        self.veg_frac = self.veg_frac.reshape(len(self.veg_frac), 1)
+        self.veg_height = np.zeros(self.veg_frac.shape)
+        self.stem_dia = np.zeros(self.veg_frac.shape)
+        self.root_len = np.zeros(self.veg_frac.shape)
+        self.stem_num = np.zeros(self.veg_frac.shape)
+        self.cover = np.zeros(self.veg_frac.shape)
+        self.veg_age = np.zeros(self.veg_frac.shape)
         i = self.ls - 1
         self.dt_height = np.zeros((2, 1))
 
@@ -120,16 +121,17 @@ class LifeStages(ExtraModel):
         self.constants.winter_start = self.constants.winter_start.replace(year=begin_date.year)
 
         if begin_date <= self.constants.winter_start <= end_date:
-            self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls]
+            self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls-1]
         else:
             self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + self.dt_height[0] * self.constants.growth_days[ets]
         self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + self.dt_stemdia * self.constants.growth_days[ets]
         self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + self.dt_root * self.constants.growth_days[ets]
         self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
         self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
-        m = veg_frac.shape
-        if len(m) > 1:
-            self.cover = veg_frac.sum(axis=1)
+        self.cover = veg_frac.sum(axis=1)
+        # m = veg_frac.shape
+        # if len(m) > 1:
+        #     self.cover = veg_frac.sum(axis=1)
 
 
 

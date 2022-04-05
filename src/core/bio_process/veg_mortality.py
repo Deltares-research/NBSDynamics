@@ -15,8 +15,10 @@ class Veg_Mortality(ExtraModel):
         super().__init__()
         self.burial_scour_j = None
         self.burial_scour_m = None
-        self.scour = None
-        self.burial = None
+        self.scour_j = None
+        self.burial_j = None
+        self.scour_m = None
+        self.burial_m = None
         self.Bl_diff = None
         self.fraction_dead_flood_j = None
         self.fraction_dead_des_j = None
@@ -40,7 +42,7 @@ class Veg_Mortality(ExtraModel):
         self.erosion_sedimentation(self, veg, ets)
 
         veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_flood_j -self.fraction_dead_des_j - self.fraction_dead_flood_j - self.burial_scour_j #update fractions due to mortality
-        veg.juvenile.veg_frac[veg.mature.veg_frac < 0] = 0 #replace negative values with 0
+        veg.juvenile.veg_frac[veg.juvenile.veg_frac < 0] = 0 #replace negative values with 0
         veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_flood_m - self.fraction_dead_des_m - self.fraction_dead_flood_m - self.burial_scour_m  # update fractions due to mortality
         veg.mature.veg_frac[veg.mature.veg_frac < 0] = 0  # replace negative values with 0
 
@@ -63,9 +65,9 @@ class Veg_Mortality(ExtraModel):
         new_wet = np.where(flooding_prev.all() == 0 and flooding_current.all() > 0) #find cells that are newly wet during this ETS
         new_dry = np.where(drying_prev.all() == 0 and drying_current.all() > 0) #find cells that are newly dry during this ETS
 
-        wet_j = np.ones(veg.juvenile.veg_frac.shape)*wet
+        wet_j = np.ones(veg.juvenile.veg_frac.shape) * wet.reshape(len(wet), 1)
             #np.repeat(wet.reshape(len(wet), 1), len(veg.juvenile.veg_frac[0]), axis=1)
-        dry_j = np.ones(veg.juvenile.veg_frac.shape)*dry
+        dry_j = np.ones(veg.juvenile.veg_frac.shape) * dry.reshape(len(dry), 1)
         wet_j[new_wet] = veg.juvenile.veg_frac[new_wet]  #add initial fractions in cells that are newly wet in matrix
         dry_j[new_dry] = veg.juvenile.veg_frac[new_dry] #add initial fractions in cells that are newly dry in matrix
         # determine flooding/drying mortalities based on linear relationship
@@ -74,8 +76,8 @@ class Veg_Mortality(ExtraModel):
         self.fraction_dead_flood_j = wet_j * mort_flood_j
         self.fraction_dead_des_j = dry_j * mort_des_j
 
-        wet_m = np.ones(veg.mature.veg_frac.shape)*wet
-        dry_m = np.ones(veg.mature.veg_frac.shape)*dry
+        wet_m = np.ones(veg.mature.veg_frac.shape) * wet.reshape(len(wet), 1)
+        dry_m = np.ones(veg.mature.veg_frac.shape) * dry.reshape(len(dry), 1)
         wet_m[new_wet] = veg.mature.veg_frac[new_wet]  #add initial fractions in cells that are newly wet in matrix
         dry_m[new_dry] = veg.mature.veg_frac[new_dry] #add initial fractions in cells that are newly dry in matrix
         # determine flooding/drying mortalities based on linear relationship
@@ -116,7 +118,7 @@ class Veg_Mortality(ExtraModel):
         out_fl[B] = 1
         C = np.where(dmax > fl.all() > th) #cells where fct applies to determine mortality
         out_fl[C] = fct[C]
-        return out_fl
+        return out_fl.reshape(len(out_fl), 1)
 
     def uprooting(self, veg: Vegetation, constants):
         """
@@ -138,35 +140,40 @@ class Veg_Mortality(ExtraModel):
         self.BedLevel_Dif(self, veg, ets)
         fract_scour_j = np.zeros(veg.juvenile.root_len.shape)
         fract_burial_j = np.zeros(veg.juvenile.veg_height.shape)
-        fract_scour_j[self.scour > veg.juvenile.root_len] = 1  #find cells with mortality (scour > rootlength)
-        fract_burial_j[self.scour > veg.juvenile.veg_height] = 1
+        fract_scour_j[self.scour_j > veg.juvenile.root_len] = 1  #find cells with mortality (scour > rootlength)
+        fract_burial_j[self.burial_j > veg.juvenile.veg_height] = 1
 
         self.burial_scour_j = fract_scour_j + fract_burial_j  # array with cells where vegetation dies and the fraction of death due to burial and scour
 
         fract_scour_m = np.zeros(veg.mature.root_len.shape)
         fract_burial_m = np.zeros(veg.mature.veg_height.shape)
-        fract_scour_m[self.scour > veg.mature.root_len] = 1  #find cells with mortality (scour > rootlength)
-        fract_burial_m[self.scour > veg.mature.veg_height] = 1
+        fract_scour_m[self.scour_m > veg.mature.root_len] = 1  #find cells with mortality (scour > rootlength)
+        fract_burial_m[self.burial_m > veg.mature.veg_height] = 1
 
         self.burial_scour_m = fract_scour_m + fract_burial_m
 
     ## TODO make this static method?
     def BedLevel_Dif(self, veg: Vegetation, ets):
-        if ets >= 2:        # from second time step onward in each ets
-            if ets == 2:
+        if ets >= 1:        # from second time step onward in each ets
+            if ets == 1:
                 self.Bl_diff = veg.bl - veg.bl_prev
             else:
                 depth_dts = veg.bl - veg.bl_prev
-                self.Bl_diff = depth_dts = self.Bl_diff
+                self.Bl_diff = depth_dts + self.Bl_diff
             loc_b = np.where(self.Bl_diff < 0)
-            self.burial[loc_b] = (np.ones(self.burial.shape)*self.Bl_diff[0:len(self.burial)])[loc_b]
-               # np.repeat(self.Bl_diff[0:len(self.burial[0])].reshape(len(self.burial[0]), 1), len(self.burial[0]), axis=1)[loc_b]
+            self.burial_j[loc_b] = (np.ones(self.burial_j.shape)*self.Bl_diff[0:len(self.burial_j)].reshape(len(self.Bl_diff[0:len(self.burial_j)]), 1))[loc_b]
+            self.burial_m[loc_b] = (np.ones(self.burial_m.shape) * self.Bl_diff[0:len(self.burial_m)].reshape(
+                len(self.Bl_diff[0:len(self.burial_m)]), 1))[loc_b]
+
             loc_s = np.where(self.Bl_diff > 0)
-            self.scour[loc_s] = (np.ones(self.scour.shape)*self.Bl_diff[0:len(self.scour)])[loc_s]
-                #np.repeat(self.Bl_diff[0:len(self.scour[0])].reshape(len(self.scour[0]), 1), len(self.scour[0]), axis=1)[loc_b]
+            self.scour_j[loc_s] = (np.ones(self.scour_j.shape)*self.Bl_diff[0:len(self.scour_j)].reshape(len(self.Bl_diff[0:len(self.scour_j)]), 1))[loc_s]
+            self.scour_m[loc_s] = (np.ones(self.scour_m.shape)*self.Bl_diff[0:len(self.scour_m)].reshape(len(self.Bl_diff[0:len(self.scour_m)]), 1))[loc_s]
+
         else:
-            self.burial = np.zeros(veg.juvenile.veg_height.shape)
-            self.scour = np.zeros(veg.juvenile.root_len.shape)
+            self.burial_j = np.zeros(veg.juvenile.veg_height.shape)
+            self.scour_j = np.zeros(veg.juvenile.root_len.shape)
+            self.burial_m = np.zeros(veg.mature.veg_height.shape)
+            self.scour_m = np.zeros(veg.mature.root_len.shape)
 
 
 

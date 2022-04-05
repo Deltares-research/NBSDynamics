@@ -36,11 +36,13 @@ class Colonization(ExtraModel):
         # # available locations for settlement
         Colonization.col_location(self, veg, constants)
         # TODO check this!
-        veg.initial.veg_frac[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniCol_frac
-        veg.initial.veg_height[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniShoot
-        veg.initial.stem_dia[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniDia
-        veg.initial.root_len[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.iniRoot
-        veg.initial.stem_num[self.seed_loc][veg.cover <= (1 - constants.iniCol_frac)] = constants.num_stem[0]
+        loc = veg.initial.veg_frac[self.seed_loc]
+        loc[veg.cover[self.seed_loc] <= (1 - constants.iniCol_frac)] = 1
+        veg.initial.veg_frac[self.seed_loc] = loc*constants.iniCol_frac
+        veg.initial.veg_height[self.seed_loc] = loc*constants.iniShoot
+        veg.initial.stem_dia[self.seed_loc] = loc*constants.iniDia
+        veg.initial.root_len[self.seed_loc] = loc*constants.iniRoot
+        veg.initial.stem_num[self.seed_loc] = loc*constants.num_stem[0]
 
 
     def col_location(self, veg, constants):
@@ -53,10 +55,10 @@ class Colonization(ExtraModel):
         # for random establishment extract random selection of seedling locations
         self.seed_loc = np.where(self.colonization_criterion(veg, constants) == True)  # all possible locations for seedlings
         if constants.random == 0:
-            self.seed_loc = self.seed_loc
+            self.seed_loc = self.seed_loc[0]
         else:
-            self.seed_loc = np.random.choice(self.seed_loc, round(
-                len(self.seed_loc) / constants.random))  # locations where random settlement can occur
+            self.seed_loc = np.random.choice(self.seed_loc[0], round(
+                len(self.seed_loc[0]) / constants.random))  # locations where random settlement can occur
 
     def colonization_criterion(self, veg: Vegetation, constants):
         """determine areas which are available for colonization
@@ -80,16 +82,18 @@ class Colonization(ExtraModel):
         """
 
         # # Calculations
-        self.cir = np.ones(FlowFmModel.space.shape)
+        self.cir = np.zeros(veg.max_wl.shape)
         self.cir = (self.cir_formula(veg.max_wl,
                                      veg.min_wl) == 1)  # true, false matrix look for cells that are flooded during high anf low water levels
 
     @staticmethod
     def cir_formula(max_water_level, min_water_level):
-
-        return (max_water_level[max_water_level > 0] == 1) - (min_water_level[min_water_level > 0] == 1)
+        max_water_level[max_water_level > 0] = 1
+        min_water_level[min_water_level > 0] = 1
+        return max_water_level - min_water_level
 
 ##TODO get information on mud in top layer from DFM
+
 # def mud_availability(self, veg: Vegetation, constants):
 #     """ Colonization criterion for mud availability
 #            Args:
