@@ -40,7 +40,7 @@ class BaseSimulation(BaseModel, ABC):
     #Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
-    constants: Constants = Constants("Spartina anglica")
+    constants: Optional[Constants]
     output: Optional[VegOutputWrapper]
     veg: Optional[Vegetation]
 

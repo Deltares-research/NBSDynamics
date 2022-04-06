@@ -160,6 +160,12 @@ class Veg_Mortality(ExtraModel):
             else:
                 depth_dts = veg.bl - veg.bl_prev
                 self.Bl_diff = depth_dts + self.Bl_diff
+
+            self.burial_j = np.zeros(veg.juvenile.veg_height.shape)
+            self.scour_j = np.zeros(veg.juvenile.root_len.shape)
+            self.burial_m = np.zeros(veg.mature.veg_height.shape)
+            self.scour_m = np.zeros(veg.mature.root_len.shape)
+
             loc_b = np.where(self.Bl_diff < 0)
             self.burial_j[loc_b] = (np.ones(self.burial_j.shape)*self.Bl_diff[0:len(self.burial_j)].reshape(len(self.Bl_diff[0:len(self.burial_j)]), 1))[loc_b]
             self.burial_m[loc_b] = (np.ones(self.burial_m.shape) * self.Bl_diff[0:len(self.burial_m)].reshape(
