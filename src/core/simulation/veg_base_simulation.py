@@ -250,12 +250,12 @@ class BaseSimulation(BaseModel, ABC):
                         pd.DataFrame(period)
                      )
 
-                    for ts in range(0, len(period)): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
+                    for ts in range(0, len(period)*288): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
                         ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=11178 #every timestep
+                            self.veg, time_step=300 #every timestep
                         )
 
                         # # environment
