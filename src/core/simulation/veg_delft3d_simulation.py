@@ -3,13 +3,13 @@ from abc import ABC
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.veg_output_wrapper import VegOutputWrapper
 from src.core.simulation.veg_base_simulation import BaseSimulation
-from src.core.common.constants_veg import Constants
+
 
 
 class _VegDelft3DSimulation(BaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`
-    Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
+    Vegetation Delft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 
     def configure_hydrodynamics(self):

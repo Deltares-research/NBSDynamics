@@ -148,6 +148,7 @@ class Delft3D(ExtraModel, abc.ABC):
         """Get hydrodynamic results; max. values. And minimum in the future"""
         self.time_step = time_step
         bed_level = self.get_variable('bl')
+        bed_level = np.delete(bed_level, np.where(bed_level <= -5))
         # cur_tau = self.get_variable('taus')
         # cur_vel = self.get_variable('u1')
         # cur1_vel = self.get_variable('ucx')
