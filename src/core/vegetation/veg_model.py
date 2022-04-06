@@ -137,9 +137,20 @@ class Vegetation(ExtraModel):
             #TODO what about too old vegetation
         if self.juvenile.veg_age.any() > self.constants.maxAge * 365:
             self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, -1, 1)
+            self.juvenile.veg_height = np.delete(self.juvenile.veg_height, -1, 1)
+            self.juvenile.stem_dia = np.delete(self.juvenile.stem_dia, -1, 1)
+            self.juvenile.root_len = np.delete(self.juvenile.root_len, -1, 1)
+            self.juvenile.stem_num = np.delete(self.juvenile.stem_num, -1, 1)
+            self.juvenile.veg_age = np.delete(self.juvenile.veg_age, -1, 1)
+
 
         if self.mature.veg_age.any() > self.constants.maxAge * 365:
             self.mature.veg_frac = np.delete(self.mature.veg_frac, -1, 1)
+            self.mature.veg_height = np.delete(self.mature.veg_height, -1, 1)
+            self.mature.stem_dia = np.delete(self.mature.stem_dia, -1, 1)
+            self.mature.root_len = np.delete(self.mature.root_len, -1, 1)
+            self.mature.stem_num = np.delete(self.mature.stem_num, -1, 1)
+            self.mature.veg_age = np.delete(self.mature.veg_age, -1, 1)
 
 
             #what if only 1 life stage (e.g. salicornia?)
