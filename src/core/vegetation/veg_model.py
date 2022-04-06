@@ -118,7 +118,12 @@ class Vegetation(ExtraModel):
             self.juvenile.stem_num = np.column_stack((self.initial.stem_num, self.juvenile.stem_num))
             self.juvenile.veg_age = np.column_stack((self.initial.veg_age, self.juvenile.veg_age))
             self.juvenile.cover = self.juvenile.veg_frac.sum(axis=1)
+            #empty initial arrays
             self.initial.veg_frac = np.zeros(self.initial.veg_height.shape)
+            self.initial.veg_height = np.zeros(self.initial.veg_frac.shape)
+            self.initial.stem_dia = np.zeros(self.initial.veg_height.shape)
+            self.initial.root_len = np.zeros(self.initial.veg_height.shape)
+            self.initial.stem_num = np.zeros(self.initial.veg_height.shape)
 
         if self.juvenile.veg_age.any() > self.constants.maxYears_LS[0] * 365:
             self.mature.veg_frac = np.column_stack((self.juvenile.veg_frac[:, -1], self.mature.veg_frac))
