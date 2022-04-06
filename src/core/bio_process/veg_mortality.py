@@ -41,7 +41,7 @@ class Veg_Mortality(ExtraModel):
         self.uprooting(self, veg, constants)
         self.erosion_sedimentation(self, veg, ets)
 
-        veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_flood_j -self.fraction_dead_des_j - self.fraction_dead_flood_j - self.burial_scour_j #update fractions due to mortality
+        veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_flood_j - self.fraction_dead_des_j - self.fraction_dead_flood_j - self.burial_scour_j #update fractions due to mortality
         veg.juvenile.veg_frac[veg.juvenile.veg_frac < 0] = 0 #replace negative values with 0
         veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_flood_m - self.fraction_dead_des_m - self.fraction_dead_flood_m - self.burial_scour_m  # update fractions due to mortality
         veg.mature.veg_frac[veg.mature.veg_frac < 0] = 0  # replace negative values with 0

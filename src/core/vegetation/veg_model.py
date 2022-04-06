@@ -108,7 +108,6 @@ class Vegetation(ExtraModel):
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
 
     def update_lifestages(self):
-        ##TODO CHECK
         # take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
         if np.any(self.initial.veg_frac > 0):
             self.juvenile.veg_frac = np.column_stack((self.initial.veg_frac, self.juvenile.veg_frac))
@@ -124,6 +123,18 @@ class Vegetation(ExtraModel):
             self.initial.stem_dia = np.zeros(self.initial.veg_height.shape)
             self.initial.root_len = np.zeros(self.initial.veg_height.shape)
             self.initial.stem_num = np.zeros(self.initial.veg_height.shape)
+            self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, np.where(np.all(self.juvenile.veg_frac == 0, axis=0)==True), 1)
+            self.juvenile.veg_height = np.delete(self.juvenile.veg_height,
+                                               np.where(np.all(self.juvenile.veg_height == 0, axis=0)==True), 1)
+            self.juvenile.veg_age = np.delete(self.juvenile.veg_age,
+                                               np.where(np.all(self.juvenile.stem_dia == 0, axis=0)==True), 1)
+            self.juvenile.stem_dia = np.delete(self.juvenile.stem_dia,
+                                               np.where(np.all(self.juvenile.stem_dia == 0, axis=0)==True), 1)
+            self.juvenile.root_len = np.delete(self.juvenile.root_len,
+                                               np.where(np.all(self.juvenile.root_len == 0, axis=0) == True), 1)
+            self.juvenile.stem_num = np.delete(self.juvenile.stem_num,
+                                               np.where(np.all(self.juvenile.stem_num == 0, axis=0)==True), 1)
+
 
         if np.any(self.juvenile.veg_age > (self.constants.maxYears_LS[0] * 365)):
             self.mature.veg_frac = np.column_stack((self.juvenile.veg_frac[:, -1], self.mature.veg_frac))
@@ -134,7 +145,26 @@ class Vegetation(ExtraModel):
             self.mature.veg_age = np.column_stack((self.juvenile.veg_age[:, -1], self.mature.veg_age))
             self.mature.cover = self.mature.veg_frac.sum(axis=1)
             self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, -1, 1)
-            #TODO what about too old vegetation
+            self.juvenile.veg_height = np.delete(self.juvenile.veg_height, -1, 1)
+            self.juvenile.stem_dia = np.delete(self.juvenile.stem_dia, -1, 1)
+            self.juvenile.root_len = np.delete(self.juvenile.root_len, -1, 1)
+            self.juvenile.stem_num = np.delete(self.juvenile.stem_num, -1, 1)
+            self.juvenile.veg_age = np.delete(self.juvenile.veg_age, -1, 1)
+
+            self.mature.veg_frac = np.delete(self.mature.veg_frac, np.where(np.all(self.mature.veg_frac == 0, axis=0)==True), 1)
+            self.mature.veg_height = np.delete(self.mature.veg_height,
+                                               np.where(np.all(self.mature.veg_height == 0, axis=0)==True), 1)
+            self.mature.veg_age = np.delete(self.mature.veg_age,
+                                               np.where(np.all(self.mature.stem_dia == 0, axis=0)==True), 1)
+            self.mature.stem_dia = np.delete(self.mature.stem_dia,
+                                               np.where(np.all(self.mature.stem_dia == 0, axis=0)==True), 1)
+            self.mature.root_len = np.delete(self.mature.root_len,
+                                               np.where(np.all(self.mature.root_len == 0, axis=0) == True), 1)
+            self.mature.stem_num = np.delete(self.mature.stem_num,
+                                               np.where(np.all(self.mature.stem_num == 0, axis=0)==True), 1)
+
+
+
         if np.any(self.juvenile.veg_age > (self.constants.maxAge * 365)):
             self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, -1, 1)
             self.juvenile.veg_height = np.delete(self.juvenile.veg_height, -1, 1)
