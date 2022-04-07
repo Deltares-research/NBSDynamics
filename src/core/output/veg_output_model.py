@@ -9,17 +9,12 @@ from pandas import DataFrame
 from src.core.base_model import BaseModel
 from src.core.common.space_time import DataReshape
 from src.core.vegetation.veg_model import Vegetation
+import datetime as dt
 
 
 class ModelParameters(BaseModel):
-    lme: bool = False  # light micro-environment
-    fme: bool = False  # flow micro-environment
-    tme: bool = False  # thermal micro-environment
-    pd: bool = False  # photosynthetic dependencies
-    ps: bool = False  # population states
-    calc: bool = False  # calcification rates
-    md: bool = False  # morphological development
-
+    hydro_mor: bool = True  # hydro_morph micro-environment
+    veg_characteristics: bool = True  # vegetation characteristics
 
 
     def valid_output(self) -> bool:
@@ -76,7 +71,7 @@ class MapOutput(BaseOutput):
         """
         return len(self.xy_coordinates)
 
-    def initialize(self, veg : Vegetation):
+    def initialize(self, veg: Vegetation):
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running.
 
         """
@@ -89,11 +84,16 @@ class MapOutput(BaseOutput):
             # dimensions
             _map_data.createDimension("time", None)
             _map_data.createDimension("nmesh2d_face", self.space)
+            _map_data.createDimension("age", None)
 
             # variables
             t = _map_data.createVariable("time", int, ("time",))
-            t.long_name = "year"
-            t.units = "years since 0 B.C."
+            t.long_name = "period"
+            t.units = "period"
+
+            age = _map_data.createVariable("age", int, ("age"))
+            age.long_name = "vegetation age"
+            age.units = "days"
 
             x = _map_data.createVariable("nmesh2d_x", "f8", ("nmesh2d_face",))
             x.long_name = "x-coordinate"
@@ -109,23 +109,54 @@ class MapOutput(BaseOutput):
 
             # initial conditions
             # Definition of methods to initialize the netcdf variables.
-            def init_cover():
+
+            def init_hydro_mor():
+                max_tau = _map_data.createVariable(
+                    "max_tau", "f8", ("time", "nmesh2d_face")
+                )
+                max_tau.long_name = "maximum bed shear stress"
+                max_tau.units = "N/m^2"
+                max_tau[:,:] = 0
+                max_u = _map_data.createVariable(
+                    "max_u", "f8", ("time", "nmesh2d_face")
+                )
+                max_u.long_name = "maximum flow velocity"
+                max_u.units = "m/s"
+                max_u[:, :] = 0
+                max_wl =  _map_data.createVariable(
+                    "max_wl", "f8", ("time", "nmesh2d_face")
+                )
+                max_wl.long_name = "maximum water level"
+                max_wl.units = "m"
+                max_wl[:, :] = 0
+                min_wl = _map_data.createVariable(
+                    "min_wl", "f8", ("time", "nmesh2d_face")
+                )
+                min_wl.long_name = "minimum water level"
+                min_wl.units = "m"
+                min_wl[:, :] = 0
+                bl = _map_data.createVariable("bl", "f8", ("time", "nmesh2d_face"))
+                bl.long_name = (
+                    "bedlevel"
+                )
+                bl.units = "m"
+                bl[:, :] = 0
+
+            def init_veg_characteristics():
                 cover = _map_data.createVariable(
                     "cover", "f8", ("time", "nmesh2d_face")
                 )
-                cover.long_name = "sum of fraction of area coverage in each cell (for all ages)"
+                cover.long_name = "sum of fraction coverage in each cell (for all ages)"
                 cover.units = "-"
-                cover[:, :] = 0 #could be =veg.cover if there is an initial one
+                cover[:, :] = veg.total_cover  # could be =veg.cover if there is an initial one
 
-            def init_height():
-                sheight = _map_data.createVariable(
-                    "stemheight", "f8", ("time", "nmesh2d_face")
+                height = _map_data.createVariable(
+                    "height", "f8", ("time", "nmesh2d_face")
                 )
-                sheight.long_name = "stem height"
-                sheight.units = "m"
-                sheight[:, :] = 0
+                height.long_name = "vegetation height"
+                height.units = "m"
+                height[:, :] = 0
 
-            def init_diaveg():
                 diaveg = _map_data.createVariable("diaveg", "f8", ("time", "nmesh2d_face"))
                 diaveg.long_name = (
                     "stem diameter"
@@ -133,44 +164,36 @@ class MapOutput(BaseOutput):
                 diaveg.units = "m"
                 diaveg[:, :] = 0
 
-            def init_rnveg():
                 rnveg = _map_data.createVariable("rnveg", "f8", ("time", "nmesh2d_face"))
                 rnveg.long_name = (
-                    "plant density"
+                    "vegetation density"
                 )
                 diaveg.units = "1/m2"
                 diaveg[:, :] = 0
 
-            def init_bl():
-                bedlevel = _map_data.createVariable("bedlevel", "f8", ("time", "nmesh2d_face"))
-                bedlevel.long_name = (
-                    "bedlevel"
+                veg_frac_j = _map_data.createVariable("veg_frac_j", "f8", ("nmesh2d_face", "age", "time"))
+                veg_frac_j.long_name = (
+                    "Vegetation fraction in each growth day for juvenile"
                 )
-                bedlevel.units = "m"
-                bedlevel[:, :] = 0
-
-            def init_veg_frac():
-                veg_frac = _map_data.createVariable("veg_frac", "f8", ("time", "nmesh2d_face"))
-                veg_frac.long_name = (
-                    "Vegetation fraction in each growth day"
+                veg_frac_j.units = "-"
+                veg_frac_j[:, :, :] = 0
+                veg_frac_m = _map_data.createVariable("veg_frac_m", "f8", ("nmesh2d_face", "age", "time"))
+                veg_frac_m.long_name = (
+                    "Vegetation fraction in each growth day for mature"
                 )
-                veg_frac.units = "-"
-                veg_frac[:, :] = 0
+                veg_frac_m.units = "-"
+                veg_frac_m[:, :, :] = 0
 
 
             conditions_funct = dict(
-                cover=init_cover,
-                sheight=init_height,
-                diaveg=init_diaveg,
-                rnveg=init_rnveg,
-                bedlevel=init_bl,
-                veg_frac=init_veg_frac
+                hydro_mor=init_hydro_mor,
+                veg_characteristics=init_veg_characteristics,
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
                     v_func()
 
-    def update(self, veg: Vegetation, end_time: int):
+    def update(self, veg: Vegetation, end_time: int, ets, year, constants):
         """Write data every period ran covering the whole model domain.
 
         :param veg: Vegetation
@@ -182,36 +205,29 @@ class MapOutput(BaseOutput):
         if not self.valid_output():
             return
         with Dataset(self.output_filepath, mode="a") as _map_data:
-            # i = int(year - self.first_year)
-            i = int(end_time)
+            i = ets + constants.t_eco_year*year
+
             _map_data["time"][i] = end_time
 
-            def update_cover():
-                _map_data["cover"][-1, :] = veg._cover[0, :]
+            def update_hydro_mor():
+                _map_data["max_tau"][-1, :] = veg.max_tau
+                _map_data["max_u"][-1, :] = veg.max_u
+                _map_data["max_wl"][-1, :] = veg.max_wl
+                _map_data["min_wl"][-1, :] = veg.min_wl
+                _map_data["bl"][-1, :] = veg.bl
 
-            def update_height():
-                _map_data["sheight"][-1, :] = veg.av_height[0, :]
 
-            def update_diaveg():
-                _map_data["diaveg"][-1, :] = veg.av_dia[0, :]
-
-            def update_rnveg():
-                _map_data["rnveg"][-1, :] = veg.veg_den[0, :]
-
-            def update_bl():
-                _map_data["bedlevel"][-1, :] = veg.bl[:,0]
-
-            def update_veg_frac():
-                _map_data["veg_frac"][:, :] = veg.veg_age_frac[:,:]
-
+            def update_veg_characteristics():
+                _map_data["cover"][-1, :] = veg.cover.transpose()
+                _map_data["height"][-1, :] = veg.av_height.transpose()
+                _map_data["diaveg"][-1, :] = veg.av_stemdia.transpose()
+                _map_data["rnveg"][-1, :] = veg.veg_den.transpose()
+                _map_data["veg_frac_j"][:, :, -1] = veg.juvenile.veg_frac[:, :]
+                _map_data["veg_frac_m"][:, :, -1] = veg.mature.veg_frac[:, :]
 
             conditions_funct = dict(
-                cover=update_cover,
-                sheight=update_height,
-                diaveg=update_diaveg,
-                rnveg=update_rnveg,
-                bedlevel=update_bl,
-                veg_frac=update_veg_frac,
+                hydro_mor=update_hydro_mor,
+                veg_characteristics=update_veg_characteristics
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
@@ -228,7 +244,7 @@ class HisOutput(BaseOutput):
     idx_stations: Optional[np.ndarray]
     first_date: Optional[Union[np.datetime64, datetime]]
 
-    def initialize(self, _: Vegetation):
+    def initialize(self, veg: Vegetation):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
         if not self.valid_output():
             return
@@ -251,62 +267,83 @@ class HisOutput(BaseOutput):
             x[:] = self.xy_stations[:, 0]
             y[:] = self.xy_stations[:, 1]
 
-            def init_cover():
-                cover = _map_data.createVariable(
-                    "cover", "f8", ("time", "nmesh2d_face")
+            def init_hydro_mor():
+                max_tau = _his_data.createVariable(
+                    "max_tau", "f8", ("time", "stations")
                 )
-                cover.long_name = "sum of fraction of area coverage in each cell (for all ages)"
+                max_tau.long_name = "maximum bed shear stress"
+                max_tau.units = "N/m^2"
+                max_tau[:, :] = 0
+                max_u = _his_data.createVariable(
+                    "max_u", "f8", ("time", "stations")
+                )
+                max_u.long_name = "maximum flow velocity"
+                max_u.units = "m/s"
+                max_u[:, :] = 0
+                max_wl = _his_data.createVariable(
+                    "max_wl", "f8", ("time", "stations")
+                )
+                max_wl.long_name = "maximum water level"
+                max_wl.units = "m"
+                max_wl[:, :] = 0
+                min_wl = _his_data.createVariable(
+                    "min_wl", "f8", ("time","stations")
+                )
+                min_wl.long_name = "minimum water level"
+                min_wl.units = "m"
+                min_wl[:, :] = 0
+                bl = _his_data.createVariable("bl", "f8", ("time", "stations"))
+                bl.long_name = (
+                    "bedlevel"
+                )
+                bl.units = "m"
+                bl[:, :] = 0
+
+            def init_veg_characteristics():
+                cover = _his_data.createVariable(
+                    "cover", "f8", ("time","stations")
+                )
+                cover.long_name = "sum of fraction coverage in each cell (for all ages)"
                 cover.units = "-"
-                cover[:, :] = 0  # could be =veg.cover if there is an initial one
+                cover[:, :] = veg.total_cover  # could be =veg.cover if there is an initial one
 
-            def init_height():
-                sheight = _map_data.createVariable(
-                    "stem height", "f8", ("time", "nmesh2d_face")
+                height = _his_data.createVariable(
+                    "height", "f8", ("time","stations")
                 )
-                sheight.long_name = "stem height"
-                sheight.units = "m"
-                sheight[:, :] = 0
+                height.long_name = "vegetation height"
+                height.units = "m"
+                height[:, :] = 0
 
-            def init_diaveg():
-                diaveg = _map_data.createVariable("diaveg", "f8", ("time", "nmesh2d_face"))
+                diaveg = _his_data.createVariable("diaveg", "f8", ("time", "stations"))
                 diaveg.long_name = (
                     "stem diameter"
                 )
                 diaveg.units = "m"
                 diaveg[:, :] = 0
 
-            def init_rnveg():
-                rnveg = _map_data.createVariable("rnveg", "f8", ("time", "nmesh2d_face"))
+                rnveg = _his_data.createVariable("rnveg", "f8", ("time", "stations"))
                 rnveg.long_name = (
-                    "plant density"
+                    "vegetation density"
                 )
                 diaveg.units = "1/m2"
                 diaveg[:, :] = 0
 
-            def init_bl():
-                bedlevel = _map_data.createVariable("bedlevel", "f8", ("time", "nmesh2d_face"))
-                bedlevel.long_name = (
-                    "bed level"
+                veg_frac_j = _his_data.createVariable("veg_frac_j", "f8", ("time", "stations"))
+                veg_frac_j.long_name = (
+                    "Vegetation fraction in each growth day for juvenile"
                 )
-                bedlevel.units = "m"
-                bedlevel[:, :] = 0
-
-            def init_veg_frac():
-                veg_frac = _map_data.createVariable("veg_frac", "f8", ("time", "nmesh2d_face"))
-                veg_frac.long_name = (
-                    "Vegetation fraction in each growth day"
+                veg_frac_j.units = "-"
+                veg_frac_j[:, :] = 0
+                veg_frac_m = _his_data.createVariable("veg_frac_m", "f8", ("time", "stations"))
+                veg_frac_m.long_name = (
+                    "Vegetation fraction in each growth day for mature"
                 )
-                veg_frac.units = "-"
-                veg_frac[:, :] = 0
+                veg_frac_m.units = "-"
+                veg_frac_m[:, :] = 0
 
-            #initial conditions
             conditions_funct = dict(
-                cover=init_cover,
-                sheight=init_height,
-                diaveg=init_diaveg,
-                rnveg=init_rnveg,
-                bedlevel=init_bl,
-                veg_frac=init_veg_frac
+                hydro_mor=init_hydro_mor,
+                veg_characteristics=init_veg_characteristics,
             )
             for key, v_func in conditions_funct.items():
                 if self.output_params.dict()[key]:
@@ -325,34 +362,51 @@ class HisOutput(BaseOutput):
             return
         with Dataset(self.output_filepath, mode="a") as _his_data:
             y_dates = dates.reset_index(drop=True)
-            ti = (y_dates - self.first_date).dt.days.values
-            _his_data["time"][ti] = y_dates.values
+            ti = ((y_dates - self.first_date).squeeze()).dt.days.values
+            _his_data["time"][ti[:]] = y_dates.values
 
-            def update_cover():
-                _his_data["cover"][ti, :] = veg._cover[self.idx_stations, :].transpose()
+            def update_hydro_mor():
+                _his_data["max_tau"][ti, :] = np.tile(veg.max_tau, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["max_u"][ti, :] = np.tile(veg.max_u, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["max_wl"][ti, :] = np.tile(veg.max_wl, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["min_wl"][ti, :] = np.tile(veg.min_wl, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["bl"][ti, :] = np.tile(veg.bl, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
 
-            def update_height():
-                _his_data["sheight"][ti, :] = veg.veg_height[self.idx_stations, :].transpose()
 
-            def update_diaveg():
-                _his_data["diaveg"][ti, :] = veg.veg_dia[self.idx_stations, :].transpose()
+            def update_veg_characteristics():
+                _his_data["cover"][ti, :] = np.tile(veg.cover.transpose(), (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["height"][ti, :] = np.tile(veg.av_height.transpose(), (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["diaveg"][ti, :] = np.tile(veg.av_stemdia.transpose(), (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["rnveg"][ti, :] = np.tile(veg.veg_den.transpose(), (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["veg_frac_j"][ti, :] = np.tile(veg.juvenile.cover, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
+                _his_data["veg_frac_m"][ti, :] = np.tile(veg.mature.cover, (len(y_dates), 1))[
+                    :, self.idx_stations
+                ]
 
-            def update_rnveg():
-                _his_data["rnveg"][ti, :] = veg.veg_den[self.idx_stations, :].transpose()
-
-            def update_bl():
-                _his_data["bedlevel"][ti, :] = veg.bl[self.idx_stations, :].transpose()
-
-            def update_veg_frac():
-                _his_data["veg_frac"][ti, :] = veg.veg_age_frac[self.idx_stations, :].transpose()
 
             conditions_funct = dict(
-                cover=update_cover,
-                sheight=update_height,
-                diaveg=update_diaveg,
-                rnveg=update_rnveg,
-                bedlevel=update_bl,
-                veg_frac=update_veg_frac
+                hydro_mor=update_hydro_mor,
+                veg_characteristics=update_veg_characteristics,
             )
 
             for key, v_func in conditions_funct.items():

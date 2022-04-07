@@ -242,49 +242,6 @@ class BaseSimulation(BaseModel, ABC):
 
         self.output.initialize(self.coral)
 
-    def initiate_hydromorphodynamics(self, duration: Optional[int] = None):
-
-        """Initial run of one ets of hydrodynamics
-
-        """
-
-        self.configure_hydrodynamics()
-        self.configure_output()
-        # Load constants and validate environment.
-        self.validate_simulation_directories()
-        self.validate_environment()
-        RESHAPE().space = self.hydrodynamics.space
-
-
-        xy = self.hydrodynamics.xy_coordinates
-        # TODO define the duration for only the 1st ETS (not the same as environment_dates, but with a similar loop)
-
-        environment_dates: pd.core.series.Series = self.environment.get_dates()
-        if duration is None:
-            duration = int(
-                environment_dates.iloc[-1].year - environment_dates.iloc[0].year
-            )
-        years = range(
-            int(environment_dates.iloc[0].year),
-            int(environment_dates.iloc[0].year + duration),
-        )
-
-        with tqdm(range((int(duration-(duration+1))))) as progress:
-            for i in progress:
-                # set dimensions (i.e. update time-dimension)
-                RESHAPE().time = len(
-                    environment_dates.dt.year[environment_dates.dt.year == years[i]]
-                )
-
-                # if-statement that encompasses all for which the hydrodynamic should be used
-                progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                RESHAPE().space = self.hydrodynamics.space
-                return max_tau, max_wl, max_vel, bed_level
-
-
-
-        self.output.initialize(self.coral)
-
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.

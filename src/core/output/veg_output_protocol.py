@@ -62,13 +62,13 @@ class OutputProtocol(Protocol):
         """
         raise NotImplementedError
 
-    def update(self, veg: Vegetation, year: int):
+    def update(self, veg: Vegetation, end_time: int):
         """
         Updates the output model with the given vegetation and year.
 
         Args:
             veg (Vegetation): Vegetation input model.
-            year (int): Current calculation year.
+            period (int): Current period year.
 
         Raises:
             NotImplementedError: When the model does not implement its own definition.

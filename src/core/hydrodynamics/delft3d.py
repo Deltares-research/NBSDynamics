@@ -244,6 +244,7 @@ class Delft3D(ExtraModel, abc.ABC):
         self.time_step = time_step
 
         self.reset_counters()
+        self.set_vegetation(veg)
         self.model_wrapper.update(self.time_step)
 
         return self.get_current_hydromorphodynamics(time_step=self.time_step)

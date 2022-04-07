@@ -18,7 +18,7 @@ class Constants(BaseModel):
     # Processes
     warn_proc: bool = False
     # User - Define time - scales
-    t_eco_year: int = 24  # number ecological time - steps per year(meaning couplings)
+    t_eco_year: int = 12 # number ecological time - steps per year(meaning couplings)
     ## TODO check with MorFac, what years is this then?
     sim_duration: float = 30  # number of morphological years of entire simulation
     start_date: str = "2022-01-01"  # Start date of the simulation
@@ -27,7 +27,6 @@ class Constants(BaseModel):
 
     # Colonization
     ColMethod: int = 1  # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
-    ets_per_year: int = 24  # number of ecological time steps per year
     species: str = "Spartina anglica"
     # Species Specific Constants
     def __init__(self, species):
@@ -133,71 +132,72 @@ class Constants(BaseModel):
 
     @property
     def ets_duration(self):
-        return round(365 / self.ets_per_year)
+        return round(365 / self.t_eco_year)
 
-    @property
-    def growth_days(self):
-            """
-            find number of growth days in current ets depending on start and end of growth period
-            """
-            ##TODO get rid of loops
-            current_date = pd.to_datetime(self.start_date)
-            growth_days = []
-            for x in range(0, self.t_eco_year):
-                growth_Day = []
-                for y in range(0, round(self.ets_duration)):
-                    if pd.to_datetime(self.growth_start).month <= current_date.month <= pd.to_datetime(
-                            self.growth_end).month:
-                        if pd.to_datetime(self.growth_start).month == current_date.month:
-                            if pd.to_datetime(self.growth_start).day <= current_date.day:
-                                growth_Day.append(1)
-                            else:
-                                growth_Day.append(0)
-                        elif pd.to_datetime(self.growth_end).month == current_date.month:
-                            if current_date.day <= pd.to_datetime(self.growth_end).day:
-                                growth_Day.append(1)
-                            else:
-                                growth_Day.append(0)
-                        else:
-                            growth_Day.append(1)
-                    else:
-                        growth_Day.append(0)
-                    current_date = current_date + timedelta(days=1)
+    # @property
+    # def growth_days(self):
+    #         """
+    #         find number of growth days in current ets depending on start and end of growth period
+    #         """
+    #         ##TODO get rid of loops
+    #         current_date = pd.to_datetime(self.start_date)
+    #         growth_days = []
+    #         for x in range(0, self.t_eco_year):
+    #             growth_Day = []
+    #             for y in range(0, round(self.ets_duration)):
+    #                 if pd.to_datetime(self.growth_start).month <= current_date.month <= pd.to_datetime(
+    #                         self.growth_end).month:
+    #                     if pd.to_datetime(self.growth_start).month == current_date.month:
+    #                         if pd.to_datetime(self.growth_start).day <= current_date.day:
+    #                             growth_Day.append(1)
+    #                         else:
+    #                             growth_Day.append(0)
+    #                     elif pd.to_datetime(self.growth_end).month == current_date.month:
+    #                         if current_date.day <= pd.to_datetime(self.growth_end).day:
+    #                             growth_Day.append(1)
+    #                         else:
+    #                             growth_Day.append(0)
+    #                     else:
+    #                         growth_Day.append(1)
+    #                 else:
+    #                     growth_Day.append(0)
+    #                 current_date = current_date + timedelta(days=1)
+    #
+    #             growth_days.append(sum(growth_Day))
+    #         return np.array(growth_days)
 
-                growth_days.append(sum(growth_Day))
-            return np.array(growth_days)
-    @property
-    def col_days(self):
-            """
-            find ets where colonization happens
-            """
-            ##TODO get rid of loops
-            days_ets = 365 / self.t_eco_year
-            current_date = pd.to_datetime(self.start_date)
-            col_days = []
-            for x in range(0, self.t_eco_year):
-                col_Day = []
-                for y in range(0, round(days_ets)):
-                    if pd.to_datetime(self.ColStart).month <= current_date.month <= pd.to_datetime(
-                            self.ColEnd).month:
-                        if pd.to_datetime(self.ColStart).month == current_date.month:
-                            if pd.to_datetime(self.ColStart).day <= current_date.day:
-                                col_Day.append(1)
-                            else:
-                                col_Day.append(0)
-                        elif pd.to_datetime(self.ColEnd).month == current_date.month:
-                            if current_date.day <= pd.to_datetime(self.ColEnd).day:
-                                col_Day.append(1)
-                            else:
-                                col_Day.append(0)
-                        else:
-                            col_Day.append(1)
-                    else:
-                        col_Day.append(0)
-                    current_date = current_date + timedelta(days=1)
-
-                col_days.append(sum(col_Day))
-            return np.array(col_days)
+    # @property
+    # def col_days(self):
+    #         """
+    #         find ets where colonization happens
+    #         """
+    #         ##TODO get rid of loops
+    #         days_ets = 365 / self.t_eco_year
+    #         current_date = pd.to_datetime(self.start_date)
+    #         col_days = []
+    #         for x in range(0, self.t_eco_year):
+    #             col_Day = []
+    #             for y in range(0, round(days_ets)):
+    #                 if pd.to_datetime(self.ColStart).month <= current_date.month <= pd.to_datetime(
+    #                         self.ColEnd).month:
+    #                     if pd.to_datetime(self.ColStart).month == current_date.month:
+    #                         if pd.to_datetime(self.ColStart).day <= current_date.day:
+    #                             col_Day.append(1)
+    #                         else:
+    #                             col_Day.append(0)
+    #                     elif pd.to_datetime(self.ColEnd).month == current_date.month:
+    #                         if current_date.day <= pd.to_datetime(self.ColEnd).day:
+    #                             col_Day.append(1)
+    #                         else:
+    #                             col_Day.append(0)
+    #                     else:
+    #                         col_Day.append(1)
+    #                 else:
+    #                     col_Day.append(0)
+    #                 current_date = current_date + timedelta(days=1)
+    #
+    #             col_days.append(sum(col_Day))
+    #         return np.array(col_days)
 
     # def get_WinterDays(self, constants):
     #         """

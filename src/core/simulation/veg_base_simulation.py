@@ -20,6 +20,14 @@ from src.core.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.veg_output_wrapper import VegOutputWrapper
+# from src.core.common.datetimeRange import DatetimeRange
+# class DatetimeRange:
+#     def __init__(self, dt1, dt2):
+#         self._dt1 = dt1
+#         self._dt2 = dt2
+#
+#     def __contains__(self, dt):
+#         return self._dt1 < dt < self._dt2
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -39,7 +47,7 @@ class BaseSimulation(BaseModel, ABC):
 
     #Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
-    environment: Environment = Environment()
+    #environment: Environment = Environment()
     constants: Optional[Constants]
     output: Optional[VegOutputWrapper]
     veg: Optional[Vegetation]
@@ -186,16 +194,10 @@ class BaseSimulation(BaseModel, ABC):
         self.validate_simulation_directories()
 
         RESHAPE().space = self.hydrodynamics.space
-
-        if self.output.defined:
-            self.output.initialize(self.veg)
-        else:
-            print("WARNING: No output defined, so none exported.")
-
         xy = self.hydrodynamics.xy_coordinates
 
         ##TODO define cover as a possible input variable!
-        cover = np.zeros(RESHAPE().space)
+        #cover = np.zeros(RESHAPE().space)
         # if x_range is not None:
         #     x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
         #     x_max = x_range[1] if x_range[1] is not None else max(xy[:][0])
@@ -206,9 +208,16 @@ class BaseSimulation(BaseModel, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
+
         self.veg.initial.initiate_vegetation_characteristics()
         self.veg.juvenile.initiate_vegetation_characteristics()
         self.veg.mature.initiate_vegetation_characteristics()
+
+        if self.output.defined:
+            self.output.initialize(self.veg)
+        else:
+            print("WARNING: No output defined, so none exported.")
+
 
 
         self.output.initialize(self.veg)
@@ -236,12 +245,12 @@ class BaseSimulation(BaseModel, ABC):
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 current_year = years[i]
-                for ets in range(0, self.constants.ets_per_year):
+                for ets in range(0, self.constants.t_eco_year):
                     if ets == 0:
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
-                        begin_date = end_date + timedelta(days=1)
-                    end_date = begin_date + timedelta(days=(365/self.constants.ets_per_year))
+                        begin_date = end_date
+                    end_date = begin_date + timedelta(days=(365/self.constants.t_eco_year))
                     period = [begin_date + timedelta(n) for n in range(int((end_date - begin_date).days))]
                     #period = int(period)## TODO convert period to integer!
 
@@ -273,16 +282,18 @@ class BaseSimulation(BaseModel, ABC):
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
-                    # vegetation mortality (ALWAYS HAPPEN)
+                    # vegetation mortality and growth update
                     mort = Veg_Mortality
-                    mort.update(mort, self.veg, self.constants, ets, begin_date, end_date)
+                    mort.update(mort, self.veg, self.constants, ets, begin_date, end_date, period)
 
-
+                    colstart = pd.to_datetime(self.constants.ColStart).replace(year=begin_date.year)
+                    colend = pd.to_datetime(self.constants.ColEnd).replace(year=end_date.year)
                     # # colonization (only in colonization period)
-                    if self.constants.col_days[ets] > 0:
-                        progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization()
-                        col.update(self.veg, constants=self.constants)
+                    # if self.constants.col_days[ets] > 0:
+                    if any(colstart <= pd.to_datetime(period)) and any(pd.to_datetime(period) <= colend):
+                            progress.set_postfix(inner_loop="vegetation colonization")
+                            col = Colonization()
+                            col.update(self.veg, constants=self.constants)
 
                     #update lifestages, initial to juvenile and juvenile to mature
                     self.veg.update_lifestages()
@@ -292,7 +303,7 @@ class BaseSimulation(BaseModel, ABC):
                     ## TODO check this when finishing the output files!
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
-                    self.output.map_output.update(self.veg, int(period[-1].strftime("%Y%m%d%H%M%S"))) #change to period we are in current ets
+                    self.output.map_output.update(self.veg, int(period[-1].strftime("%Y%m%d")), ets, i, self.constants) #change to period we are in current ets
                     # his-file
                     self.output.his_output.update(
                         self.veg,

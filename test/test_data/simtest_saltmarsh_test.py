@@ -9,6 +9,7 @@ from test.utils import TestUtils  # check why I need to go to test folder to wor
 from src.core.simulation.veg_delft3d_simulation import VegFlowFmSimulation
 from src.core.common.constants_veg import Constants
 from src.core.vegetation.veg_model import Vegetation
+import pandas as pd
 
 # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
 test_dir = Path(
@@ -37,10 +38,10 @@ sim_run = VegFlowFmSimulation(
     ),
     output=dict(
         output_dir=test_dir / "output",
-        map_output=dict(output_params=dict(fme=False)),
+        map_output=dict(output_params=dict()),
         his_output=dict(
             # xy_stations=np.array([[0, 0], [1, 1]]),
-            output_params=dict(fme=False),
+            output_params=dict(),
         ),
 
     ),
@@ -49,5 +50,5 @@ sim_run = VegFlowFmSimulation(
 
 # Run simulation.
 sim_run.initiate()
-sim_run.run(5)
+sim_run.run(1)
 sim_run.finalise()

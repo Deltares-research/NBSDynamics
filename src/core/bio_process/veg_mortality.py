@@ -35,7 +35,7 @@ class Veg_Mortality(ExtraModel):
     # fraction_dead_des: Optional[np.array] = None
     # fraction_dead_upr: Optional[np.array] = None
 
-    def update(self, veg: Vegetation, constants, ets, begin_date, end_date):
+    def update(self, veg: Vegetation, constants, ets, begin_date, end_date, period):
         """Update vegetation characteristics after mortality"""
         self.drowning_hydroperiod(self, veg, constants, ets)
         self.uprooting(self, veg, constants)
@@ -46,8 +46,8 @@ class Veg_Mortality(ExtraModel):
         veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_flood_m - self.fraction_dead_des_m - self.fraction_dead_flood_m - self.burial_scour_m  # update fractions due to mortality
         veg.mature.veg_frac[veg.mature.veg_frac < 0] = 0  # replace negative values with 0
 
-        veg.juvenile.update_growth(veg.juvenile.veg_frac, ets, begin_date, end_date)
-        veg.mature.update_growth(veg.mature.veg_frac, ets, begin_date, end_date)
+        veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
+        veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)
 
     def drowning_hydroperiod(self, veg: Vegetation, constants, ets):
         flooding_current, drying_current = self.compute_hydroperiod(veg.wl_ts, constants)

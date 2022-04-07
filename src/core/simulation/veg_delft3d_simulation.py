@@ -3,7 +3,7 @@ from abc import ABC
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.veg_output_wrapper import VegOutputWrapper
 from src.core.simulation.veg_base_simulation import BaseSimulation
-
+import pandas as pd
 
 
 class _VegDelft3DSimulation(BaseSimulation, ABC):
@@ -19,7 +19,7 @@ class _VegDelft3DSimulation(BaseSimulation, ABC):
         self.hydrodynamics.initiate()
 
     def configure_output(self):
-        first_date = self.constants.start_date
+        first_date = pd.to_datetime(self.constants.start_date)
         hydromodel: Delft3D = self.hydrodynamics
         xy_coordinates = hydromodel.xy_coordinates
         # TODO: There should be an output definition for this model.
@@ -37,7 +37,7 @@ class _VegDelft3DSimulation(BaseSimulation, ABC):
         def get_map_output_dict(output_dict: dict) -> dict:
             return dict(
                 output_dir=output_dict["output_dir"],
-                #first_year=output_dict["first_date"].year, ## TODO fix this!
+                first_year=output_dict["first_date"].year,
                 xy_coordinates=output_dict["xy_coordinates"],
             )
 

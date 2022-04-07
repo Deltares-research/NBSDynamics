@@ -37,7 +37,7 @@ class Colonization(ExtraModel):
         Colonization.col_location(self, veg, constants)
         # TODO check this!
         loc = veg.initial.veg_frac[self.seed_loc]
-        loc[veg.cover[self.seed_loc] <= (1 - constants.iniCol_frac)] = 1
+        loc[veg.cover_all[self.seed_loc] <= (1 - constants.iniCol_frac)] = 1
         veg.initial.veg_frac[self.seed_loc] = loc*constants.iniCol_frac
         veg.initial.veg_height[self.seed_loc] = loc*constants.iniShoot
         veg.initial.stem_dia[self.seed_loc] = loc*constants.iniDia
