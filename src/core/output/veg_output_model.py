@@ -218,7 +218,7 @@ class MapOutput(BaseOutput):
 
 
             def update_veg_characteristics():
-                _map_data["cover"][-1, :] = veg.cover.transpose()
+                _map_data["cover"][-1, :] = veg.total_cover.transpose()
                 _map_data["height"][-1, :] = veg.av_height.transpose()
                 _map_data["diaveg"][-1, :] = veg.av_stemdia.transpose()
                 _map_data["rnveg"][-1, :] = veg.veg_den.transpose()
@@ -384,7 +384,7 @@ class HisOutput(BaseOutput):
 
 
             def update_veg_characteristics():
-                _his_data["cover"][ti, :] = np.tile(veg.cover.transpose(), (len(y_dates), 1))[
+                _his_data["cover"][ti, :] = np.tile(veg.total_cover.transpose(), (len(y_dates), 1))[
                     :, self.idx_stations
                 ]
                 _his_data["height"][ti, :] = np.tile(veg.av_height.transpose(), (len(y_dates), 1))[
@@ -396,10 +396,10 @@ class HisOutput(BaseOutput):
                 _his_data["rnveg"][ti, :] = np.tile(veg.veg_den.transpose(), (len(y_dates), 1))[
                     :, self.idx_stations
                 ]
-                _his_data["veg_frac_j"][ti, :] = np.tile(veg.juvenile.cover, (len(y_dates), 1))[
+                _his_data["veg_frac_j"][ti, :] = np.tile(veg.juvenile.cover.transpose(), (len(y_dates), 1))[
                     :, self.idx_stations
                 ]
-                _his_data["veg_frac_m"][ti, :] = np.tile(veg.mature.cover, (len(y_dates), 1))[
+                _his_data["veg_frac_m"][ti, :] = np.tile(veg.mature.cover.transpose(), (len(y_dates), 1))[
                     :, self.idx_stations
                 ]
 

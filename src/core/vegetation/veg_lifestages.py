@@ -140,7 +140,7 @@ class LifeStages(ExtraModel):
         self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + self.dt_root * growth_days
         self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
         self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
-        self.cover = veg_frac.sum(axis=1)
+        self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
         # m = veg_frac.shape
         # if len(m) > 1:
         #     self.cover = veg_frac.sum(axis=1)

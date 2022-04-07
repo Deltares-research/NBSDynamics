@@ -75,7 +75,7 @@ class Vegetation(ExtraModel):
     def total_cover(self):  # as input for DFM
         # take cover as sum of all the ages and life stages
         self.total_cover = self.juvenile.cover + self.mature.cover
-        #return self.juvenile.cover + self.mature.cover
+        return self.juvenile.cover + self.mature.cover
 
     @property
     def veg_den(self):  # as input for DFM
@@ -86,8 +86,8 @@ class Vegetation(ExtraModel):
     @property
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of the different vegetation in one grid cell"""
-        cover_j = self.juvenile.cover
-        cover_m = self.mature.cover
+        cover_j = self.juvenile.cover.copy()
+        cover_m = self.mature.cover.copy()
         cover_j[cover_j == 0] = 1
         cover_m[cover_m == 0] = 1
         # if self.juvenile.cover.all() == 0 and self.mature.cover.all() == 0:
@@ -97,14 +97,14 @@ class Vegetation(ExtraModel):
         # elif self.juvenile.cover.all() == 0:
         #     return (self.mature.stem_dia * self.mature.veg_frac).sum(axis=1) / self.mature.cover
         # else:
-        return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1) / cover_j + (
-                    self.mature.stem_dia * self.mature.veg_frac).sum(axis=1) / cover_m
+        return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1).reshape(-1, 1) / cover_j + (
+                self.mature.stem_dia * self.mature.veg_frac).sum(axis=1).reshape(-1, 1) / cover_m
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of the different vegetation in one grid cell"""
-        cover_j = self.juvenile.cover
-        cover_m = self.mature.cover
+        cover_j = self.juvenile.cover.copy()
+        cover_m = self.mature.cover.copy()
         cover_j[cover_j == 0] = 1
         cover_m[cover_m == 0] = 1
         # if np.all(self.juvenile.cover == 0) and np.all(self.mature.cover == 0):
@@ -114,8 +114,8 @@ class Vegetation(ExtraModel):
         # elif self.juvenile.cover.all() == 0:
         #     return (self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / self.mature.cover
         # else:
-        return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1) / cover_j + (
-                    self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / cover_m
+        return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1).reshape(-1, 1) / cover_j + (
+                    self.mature.veg_height * self.mature.veg_frac).sum(axis=1).reshape(-1, 1) / cover_m
 
     # def duration_growth(self, constants):
     #     """duration of the growth period from start, end growth from Constants"""
