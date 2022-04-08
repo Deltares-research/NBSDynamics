@@ -71,7 +71,7 @@ class MapOutput(BaseOutput):
         """
         return len(self.xy_coordinates)
 
-    def initialize(self, veg: Vegetation):
+    def initialize(self):
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running.
 
         """
@@ -103,7 +103,7 @@ class MapOutput(BaseOutput):
             y.long_name = "y-coordinate"
             y.units = "m"
 
-            t[:] = self.first_year
+            #t[:] = self.first_year
             x[:] = self.xy_coordinates[:, 0]
             y[:] = self.xy_coordinates[:, 1]
 
@@ -148,7 +148,7 @@ class MapOutput(BaseOutput):
                 )
                 cover.long_name = "sum of fraction coverage in each cell (for all ages)"
                 cover.units = "-"
-                cover[:, :] = veg.total_cover  # could be =veg.cover if there is an initial one
+                cover[:, :] = 0  # could be =veg.cover if there is an initial one
 
                 height = _map_data.createVariable(
                     "height", "f8", ("time", "nmesh2d_face")
@@ -210,8 +210,8 @@ class MapOutput(BaseOutput):
             _map_data["time"][i] = end_time
 
             def update_hydro_mor():
-                _map_data["max_tau"][i, :] = veg.max_tau
-                _map_data["max_u"][i, :] = veg.max_u
+                _map_data["max_tau"][-1, :] = veg.max_tau
+                _map_data["max_u"][-1, :] = veg.max_u
                 _map_data["max_wl"][-1, :] = veg.max_wl
                 _map_data["min_wl"][-1, :] = veg.min_wl
                 _map_data["bl"][-1, :] = veg.bl

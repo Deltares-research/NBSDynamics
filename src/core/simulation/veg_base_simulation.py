@@ -20,14 +20,6 @@ from src.core.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.veg_output_wrapper import VegOutputWrapper
-# from src.core.common.datetimeRange import DatetimeRange
-# class DatetimeRange:
-#     def __init__(self, dt1, dt2):
-#         self._dt1 = dt1
-#         self._dt2 = dt2
-#
-#     def __contains__(self, dt):
-#         return self._dt1 < dt < self._dt2
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -214,13 +206,13 @@ class BaseSimulation(BaseModel, ABC):
         self.veg.mature.initiate_vegetation_characteristics()
 
         if self.output.defined:
-            self.output.initialize(self.veg)
+            self.output.initialize()
         else:
             print("WARNING: No output defined, so none exported.")
 
 
 
-        self.output.initialize(self.veg)
+        self.output.initialize()
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
