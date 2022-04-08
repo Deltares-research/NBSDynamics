@@ -127,10 +127,9 @@ class LifeStages(ExtraModel):
 
         a = start_growth <= pd.to_datetime(period)
         b = pd.to_datetime(period) <= end_growth
-        #c = np.zeros(a.shape, dtype=bool)
-        #c[a == True][b == True] = True
-        growth_days = np.sum(np.nonzero((a == True) & (b == True)))
 
+        c = np.nonzero((a == True) & (b == True))
+        growth_days = len(c[0])
         if begin_date <= winter_start <= end_date:
             self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls-1]
 

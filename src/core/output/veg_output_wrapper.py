@@ -126,5 +126,5 @@ class VegOutputWrapper(BaseModel):
 
         # Initialize output models.
         self.his_output.initialize(veg_model)
-        self.map_output.initialize(veg_model)
+        self.map_output.initialize()
 

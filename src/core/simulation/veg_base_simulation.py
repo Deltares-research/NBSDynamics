@@ -206,13 +206,13 @@ class BaseSimulation(BaseModel, ABC):
         self.veg.mature.initiate_vegetation_characteristics()
 
         if self.output.defined:
-            self.output.initialize()
+            self.output.initialize(self.veg)
         else:
             print("WARNING: No output defined, so none exported.")
 
 
 
-        self.output.initialize()
+        self.output.initialize(self.veg)
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
