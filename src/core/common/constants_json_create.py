@@ -51,12 +51,12 @@ schema = {
         'numStem': [190, 0], # 3.5. number of stems per m2
         'iniCol_frac': 0.6, # 3.6. initial colonization fraction (0-1)
         'Cd': [0.7, 0], # 3.7. drag coefficient
-        'desMort_thres': [400, 0], # 3.9. dessication mortality threshold
-        'desMort_slope': [0.75, 0], # 3.10. dessication mortality slope
-        'floMort_thres': [0.5, 0], # 3.11. flooding mortality threshold
-        'floMort_slope': [0.12, 0], # 3.12. flooding mortality slope
-        'vel_thres': [0.15, 0],   # 3.13. flow velocity threshold
-        'vel_slope': [3, 0],  # 3.14. flow velocity slope
+        'desMort_thres': [400, 1], # 3.9. dessication mortality threshold
+        'desMort_slope': [0.75, 1], # 3.10. dessication mortality slope
+        'floMort_thres': [0.5, 1], # 3.11. flooding mortality threshold
+        'floMort_slope': [0.12, 1], # 3.12. flooding mortality slope
+        'vel_thres': [0.15, 1],   # 3.13. flow velocity threshold
+        'vel_slope': [3, 1],  # 3.14. flow velocity slope
         'maxH_winter': [0.0, 0.0]  # 3.15  max height during winter time
     },
     'Puccinellia': {

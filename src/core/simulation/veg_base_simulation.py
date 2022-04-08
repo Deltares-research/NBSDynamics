@@ -39,7 +39,6 @@ class BaseSimulation(BaseModel, ABC):
 
     #Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
-    #environment: Environment = Environment()
     constants: Optional[Constants]
     output: Optional[VegOutputWrapper]
     veg: Optional[Vegetation]
@@ -238,11 +237,11 @@ class BaseSimulation(BaseModel, ABC):
             for i in progress:
                 current_year = years[i]
                 for ets in range(0, self.constants.t_eco_year):
-                    if ets == 0:
+                    if ets == 0 and i == 0:
                         begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
                     else:
                         begin_date = end_date
-                    end_date = begin_date + timedelta(days=(365/self.constants.t_eco_year))
+                    end_date = begin_date + timedelta(days=round(365/self.constants.t_eco_year))
                     period = [begin_date + timedelta(n) for n in range(int((end_date - begin_date).days))]
                     #period = int(period)## TODO convert period to integer!
 

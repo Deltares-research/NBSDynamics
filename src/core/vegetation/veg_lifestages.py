@@ -73,7 +73,6 @@ class LifeStages(ExtraModel):
 
     def initiate_vegetation_characteristics(self):
         _reshape = RESHAPE()
-
         # intialization of the vegetation with initial values
         ## TODO change this for other input cases with initial cover!
         self.veg_frac = np.zeros(_reshape.space)
@@ -91,9 +90,11 @@ class LifeStages(ExtraModel):
 
         if self.ls == 0:
             pass
+        elif self.constants.num_ls < self.ls:
+            pass
         elif self.ls == 1:
-            self.dt_height[i] = (self.constants.maxGrowth_H[i] - self.constants.iniShoot)/growth_duration
-            self.dt_height[i] = (self.constants.maxGrowth_H[i] - self.constants.maxH_winter[i]) / growth_duration
+            self.dt_height[0] = (self.constants.maxGrowth_H[i] - self.constants.iniShoot)/growth_duration
+            self.dt_height[1] = (self.constants.maxGrowth_H[i] - self.constants.maxH_winter[i]) / growth_duration
             self.dt_stemdia = (self.constants.maxDia[i] - self.constants.iniDia) / (growth_duration * self.constants.maxYears_LS[i])
             self.dt_root = (self.constants.maxRoot[i] - self.constants.iniRoot) / (growth_duration * self.constants.maxYears_LS[i])
         elif self.ls > 1:
@@ -102,47 +103,36 @@ class LifeStages(ExtraModel):
             self.dt_root = (self.constants.maxRoot[i] - self.constants.maxRoot[i-1]) / (growth_duration * self.constants.maxYears_LS[i])
 
 
-
-
-
-    # def update_winter(self, veg_frac):
-    #     self.veg_frac = veg_frac
-    #     self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls]
-    #     self.stem_dia[veg_frac > 0] = self.stem_dia
-    #     self.root_len[veg_frac > 0] = self.root_len
-    #     self.stem_num[veg_frac > 0] = self.stem_num
-    #     self.veg_age[veg_frac > 0] = self.veg_age + self.constants.ets_duration()
-    #     self.cover = veg_frac.sum(axis=1)
-
     def update_growth(self, veg_frac, period, begin_date, end_date):
         """
         update vegetation characteristics based on
         the vegetation age and fraction of veg in each cell (veg_frac_age)
         """
-        winter_start = pd.to_datetime(self.constants.winter_start).replace(year=begin_date.year)
-        start_growth = pd.to_datetime(self.constants.growth_start).replace(year=begin_date.year)
-        end_growth = pd.to_datetime(self.constants.growth_end).replace(year=begin_date.year)
-
-
-
-        a = start_growth <= pd.to_datetime(period)
-        b = pd.to_datetime(period) <= end_growth
-
-        c = np.nonzero((a == True) & (b == True))
-        growth_days = len(c[0])
-        if begin_date <= winter_start <= end_date:
-            self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls-1]
-
+        if self.constants.num_ls < self.ls:
+            pass
         else:
-            self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (self.dt_height[0] * growth_days)
-        self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (self.dt_stemdia * growth_days)
-        self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + (self.dt_root * growth_days)
-        self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
-        self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
-        self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
-        # m = veg_frac.shape
-        # if len(m) > 1:
-        #     self.cover = veg_frac.sum(axis=1)
+            winter_start = pd.to_datetime(self.constants.winter_start).replace(year=begin_date.year)
+            start_growth = pd.to_datetime(self.constants.growth_start).replace(year=begin_date.year)
+            end_growth = pd.to_datetime(self.constants.growth_end).replace(year=begin_date.year)
+
+            a = start_growth <= pd.to_datetime(period)
+            b = pd.to_datetime(period) <= end_growth
+            c = np.nonzero((a == True) & (b == True))
+            growth_days = len(c[0])
+
+
+            if begin_date <= winter_start <= end_date:
+                self.veg_height[veg_frac == 0] = 0 #delete vegetation which died
+                self.veg_height[self.constants.maxH_winter[self.ls - 1] < self.veg_height] = self.constants.maxH_winter[self.ls - 1] #change the height for all the vegetation which i biger than max_height_winter to max_height_winter
+
+            else:
+                self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (self.dt_height[0] * growth_days)
+
+            self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (self.dt_stemdia * growth_days)
+            self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + (self.dt_root * growth_days)
+            self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
+            self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
+            self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
 
 
 

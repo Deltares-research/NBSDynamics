@@ -22,10 +22,11 @@ kernels_dir = dll_repo / "kernels" / "x64"
 # test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
 
 input_dir = test_dir / "input"
+species = "Salicornia"
 
 sim_run = VegFlowFmSimulation(
     working_dir=test_dir,
-    constants=Constants(species="Spartina anglica"),
+    constants=Constants(species=species),
     # constants=input_dir/ "MinFiles" / "fm" / "veg.ext",
 
     hydrodynamics=dict(
@@ -45,7 +46,7 @@ sim_run = VegFlowFmSimulation(
         ),
 
     ),
-    veg=Vegetation(species="Spartina anglica")
+    veg=Vegetation(species=species)
 )
 
 # Run simulation.
