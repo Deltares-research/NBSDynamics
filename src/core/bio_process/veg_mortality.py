@@ -116,7 +116,9 @@ class Veg_Mortality(ExtraModel):
         out_fl = np.zeros(fl.shape)
         B = np.where(fl > dmax) #cells with 100% mortality
         out_fl[B] = 1
-        C = np.where(dmax > fl.all() > th) #cells where fct applies to determine mortality
+        a = fl>th
+        b = fl<dmax
+        C = np.nonzero((a == True) & (b == True)) #cells where fct applies to determine mortality
         out_fl[C] = fct[C]
         return out_fl.reshape(len(out_fl), 1)
 

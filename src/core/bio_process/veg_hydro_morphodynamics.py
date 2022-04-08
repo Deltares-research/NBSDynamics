@@ -14,7 +14,6 @@ class Hydro_Morphodynamics:
             ts,
             veg: Vegetation
     ):
-        ## TODO does this work??
 
         self.tau = tau_cur
         self.u = u_cur

@@ -97,7 +97,7 @@ class LifeStages(ExtraModel):
             self.dt_stemdia = (self.constants.maxDia[i] - self.constants.iniDia) / (growth_duration * self.constants.maxYears_LS[i])
             self.dt_root = (self.constants.maxRoot[i] - self.constants.iniRoot) / (growth_duration * self.constants.maxYears_LS[i])
         elif self.ls > 1:
-            self.dt_height[i] = (self.constants.maxGrowth_H[i] - self.constants.maxH_winter[i]) / growth_duration  # growth per day of growing season
+            self.dt_height[0] = (self.constants.maxGrowth_H[i] - self.constants.maxH_winter[i]) / growth_duration  # growth per day of growing season
             self.dt_stemdia = (self.constants.maxDia[i] - self.constants.maxDia[i-1]) / (growth_duration * self.constants.maxYears_LS[i])
             self.dt_root = (self.constants.maxRoot[i] - self.constants.maxRoot[i-1]) / (growth_duration * self.constants.maxYears_LS[i])
 
@@ -135,9 +135,9 @@ class LifeStages(ExtraModel):
             self.veg_height[veg_frac > 0] = self.constants.maxH_winter[self.ls-1]
 
         else:
-            self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + self.dt_height[0] * growth_days
-        self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + self.dt_stemdia * growth_days
-        self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + self.dt_root * growth_days
+            self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (self.dt_height[0] * growth_days)
+        self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (self.dt_stemdia * growth_days)
+        self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + (self.dt_root * growth_days)
         self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
         self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
         self.cover = veg_frac.sum(axis=1).reshape(-1, 1)

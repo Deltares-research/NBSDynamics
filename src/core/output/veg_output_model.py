@@ -210,8 +210,8 @@ class MapOutput(BaseOutput):
             _map_data["time"][i] = end_time
 
             def update_hydro_mor():
-                _map_data["max_tau"][-1, :] = veg.max_tau
-                _map_data["max_u"][-1, :] = veg.max_u
+                _map_data["max_tau"][i, :] = veg.max_tau
+                _map_data["max_u"][i, :] = veg.max_u
                 _map_data["max_wl"][-1, :] = veg.max_wl
                 _map_data["min_wl"][-1, :] = veg.min_wl
                 _map_data["bl"][-1, :] = veg.bl
