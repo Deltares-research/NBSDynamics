@@ -9,7 +9,6 @@ from src.core.vegetation.veg_lifestages import LifeStages
 
 class Veg_Mortality(ExtraModel):
     """Mortality"""
-    #constants: Constants = Constants()
 
     def __init__(self):
         super().__init__()

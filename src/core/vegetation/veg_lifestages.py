@@ -130,11 +130,16 @@ class LifeStages(ExtraModel):
             else:
                 self.winter = False
                 self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (self.dt_height[0] * growth_days)
+                self.veg_height[veg_frac == 0] = 0
 
             self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (self.dt_stemdia * growth_days)
+            self.stem_dia[veg_frac == 0] = 0
             self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + (self.dt_root * growth_days)
+            self.root_len[veg_frac == 0] = 0
             self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls-1]
+            self.stem_num[veg_frac == 0] = 0
             self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + self.constants.ets_duration
+            self.veg_age[veg_frac == 0] = 0
             self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
 
 

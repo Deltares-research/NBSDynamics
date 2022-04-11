@@ -7,7 +7,7 @@
             0.0,
             0.0
         ],
-        "fl_dr": 0.05,
+        "fl_dr": 0.005,
         "Maximum age": 20,
         "Number LifeStages": 2,
         "initial root length": 0.05,
@@ -78,7 +78,7 @@
             0.0,
             0.0
         ],
-        "fl_dr": 0.05,
+        "fl_dr": 0.005,
         "Maximum age": 1,
         "Number LifeStages": 1,
         "initial root length": 0.15,
@@ -149,7 +149,7 @@
             0.0,
             0.0
         ],
-        "fl_dr": 0.05,
+        "fl_dr": 0.005,
         "Maximum age": 20,
         "Number LifeStages": 2,
         "initial root length": 0.02,

@@ -31,7 +31,8 @@ class Vegetation(ExtraModel):
         self.constants = Constants(species=self.species)
 
         # other attributes.
-        self.total_cover: Optional[VegAttribute] = list()  # sum of fraction of area coverage in each cell (for all ages)
+        self.total_cover: Optional[
+            VegAttribute] = list()  # sum of fraction of area coverage in each cell (for all ages)
         self.initial = LifeStages(ls=0, constants=self.constants)
         self.juvenile = LifeStages(ls=1, constants=self.constants)
         self.mature = LifeStages(ls=2, constants=self.constants)
@@ -74,14 +75,14 @@ class Vegetation(ExtraModel):
     @property
     def total_cover(self):  # as input for DFM
         # take cover as sum of all the ages and life stages
-        #self.total_cover = self.juvenile.cover + self.mature.cover
+        # self.total_cover = self.juvenile.cover + self.mature.cover
         return self.juvenile.cover + self.mature.cover
 
     @property
     def veg_den(self):  # as input for DFM
         """stem density in number of stems per m2, according to area fraction of veg age"""
         return (self.juvenile.stem_num * self.juvenile.veg_frac).sum(axis=1) + (
-                    self.mature.stem_num * self.mature.veg_frac).sum(axis=1)
+                self.mature.stem_num * self.mature.veg_frac).sum(axis=1)
 
     @property
     def av_stemdia(self):  # as input for DFM
@@ -115,7 +116,7 @@ class Vegetation(ExtraModel):
         #     return (self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / self.mature.cover
         # else:
         return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1).reshape(-1, 1) / cover_j + (
-                    self.mature.veg_height * self.mature.veg_frac).sum(axis=1).reshape(-1, 1) / cover_m
+                self.mature.veg_height * self.mature.veg_frac).sum(axis=1).reshape(-1, 1) / cover_m
 
     # def duration_growth(self, constants):
     #     """duration of the growth period from start, end growth from Constants"""
@@ -130,7 +131,7 @@ class Vegetation(ExtraModel):
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
 
     def update_lifestages(self):
-
+        _reshape = RESHAPE()
         # take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
         if np.any(self.initial.veg_frac > 0):
             self.juvenile.veg_frac = np.column_stack((self.initial.veg_frac, self.juvenile.veg_frac))
@@ -140,27 +141,27 @@ class Vegetation(ExtraModel):
             self.juvenile.stem_num = np.column_stack((self.initial.stem_num, self.juvenile.stem_num))
             self.juvenile.veg_age = np.column_stack((self.initial.veg_age, self.juvenile.veg_age))
 
-            #empty initial arrays
+            # empty initial arrays
             self.initial.veg_frac = np.zeros(self.initial.veg_height.shape)
             self.initial.veg_height = np.zeros(self.initial.veg_frac.shape)
             self.initial.stem_dia = np.zeros(self.initial.veg_height.shape)
             self.initial.root_len = np.zeros(self.initial.veg_height.shape)
             self.initial.stem_num = np.zeros(self.initial.veg_height.shape)
-            self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, np.where(np.all(self.juvenile.veg_frac == 0, axis=0)==True), 1)
+            self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac,
+                                               np.where(np.all(self.juvenile.veg_frac == 0, axis=0) == True), 1)
             self.juvenile.veg_height = np.delete(self.juvenile.veg_height,
-                                               np.where(np.all(self.juvenile.veg_height == 0, axis=0)==True), 1)
+                                                 np.where(np.all(self.juvenile.veg_height == 0, axis=0) == True), 1)
             self.juvenile.veg_age = np.delete(self.juvenile.veg_age,
-                                               np.where(np.all(self.juvenile.stem_dia == 0, axis=0)==True), 1)
+                                                 np.where(np.all(self.juvenile.stem_dia == 0, axis=0) == True), 1)
             self.juvenile.stem_dia = np.delete(self.juvenile.stem_dia,
-                                               np.where(np.all(self.juvenile.stem_dia == 0, axis=0)==True), 1)
+                                               np.where(np.all(self.juvenile.stem_dia == 0, axis=0) == True), 1)
             self.juvenile.root_len = np.delete(self.juvenile.root_len,
                                                np.where(np.all(self.juvenile.root_len == 0, axis=0) == True), 1)
             self.juvenile.stem_num = np.delete(self.juvenile.stem_num,
-                                               np.where(np.all(self.juvenile.stem_num == 0, axis=0)==True), 1)
+                                               np.where(np.all(self.juvenile.stem_num == 0, axis=0) == True), 1)
             self.juvenile.cover = self.juvenile.veg_frac.sum(axis=1).reshape(-1, 1)
 
         if self.species == "Salicornia" and self.juvenile.winter == True:
-            _reshape = RESHAPE()
             self.juvenile.veg_frac = np.zeros(_reshape.space)
             self.juvenile.veg_frac = self.juvenile.veg_frac.reshape(len(self.juvenile.veg_frac), 1)
             self.juvenile.veg_height = np.zeros(self.juvenile.veg_frac.shape)
@@ -184,17 +185,18 @@ class Vegetation(ExtraModel):
             self.juvenile.stem_num = np.delete(self.juvenile.stem_num, -1, 1)
             self.juvenile.veg_age = np.delete(self.juvenile.veg_age, -1, 1)
             self.juvenile.cover = self.juvenile.veg_frac.sum(axis=1).reshape(-1, 1)
-            self.mature.veg_frac = np.delete(self.mature.veg_frac, np.where(np.all(self.mature.veg_frac == 0, axis=0)==True), 1)
+            self.mature.veg_frac = np.delete(self.mature.veg_frac,
+                                             np.where(np.all(self.mature.veg_frac == 0, axis=0) == True), 1)
             self.mature.veg_height = np.delete(self.mature.veg_height,
-                                               np.where(np.all(self.mature.veg_height == 0, axis=0)==True), 1)
+                                               np.where(np.all(self.mature.veg_height == 0, axis=0) == True), 1)
             self.mature.veg_age = np.delete(self.mature.veg_age,
-                                               np.where(np.all(self.mature.stem_dia == 0, axis=0)==True), 1)
+                                            np.where(np.all(self.mature.stem_dia == 0, axis=0) == True), 1)
             self.mature.stem_dia = np.delete(self.mature.stem_dia,
-                                               np.where(np.all(self.mature.stem_dia == 0, axis=0)==True), 1)
+                                             np.where(np.all(self.mature.stem_dia == 0, axis=0) == True), 1)
             self.mature.root_len = np.delete(self.mature.root_len,
-                                               np.where(np.all(self.mature.root_len == 0, axis=0) == True), 1)
+                                             np.where(np.all(self.mature.root_len == 0, axis=0) == True), 1)
             self.mature.stem_num = np.delete(self.mature.stem_num,
-                                               np.where(np.all(self.mature.stem_num == 0, axis=0)==True), 1)
+                                             np.where(np.all(self.mature.stem_num == 0, axis=0) == True), 1)
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
 
 
@@ -216,4 +218,4 @@ class Vegetation(ExtraModel):
             self.mature.veg_age = np.delete(self.mature.veg_age, -1, 1)
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
 
-            #what if only 1 life stage (e.g. salicornia?)
+            # what if only 1 life stage (e.g. salicornia?)

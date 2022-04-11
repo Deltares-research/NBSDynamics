@@ -13,7 +13,7 @@ import pandas as pd
 
 # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
 test_dir = Path(
-    r"C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase")
+    r"C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase6")
 # dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
 dll_repo = Path(r"C:\Users\dzimball\dimrdlldependencies")
 # dll_repo= Path (r"c:\Program Files (x86)\Deltares\Delft3D Flexible Mesh Suite HMWQ (2021.03)\plugins\DeltaShell.Dimr")
@@ -22,7 +22,7 @@ kernels_dir = dll_repo / "kernels" / "x64"
 # test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
 
 input_dir = test_dir / "input"
-species = "Salicornia"
+species = "Spartina anglica"
 
 sim_run = VegFlowFmSimulation(
     working_dir=test_dir,
@@ -34,7 +34,7 @@ sim_run = VegFlowFmSimulation(
         d3d_home=kernels_dir,
         dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
         # definition_file=test_case / "fm" / "shallow_wave.mdu",
-        definition_file=input_dir / "MinFiles" / "fm" /"test_case2.mdu",
+        definition_file=input_dir / "MinFiles" / "fm" /"test_case6.mdu",
 
     ),
     output=dict(
@@ -51,5 +51,5 @@ sim_run = VegFlowFmSimulation(
 
 # Run simulation.
 sim_run.initiate()
-sim_run.run(6)
+sim_run.run(2)
 sim_run.finalise()

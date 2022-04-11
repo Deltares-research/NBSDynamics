@@ -243,7 +243,6 @@ class BaseSimulation(BaseModel, ABC):
                         begin_date = end_date
                     end_date = begin_date + timedelta(days=round(365/self.constants.t_eco_year))
                     period = [begin_date + timedelta(n) for n in range(int((end_date - begin_date).days))]
-                    #period = int(period)## TODO convert period to integer!
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(
@@ -255,7 +254,7 @@ class BaseSimulation(BaseModel, ABC):
                         ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=11178 #every timestep
+                            self.veg, time_step=1000 #every timestep
                         )
 
                         # # environment
