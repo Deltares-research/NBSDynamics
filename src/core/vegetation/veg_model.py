@@ -130,6 +130,7 @@ class Vegetation(ExtraModel):
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
 
     def update_lifestages(self):
+
         # take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
         if np.any(self.initial.veg_frac > 0):
             self.juvenile.veg_frac = np.column_stack((self.initial.veg_frac, self.juvenile.veg_frac))
@@ -158,7 +159,17 @@ class Vegetation(ExtraModel):
                                                np.where(np.all(self.juvenile.stem_num == 0, axis=0)==True), 1)
             self.juvenile.cover = self.juvenile.veg_frac.sum(axis=1).reshape(-1, 1)
 
-        if np.any(self.juvenile.veg_age > (self.constants.maxYears_LS[0] * 365)):
+        if self.species == "Salicornia" and self.juvenile.winter == True:
+            _reshape = RESHAPE()
+            self.juvenile.veg_frac = np.zeros(_reshape.space)
+            self.juvenile.veg_frac = self.juvenile.veg_frac.reshape(len(self.juvenile.veg_frac), 1)
+            self.juvenile.veg_height = np.zeros(self.juvenile.veg_frac.shape)
+            self.juvenile.stem_dia = np.zeros(self.juvenile.veg_frac.shape)
+            self.juvenile.root_len = np.zeros(self.juvenile.veg_frac.shape)
+            self.juvenile.stem_num = np.zeros(self.juvenile.veg_frac.shape)
+            self.juvenile.cover = np.zeros(self.juvenile.veg_frac.shape)
+            self.juvenile.veg_age = np.zeros(self.juvenile.veg_frac.shape)
+        elif np.any(self.juvenile.veg_age > (self.constants.maxYears_LS[0] * 365)):
             self.mature.veg_frac = np.column_stack((self.juvenile.veg_frac[:, -1], self.mature.veg_frac))
             self.mature.veg_height = np.column_stack((self.juvenile.veg_height[:, -1], self.mature.veg_height))
             self.mature.stem_dia = np.column_stack((self.juvenile.stem_dia[:, -1], self.mature.stem_dia))
@@ -187,7 +198,7 @@ class Vegetation(ExtraModel):
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
 
 
-        if np.any(self.juvenile.veg_age > (self.constants.maxAge * 365)):
+        elif np.any(self.juvenile.veg_age > (self.constants.maxAge * 365)):
             self.juvenile.veg_frac = np.delete(self.juvenile.veg_frac, -1, 1)
             self.juvenile.veg_height = np.delete(self.juvenile.veg_height, -1, 1)
             self.juvenile.stem_dia = np.delete(self.juvenile.stem_dia, -1, 1)

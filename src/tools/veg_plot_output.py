@@ -26,12 +26,12 @@ veg_den = pd.DataFrame(data = veg_den)
 veg_height = hisfile.variables['height'][:]
 veg_height = pd.DataFrame(data = veg_height)
 
-plt.plot(time, veg_height[135][:])
+plt.plot(time, diaveg[52][:])
 plt.show()
 #
-plt.plot(time, veg_den[130][:])
-plt.show()
-#
+# plt.plot(time, veg_den[130][:])
+# plt.show()
+
 
 # mapfile = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase\output\VegModel_map.nc', 'r')
 # mapfile.close
@@ -43,23 +43,23 @@ plt.show()
 # veg_cover = mapfile.variables['cover'][:]
 # veg_cover = pd.DataFrame(data = veg_cover)
 # time = mapfile.variables['time'][:]
-# veg_height = mapfile.variables['height'][9 , :].reshape(-1,1)
+# veg_height = mapfile.variables['height'][9 , :].reshape(-1, 1)
 # # veg_height = pd.DataFrame(data = veg_height)
 # x = mapfile.variables['nmesh2d_x'][:]
 # x = pd.DataFrame(data = x)
 # y = mapfile.variables['nmesh2d_y'][:]
 # y = pd.DataFrame(data = y)
 # bl = mapfile.variables['bl'][-1, :].reshape(-1, 1)
-
-
+#
+#
 # plt.scatter(x,y, c=veg_den)
 # cbar= plt.colorbar()
 # plt.show()
-
-# plt.scatter(y,x, c=bl)
-# # cbar= plt.colorbar()
-# # plt.show()
-#
+# #
+# # plt.scatter(y,x, c=bl)
+# # # cbar= plt.colorbar()
+# # # plt.show()
+# #
 # plt.scatter(y,x, c=veg_height)
 # cbar= plt.colorbar()
 # plt.show()

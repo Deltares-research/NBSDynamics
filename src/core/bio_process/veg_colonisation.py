@@ -9,17 +9,13 @@ from src.core.hydrodynamics.delft3d import FlowFmModel
 class Colonization(ExtraModel):
     """
     Colonization
-    Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content
-
-    Colonization depends on ColMethod
+    Colonization depends on ColMethod (Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
     1. inundation (max, min water level, flooded only in max waterlevel: intertidal area)
     2. mud fraction in top layer: mud_frac>mud_colonization (NOT YET FULLY IMPLEMENTED!)
-
     """
 
     cir: Optional[np.ndarray] = None
     ma: Optional[np.ndarray] = None
-
 
     def __init__(self):
         super().__init__()

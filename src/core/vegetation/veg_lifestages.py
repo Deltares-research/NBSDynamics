@@ -25,6 +25,7 @@ class LifeStages(ExtraModel):
     dt_height: VegAttribute = list()
     dt_root: VegAttribute = list()
     dt_stemdia: VegAttribute = list()
+    winter: VegAttribute = False
 
 
     def __repr__(self):
@@ -122,10 +123,12 @@ class LifeStages(ExtraModel):
 
 
             if begin_date <= winter_start <= end_date:
+                self.winter = True
                 self.veg_height[veg_frac == 0] = 0 #delete vegetation which died
                 self.veg_height[self.constants.maxH_winter[self.ls - 1] < self.veg_height] = self.constants.maxH_winter[self.ls - 1] #change the height for all the vegetation which i biger than max_height_winter to max_height_winter
 
             else:
+                self.winter = False
                 self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (self.dt_height[0] * growth_days)
 
             self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (self.dt_stemdia * growth_days)
