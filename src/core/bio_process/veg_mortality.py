@@ -41,9 +41,9 @@ class Veg_Mortality(ExtraModel):
         self.uprooting(self, veg, constants)
         self.erosion_sedimentation(self, veg, ets)
 
-        veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_upr_j - self.fraction_dead_des_j - self.fraction_dead_flood_j - self.burial_scour_j #update fractions due to mortality
+        veg.juvenile.veg_frac = veg.juvenile.veg_frac - self.fraction_dead_flood_j - self.fraction_dead_des_j - self.fraction_dead_upr_j - self.burial_scour_j #update fractions due to mortality
         veg.juvenile.veg_frac[veg.juvenile.veg_frac < 0] = 0 #replace negative values with 0
-        veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_upr_m - self.fraction_dead_des_m - self.fraction_dead_flood_m - self.burial_scour_m  # update fractions due to mortality
+        veg.mature.veg_frac = veg.mature.veg_frac - self.fraction_dead_flood_m - self.fraction_dead_des_m - self.fraction_dead_upr_m - self.burial_scour_m  # update fractions due to mortality
         veg.mature.veg_frac[veg.mature.veg_frac < 0] = 0  # replace negative values with 0
 
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
@@ -62,8 +62,9 @@ class Veg_Mortality(ExtraModel):
 
         dry = drying_prev*dry #deleting all cells that have fallen wet during this ETS
         wet = flooding_prev*wet #deleting all cells that have fallen dry during this ETS
-        new_wet = np.where(flooding_prev.all() == 0 and flooding_current.all() > 0) #find cells that are newly wet during this ETS
-        new_dry = np.where(drying_prev.all() == 0 and drying_current.all() > 0) #find cells that are newly dry during this ETS
+
+        new_wet = np.where((flooding_prev == 0) & (flooding_current > 0)) #find cells that are newly wet during this ETS
+        new_dry = np.where((drying_prev == 0) & (drying_current > 0)) #find cells that are newly dry during this ETS
 
         wet_j = np.ones(veg.juvenile.veg_frac.shape) * wet.reshape(len(wet), 1)
             #np.repeat(wet.reshape(len(wet), 1), len(veg.juvenile.veg_frac[0]), axis=1)
@@ -110,7 +111,7 @@ class Veg_Mortality(ExtraModel):
         fl: matrix with flooded days
         """
         b = -th*sl
-        dmax = round((1-b)/sl,2) #no. of days when 100% is died off
+        dmax = round((1-b)/sl, 2) #no. of days when 100% is died off
         fct = (sl*fl+b)  #determines all mortality values over the grid
 
         out_fl = np.zeros(fl.shape)
