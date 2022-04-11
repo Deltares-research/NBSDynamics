@@ -255,7 +255,7 @@ class BaseSimulation(BaseModel, ABC):
                         ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=1000 #every timestep
+                            self.veg, time_step=11178 #every timestep
                         )
 
                         # # environment
