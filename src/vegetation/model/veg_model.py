@@ -9,7 +9,7 @@ import src
 from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
 from src.core.common import fpath_constants_file
-from src.core.common.constants_veg import Constants
+from src.vegetation.model.veg_constants import Constants
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
 from src.vegetation.model.veg_lifestages import LifeStages

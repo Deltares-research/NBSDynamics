@@ -8,8 +8,8 @@ Here the different paths need to be specified.
 An object of the class [VegFlowFmSimulation](../../reference/simulation/vegetation_simulation/#src.core.simulation.veg_delft3d_simulation) (which inherits from the BaseSimulation) is created. 
 Within the object, the vegetation species (in constants and vegetation) are required as an input. 
 Different species are defined through different constants. 
-In [Constants](../../reference/common/common/#src.core.common.constants_veg) a json file is called which contains the species specific vegetation parameters. 
-Additional time related constants (e.g. start time and ecological time steps) are defined in [Constants](../../src/core/common/common/#src.core.common.constants_veg) and can be changed manually there.  
+In [Constants](../../reference/common/common/#src.vegetation.model.veg_constants) a json file is called which contains the species specific vegetation parameters. 
+Additional time related constants (e.g. start time and ecological time steps) are defined in [Constants](../../src/core/common/common/#src.vegetation.model.veg_constants) and can be changed manually there.  
 Further species can be added by defining their specific parameters using [constants_json_create](../../src/core/common/common/#src.core.common.constants_json_create).
 
 With those parameters assigned to the object, the simulation is started by using the following methods (specified in the [BaseSimulation](../../reference/simulation/vegetation_simulation/#src.core.simulation.veg_base_simulation)):
@@ -22,11 +22,11 @@ With those parameters assigned to the object, the simulation is started by using
 
 * run
   * when calling the run method (sim_run.run()), the duration of the simulation needs to be specified (in years) (e.g. sim_run.run(5))
-  * if duration is not given, the duration specified in the [Constants](../../reference/common/common/#src.core.common.constants_veg) class will be used 
-  * the start date is set to the date specified in [Constants](../../reference/common/common/#src.core.common.constants_veg)
+  * if duration is not given, the duration specified in the [Constants](../../reference/common/common/#src.vegetation.model.veg_constants) class will be used 
+  * the start date is set to the date specified in [Constants](../../reference/common/common/#src.vegetation.model.veg_constants)
   * end date = start date + duration 
   * a loop is started over the duration of the simulation (years)
-  * inside of that loop another loop iterates over the number of ecological time steps per year (coupling times per year) specified in [Constants](../../reference/common/common/#src.core.common.constants_veg)
+  * inside of that loop another loop iterates over the number of ecological time steps per year (coupling times per year) specified in [Constants](../../reference/common/common/#src.vegetation.model.veg_constants)
   * to get the hydro and morphological variables from Delft-FM, the hydro-morphodynamics are retrieved every day.
     * the coupling and retrieving of the values is specified in the class [Delft3D](.../../reference/hydrodynamics/hydromodels/#delft3d)
   * aggregated values are then created in the class [Hydro_Morphodynamics](../../reference/bio_process/vegetation_processes/#src.core.bio_process.veg_hydro_morphodynamics) and retrieved via the method 'get_hydromorph_values'

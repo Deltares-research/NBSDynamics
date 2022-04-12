@@ -3,8 +3,7 @@ from typing import Optional
 import numpy as np
 
 from src.core.base_model import ExtraModel
-from src.core.common.constants_veg import Constants
-
+from src.vegetation.model.veg_constants import Constants
 from src.vegetation.model.veg_model import Vegetation
 
 

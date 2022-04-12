@@ -7,7 +7,7 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.common.constants_veg import Constants as VegConstants
+from src.vegetation.model.veg_constants import Constants as VegConstants
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,

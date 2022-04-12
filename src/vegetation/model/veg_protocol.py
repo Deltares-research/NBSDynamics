@@ -2,7 +2,7 @@ from typing import Dict, Optional, Protocol, Union, runtime_checkable
 
 import numpy as np
 
-from src.core.common.constants_veg import Constants
+from src.vegetation.model.veg_constants import Constants
 
 
 @runtime_checkable

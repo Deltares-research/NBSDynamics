@@ -14,7 +14,7 @@ from src.core.bio_process.veg_colonisation import Colonization
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.bio_process.veg_mortality import Veg_Mortality
 from src.vegetation.model.veg_model import Vegetation
-from src.core.common.constants_veg import Constants
+from src.vegetation.model.veg_constants import Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.hydrodynamics.factory import HydrodynamicsFactory

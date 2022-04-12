@@ -13,7 +13,7 @@
 ::: src.core.common.singletons
 
 ## Vegetation Constants
-:: src.core.common.constants_veg
+:: src.vegetation.model.veg_constants
 
 ## Create json file
 :: src.core.common.constants_json_create
