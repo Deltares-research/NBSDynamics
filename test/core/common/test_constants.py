@@ -24,11 +24,11 @@ class TestCoralConstants:
         ],
     )
     def test_validate_scientific_int_value(self, value: Any):
-        assert Constants.validate_scientific_int_value(value) == 1000000
+        assert CoralConstants.validate_scientific_int_value(value) == 1000000
 
     def test_validate_scientific_int_raises(self):
         with pytest.raises(NotImplementedError) as e_err:
-            Constants.validate_scientific_int_value(None)
+            CoralConstants.validate_scientific_int_value(None)
         assert str(e_err.value) == f"No converter available for {type(None)}."
 
     @pytest.mark.parametrize(
@@ -67,12 +67,12 @@ class TestCoralConstants:
         ],
     )
     def test_check_processes(self, input_dict: dict, output_dict: dict):
-        result_dict = Constants.check_processes(input_dict)
+        result_dict = CoralConstants.check_processes(input_dict)
         assert result_dict == output_dict
 
     def test_correct_values(self):
         # Define test data.
-        test_CoralConstants = CoralConstants()
+        test_constants = CoralConstants()
         test_constants.theta_max = 0.42
         test_constants.prop_space = 0.24
 

@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Optional
 
+from src.core.common.coral_constants import CoralConstants
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
@@ -13,6 +14,7 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
     """
 
     output: Optional[CoralOutputWrapper]
+    constants: CoralConstants = CoralConstants()
 
     def configure_hydrodynamics(self):
         """

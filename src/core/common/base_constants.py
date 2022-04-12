@@ -11,6 +11,12 @@ class BaseConstants(BaseModel, abc.ABC):
     # Input file
     input_file: Optional[Path]
 
+    def correct_values(self):
+        """
+        Corrects values that require extra operations.
+        """
+        pass
+
     @classmethod
     def from_input_file(cls, input_file: Path):
         """

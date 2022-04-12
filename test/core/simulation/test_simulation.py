@@ -5,6 +5,7 @@ from typing import Any, Callable, Optional, Union
 import pytest
 
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.base_constants import BaseConstants
 from src.core.common.coral_constants import CoralConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
@@ -91,11 +92,11 @@ class TestBaseSimulation:
             pytest.param(constants_file_case.as_posix(), id="As String"),
         ],
     )
-    def test_validate_constants_with_valid_values(
-        self, valid_value: Union[CoralConstants, str, Path]
+    def test_validate_coral_constants_with_valid_values(
+        self, valid_value: Union[BaseConstants, str, Path]
     ):
         return_value = BaseSimulation.validate_constants(valid_value)
-        assert isinstance(return_value, CoralConstants)
+        assert isinstance(return_value, BaseConstants)
 
     def test_validate_constants_with_not_valid_value(self):
         with pytest.raises(NotImplementedError) as e_err:
