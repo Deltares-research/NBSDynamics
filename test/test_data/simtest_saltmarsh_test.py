@@ -22,7 +22,7 @@ kernels_dir = dll_repo / "kernels" / "x64"
 # test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
 
 input_dir = test_dir / "input"
-species = "Spartina anglica"
+species = "Salicornia"
 
 sim_run = VegFlowFmSimulation(
     working_dir=test_dir,
@@ -51,5 +51,5 @@ sim_run = VegFlowFmSimulation(
 
 # Run simulation.
 sim_run.initiate()
-sim_run.run(2)
+sim_run.run(10)
 sim_run.finalise()
