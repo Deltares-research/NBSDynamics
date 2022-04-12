@@ -1,9 +1,10 @@
 from abc import ABC
 
+import pandas as pd
+
 from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.veg_output_wrapper import VegOutputWrapper
 from src.core.simulation.veg_base_simulation import BaseSimulation
-import pandas as pd
 
 
 class _VegDelft3DSimulation(BaseSimulation, ABC):

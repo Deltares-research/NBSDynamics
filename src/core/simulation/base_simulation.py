@@ -242,7 +242,6 @@ class BaseSimulation(BaseModel, ABC):
 
         self.output.initialize(self.coral)
 
-
     def run(self, duration: Optional[int] = None):
         """Run simulation.
 

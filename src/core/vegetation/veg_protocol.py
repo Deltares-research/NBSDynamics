@@ -4,6 +4,7 @@ import numpy as np
 
 from src.core.common.constants_veg import Constants
 
+
 @runtime_checkable
 class VegProtocol(Protocol):
     """
@@ -23,7 +24,9 @@ class VegProtocol(Protocol):
         """
         raise NotImplementedError
 
-    def update_vegetation_characteristics_growth(self, veg_height, stem_dia, veg_root, m_height, m_stemdia, m_root):
+    def update_vegetation_characteristics_growth(
+        self, veg_height, stem_dia, veg_root, m_height, m_stemdia, m_root
+    ):
         """
         Initiate the morphology based on the on set of morphological dimensions and the coral cover. This method
         contains a catch that it can only be used to initiate the morphology, and cannot overwrite existing spatial
@@ -49,6 +52,3 @@ class VegProtocol(Protocol):
             NotImplementedError: When the model does not implement its own definition.
         """
         raise NotImplementedError
-
-
-    

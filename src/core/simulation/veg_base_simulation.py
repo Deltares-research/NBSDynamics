@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -6,20 +7,19 @@ import numpy as np
 import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
-from datetime import timedelta
 
 from src.core import RESHAPE
 from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
-from src.core.bio_process.veg_mortality import Veg_Mortality
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
+from src.core.bio_process.veg_mortality import Veg_Mortality
 from src.core.common.constants_veg import Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
-from src.core.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.veg_output_wrapper import VegOutputWrapper
+from src.core.vegetation.veg_model import Vegetation
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -31,13 +31,13 @@ class BaseSimulation(BaseModel, ABC):
 
     mode: str
 
-    #Directories related to working dir
+    # Directories related to working dir
     working_dir: Optional[Path] = Path.cwd()
     figures_dir: Path = working_dir / "figures"
     output_dir: Path = working_dir / "output"
     input_dir: Path = working_dir / "input"
 
-    #Other fields.
+    # Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     constants: Optional[Constants]
     output: Optional[VegOutputWrapper]
@@ -66,10 +66,11 @@ class BaseSimulation(BaseModel, ABC):
             return Constants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-
     @validator("veg", pre=True)
     @classmethod
-    def validate_veg(cls, field_value: Union[dict, Vegetation], values: dict) -> Vegetation:
+    def validate_veg(
+        cls, field_value: Union[dict, Vegetation], values: dict
+    ) -> Vegetation:
         """
         Initializes vegetation in case a dictionary is provided. Ensuring the constants are also
         given to the object.
@@ -97,11 +98,10 @@ class BaseSimulation(BaseModel, ABC):
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-
     @validator("hydrodynamics", pre=True, always=True)
     @classmethod
     def validate_hydrodynamics_present(
-            cls, field_values: Union[dict, HydrodynamicProtocol], values: dict
+        cls, field_values: Union[dict, HydrodynamicProtocol], values: dict
     ) -> HydrodynamicProtocol:
         """
         Validator to transform the given dictionary into the corresponding hydrodynamic model.
@@ -157,7 +157,6 @@ class BaseSimulation(BaseModel, ABC):
             if not value_dir.is_dir():
                 value_dir.mkdir(parents=True)
 
-
     def initiate(
         self,
         x_range: Optional[tuple] = None,
@@ -188,7 +187,7 @@ class BaseSimulation(BaseModel, ABC):
         xy = self.hydrodynamics.xy_coordinates
 
         ##TODO define cover as a possible input variable!
-        #cover = np.zeros(RESHAPE().space)
+        # cover = np.zeros(RESHAPE().space)
         # if x_range is not None:
         #     x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
         #     x_max = x_range[1] if x_range[1] is not None else max(xy[:][0])
@@ -199,7 +198,6 @@ class BaseSimulation(BaseModel, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-
         self.veg.initial.initiate_vegetation_characteristics()
         self.veg.juvenile.initiate_vegetation_characteristics()
         self.veg.mature.initiate_vegetation_characteristics()
@@ -208,8 +206,6 @@ class BaseSimulation(BaseModel, ABC):
             self.output.initialize(self.veg)
         else:
             print("WARNING: No output defined, so none exported.")
-
-
 
         self.output.initialize(self.veg)
 
@@ -224,37 +220,49 @@ class BaseSimulation(BaseModel, ABC):
         """
         # auto-set duration based on constants value (provided or default)
         if duration is None:
-            duration = int(
-                self.constants.sim_duration
-            )
+            duration = int(self.constants.sim_duration)
         start_date = pd.to_datetime(self.constants.start_date)
         years = range(
             int(start_date.year),
             int(start_date.year + duration),
-        )   # takes the starting year from the start date defined in the Constants class.
+        )  # takes the starting year from the start date defined in the Constants class.
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 current_year = years[i]
                 for ets in range(0, self.constants.t_eco_year):
                     if ets == 0 and i == 0:
-                        begin_date = pd.Timestamp(year=current_year,  month=start_date.month, day=start_date.day)
+                        begin_date = pd.Timestamp(
+                            year=current_year,
+                            month=start_date.month,
+                            day=start_date.day,
+                        )
                     else:
                         begin_date = end_date
-                    end_date = begin_date + timedelta(days=round(365/self.constants.t_eco_year))
-                    period = [begin_date + timedelta(n) for n in range(int((end_date - begin_date).days))]
+                    end_date = begin_date + timedelta(
+                        days=round(365 / self.constants.t_eco_year)
+                    )
+                    period = [
+                        begin_date + timedelta(n)
+                        for n in range(int((end_date - begin_date).days))
+                    ]
 
                     # # set dimensions (i.e. update time-dimension)
-                    RESHAPE().time = len(
-                        pd.DataFrame(period)
-                     )
+                    RESHAPE().time = len(pd.DataFrame(period))
 
-                    for ts in range(0, len(period)): #if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
+                    for ts in range(
+                        0, len(period)
+                    ):  # if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
                         ## TODO what is the unit of the time_step?
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        cur_tau, cur_vel, cur_wl, bed_level = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=10800 #every timestep
+                        (
+                            cur_tau,
+                            cur_vel,
+                            cur_wl,
+                            bed_level,
+                        ) = self.hydrodynamics.update_hydromorphodynamics(
+                            self.veg, time_step=10800  # every timestep
                         )
 
                         # # environment
@@ -266,7 +274,7 @@ class BaseSimulation(BaseModel, ABC):
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
                             ts=ts,
-                            veg=self.veg
+                            veg=self.veg,
                         )
                     hydro_mor.get_hydromorph_values(self.veg)
 
@@ -274,18 +282,32 @@ class BaseSimulation(BaseModel, ABC):
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality and growth update
                     mort = Veg_Mortality
-                    mort.update(mort, self.veg, self.constants, ets, begin_date, end_date, period)
+                    mort.update(
+                        mort,
+                        self.veg,
+                        self.constants,
+                        ets,
+                        begin_date,
+                        end_date,
+                        period,
+                    )
 
-                    colstart = pd.to_datetime(self.constants.ColStart).replace(year=begin_date.year)
-                    colend = pd.to_datetime(self.constants.ColEnd).replace(year=end_date.year)
+                    colstart = pd.to_datetime(self.constants.ColStart).replace(
+                        year=begin_date.year
+                    )
+                    colend = pd.to_datetime(self.constants.ColEnd).replace(
+                        year=end_date.year
+                    )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:
-                    if any(colstart <= pd.to_datetime(period)) and any(pd.to_datetime(period) <= colend):
-                            progress.set_postfix(inner_loop="vegetation colonization")
-                            col = Colonization()
-                            col.update(self.veg, constants=self.constants)
+                    if any(colstart <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend
+                    ):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(self.veg, constants=self.constants)
 
-                    #update lifestages, initial to juvenile and juvenile to mature
+                    # update lifestages, initial to juvenile and juvenile to mature
                     self.veg.update_lifestages()
 
                     # # export results
@@ -293,7 +315,13 @@ class BaseSimulation(BaseModel, ABC):
                     ## TODO check this when finishing the output files!
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
-                    self.output.map_output.update(self.veg, int(period[-1].strftime("%Y%m%d")), ets, i, self.constants) #change to period we are in current ets
+                    self.output.map_output.update(
+                        self.veg,
+                        int(period[-1].strftime("%Y%m%d")),
+                        ets,
+                        i,
+                        self.constants,
+                    )  # change to period we are in current ets
                     # his-file
                     self.output.his_output.update(
                         self.veg,
