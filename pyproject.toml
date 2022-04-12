@@ -50,7 +50,7 @@ version_files = [
     "pyproject.toml:version"
 ]
 
-[tool.commitizen.custommize]
+[tool.commitizen.customize]
 bump_pattern = "^(break|new|fix|hotfix|refactor|docs)"
 bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH", "refactor"="PATCH", "docs" = "PATCH"}
 
