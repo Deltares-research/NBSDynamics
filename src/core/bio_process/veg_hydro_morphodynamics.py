@@ -1,19 +1,12 @@
 import numpy as np
+
 from src.core.vegetation.veg_model import Vegetation
 
 
 class Hydro_Morphodynamics:
     """hydromorphodynamic environment"""
 
-    def __init__(
-            self,
-            tau_cur,
-            u_cur,
-            wl_cur,
-            bl_cur,
-            ts,
-            veg: Vegetation
-    ):
+    def __init__(self, tau_cur, u_cur, wl_cur, bl_cur, ts, veg: Vegetation):
 
         self.tau = tau_cur
         self.u = u_cur
@@ -52,4 +45,3 @@ class Hydro_Morphodynamics:
         veg.min_wl_prev = veg.min_wl
         veg.bl_prev = veg.bl
         veg.wl_prev = veg.wl_ts
-

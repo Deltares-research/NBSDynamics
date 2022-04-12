@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from src.core.vegetation.veg_model import Vegetation
 from src.core.output.veg_output_model import ModelParameters
+from src.core.vegetation.veg_model import Vegetation
 
 
 @runtime_checkable
