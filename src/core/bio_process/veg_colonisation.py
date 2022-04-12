@@ -1,9 +1,10 @@
 from typing import Optional
+
 import numpy as np
+
 from src.core.base_model import ExtraModel
 from src.core.common.constants_veg import Constants
 from src.core.biota.vegetation.veg_model import Vegetation
-from src.core.hydrodynamics.delft3d import FlowFmModel
 
 
 class Colonization(ExtraModel):

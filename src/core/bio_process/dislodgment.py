@@ -7,7 +7,6 @@ from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly
 from src.core.biota.coral.coral_model import Coral
 
-
 class Dislodgement(ExtraModel):
     """Dislodgement due to storm conditions."""
 

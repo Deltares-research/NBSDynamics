@@ -1,3 +1,4 @@
+import datetime as dt
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
@@ -9,7 +10,6 @@ from pandas import DataFrame
 from src.core.base_model import BaseModel
 from src.core.common.space_time import DataReshape
 from src.core.biota.vegetation.veg_model import Vegetation
-import datetime as dt
 
 
 class ModelParameters(BaseModel):

@@ -1,12 +1,13 @@
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
+
 import numpy as np
 import pandas as pd
 from pydantic import root_validator, validator
+
 from src.core.base_model import BaseModel
-from datetime import datetime
-from datetime import timedelta
 from src.core.common import fpath_constants_file
 
 
@@ -18,7 +19,7 @@ class Constants(BaseModel):
     # Processes
     warn_proc: bool = False
     # User - Define time - scales
-    t_eco_year: int = 24 # number ecological time - steps per year(meaning couplings)
+    t_eco_year: int = 24  # number ecological time - steps per year(meaning couplings)
     ## TODO check with MorFac, what years is this then?
     sim_duration: float = 30  # number of morphological years of entire simulation
     start_date: str = "2022-01-01"  # Start date of the simulation
@@ -33,6 +34,7 @@ class Constants(BaseModel):
         super().__init__()
         self.species = species
         self.get_constants(self.species)
+
     ColStart: str = None
     ColEnd: str = None
     random: int = None
@@ -61,38 +63,37 @@ class Constants(BaseModel):
     vel_slope: float = None
     maxH_winter: float = None
 
-
     def get_constants(self, species):
         # if species_1 is not None and species_2 is None:
         with open(fpath_constants_file) as f:
             constants_dict = json.load(f)
-            self.ColStart = constants_dict[species]['ColStart']
-            self.ColEnd = constants_dict[species]['ColEnd']
-            self.random = constants_dict[species]['random']
-            self.mud_col = constants_dict[species]['mud_colonization']
-            self.fl_dr = constants_dict[species]['fl_dr']
-            self.maxAge = constants_dict[species]['Maximum age']
-            self.num_ls = constants_dict[species]['Number LifeStages']
-            self.iniRoot = constants_dict[species]['initial root length']
-            self.iniShoot = constants_dict[species]['initial shoot length']
-            self.iniDia = constants_dict[species]['initial diameter']
-            self.growth_start = constants_dict[species]['start growth period']
-            self.growth_end = constants_dict[species]['end growth period']
-            self.winter_start = constants_dict[species]['start winter period']
-            self.maxGrowth_H = constants_dict[species]['maximum plant height']
-            self.maxDia = constants_dict[species]['maximum diameter']
-            self.maxRoot = constants_dict[species]['maximum root length']
-            self.maxYears_LS = constants_dict[species]['maximum years in LifeStage']
-            self.num_stem = constants_dict[species]['numStem']
-            self.iniCol_frac = constants_dict[species]['iniCol_frac']
-            self.Cd = constants_dict[species]['Cd']
-            self.desMort_thres = constants_dict[species]['desMort_thres']
-            self.desMort_slope = constants_dict[species]['desMort_slope']
-            self.floMort_thres = constants_dict[species]['floMort_thres']
-            self.floMort_slope = constants_dict[species]['floMort_slope']
-            self.vel_thres = constants_dict[species]['vel_thres']
-            self.vel_slope = constants_dict[species]['vel_slope']
-            self.maxH_winter = constants_dict[species]['maxH_winter']
+            self.ColStart = constants_dict[species]["ColStart"]
+            self.ColEnd = constants_dict[species]["ColEnd"]
+            self.random = constants_dict[species]["random"]
+            self.mud_col = constants_dict[species]["mud_colonization"]
+            self.fl_dr = constants_dict[species]["fl_dr"]
+            self.maxAge = constants_dict[species]["Maximum age"]
+            self.num_ls = constants_dict[species]["Number LifeStages"]
+            self.iniRoot = constants_dict[species]["initial root length"]
+            self.iniShoot = constants_dict[species]["initial shoot length"]
+            self.iniDia = constants_dict[species]["initial diameter"]
+            self.growth_start = constants_dict[species]["start growth period"]
+            self.growth_end = constants_dict[species]["end growth period"]
+            self.winter_start = constants_dict[species]["start winter period"]
+            self.maxGrowth_H = constants_dict[species]["maximum plant height"]
+            self.maxDia = constants_dict[species]["maximum diameter"]
+            self.maxRoot = constants_dict[species]["maximum root length"]
+            self.maxYears_LS = constants_dict[species]["maximum years in LifeStage"]
+            self.num_stem = constants_dict[species]["numStem"]
+            self.iniCol_frac = constants_dict[species]["iniCol_frac"]
+            self.Cd = constants_dict[species]["Cd"]
+            self.desMort_thres = constants_dict[species]["desMort_thres"]
+            self.desMort_slope = constants_dict[species]["desMort_slope"]
+            self.floMort_thres = constants_dict[species]["floMort_thres"]
+            self.floMort_slope = constants_dict[species]["floMort_slope"]
+            self.vel_thres = constants_dict[species]["vel_thres"]
+            self.vel_slope = constants_dict[species]["vel_slope"]
+            self.maxH_winter = constants_dict[species]["maxH_winter"]
 
     @classmethod
     def from_input_file(cls, input_file: Path):

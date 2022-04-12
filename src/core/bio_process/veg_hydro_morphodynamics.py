@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.core.biota.vegetation.veg_model import Vegetation
 
 

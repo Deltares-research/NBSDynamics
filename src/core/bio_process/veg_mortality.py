@@ -1,6 +1,7 @@
-from typing import Optional
 import numpy as np
+
 from src.core.base_model import ExtraModel
+from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.common.constants_veg import Constants
 from src.core.biota.vegetation.veg_model import Vegetation
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
