@@ -20,6 +20,7 @@ from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.biota.coral.coral_model import Coral
 from src.core.common.base_constants import BaseConstants
+from src.core.common.coral_constants import CoralConstants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
@@ -71,7 +72,7 @@ class BaseSimulation(BaseModel, ABC):
         if isinstance(field_value, str):
             field_value = Path(field_value)
         if isinstance(field_value, Path):
-            return BaseConstants.from_input_file(field_value)
+            return CoralConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @validator("coral", pre=True)
