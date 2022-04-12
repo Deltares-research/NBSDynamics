@@ -1,5 +1,6 @@
 """
 coral_model - utils
+veg_model - utils
 
 @author: Gijs G. Hendrickx
 @contributor: Peter M.J. Herman
@@ -12,7 +13,7 @@ import numpy as np
 from pandas import DataFrame
 
 from src.core.coral.coral_only import CoralOnly
-
+from src.core.vegetation.veg_only import VegOnly
 
 class SpaceTime:
     """Spacetime-object, which validates the definition of the spacetime dimensions."""
@@ -28,6 +29,7 @@ class SpaceTime:
             self.spacetime = spacetime
 
         self.set_coral_only(self.spacetime)
+        self.set_veg_only(self.spacetime)
 
     def __repr__(self):
         """Development representation."""
@@ -67,6 +69,7 @@ class SpaceTime:
 
         self.__spacetime = tuple(space_time)
         self.set_coral_only(tuple(space_time))
+        self.set_veg_only(tuple(space_time))
 
     @property
     def space(self) -> int:
@@ -109,6 +112,13 @@ class SpaceTime:
         """
         CoralOnly.spacetime = spacetime
 
+    def set_veg_only(self, spacetime: Tuple):
+        """Automatically set the spacetime dimensions for the VegOnly-class.
+
+        :param spacetime: spacetime dimension
+        :type spacetime: tuple
+        """
+        VegOnly.spacetime = spacetime
 
 class DataReshape(SpaceTime):
     """Reshape data to create a spacetime matrix."""

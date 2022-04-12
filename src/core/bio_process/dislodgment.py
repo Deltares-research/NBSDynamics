@@ -8,6 +8,7 @@ from src.core.common.space_time import CoralOnly
 from src.core.coral.coral_model import Coral
 
 
+
 class Dislodgement(ExtraModel):
     """Dislodgement due to storm conditions."""
 
@@ -28,7 +29,7 @@ class Dislodgement(ExtraModel):
         # # partial dislodgement
         Dislodgement.partial_dislodgement(self, coral, survival_coefficient)
         # # update
-        # ulation states
+        # population states
         for s in range(4):
             coral.p0[:, s] *= self.survival
         # morphology

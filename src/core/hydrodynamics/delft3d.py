@@ -12,6 +12,7 @@ from pydantic.class_validators import root_validator
 
 from src.core.base_model import ExtraModel
 from src.core.coral.coral_model import Coral
+from src.core.vegetation.veg_model import Vegetation
 
 faulthandler.enable()
 
@@ -104,6 +105,17 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", coral.dc_rep)
         self.set_variable("stemheight", coral.hc)
 
+    def set_vegetation(self, veg: Vegetation):
+        """Set vegetation dimensions to Delft3D-model.
+
+        :param veg: vegetation
+        :type veg: Vegetation
+        """
+        self.set_variable("rnveg", veg.veg_den)  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+        self.set_variable("diaveg", veg.av_stemdia)  # [m] 3D plant diameter, 2D part is basis input (m)
+        self.set_variable("stemheight", veg.av_height)  # [m] 2D plant heights (m)
+
+
     def get_mean_hydrodynamics(self):
         """Get hydrodynamic results; mean values."""
         if self.time_step is None:
@@ -121,6 +133,34 @@ class Delft3D(ExtraModel, abc.ABC):
         wave_vel = self.get_variable("Uorb")[range(self.space)]
         wave_per = self.get_variable("twav")[range(self.space)]
         return current_vel, wave_vel, wave_per
+
+    def get_hydromorphodynamics(self):
+        """Get hydrodynamic results; max. values. And minimum in the future"""
+        # TODO Add the minimum values when it is implemented in the model as a variable
+        max_tau = self.get_variable("is_maxvalsnd")[range(self.space), 0]
+        max_vel = self.get_variable("is_maxvalsnd")[range(self.space), 1]
+        max_wl = self.get_variable("is_maxvalsnd")[range(self.space), 2]
+        bed_level = self.get_variable('bl')
+
+        return max_tau, max_wl, max_vel, bed_level
+
+    def get_current_hydromorphodynamics(self, time_step): # only needed as long as we cannot get minval from the wrapper
+        """Get hydrodynamic results; max. values. And minimum in the future"""
+        self.time_step = time_step
+        bed_level = self.get_variable('bl')[range(self.space)]
+        #bed_level = np.delete(bed_level, np.where(bed_level <= -5))
+        # cur_tau = self.get_variable('taus')
+        # cur_vel = self.get_variable('u1')
+        # cur1_vel = self.get_variable('ucx')
+        # cur2_vel = self.get_variable('ucy')
+        # cur_wl = self.get_variable('s1')
+        dt_int = self.get_variable('is_dtint')
+        cur_tau = self.get_variable("is_sumvalsnd")[range(self.space), 0]/ self.time_step
+        cur_vel = self.get_variable("is_sumvalsnd")[range(self.space), 1]/ self.time_step
+        cur_wl = self.get_variable("is_sumvalsnd")[range(self.space), 2]/ self.time_step
+
+        return cur_tau, cur_wl, cur_vel, bed_level
+
 
     @abstractmethod
     def configure_model_wrapper(self):
@@ -198,11 +238,22 @@ class Delft3D(ExtraModel, abc.ABC):
             if stormcat > 0
             else self.get_mean_hydrodynamics()
         )
+## TODO input timestep is in days! what is the unit here?
+    def update_hydromorphodynamics(self, veg, time_step):
+        """Update the Delft3D-model."""
+        self.time_step = time_step
+
+        self.reset_counters()
+        self.set_vegetation(veg)
+        self.model_wrapper.update(self.time_step)
+
+        return self.get_current_hydromorphodynamics(time_step=self.time_step)
+
 
     def finalise(self):
         """Finalize the working model."""
         self.model_wrapper.finalize()
-        self.cleanup_environment_variables()
+        #self.cleanup_environment_variables()
 
 
 class FlowFmModel(Delft3D):
