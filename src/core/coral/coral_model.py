@@ -5,13 +5,14 @@ from pydantic import validator
 
 from src.core import RESHAPE
 from src.core.base_model import ExtraModel
+from src.core.biota.biota_model import Biota
 from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
 from src.core.coral.coral_only import CoralOnly
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
-class Coral(ExtraModel):
+class Coral(Biota):
 
     """
     Implements the `CoralProtocol`.

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from src.core.coral.coral_model import Coral
+from src.core.biota.biota_model import Biota
 from src.core.output.output_model import ModelParameters
 
 
@@ -50,24 +50,24 @@ class OutputProtocol(Protocol):
         """
         raise NotImplementedError
 
-    def initialize(self, coral: Coral):
+    def initialize(self, biota: Biota):
         """
-        Initializes an output model with the given coral input.
+        Initializes an output model with the given biota input.
 
         Args:
-            coral (Coral): Coral input model.
+            biota (Biota): Biota input model.
 
         Raises:
             NotImplementedError: When the model does not implement its own definition.
         """
         raise NotImplementedError
 
-    def update(self, coral: Coral, year: int):
+    def update(self, biota: Biota, year: int):
         """
-        Updates the output model with the given coral and year.
+        Updates the output model with the given biota and year.
 
         Args:
-            coral (Coral): Coral input model.
+            biota (Biota): Coral input model.
             year (int): Current calculation year.
 
         Raises:
