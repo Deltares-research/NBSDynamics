@@ -6,9 +6,9 @@ import numpy as np
 from pydantic.class_validators import root_validator
 
 from src.core.base_model import BaseModel
-from src.core.vegetation.veg_model import Vegetation
-from src.core.output.veg_output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
+from src.core.output.veg_output_model import HisOutput, MapOutput
+from src.core.vegetation.veg_model import Vegetation
 
 
 class VegOutputWrapper(BaseModel):
@@ -74,8 +74,8 @@ class VegOutputWrapper(BaseModel):
             if out_model is None:
                 return False
             return (
-                    out_model.output_params is not None
-                    and out_model.output_filepath.exists()
+                out_model.output_params is not None
+                and out_model.output_filepath.exists()
             )
 
         return output_model_defined(self.map_output) or output_model_defined(
@@ -84,7 +84,7 @@ class VegOutputWrapper(BaseModel):
 
     @staticmethod
     def get_xy_stations(
-            xy_coordinates: np.ndarray, outpoint: np.ndarray
+        xy_coordinates: np.ndarray, outpoint: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Determine space indices based on the (x,y)-coordinates of the stations.
@@ -127,4 +127,3 @@ class VegOutputWrapper(BaseModel):
         # Initialize output models.
         self.his_output.initialize(veg_model)
         self.map_output.initialize()
-

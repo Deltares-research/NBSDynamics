@@ -12,6 +12,7 @@ from src.core.coral.coral_only import CoralOnly
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
+
 class Coral(Biota):
 
     """
