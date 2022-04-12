@@ -6,15 +6,15 @@ import numpy as np
 from pydantic.class_validators import root_validator
 
 from src.core.base_model import BaseModel
-from src.core.coral.coral_model import Coral
+from src.core.biota.coral.coral_model import Coral
 from src.core.output.output_model import HisOutput, MapOutput
 from src.core.output.output_protocol import OutputProtocol
 
 
-class OutputWrapper(BaseModel):
+class BaseOutputWrapper(BaseModel):
     """
     Output files based on predefined output content.
-    Generate output files of CoralModel simulation. Output files are formatted as NetCDF4-files.
+    Generate output files of Biota model(s) simulation. Output files are formatted as NetCDF4-files.
     """
 
     output_dir: Path = Path.cwd() / "output"  # directory to write the output to

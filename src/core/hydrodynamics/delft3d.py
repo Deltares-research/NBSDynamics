@@ -11,8 +11,8 @@ from bmi.wrapper import BMIWrapper
 from pydantic.class_validators import root_validator
 
 from src.core.base_model import ExtraModel
-from src.core.coral.coral_model import Coral
-from src.core.vegetation.veg_model import Vegetation
+from src.core.biota.vegetation.veg_model import Vegetation
+from src.core.biota.coral.coral_model import Coral
 
 faulthandler.enable()
 

@@ -14,7 +14,7 @@ import matplotlib
 import numpy as np
 from netCDF4 import Dataset
 
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.coral_output_wrapper import CoralOutputWrapper
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:
@@ -126,7 +126,7 @@ class OutputHis(_BaseOutputPlot):
             self._plot_nc_variables(nc.variables, _subplot_hisfile)
 
 
-def plot_output(output_wrapper: OutputWrapper):
+def plot_output(output_wrapper: CoralOutputWrapper):
     """
     Plots the map and his files from an output model.
 
@@ -136,7 +136,7 @@ def plot_output(output_wrapper: OutputWrapper):
     Raises:
         ValueError: When no input argument has been provided.
     """
-    if not isinstance(output_wrapper, OutputWrapper):
+    if not isinstance(output_wrapper, CoralOutputWrapper):
         raise ValueError("No output model provided.")
     OutputMap().plot(output_wrapper.map_output.output_filepath)
     OutputHis().plot(output_wrapper.his_output.output_filepath)

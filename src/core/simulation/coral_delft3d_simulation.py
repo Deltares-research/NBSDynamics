@@ -1,7 +1,8 @@
 from abc import ABC
+from typing import Optional
 
 from src.core.hydrodynamics.delft3d import Delft3D
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 
 
@@ -10,6 +11,8 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
     Implements the `SimulationProtocol`
     Coral DDelft3D Simulation. Contains the specific logic and parameters required for the case.
     """
+
+    output: Optional[CoralOutputWrapper]
 
     def configure_hydrodynamics(self):
         """
@@ -41,7 +44,7 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
             )
 
         def get_his_output_dict(output_dict: dict) -> dict:
-            xy_stations, idx_stations = OutputWrapper.get_xy_stations(
+            xy_stations, idx_stations = CoralOutputWrapper.get_xy_stations(
                 output_dict["xy_coordinates"], output_dict["outpoint"]
             )
             return dict(
@@ -57,7 +60,7 @@ class _CoralDelft3DSimulation(BaseSimulation, ABC):
         if self.output is None:
             extended_output["map_output"] = map_dict
             extended_output["his_output"] = his_dict
-            self.output = OutputWrapper(**extended_output)
+            self.output = CoralOutputWrapper(**extended_output)
             return
 
         def update_output(out_model, new_values: dict):

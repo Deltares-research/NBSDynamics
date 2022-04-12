@@ -8,7 +8,7 @@ from pandas import DataFrame
 
 from src.core.base_model import BaseModel
 from src.core.common.space_time import DataReshape
-from src.core.coral.coral_model import Coral
+from src.core.biota.coral.coral_model import Coral
 
 
 class ModelParameters(BaseModel):

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
@@ -88,6 +88,6 @@ class TestCoralDelft3dSimulation:
         assert hydro_model.init_count == 0
         assert hydro_model.update_count == 0
         assert hydro_model.finalise_count == 0
-        assert isinstance(test_sim.output, OutputWrapper)
+        assert isinstance(test_sim.output, CoralOutputWrapper)
         assert test_sim.output.map_output is not None
         assert test_sim.output.his_output is not None

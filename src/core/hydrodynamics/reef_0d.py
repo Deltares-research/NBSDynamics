@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 
 from src.core.base_model import BaseModel
-from src.core.coral.coral_model import Coral
+from src.core.biota.coral.coral_model import Coral
 
 
 class Reef0D(BaseModel):

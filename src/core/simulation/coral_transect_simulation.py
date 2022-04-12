@@ -1,5 +1,7 @@
+from typing import Optional
+
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 
 
@@ -10,6 +12,8 @@ class CoralTransectSimulation(BaseSimulation):
     """
 
     mode = "Transect"
+
+    output: Optional[CoralOutputWrapper]
 
     def configure_hydrodynamics(self):
         """

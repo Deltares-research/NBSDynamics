@@ -1,6 +1,6 @@
 from src.core import RESHAPE
 from src.core.common.constants import Constants
-from src.core.coral.coral_model import Coral
+from src.core.biota.coral.coral_model import Coral
 
 
 class Temperature:

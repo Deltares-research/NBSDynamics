@@ -12,8 +12,9 @@ from typing import Optional, Tuple, Union
 import numpy as np
 from pandas import DataFrame
 
-from src.core.coral.coral_only import CoralOnly
-from src.core.vegetation.veg_only import VegOnly
+from src.core.biota.coral.coral_only import CoralOnly
+from src.core.biota.vegetation.veg_only import VegOnly
+
 
 class SpaceTime:
     """Spacetime-object, which validates the definition of the spacetime dimensions."""
@@ -119,6 +120,7 @@ class SpaceTime:
         :type spacetime: tuple
         """
         VegOnly.spacetime = spacetime
+
 
 class DataReshape(SpaceTime):
     """Reshape data to create a spacetime matrix."""

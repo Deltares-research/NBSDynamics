@@ -8,9 +8,10 @@ from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
 from src.core.common.constants import Constants
 from src.core.common.space_time import DataReshape
-from src.core.coral.coral_only import CoralOnly
+from src.core.biota.coral.coral_only import CoralOnly
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
+
 
 class Coral(Biota):
 

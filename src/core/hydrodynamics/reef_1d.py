@@ -5,7 +5,7 @@ import numpy as np
 from scipy.optimize import fsolve
 
 from src.core.base_model import BaseModel
-from src.core.coral.coral_model import Coral
+from src.core.biota.coral.coral_model import Coral
 
 
 class Reef1D(BaseModel):

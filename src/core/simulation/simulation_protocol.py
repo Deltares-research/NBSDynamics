@@ -1,10 +1,10 @@
 from typing import Protocol, runtime_checkable
 
+from src.core.biota.coral.coral_model import Coral
 from src.core.common.constants import Constants
 from src.core.common.environment import Environment
-from src.core.coral.coral_model import Coral
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.base_output_wrapper import BaseOutputWrapper
 
 
 @runtime_checkable
@@ -78,7 +78,7 @@ class SimulationProtocol(Protocol):
         raise NotImplementedError
 
     @property
-    def output(self) -> OutputWrapper:
+    def output(self) -> BaseOutputWrapper:
         """
         Wrapper containing different output models.
 

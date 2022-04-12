@@ -18,13 +18,13 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
+from src.core.biota.coral.coral_model import Coral
 from src.core.common.constants import Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
-from src.core.coral.coral_model import Coral
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.output_wrapper import OutputWrapper
+from src.core.output.base_output_wrapper import BaseOutputWrapper
 
 
 class BaseSimulation(BaseModel, ABC):
@@ -46,7 +46,7 @@ class BaseSimulation(BaseModel, ABC):
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
     constants: Constants = Constants()
-    output: Optional[OutputWrapper]
+    output: Optional[BaseOutputWrapper]
     coral: Optional[Coral]
 
     @validator("constants", pre=True)
@@ -241,7 +241,6 @@ class BaseSimulation(BaseModel, ABC):
         self.coral.initiate_coral_morphology(cover)
 
         self.output.initialize(self.coral)
-
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
