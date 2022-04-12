@@ -5,6 +5,7 @@ import numpy as np
 from src.core.base_model import ExtraModel
 from src.core.common.constants import Constants
 from src.core.common.space_time import CoralOnly
+
 from src.core.biota.coral.coral_model import Coral
 
 class Dislodgement(ExtraModel):
