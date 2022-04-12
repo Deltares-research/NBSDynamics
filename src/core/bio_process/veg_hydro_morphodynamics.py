@@ -4,7 +4,7 @@ from src.core.vegetation.veg_model import Vegetation
 
 
 class Hydro_Morphodynamics:
-    """ Get the values for the hydromorphodynamic environment"""
+    """Get the values for the hydromorphodynamic environment"""
 
     def __init__(self, tau_cur, u_cur, wl_cur, bl_cur, ts, veg: Vegetation):
 
