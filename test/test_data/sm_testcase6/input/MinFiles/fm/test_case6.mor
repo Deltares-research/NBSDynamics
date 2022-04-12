@@ -1,0 +1,32 @@
+[MorphologyFileInformation]
+    FileCreatedBy         = Deltares, FM-Suite DFlowFM Model Version 4.5.0.2430, DFlow FM Version 1.2.130.69672M 
+    FileCreationDate      = Fri Apr 08 2022, 11:29:17 
+    FileVersion           = 02.00                  
+[Morphology]
+    MorFac                = 100                    
+    MorStt                = 720                    
+    Thresh                = 0.05                   
+    SedThr                = 0.1                    
+    DensIn                = 0                      
+    BedUpd                = 1                      
+    CmpUpd                = 1                      
+    ISlope                = 2                      
+    AlfaBs                = 1                      
+    AlfaBn                = 1.5                    
+    Ashld                 = 0.85                   
+    Bshld                 = 0.5                    
+    Cshld                 = 0                      
+    Dshld                 = 0                      
+    CoulFri               = 0                      
+    FlFdRat               = 0                      
+    ThetaCr               = 0                      
+    IHidExp               = 1                      
+    ASKLHE                = 1                      
+    MWWJHE                = 1                      
+    Espir                 = 0.5                    
+    Sus                   = 1                      
+    Bed                   = 1                      
+    SusW                  = 1                      
+    BedW                  = 1                      
+    ThetSD                = 0                      
+    HMaxTH                = 1.5                    
