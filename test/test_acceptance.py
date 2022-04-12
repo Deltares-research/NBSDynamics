@@ -75,7 +75,7 @@ class TestAcceptance:
 
         # Run simulation.
         sim_run.initiate()
-        sim_run.run()
+        sim_run.run(1)
         sim_run.finalise()
 
         # 4. Verify expectations.
