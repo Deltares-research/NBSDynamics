@@ -6,9 +6,9 @@ import numpy as np
 from pydantic.class_validators import root_validator
 
 from src.core.base_model import BaseModel
-from src.vegetation.model.veg_model import Vegetation
 from src.core.output.base_output_wrapper import BaseOutputWrapper
 from src.core.output.output_protocol import OutputProtocol
+from src.vegetation.model.veg_model import Vegetation
 from src.vegetation.output.veg_output_model import HisOutput, MapOutput
 
 
