@@ -29,12 +29,12 @@ With those parameters assigned to the object, the simulation is started by using
   * inside of that loop another loop iterates over the number of ecological time steps per year (coupling times per year) specified in [Constants](../../reference/common/common/#src.vegetation.model.veg_constants)
   * to get the hydro and morphological variables from Delft-FM, the hydro-morphodynamics are retrieved every day.
     * the coupling and retrieving of the values is specified in the class [Delft3D](.../../reference/hydrodynamics/hydromodels/#delft3d)
-  * aggregated values are then created in the class [Hydro_Morphodynamics](../../reference/bio_process/vegetation_processes/#src.core.bio_process.veg_hydro_morphodynamics) and retrieved via the method 'get_hydromorph_values'
+  * aggregated values are then created in the class [Hydro_Morphodynamics](../../reference/bio_process/vegetation_processes/#src.vegetation.bio_process.veg_hydro_morphodynamics) and retrieved via the method 'get_hydromorph_values'
   * the vegetation dynamics are initiated: 
-    * [Mortality and Growth](../../reference/bio_process/vegetation_processes/#src.core.bio_process.veg_mortality)
+    * [Mortality and Growth](../../reference/bio_process/vegetation_processes/#src.vegetation.bio_process.veg_mortality)
       * criteria for mortality and mortality fractions are determined based on the species and the morpho- &  hydrodynamics 
       * vegetation growth is initiated based on the number of growth days within the current ecological time step
-    * [Colonisation](../../reference/bio_process/vegetation_processes/#src.core.bio_process.veg_colonisation)
+    * [Colonisation](../../reference/bio_process/vegetation_processes/#src.vegetation.bio_process.veg_colonisation)
       * method is only called when colonisation is possible during the specific period of the ecological time step 
       * criteria for colonisation are determined based on the species and the morpho- &  hydrodynamics
       * the vegetation characteristics of the initial lifestage are updated based on the possible colonisation

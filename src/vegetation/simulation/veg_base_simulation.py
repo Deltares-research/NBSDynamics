@@ -10,15 +10,15 @@ from tqdm import tqdm
 
 from src.core import RESHAPE
 from src.core.base_model import BaseModel
-from src.core.bio_process.veg_colonisation import Colonization
-from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
-from src.core.bio_process.veg_mortality import Veg_Mortality
-from src.vegetation.model.veg_model import Vegetation
-from src.vegetation.model.veg_constants import Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.vegetation.bio_process.veg_colonisation import Colonization
+from src.vegetation.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
+from src.vegetation.bio_process.veg_mortality import Veg_Mortality
+from src.vegetation.model.veg_constants import Constants
+from src.vegetation.model.veg_model import Vegetation
 from src.vegetation.output.veg_output_wrapper import VegOutputWrapper
 
 

@@ -20,7 +20,7 @@ class ModelParameters(BaseModel):
         return any(self.dict().values())
 
 
-class BaseOutput(BaseModel):
+class VegBaseOutput(BaseModel):
     """
     Base class containing the generic definition of a 'Vegetation' output model.
     """
@@ -51,7 +51,7 @@ class BaseOutput(BaseModel):
         return self.output_dir / self.output_filename
 
 
-class MapOutput(BaseOutput):
+class MapOutput(VegBaseOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
@@ -231,7 +231,7 @@ class MapOutput(BaseOutput):
                     v_func()
 
 
-class HisOutput(BaseOutput):
+class HisOutput(VegBaseOutput):
     """
     Object representing a His output. Implements the 'OutputProtocol'.
     """
