@@ -48,7 +48,7 @@ class CoralTransectSimulation(BaseSimulation):
             )
 
         def get_his_output_dict(output_dict: dict) -> dict:
-            xy_stations, idx_stations = OutputWrapper.get_xy_stations(
+            xy_stations, idx_stations = CoralOutputWrapper.get_xy_stations(
                 output_dict["xy_coordinates"], output_dict["outpoint"]
             )
             return dict(
@@ -64,7 +64,7 @@ class CoralTransectSimulation(BaseSimulation):
         if self.output is None:
             extended_output["map_output"] = map_dict
             extended_output["his_output"] = his_dict
-            self.output = OutputWrapper(**extended_output)
+            self.output = CoralOutputWrapper(**extended_output)
             return
 
         def update_output(out_model, new_values: dict):
