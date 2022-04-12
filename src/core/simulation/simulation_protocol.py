@@ -1,7 +1,7 @@
 from typing import Protocol, runtime_checkable
 
 from src.core.biota.coral.coral_model import Coral
-from src.core.common.constants import Constants
+from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.base_output_wrapper import BaseOutputWrapper
@@ -53,7 +53,7 @@ class SimulationProtocol(Protocol):
         raise NotImplementedError
 
     @property
-    def constants(self) -> Constants:
+    def constants(self) -> BaseConstants:
         """
         Constants being used for calculations during simulation.
 

@@ -2,7 +2,7 @@ from typing import Dict, Optional, Protocol, Union, runtime_checkable
 
 import numpy as np
 
-from src.core.common.constants import Constants
+from src.core.common.coral_constants import CoralConstants
 
 
 @runtime_checkable
@@ -12,7 +12,7 @@ class CoralProtocol(Protocol):
     """
 
     @property
-    def constants(self) -> Constants:
+    def constants(self) -> CoralConstants:
         """
         Constants associated to the Coral Model to be run.
 

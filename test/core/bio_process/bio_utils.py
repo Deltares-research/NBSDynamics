@@ -1,14 +1,14 @@
 import pytest
 
 from src.core import RESHAPE
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 
 @pytest.fixture(scope="module", autouse=True)
-def default_constants() -> Constants:
-    return Constants()
+def default_constants() -> CoralConstants:
+    return CoralConstants()
 
 
 @pytest.fixture(scope="module", autouse=False)

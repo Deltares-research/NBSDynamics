@@ -6,9 +6,9 @@ from pydantic import validator
 from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_only import CoralOnly
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 CoralAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -20,7 +20,7 @@ class Coral(Biota):
     Coral object, representing one coral type.
     """
 
-    constants: Constants = Constants()
+    constants: CoralConstants = CoralConstants()
     dc: CoralAttribute  # diameter coral plate [m]
     hc: CoralAttribute  # coral height [m]
     bc: CoralAttribute  # diameter coral base [m]

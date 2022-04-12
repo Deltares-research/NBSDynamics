@@ -4,15 +4,15 @@ from typing import Any
 import numpy as np
 import pytest
 
-from src.core.common.constants import Constants
+from src.core.common.coral_constants import CoralConstants
 
 
-class TestConstants:
+class TestCoralConstants:
     def test_from_input_file(self):
         test_file = (
             TestUtils.get_local_test_file("transect_case") / "input" / "coral_input.txt"
         )
-        result_constants = Constants.from_input_file(test_file)
+        result_constants = CoralConstants.from_input_file(test_file)
         assert result_constants is not None
 
     @pytest.mark.parametrize(
@@ -72,7 +72,7 @@ class TestConstants:
 
     def test_correct_values(self):
         # Define test data.
-        test_constants = Constants()
+        test_CoralConstants = CoralConstants()
         test_constants.theta_max = 0.42
         test_constants.prop_space = 0.24
 

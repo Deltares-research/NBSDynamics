@@ -3,8 +3,8 @@ from typing import Optional
 import numpy as np
 
 from src.core import RESHAPE
-from src.core.common.constants import Constants
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
 
 
 class PopulationStates:
@@ -12,7 +12,9 @@ class PopulationStates:
 
     # TODO: Check this class; incl. writing tests
 
-    def __init__(self, constants: Constants = Constants(), dt: Optional[float] = 1):
+    def __init__(
+        self, constants: CoralConstants = CoralConstants(), dt: Optional[float] = 1
+    ):
         """Population dynamics.
 
         :param dt: time step [yrs], defaults to one

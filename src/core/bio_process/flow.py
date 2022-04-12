@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import newton
 
 from src.core import RESHAPE
-from src.core.common.constants import Constants
+from src.core.common.coral_constants import CoralConstants
 from src.core.common.space_time import CoralOnly, DataReshape
 
 
@@ -15,7 +15,7 @@ class Flow:
         u_wave,
         h,
         peak_period,
-        constants: Constants = Constants(),
+        constants: CoralConstants = CoralConstants(),
     ):
         """
         :param u_current: current flow velocity [m s-1]

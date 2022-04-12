@@ -3,15 +3,15 @@ from typing import Optional
 import numpy as np
 
 from src.core.base_model import ExtraModel
-from src.core.common.constants import Constants
+from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
 from src.core.common.space_time import CoralOnly
 
-from src.core.biota.coral.coral_model import Coral
 
 class Dislodgement(ExtraModel):
     """Dislodgement due to storm conditions."""
 
-    constants: Constants = Constants()
+    constants: CoralConstants = CoralConstants()
     dmt: Optional[np.ndarray] = None
     csf: Optional[np.ndarray] = None
     survival: Optional[np.ndarray] = None

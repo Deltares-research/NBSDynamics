@@ -2,15 +2,17 @@ import numpy as np
 import pandas as pd
 
 from src.core import RESHAPE
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 
 class Photosynthesis:
     """Photosynthesis."""
 
-    def __init__(self, light_in, first_year, constants: Constants = Constants()):
+    def __init__(
+        self, light_in, first_year, constants: CoralConstants = CoralConstants()
+    ):
         """
         Photosynthetic efficiency based on photosynthetic dependencies.
 

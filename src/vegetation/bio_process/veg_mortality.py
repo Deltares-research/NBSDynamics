@@ -4,9 +4,9 @@ import numpy as np
 
 from src.core.base_model import ExtraModel
 from src.vegetation.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
+from src.vegetation.model.veg_constants import VegetationConstants
 from src.vegetation.model.veg_lifestages import LifeStages
 from src.vegetation.model.veg_model import Vegetation
-from src.vegetation.model.veg_constants import Constants
 
 
 class Veg_Mortality(ExtraModel):

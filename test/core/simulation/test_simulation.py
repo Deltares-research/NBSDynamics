@@ -4,9 +4,9 @@ from typing import Any, Callable, Optional, Union
 
 import pytest
 
-from src.core.common.constants import Constants
-from src.core.common.environment import Environment
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
@@ -42,7 +42,7 @@ class TestBaseSimulation:
         assert issubclass(mode_case, BaseSimulation)
         assert isinstance(test_sim, SimulationProtocol)
         assert isinstance(test_sim.environment, Environment)
-        assert isinstance(test_sim.constants, Constants)
+        assert isinstance(test_sim.constants, CoralConstants)
         assert isinstance(test_sim.working_dir, Path)
         assert test_sim.output is None
         assert isinstance(test_sim.hydrodynamics, expected_hydro)
@@ -86,16 +86,16 @@ class TestBaseSimulation:
     @pytest.mark.parametrize(
         "valid_value",
         [
-            pytest.param(Constants(), id="As object"),
+            pytest.param(CoralConstants(), id="As object"),
             pytest.param(constants_file_case, id="As Path"),
             pytest.param(constants_file_case.as_posix(), id="As String"),
         ],
     )
     def test_validate_constants_with_valid_values(
-        self, valid_value: Union[Constants, str, Path]
+        self, valid_value: Union[CoralConstants, str, Path]
     ):
         return_value = BaseSimulation.validate_constants(valid_value)
-        assert isinstance(return_value, Constants)
+        assert isinstance(return_value, CoralConstants)
 
     def test_validate_constants_with_not_valid_value(self):
         with pytest.raises(NotImplementedError) as e_err:
@@ -108,7 +108,7 @@ class TestBaseSimulation:
             pytest.param(
                 Coral(
                     **dict(
-                        constants=Constants(),
+                        constants=CoralConstants(),
                         dc=0.2,
                         hc=0.1,
                         bc=0.2,
@@ -121,13 +121,15 @@ class TestBaseSimulation:
                 id="As Object",
             ),
             pytest.param(
-                dict(constants=Constants(), dc=0.2, hc=0.2, bc=0.2, ac=0.2, tc=0.2),
+                dict(
+                    constants=CoralConstants(), dc=0.2, hc=0.2, bc=0.2, ac=0.2, tc=0.2
+                ),
                 None,
                 id="As dict with Constants object entry.",
             ),
             pytest.param(
                 dict(dc=0.2, hc=0.2, bc=0.2, ac=0.2, tc=0.2),
-                dict(constants=Constants()),
+                dict(constants=CoralConstants()),
                 id="As dict with Constants in values dict entry.",
             ),
         ],

@@ -3,9 +3,9 @@ from typing import Optional, Union
 import numpy as np
 
 from src.core import RESHAPE
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_only import CoralOnly
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 LightVariable = Union[float, list, tuple, np.ndarray]
 
@@ -18,7 +18,7 @@ class Light:
         light_in: LightVariable,
         lac: LightVariable,
         depth: LightVariable,
-        constants: Constants = Constants(),
+        constants: CoralConstants = CoralConstants(),
     ):
         """
         Light micro-environment.

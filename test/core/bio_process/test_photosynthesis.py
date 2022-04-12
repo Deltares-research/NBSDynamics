@@ -9,9 +9,9 @@ import numpy as np
 import pytest
 
 from src.core.bio_process.photosynthesis import Photosynthesis
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 
 class TestPhotosynthesis:

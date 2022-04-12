@@ -8,10 +8,9 @@ from pydantic import validator
 import src
 from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
-from src.core.common import fpath_constants_file
-from src.vegetation.model.veg_constants import Constants
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
+from src.vegetation.model.veg_constants import VegetationConstants
 from src.vegetation.model.veg_lifestages import LifeStages
 from src.vegetation.model.veg_only import VegOnly
 
@@ -28,7 +27,7 @@ class Vegetation(Biota):
         super().__init__()
         self.species = species
 
-        self.constants = Constants(species=self.species)
+        self.constants = VegetationConstants(species=self.species)
 
         # other attributes.
         self.total_cover: Optional[

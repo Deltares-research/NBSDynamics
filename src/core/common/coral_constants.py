@@ -5,13 +5,11 @@ import numpy as np
 from pydantic import root_validator, validator
 
 from src.core.base_model import BaseModel
+from src.core.common.base_constants import BaseConstants
 
 
-class Constants(BaseModel):
+class CoralConstants(BaseConstants):
     """Object containing all constants used in coral_model simulations."""
-
-    # Input file
-    input_file: Optional[Path]
 
     # Processes
     fme: bool = False
@@ -153,36 +151,6 @@ class Constants(BaseModel):
                 "WARNING: Exclusion of photosynthetic flow dependency not fully implemented yet."
             )
         return values
-
-    @classmethod
-    def from_input_file(cls, input_file: Path):
-        """
-        Generates a 'Constants' class based on the defined parameters in the input_file.
-
-        Args:
-            input_file (Path): Path to the constants input (.txt) file.
-        """
-
-        def split_line(line: str):
-            s_line = line.split("=")
-            if len(s_line) <= 1:
-                raise ValueError
-            return s_line[0].strip(), s_line[1].strip()
-
-        def format_line(line: str) -> str:
-            return split_line(line.split("#")[0])
-
-        def normalize_line(line: str) -> str:
-            return line.strip()
-
-        input_lines = [
-            format_line(n_line)
-            for line in input_file.read_text().splitlines(keepends=False)
-            if line and not (n_line := normalize_line(line)).startswith("#")
-        ]
-        cls_constants = cls(**dict(input_lines))
-        cls_constants.correct_values()
-        return cls_constants
 
     def correct_values(self):
         """

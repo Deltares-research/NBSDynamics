@@ -1,14 +1,14 @@
 from src.core import RESHAPE
 from src.core.base_model import ExtraModel
-from src.core.common.constants import Constants
 from src.core.biota.coral.coral_model import Coral
 from src.core.biota.coral.coral_only import CoralOnly
+from src.core.common.coral_constants import CoralConstants
 
 
 class Recruitment(ExtraModel):
     """Recruitment dynamics."""
 
-    constants: Constants = Constants()
+    constants: CoralConstants = CoralConstants()
 
     def update(self, coral: Coral):
         """Update coral cover / volume after spawning event.

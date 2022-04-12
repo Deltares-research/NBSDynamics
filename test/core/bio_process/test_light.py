@@ -10,9 +10,9 @@ import numpy as np
 import pytest
 
 from src.core.bio_process.light import Light
-from src.core.common.constants import Constants
-from src.core.common.space_time import DataReshape
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
+from src.core.common.space_time import DataReshape
 
 tolerance = 0.0000001
 
@@ -65,7 +65,7 @@ class TestLight:
     def test_side_correction(self, light_test: Light, valid_coral: Coral):
         max_thetas = np.linspace(0, np.pi)
         for theta in max_thetas:
-            Constants().theta_max = theta
+            CoralConstants().theta_max = theta
             result = light_test.side_correction(valid_coral)
             assert result < 1
 

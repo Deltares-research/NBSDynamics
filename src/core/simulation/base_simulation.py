@@ -19,7 +19,7 @@ from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
 from src.core.biota.coral.coral_model import Coral
-from src.core.common.constants import Constants
+from src.core.common.coral_constants import CoralConstants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
@@ -45,13 +45,13 @@ class BaseSimulation(BaseModel, ABC):
     # Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
-    constants: Constants = Constants()
+    constants: CoralConstants = CoralConstants()
     output: Optional[BaseOutputWrapper]
     coral: Optional[Coral]
 
     @validator("constants", pre=True)
     @classmethod
-    def validate_constants(cls, field_value: Union[str, Path, Constants]) -> Constants:
+    def validate_constants(cls, field_value: Union[str, Path, CoralConstants]) -> CoralConstants:
         """
         Validates the user-input constants value and transforms in case it's a filepath (str, Path).
 
@@ -64,12 +64,12 @@ class BaseSimulation(BaseModel, ABC):
         Returns:
             Constants: Validated constants value.
         """
-        if isinstance(field_value, Constants):
+        if isinstance(field_value, CoralConstants):
             return field_value
         if isinstance(field_value, str):
             field_value = Path(field_value)
         if isinstance(field_value, Path):
-            return Constants.from_input_file(field_value)
+            return CoralConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @validator("coral", pre=True)

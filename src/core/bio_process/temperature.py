@@ -1,10 +1,10 @@
 from src.core import RESHAPE
-from src.core.common.constants import Constants
 from src.core.biota.coral.coral_model import Coral
+from src.core.common.coral_constants import CoralConstants
 
 
 class Temperature:
-    def __init__(self, temperature, constants: Constants = Constants()):
+    def __init__(self, temperature, constants: CoralConstants = CoralConstants()):
         """
         Thermal micro-environment.
 

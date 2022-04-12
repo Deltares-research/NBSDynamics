@@ -2,7 +2,7 @@ from typing import Dict, Optional, Protocol, Union, runtime_checkable
 
 import numpy as np
 
-from src.vegetation.model.veg_constants import Constants
+from src.vegetation.model.veg_constants import VegetationConstants
 
 
 @runtime_checkable
@@ -12,7 +12,7 @@ class VegProtocol(Protocol):
     """
 
     @property
-    def constants(self) -> Constants:
+    def constants(self) -> VegetationConstants:
         """
         Constants associated to the Vegetation Model to be run.
 

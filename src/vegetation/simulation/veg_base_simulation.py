@@ -17,7 +17,7 @@ from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.vegetation.bio_process.veg_colonisation import Colonization
 from src.vegetation.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.vegetation.bio_process.veg_mortality import Veg_Mortality
-from src.vegetation.model.veg_constants import Constants
+from src.vegetation.model.veg_constants import VegetationConstants
 from src.vegetation.model.veg_model import Vegetation
 from src.vegetation.output.veg_output_wrapper import VegOutputWrapper
 
@@ -39,13 +39,15 @@ class BaseSimulation(BaseModel, ABC):
 
     # Other fields.
     hydrodynamics: Optional[HydrodynamicProtocol]
-    constants: Optional[Constants]
+    constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
     veg: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
-    def validate_constants(cls, field_value: Union[str, Path, Constants]) -> Constants:
+    def validate_constants(
+        cls, field_value: Union[str, Path, VegetationConstants]
+    ) -> VegetationConstants:
         """
         Validates the user-input constants value and transforms in case it's a filepath (str, Path).
 
@@ -58,12 +60,12 @@ class BaseSimulation(BaseModel, ABC):
         Returns:
             Constants: Validated constants value.
         """
-        if isinstance(field_value, Constants):
+        if isinstance(field_value, VegetationConstants):
             return field_value
         if isinstance(field_value, str):
             field_value = Path(field_value)
         if isinstance(field_value, Path):
-            return Constants.from_input_file(field_value)
+            return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @validator("veg", pre=True)

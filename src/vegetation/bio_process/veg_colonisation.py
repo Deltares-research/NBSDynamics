@@ -3,7 +3,7 @@ from typing import Optional
 import numpy as np
 
 from src.core.base_model import ExtraModel
-from src.vegetation.model.veg_constants import Constants
+from src.vegetation.model.veg_constants import VegetationConstants
 from src.vegetation.model.veg_model import Vegetation
 
 
@@ -59,7 +59,7 @@ class Colonization(ExtraModel):
                 self.seed_loc[0], round(len(self.seed_loc[0]) / constants.random)
             )  # locations where random settlement can occur
 
-    def colonization_criterion(self, veg: Vegetation, constants):
+    def colonization_criterion(self, veg: Vegetation, constants: VegetationConstants):
         """determine areas which are available for colonization
 
         :param veg: vegetation
