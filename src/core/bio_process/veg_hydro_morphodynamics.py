@@ -3,7 +3,7 @@ from src.core.vegetation.veg_model import Vegetation
 
 
 class Hydro_Morphodynamics:
-    """hydromorphodynamic environment"""
+    """ Get the values for the hydromorphodynamic environment"""
 
     def __init__(
             self,
