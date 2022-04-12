@@ -13,15 +13,13 @@ from src.core.base_model import BaseModel
 from src.core.bio_process.veg_colonisation import Colonization
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
 from src.core.bio_process.veg_mortality import Veg_Mortality
+from src.core.biota.vegetation.veg_model import Vegetation
 from src.core.common.constants_veg import Constants
 from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
-
-from src.core.biota.vegetation.veg_model import Vegetation
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.veg_output_wrapper import VegOutputWrapper
-from src.core.vegetation.veg_model import Vegetation
 
 
 class BaseSimulation(BaseModel, ABC):
