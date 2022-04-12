@@ -13,9 +13,7 @@ import numpy as np
 from pandas import DataFrame
 
 from src.core.biota.coral.coral_only import CoralOnly
-from src.core.biota.vegetation.veg_only import VegOnly
-
-
+from src.vegetation.model.veg_only import VegOnly
 
 
 class SpaceTime:

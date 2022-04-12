@@ -9,7 +9,7 @@ from pandas import DataFrame
 
 from src.core.base_model import BaseModel
 from src.core.common.space_time import DataReshape
-from src.core.biota.vegetation.veg_model import Vegetation
+from src.vegetation.model.veg_model import Vegetation
 
 
 class ModelParameters(BaseModel):

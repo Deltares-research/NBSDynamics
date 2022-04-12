@@ -12,8 +12,8 @@ from src.core.common import fpath_constants_file
 from src.core.common.constants_veg import Constants
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
-from src.core.biota.vegetation.veg_lifestages import LifeStages
-from src.core.biota.vegetation.veg_only import VegOnly
+from src.vegetation.model.veg_lifestages import LifeStages
+from src.vegetation.model.veg_only import VegOnly
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 

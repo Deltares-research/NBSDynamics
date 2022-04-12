@@ -13,8 +13,8 @@ from src.core.simulation.coral_delft3d_simulation import (
     CoralFlowFmSimulation,
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from src.core.simulation.veg_delft3d_simulation import VegFlowFmSimulation
-from src.core.biota.vegetation.veg_model import Vegetation
+from src.vegetation.simulation.veg_delft3d_simulation import VegFlowFmSimulation
+from src.vegetation.model.veg_model import Vegetation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 

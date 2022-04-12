@@ -4,8 +4,8 @@ import numpy as np
 
 from src.core.base_model import ExtraModel
 from src.core.bio_process.veg_hydro_morphodynamics import Hydro_Morphodynamics
-from src.core.biota.vegetation.veg_lifestages import LifeStages
-from src.core.biota.vegetation.veg_model import Vegetation
+from src.vegetation.model.veg_lifestages import LifeStages
+from src.vegetation.model.veg_model import Vegetation
 from src.core.common.constants_veg import Constants
 
 
