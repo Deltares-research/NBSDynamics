@@ -242,6 +242,7 @@ class BaseSimulation(BaseModel, ABC):
 
         self.output.initialize(self.coral)
 
+
     def run(self, duration: Optional[int] = None):
         """Run simulation.
 
@@ -286,6 +287,13 @@ class BaseSimulation(BaseModel, ABC):
                 lme.rep_light(self.coral)
                 # flow micro-environment
                 fme = Flow(
+                    u_current=current_vel,
+                    u_wave=wave_vel,
+                    h=self.hydrodynamics.water_depth,
+                    peak_period=wave_per,
+                    constants=self.constants,
+                )
+                fme2 = Flow(
                     u_current=current_vel,
                     u_wave=wave_vel,
                     h=self.hydrodynamics.water_depth,
