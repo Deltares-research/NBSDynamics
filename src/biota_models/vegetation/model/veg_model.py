@@ -1,18 +1,13 @@
-from datetime import datetime, timedelta
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from pydantic import validator
+from pydantic import root_validator
 
-import src
 from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_lifestages import LifeStages
-from src.biota_models.vegetation.model.veg_only import VegOnly
-from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
 from src.core.common.singletons import RESHAPE
-from src.core.common.space_time import DataReshape
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -23,19 +18,30 @@ class Vegetation(Biota):
     Vegetation object, representing one plant.
     """
 
-    def __init__(self, species):
-        super().__init__()
-        self.species = species
+    species: str
+    constants: Optional[VegetationConstants]
+    total_cover: Optional[
+        VegAttribute
+    ]  # sum of fraction of area coverage in each cell (for all ages)
+    initial: Optional[LifeStages]
+    juvenile: Optional[LifeStages]
+    mature: Optional[LifeStages]
 
-        self.constants = VegetationConstants(species=self.species)
+    @root_validator
+    def configure_veg_fields(cls, values: dict) -> dict:
+        veg_constants = values.get("constants", None)
+        if not veg_constants:
+            veg_constants = VegetationConstants(species=values["species"])
+            values["constants"] = veg_constants
 
         # other attributes.
-        self.total_cover: Optional[
-            VegAttribute
-        ] = list()  # sum of fraction of area coverage in each cell (for all ages)
-        self.initial = LifeStages(ls=0, constants=self.constants)
-        self.juvenile = LifeStages(ls=1, constants=self.constants)
-        self.mature = LifeStages(ls=2, constants=self.constants)
+        values["initial"] = LifeStages(ls=0, constants=veg_constants)
+        values["juvenile"] = LifeStages(ls=1, constants=veg_constants)
+        values["mature"] = LifeStages(ls=2, constants=veg_constants)
+        if not values.get("total_cover", None):
+            # Initialize as an empty list if it  has not been done earlier.
+            values["total_cover"] = []
+        return values
 
     # time related values
     growth_duration: pd.Timedelta = None

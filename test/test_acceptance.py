@@ -52,10 +52,10 @@ class TestAcceptance:
 
         test_case = test_dir / "input" / "MinFiles"
         species = "Salicornia"
-
+        veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
-            constants=VegetationConstants(species=species),
+            constants=veg_constants,
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
@@ -69,7 +69,7 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            biota=Vegetation(species=species),
+            biota=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.
