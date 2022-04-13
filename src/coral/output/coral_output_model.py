@@ -25,7 +25,7 @@ class _CoralOutput(BaseOutput):
     output_params: CoralOutputParameters = CoralOutputParameters()
 
 
-class MapOutput(_CoralOutput):
+class CoralMapOutput(_CoralOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
@@ -272,7 +272,7 @@ class MapOutput(_CoralOutput):
                     v_func()
 
 
-class HisOutput(_CoralOutput):
+class CoralHisOutput(_CoralOutput):
     """
     Object representing a His output. Implements the 'OutputProtocol'.
     """

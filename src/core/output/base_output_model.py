@@ -8,6 +8,12 @@ from src.core.biota.biota_model import Biota
 
 class BaseOutputParameters(BaseModel, ABC):
     def valid_output(self) -> bool:
+        """
+        Validates whether all the fields from this class have a value.
+
+        Returns:
+            bool: When all the values are 'filled'.
+        """
         return any(self.dict().values())
 
 

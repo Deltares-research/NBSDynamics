@@ -1,14 +1,11 @@
-import datetime as dt
 from datetime import datetime
-from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
 
-from src.core.base_model import BaseModel
-from src.core.output.base_output_model import BaseOutputParameters
+from src.core.output.base_output_model import BaseOutput, BaseOutputParameters
 from src.vegetation.model.veg_model import Vegetation
 
 
@@ -17,7 +14,7 @@ class VegetationOutputParameters(BaseOutputParameters):
     veg_characteristics: bool = True  # vegetation characteristics
 
 
-class _VegetationOutput(BaseModel):
+class _VegetationOutput(BaseOutput):
     """
     Base class containing the generic definition of a 'Vegetation' output model.
     """
@@ -26,7 +23,7 @@ class _VegetationOutput(BaseModel):
     output_params: VegetationOutputParameters = VegetationOutputParameters()
 
 
-class MapOutput(_VegetationOutput):
+class VegetationMapOutput(_VegetationOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
@@ -45,7 +42,7 @@ class MapOutput(_VegetationOutput):
         """
         return len(self.xy_coordinates)
 
-    def initialize(self):
+    def initialize(self, vegetation: Optional[Vegetation]):
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return
@@ -206,7 +203,7 @@ class MapOutput(_VegetationOutput):
                     v_func()
 
 
-class HisOutput(_VegetationOutput):
+class VegetationHisOutput(_VegetationOutput):
     """
     Object representing a His output. Implements the 'OutputProtocol'.
     """

@@ -2,7 +2,10 @@ from typing import Optional
 
 from src.core.output.base_output_wrapper import BaseOutputWrapper
 from src.vegetation.model.veg_model import Vegetation
-from src.vegetation.output.veg_output_model import HisOutput, MapOutput
+from src.vegetation.output.veg_output_model import (
+    VegetationHisOutput,
+    VegetationMapOutput,
+)
 
 
 class VegOutputWrapper(BaseOutputWrapper):
@@ -12,8 +15,8 @@ class VegOutputWrapper(BaseOutputWrapper):
     """
 
     # Output models.
-    map_output: Optional[MapOutput]
-    his_output: Optional[HisOutput]
+    map_output: Optional[VegetationMapOutput]
+    his_output: Optional[VegetationHisOutput]
 
     def initialize(self, veg_model: Vegetation):
         """
@@ -27,4 +30,4 @@ class VegOutputWrapper(BaseOutputWrapper):
 
         # Initialize output models.
         self.his_output.initialize(veg_model)
-        self.map_output.initialize()
+        self.map_output.initialize(veg_model)

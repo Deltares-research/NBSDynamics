@@ -1,9 +1,7 @@
-from datetime import datetime
-from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional
 
 from src.coral.model.coral_model import Coral
-from src.coral.output.coral_output_model import HisOutput, MapOutput
+from src.coral.output.coral_output_model import CoralHisOutput, CoralMapOutput
 from src.core.output.base_output_wrapper import BaseOutputWrapper
 
 
@@ -14,8 +12,8 @@ class CoralOutputWrapper(BaseOutputWrapper):
     """
 
     # Output models.
-    map_output: Optional[MapOutput]
-    his_output: Optional[HisOutput]
+    map_output: Optional[CoralMapOutput]
+    his_output: Optional[CoralHisOutput]
 
     def initialize(self, coral: Coral):
         """
