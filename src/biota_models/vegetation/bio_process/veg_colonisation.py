@@ -69,8 +69,8 @@ class Colonization(ExtraModel):
             veg2.initial.stem_num[self.seed_loc2] = loc2 * veg2.constants.num_stem[0]
 
             comp = np.where(loc1 == 1 and loc2 == 1)
-            loc1[comp] = (1/(veg.constants.iniCol_frac + veg2.constants.iniCol_frac))
-            loc2[comp] = (1/(veg.constants.iniCol_frac + veg2.constants.iniCol_frac))
+            loc1[comp] = 1 / (veg.constants.iniCol_frac + veg2.constants.iniCol_frac)
+            loc2[comp] = 1 / (veg.constants.iniCol_frac + veg2.constants.iniCol_frac)
             veg.initial.veg_frac[self.seed_loc1] = loc1 * veg.constants.iniCol_frac
             veg2.initial.veg_frac[self.seed_loc2] = loc2 * veg2.constants.iniCol_frac
 
@@ -116,7 +116,7 @@ class Colonization(ExtraModel):
         # # Calculations
         self.cir = np.zeros(veg.max_wl.shape)
         self.cir = (
-                self.cir_formula(veg.max_wl, veg.min_wl) == 1
+            self.cir_formula(veg.max_wl, veg.min_wl) == 1
         )  # true, false matrix look for cells that are flooded during high anf low water levels
 
     @staticmethod
@@ -124,6 +124,7 @@ class Colonization(ExtraModel):
         max_water_level[max_water_level > 0] = 1
         min_water_level[min_water_level > 0] = 1
         return max_water_level - min_water_level
+
 
 ##TODO get information on mud in top layer from DFM
 
