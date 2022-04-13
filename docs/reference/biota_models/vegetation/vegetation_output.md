@@ -1,7 +1,7 @@
 ## Output classes for the NBSDynamics vegetation model.
 
 ### Wrapper
-::: src.core.output.veg_output_wrapper
+::: src.biota_models.vegetation.output.veg_output_wrapper
 
 ### Output models
-::: src.core.output.veg_output_model
+::: src.biota_models.vegetation.output.veg_output_model
