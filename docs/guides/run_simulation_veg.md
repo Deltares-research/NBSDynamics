@@ -1,5 +1,7 @@
 # How to run a Vegetation simulation in NBSDynamics
 
+To fully understand how to create a simulation object in NBSDynamics we recommend first going through the basic guideline [How to create and run a simulation](../../guides/run_simulation).
+
 An example of how a simulation is run can be found in the [acceptance tests](../../test/test_acceptance.py#TestAcceptance::test_given_veg_case_runs)
 
 ## Simulation structure.
@@ -47,3 +49,39 @@ With those parameters assigned to the object, the simulation is started by using
   * The results are exported using the methods defined in [MapOutput](../../reference/output/vegetation_output/#src.biota_models.vegetation.output.veg_output_model) and [HisOutput](../../reference/output/vegetation_output/#src.biota_models.vegetation.output.veg_output_model)
 
 * finalize (Finalize simulation)
+
+### Vegetation Delft3D Simulation
+```python
+# 1. Define attributes
+test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+# We need to specify where the DIMR directory (WITH ALL THE SHARED BINARIES) is located.
+dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+kernels_dir = dll_repo / "kernels"
+output_dir = test_dir / "output"
+test_case = test_dir / "input" / "MinFiles"
+
+# 2. Prepare model.
+sim_run = VegFlowFmSimulation(
+    working_dir=test_dir,
+    constants=VegetationConstants(species="Salicornia"),
+    hydrodynamics=dict(
+        working_dir=test_dir / "d3d_work",
+        d3d_home=kernels_dir,
+        dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
+        definition_file=test_case / "fm" / "test_case6.mdu",
+    ),
+    output=dict(
+        output_dir=output_dir,
+        map_output=dict(output_params=dict()),
+        his_output=dict(
+            output_params=dict(),
+        ),
+    ),
+    biota=Vegetation(species="Salicornia"),
+)
+
+# 3. Run simulation.
+sim_run.initiate()
+sim_run.run()
+sim_run.finalise()
+```
