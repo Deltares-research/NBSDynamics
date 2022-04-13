@@ -16,4 +16,5 @@ Currently we support the Vegetation and Coral models. More details of how to run
 In addition, quick links on how to run models in this package:
 * [Basics: How to run 'any' model](https://deltares.github.io/NBSDynamics/guides/run_simulation/)
 * [How to run a Vegetation Model](https://deltares.github.io/NBSDynamics/guides/run_simulation_veg/)
+* [How to run a Coral Model](https://deltares.github.io/NBSDynamics/guides/run_simulation_coral/)
 
