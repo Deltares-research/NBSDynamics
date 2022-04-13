@@ -5,7 +5,7 @@ The current package offers the user the possibility to run a simulation with the
 ## 1. Simulation structure.
 A simulation is based on the [SimulationProtocol](../../reference/simulation/simulation/#simulation-protocol). Thus its required attributes are as follows:
 
-* [Constants](../../reference/common/common/#constants). Definition of constants to be used during the simulation.
+* [Constants](../../reference/core/common/common/#constants). Definition of constants to be used during the simulation.
 * [Coral](../../reference/coral/coral/#coral-model). Required to represent a morphological model of a coral.
 * [Environment](../../reference/common/common/#environment).
 * [Hydrodynamics](../../reference/hydrodynamics/hydromodels/). Defines the type of simulation that will be run. As per version v0.8.0 the following types are available:
