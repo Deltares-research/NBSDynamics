@@ -66,7 +66,6 @@ class Veg_Mortality(ExtraModel):
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
         veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)
 
-
     def drowning_hydroperiod(self, veg: Vegetation, constants, ets):
         flooding_current, drying_current = self.compute_hydroperiod(
             veg.wl_ts, constants
