@@ -1,3 +1,9 @@
+## v0.8.3 (2022-04-13)
+
+### Refactor
+
+- **veg_model.py**: Now we configure the fields using pydantic
+
 ## v0.8.2 (2022-04-13)
 
 ### Refactor
