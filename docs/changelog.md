@@ -1,3 +1,11 @@
+## v0.8.1 (2022-04-13)
+
+### Fix
+
+- **docs/reference**: removed previous references (#84)
+
+## v0.8.0-NBSDynamics_as_package (2021-11-19)
+
 ## v0.8.0 (2021-11-18)
 
 ### Feat
