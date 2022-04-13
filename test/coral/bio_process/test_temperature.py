@@ -1,4 +1,4 @@
-from test.core.bio_process.bio_utils import (
+from test.coral.bio_process.bio_utils import (
     coral_2x2,
     matrix_1x1,
     matrix_2x2,
@@ -8,7 +8,7 @@ from test.core.bio_process.bio_utils import (
 import pytest
 
 from src.coral.model.coral_model import Coral
-from src.core.bio_process.temperature import Temperature
+from src.coral.bio_process.temperature import Temperature
 from src.core.common.space_time import DataReshape
 
 

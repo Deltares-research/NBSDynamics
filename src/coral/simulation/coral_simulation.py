@@ -11,15 +11,15 @@ from src.coral.model.coral_constants import CoralConstants
 from src.coral.model.coral_model import Coral
 from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.core import RESHAPE
-from src.core.bio_process.calcification import Calcification
-from src.core.bio_process.dislodgment import Dislodgement
-from src.core.bio_process.flow import Flow
-from src.core.bio_process.light import Light
-from src.core.bio_process.morphology import Morphology
-from src.core.bio_process.photosynthesis import Photosynthesis
-from src.core.bio_process.population_states import PopulationStates
-from src.core.bio_process.recruitment import Recruitment
-from src.core.bio_process.temperature import Temperature
+from src.coral.bio_process.calcification import Calcification
+from src.coral.bio_process.dislodgment import Dislodgement
+from src.coral.bio_process.flow import Flow
+from src.coral.bio_process.light import Light
+from src.coral.bio_process.morphology import Morphology
+from src.coral.bio_process.photosynthesis import Photosynthesis
+from src.coral.bio_process.population_states import PopulationStates
+from src.coral.bio_process.recruitment import Recruitment
+from src.coral.bio_process.temperature import Temperature
 from src.core.common.space_time import time_series_year
 from src.core.simulation.base_simulation import BaseSimulation
 
