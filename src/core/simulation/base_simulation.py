@@ -292,6 +292,13 @@ class BaseSimulation(BaseModel, ABC):
                     peak_period=wave_per,
                     constants=self.constants,
                 )
+                fme2 = Flow(
+                    u_current=current_vel,
+                    u_wave=wave_vel,
+                    h=self.hydrodynamics.water_depth,
+                    peak_period=wave_per,
+                    constants=self.constants,
+                )
                 fme.velocities(self.coral, in_canopy=self.constants.fme)
                 fme.thermal_boundary_layer(self.coral)
                 # thermal micro-environment

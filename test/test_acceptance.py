@@ -7,11 +7,14 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
+from src.core.common.constants_veg import Constants as VegConstants
 from src.core.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
 )
 from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.core.simulation.veg_delft3d_simulation import VegFlowFmSimulation
+from src.core.vegetation.veg_model import Vegetation
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -32,6 +35,58 @@ class TestAcceptance:
         ).is_dir(),
         reason="Only to be run to generate expected data from local machines.",
     )
+
+    @only_local
+    def test_given_veg_case_runs(self):
+        # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+
+        # dll_repo= Path (r"c:\Program Files (x86)\Deltares\Delft3D Flexible Mesh Suite HMWQ (2021.03)\plugins\DeltaShell.Dimr")
+        assert test_dir.is_dir()
+        kernels_dir = dll_repo / "kernels"
+        assert kernels_dir.is_dir()
+
+        # test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
+        test_case = test_dir / "input" / "MinFiles"
+        species = "Salicornia"
+
+        sim_run = VegFlowFmSimulation(
+            working_dir=test_dir,
+            constants=VegConstants(species=species),
+            # constants=input_dir/ "MinFiles" / "fm" / "veg.ext",
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
+                # definition_file=test_case / "fm" / "shallow_wave.mdu",
+                definition_file=test_case / "fm" / "test_case6.mdu",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict()),
+                his_output=dict(
+                    # xy_stations=np.array([[0, 0], [1, 1]]),
+                    output_params=dict(),
+                ),
+            ),
+            veg=Vegetation(species=species),
+        )
+
+        # Run simulation.
+        sim_run.initiate()
+        sim_run.run(1)
+        sim_run.finalise()
+
+        # 4. Verify expectations.
+        # expected_dir = (
+        #         TestUtils.get_local_test_data_dir("transect_case") / "expected_output"
+        # )
+        # compare_files(run_trans.output.his_output.output_filepath)
+        # compare_files(run_trans.output.map_output.output_filepath)
+
+        # 5. Verify plotting can be done.
+        plot_output(sim_run.output)
 
     def test_given_transect_case_runs(self):
         # 1. Define test data.
