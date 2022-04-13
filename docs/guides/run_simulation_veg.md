@@ -2,30 +2,30 @@
 
 To fully understand how to create a simulation object in NBSDynamics we recommend first going through the basic guideline [How to create and run a simulation](../../guides/run_simulation).
 
-An example of how a simulation is run can be found in the [acceptance tests](../../test/test_acceptance.py#TestAcceptance::test_given_veg_case_runs)
+An example of how a simulation is run can be found in the acceptance tests.
 
 ## 1. Simulation structure.
-The [Vegetation Delft3d Simulation](../../reference/simulation/vegetation_simulation/#src.biota_models.vegetation.simulation.veg_delft3d_simulation) is a concrete implementation of the  [BaseSimulation]() which implements the `SimulationProtocol` already described in the previous mentioned [guide](../../guides/run_simulation#1.-Simulation-structure). As such, we are allowed to define our own interpretations of the simulation. Here is how we build a Vegetation simulation:
+The [Vegetation Delft3d Simulation](../../reference/biota_models/vegetation/vegetation_simulation/) is a concrete implementation of the  [BaseSimulation](../../reference/core/simulation/simulation/#base-simulation) which implements the `SimulationProtocol` already described in the previous mentioned [guide](../../guides/run_simulation#1.-Simulation-structure). As such, we are allowed to define our own interpretations of the simulation. Here is how we build a Vegetation simulation:
 
-* Constants -> [VegetationConstants](../../reference/common/common/#src.biota_models.vegetation.model.veg_constants). Different species are defined through different constant values, as well as time related constants (e.g. start time and ecological time steps).
+* Constants -> [VegetationConstants](../../reference/biota_models/vegetation/vegetation_model/#vegetation-constants). Different species are defined through different constant values, as well as time related constants (e.g. start time and ecological time steps).
     * To initialize the object at least a valid species name is required.
-    * This class will load its values looking for the default [vegetation constants file]().
+    * This class will load its values looking for the default [vegetation constants file](https://github.com/Deltares/NBSDynamics/blob/master/src/biota_models/vegetation/model/veg_constants.json).
     * We also allow the user to load their own file by doing the following:
     ```python
       VegetationConstants(species='Salicornia', input_file='your_json_filepath_here.json')
     ```
-    * Further species can be added by defining their specific parameters using [constants_json_create](../../src/biota_models/vegetation/vegetation_model#src.biota_models.vegetation.model.constants_json_create).
-* Biota -> [Vegetation](../../src/biota_models/vegetation/vegetation_model#vegetation-model)
-    * This biota also includes extra characteristics such as [LifeStages](../../reference/vegetation/vegetation_model/#src.biota_models.vegetation.model.veg_lifestages).
+    * Further species can be added by defining their specific parameters using [constants_json_create](https://github.com/Deltares/NBSDynamics/blob/master/src/biota_models/vegetation/model/constants_json_create.py).
+* Biota -> [Vegetation](../../reference/biota_models/vegetation/vegetation_model/#vegetation-model)
+    * This biota also includes extra characteristics such as [LifeStages](../../reference/biota_models/vegetation/vegetation_model/#src.biota_models.vegetation.model.veg_lifestages.LifeStages).
 * Environment -> None (we do not need it for this simulation).
 * Hydrodynamics -> Either of the following two:
     * [Delft3D - FlowFMModel](../../reference/core/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.FlowFmModel).
     * [Delft3D - DimrModel](../../reference/core/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.DimrModel).
-* Output -> [VegetationOutputWrapper](../../reference/output/vegetation_output/#src.biota_models.vegetation.output.veg_output_wrapper).
+* Output -> [VegetationOutputWrapper](../../reference/biota_models/vegetation/vegetation_output/#src.biota_models.vegetation.output.veg_output_wrapper.VegOutputWrapper).
     * Our custom wrapper ensures the required output variables are stored to be later evaluated.
 
 ## 2. Simulation steps.
-When the previous paramaters have been correctly assigned to the object, the simulation is started by using the required methods from [BaseSimulation](../../reference/simulation/vegetation_simulation/#src.biota_models.vegetation.simulation.veg_base_simulation) and defined in [VegFlowFmSimulation](../../reference/simulation/vegetation_simulation/#src.biota_models.vegetation.simulation.veg_delft3d_simulation):
+When the previous paramaters have been correctly assigned to the object, the simulation is started by using the required methods from [BaseSimulation](../../reference/core/simulation/simulation/#base-simulation) and defined in [VegFlowFmSimulation](reference/biota_models/vegetation/vegetation_simulation/#src.biota_models.vegetation.simulation.veg_delft3d_simulation.VegFlowFmSimulation):
 
 1. Initiate:
     * Configures hydrodynamics and output
@@ -78,9 +78,11 @@ output_dir = test_dir / "output"
 test_case = test_dir / "input" / "MinFiles"
 
 # 2. Prepare model.
+# Create vegetation constants based on the above species.
+veg_constants = VegetationConstants(species="Salicornia")
 sim_run = VegFlowFmSimulation(
     working_dir=test_dir,
-    constants=VegetationConstants(species="Salicornia"),
+    constants=veg_constants,
     hydrodynamics=dict(
         working_dir=test_dir / "d3d_work",
         d3d_home=kernels_dir,
@@ -94,7 +96,7 @@ sim_run = VegFlowFmSimulation(
             output_params=dict(),
         ),
     ),
-    biota=Vegetation(species="Salicornia"),
+    biota=Vegetation(species="Salicornia", constants=veg_constants),
 )
 
 # 3. Run simulation.

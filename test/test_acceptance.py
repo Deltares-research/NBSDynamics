@@ -52,6 +52,7 @@ class TestAcceptance:
 
         test_case = test_dir / "input" / "MinFiles"
         species = "Salicornia"
+        # Create vegetation constants based on the above species.
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
