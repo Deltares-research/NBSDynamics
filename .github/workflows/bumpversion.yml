@@ -46,7 +46,7 @@ jobs:
           git checkout $GITHUB_HEAD_REF
           git fetch --all --tags
           git tag
-          current_tag=$(git describe --tags)
+          current_tag=$(git tag --sort=committerdate | tail -1)
           echo $current_tag
 
       # - name: Create bump and changelog
@@ -60,7 +60,7 @@ jobs:
 
       - name: Push changelog, version files and new tag
         run: |
-          new_tag=$(git describe --tags)
+          new_tag=$(git tag --sort=committerdate | tail -1)
           echo $new_tag
           git config --global user.name '${{ github.actor }}'
           git config --global user.email '${{ github.actor }}@users.noreply.github.com'

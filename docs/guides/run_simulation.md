@@ -3,22 +3,22 @@
 The current package offers the user the possibility to run a simulation with the built-in simulation types, or to create their own simulation with their custom attributes.
 
 ## 1. Simulation structure.
-A simulation is based on the [SimulationProtocol](../../reference/simulation/simulation/#simulation-protocol). Thus its required attributes are as follows:
+A simulation is based on the [SimulationProtocol](../../reference/core/simulation/simulation/#simulation-protocol). Thus its required attributes are as follows:
 
 * [Constants](../../reference/core/common/common/#constants). Definition of constants to be used during the simulation.
 * [Coral](../../reference/coral/coral/#coral-model). Required to represent a morphological model of a coral.
-* [Environment](../../reference/common/common/#environment).
-* [Hydrodynamics](../../reference/hydrodynamics/hydromodels/). Defines the type of simulation that will be run. As per version v0.8.0 the following types are available:
-    * [Reef0D](../../reference/hydrodynamics/hydromodels/#reef0d)
-    * [Reef1D](../../reference/hydrodynamics/hydromodels/#reef1d)
-    * [Transect](../../reference/hydrodynamics/hydromodels/#transect)
-    * [Delft3D](../../reference/hydrodynamics/hydromodels/#delft3d). Simulation through usage of a BMI runner:
-        * [Delft3D - FlowFMModel](../../reference/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.FlowFmModel). Currently under work.
-        * [Delft3D - DimrModel](../../reference/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.DimrModel). Currently under work.
-* [Output](../../reference/output/output/#wrapper). Required to define what output should be stored, how, where and when.
+* [Environment](../../reference/core/common/common/#environment).
+* [Hydrodynamics](../../reference/core/hydrodynamics/hydromodels/). Defines the type of simulation that will be run. As per version v0.8.0 the following types are available:
+    * [Reef0D](../../reference/core/hydrodynamics/hydromodels/#reef-0d)
+    * [Reef1D](../../reference/core/hydrodynamics/hydromodels/#reef-1d)
+    * [Transect](../../reference/core/hydrodynamics/hydromodels/#transect)
+    * [Delft3D](../../reference/core/hydrodynamics/hydromodels/#delft3d). Simulation through usage of a BMI runner:
+        * [Delft3D - FlowFMModel](../../reference/core/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.FlowFmModel). Currently under work.
+        * [Delft3D - DimrModel](../../reference/core/hydrodynamics/hydromodels/#src.core.hydrodynamics.delft3d.DimrModel). Currently under work.
+* [Output](../../reference/core/output/output/#wrapper). Required to define what output should be stored, how, where and when.
 
 ## 2. 'Vanilla' Simulation.
-The user has the possibility to create its custom simulation by calling to the most simple simulation class [`Simulation`](../../reference/simulation/simulation/#src.core.simulation.base_simulation.Simulation). This class allows the user to combine their own set of `Constants`, `Coral`, `Environment`, `Hydrodynamics` and `Output` and then call the predefined `initiate`, `run` or `finalise` methods.
+The user has the possibility to create its custom simulation by calling to the most simple simulation class [`Simulation`](../../reference/core/simulation/simulation/#src.core.simulation.base_simulation.Simulation). This class allows the user to combine their own set of `Constants`, `Coral`, `Environment`, `Hydrodynamics` and `Output` and then call the predefined `initiate`, `run` or `finalise` methods.
 
 Keep in mind this way of running a simulation implies the user will have to manually configure the Simulation attributes.
 

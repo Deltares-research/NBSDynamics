@@ -129,7 +129,7 @@ class TestAcceptance:
                 map_output=dict(output_params=dict(fme=False)),
                 his_output=dict(output_params=dict(fme=False)),
             ),
-            coral=dict(
+            biota=dict(
                 dc=0.125,
                 hc=0.125,
                 bc=0.1,
