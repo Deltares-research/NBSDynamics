@@ -45,36 +45,31 @@ class TestAcceptance:
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-
-        # dll_repo= Path (r"c:\Program Files (x86)\Deltares\Delft3D Flexible Mesh Suite HMWQ (2021.03)\plugins\DeltaShell.Dimr")
-        assert test_dir.is_dir()
         kernels_dir = dll_repo / "kernels"
+
+        assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
-        # test_case = dll_repo / "test_cases" / "c01_test1_smalltidalbasin_vegblock"
         test_case = test_dir / "input" / "MinFiles"
         species = "Salicornia"
-
+        veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
-            constants=VegetationConstants(species=species),
-            # constants=input_dir/ "MinFiles" / "fm" / "veg.ext",
+            constants=veg_constants,
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
-                # definition_file=test_case / "fm" / "shallow_wave.mdu",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
                 map_output=dict(output_params=dict()),
                 his_output=dict(
-                    # xy_stations=np.array([[0, 0], [1, 1]]),
                     output_params=dict(),
                 ),
             ),
-            veg=Vegetation(species=species),
+            biota=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.
@@ -129,7 +124,7 @@ class TestAcceptance:
                 map_output=dict(output_params=dict(fme=False)),
                 his_output=dict(output_params=dict(fme=False)),
             ),
-            coral=dict(
+            biota=dict(
                 dc=0.125,
                 hc=0.125,
                 bc=0.1,
@@ -194,7 +189,7 @@ class TestAcceptance:
                 light=input_dir / self.light_input_file,
                 temperature=input_dir / self.temp_input_file,
             ),
-            coral=dict(
+            biota=dict(
                 dc=0.1,
                 hc=0.1,
                 bc=0.05,
@@ -243,7 +238,7 @@ class TestAcceptance:
                 light=input_dir / self.light_input_file,
                 temperature=input_dir / self.temp_input_file,
             ),
-            coral=dict(
+            biota=dict(
                 dc=0.1,
                 hc=0.1,
                 bc=0.05,

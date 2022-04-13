@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
 
-from src.biota_models.coral.model.coral_model import Coral
+from src.core.biota.biota_model import Biota
 from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
@@ -65,15 +65,15 @@ class SimulationProtocol(Protocol):
         """
 
     @property
-    def coral(self) -> Coral:
+    def biota(self) -> Biota:
         """
-        Instance of a Coral model object.
+        Instance of a Biota model object.
 
         Raises:
             NotImplementedError: When the model does not implement its own definition.
 
         Returns:
-            Coral: Coral instance.
+            Biota: Biota instance.
         """
         raise NotImplementedError
 
@@ -90,20 +90,20 @@ class SimulationProtocol(Protocol):
         """
         raise NotImplementedError
 
-    def initiate(self, x_range: tuple, y_range: tuple, value: float) -> Coral:
+    def initiate(self, x_range: tuple, y_range: tuple, value: float) -> Biota:
         """
         Initiates the simulation attributes with the given parameters.
 
         Args:
             x_range (tuple): Minimum and maximum x-coordinate.
             y_range (tuple): Minimum and maximum y-coordinate.
-            value (float): Coral cover.
+            value (float): Biota cover.
 
         Raises:
             NotImplementedError: When the model does not implement its own definition.
 
         Returns:
-            Coral: Initiated coral animal.
+            Biota: Initiated Biota object.
         """
         raise NotImplementedError
 

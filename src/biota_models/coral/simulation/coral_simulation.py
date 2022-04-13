@@ -32,9 +32,9 @@ class _CoralSimulation(BaseSimulation, ABC):
 
     constants: CoralConstants = CoralConstants()
     output: Optional[CoralOutputWrapper]
-    coral: Optional[Coral]
+    biota: Optional[Coral]
 
-    @validator("coral", pre=True)
+    @validator("biota", pre=True)
     @classmethod
     def validate_coral(cls, field_value: Union[dict, Coral], values: dict) -> Coral:
         """
@@ -125,7 +125,7 @@ class _CoralSimulation(BaseSimulation, ABC):
         RESHAPE().space = self.hydrodynamics.space
 
         if self.output.defined:
-            self.output.initialize(self.coral)
+            self.output.initialize(self.biota)
         else:
             print("WARNING: No output defined, so none exported.")
 
@@ -146,9 +146,9 @@ class _CoralSimulation(BaseSimulation, ABC):
             y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
             cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.coral.initiate_coral_morphology(cover)
+        self.biota.initiate_coral_morphology(cover)
 
-        self.output.initialize(self.coral)
+        self.output.initialize(self.biota)
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
@@ -180,7 +180,7 @@ class _CoralSimulation(BaseSimulation, ABC):
                 # if-statement that encompasses all for which the hydrodynamic should be used
                 progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                 current_vel, wave_vel, wave_per = self.hydrodynamics.update(
-                    self.coral, stormcat=0
+                    self.biota, stormcat=0
                 )
 
                 # # environment
@@ -191,7 +191,7 @@ class _CoralSimulation(BaseSimulation, ABC):
                     lac=time_series_year(self.environment.light_attenuation, years[i]),
                     depth=self.hydrodynamics.water_depth,
                 )
-                lme.rep_light(self.coral)
+                lme.rep_light(self.biota)
                 # flow micro-environment
                 fme = Flow(
                     u_current=current_vel,
@@ -207,8 +207,8 @@ class _CoralSimulation(BaseSimulation, ABC):
                     peak_period=wave_per,
                     constants=self.constants,
                 )
-                fme.velocities(self.coral, in_canopy=self.constants.fme)
-                fme.thermal_boundary_layer(self.coral)
+                fme.velocities(self.biota, in_canopy=self.constants.fme)
+                fme.thermal_boundary_layer(self.biota)
                 # thermal micro-environment
                 tme = Temperature(
                     constants=self.constants,
@@ -216,7 +216,7 @@ class _CoralSimulation(BaseSimulation, ABC):
                         self.environment.temp_kelvin, years[i]
                     ),
                 )
-                tme.coral_temperature(self.coral)
+                tme.coral_temperature(self.biota)
 
                 # # physiology
                 progress.set_postfix(inner_loop="coral physiology")
@@ -226,24 +226,24 @@ class _CoralSimulation(BaseSimulation, ABC):
                     light_in=time_series_year(self.environment.light, years[i]),
                     first_year=True if i == 0 else False,
                 )
-                phd.photo_rate(self.coral, self.environment, years[i])
+                phd.photo_rate(self.biota, self.environment, years[i])
                 # population states
                 ps = PopulationStates(constants=self.constants)
-                ps.pop_states_t(self.coral)
+                ps.pop_states_t(self.biota)
                 # calcification
                 cr = Calcification(constants=self.constants)
                 cr.calcification_rate(
-                    self.coral, time_series_year(self.environment.aragonite, years[i])
+                    self.biota, time_series_year(self.environment.aragonite, years[i])
                 )
                 # # morphology
                 progress.set_postfix(inner_loop="coral morphology")
                 # morphological development
                 mor = Morphology(
                     constants=self.constants,
-                    calc_sum=self.coral.calc.sum(axis=1),
+                    calc_sum=self.biota.calc.sum(axis=1),
                     light_in=time_series_year(self.environment.light, years[i]),
                 )
-                mor.update(self.coral)
+                mor.update(self.biota)
 
                 # # storm damage
                 if self.environment.storm_category is not None:
@@ -254,7 +254,7 @@ class _CoralSimulation(BaseSimulation, ABC):
                         progress.set_postfix(inner_loop="storm damage")
                         # update hydrodynamic model
                         current_vel, wave_vel, wave_per = self.hydrodynamics.update(
-                            self.coral, stormcat
+                            self.biota, stormcat
                         )
                         # storm flow environment
                         sfe = Flow(
@@ -264,24 +264,24 @@ class _CoralSimulation(BaseSimulation, ABC):
                             h=self.hydrodynamics.water_depth,
                             peak_period=wave_per,
                         )
-                        sfe.velocities(self.coral, in_canopy=self.constants.fme)
+                        sfe.velocities(self.biota, in_canopy=self.constants.fme)
                         # storm dislodgement criterion
                         sdc = Dislodgement(constants=self.constants)
-                        sdc.update(self.coral)
+                        sdc.update(self.biota)
 
                 # # recruitment
                 progress.set_postfix(inner_loop="coral recruitment")
                 # recruitment
                 rec = Recruitment(constants=self.constants)
-                rec.update(self.coral)
+                rec.update(self.biota)
 
                 # # export results
                 progress.set_postfix(inner_loop="export results")
                 # map-file
-                self.output.map_output.update(self.coral, years[i])
+                self.output.map_output.update(self.biota, years[i])
                 # his-file
                 self.output.his_output.update(
-                    self.coral,
+                    self.biota,
                     environment_dates[environment_dates.dt.year == years[i]],
                 )
 

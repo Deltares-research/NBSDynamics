@@ -1,7 +1,7 @@
 name: Bump version
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -46,7 +46,6 @@ jobs:
           git checkout $GITHUB_HEAD_REF
           git fetch --all --tags
           git tag
-
       # - name: Create bump and changelog
       #   uses: commitizen-tools/commitizen-action@master
       #   with:
@@ -55,7 +54,6 @@ jobs:
       - name: Create bump and changelog
         run: |
           poetry run cz bump --changelog
-
       - name: Push changelog, version files and new tag
         run: |
           git config --global user.name '${{ github.actor }}'

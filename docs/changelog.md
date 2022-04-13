@@ -1,3 +1,24 @@
+## v0.8.3 (2022-04-13)
+
+### Refactor
+
+- **veg_model.py**: Now we configure the fields using pydantic
+
+## v0.8.2 (2022-04-13)
+
+### Refactor
+
+- **veg_base_simulation.py;veg_delft3d_simulation.py**: Changed vegetation simulation naming and reduced code duplicity
+- **src/core/simulation/simulation_protocol.py**: Removed coral from being a simulation protocol parameter
+
+## v0.8.1 (2022-04-13)
+
+### Fix
+
+- **docs/reference**: removed previous references (#84)
+
+## v0.8.0-NBSDynamics_as_package (2021-11-19)
+
 ## v0.8.0 (2021-11-18)
 
 ### Feat

@@ -3,11 +3,13 @@ from abc import ABC
 import pandas as pd
 
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
-from src.biota_models.vegetation.simulation.veg_base_simulation import BaseSimulation
+from src.biota_models.vegetation.simulation.veg_base_simulation import (
+    _VegetationSimulation,
+)
 from src.core.hydrodynamics.delft3d import Delft3D
 
 
-class _VegDelft3DSimulation(BaseSimulation, ABC):
+class _VegDelft3DSimulation(_VegetationSimulation, ABC):
     """
     Implements the `SimulationProtocol`
     Vegetation Delft3D Simulation. Contains the specific logic and parameters required for the case.
