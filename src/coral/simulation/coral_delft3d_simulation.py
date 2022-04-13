@@ -1,8 +1,8 @@
 from abc import ABC
 
-from src.core.hydrodynamics.delft3d import Delft3D
 from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.coral.simulation.coral_simulation import _CoralSimulation
+from src.core.hydrodynamics.delft3d import Delft3D
 
 
 class _CoralDelft3DSimulation(_CoralSimulation, ABC):

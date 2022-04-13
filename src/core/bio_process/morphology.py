@@ -1,8 +1,8 @@
 import numpy as np
 
-from src.core import RESHAPE
-from src.coral.model.coral_model import Coral
 from src.coral.model.coral_constants import CoralConstants
+from src.coral.model.coral_model import Coral
+from src.core import RESHAPE
 
 
 class Morphology:

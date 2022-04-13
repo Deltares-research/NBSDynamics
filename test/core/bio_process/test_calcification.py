@@ -3,8 +3,8 @@ from test.core.bio_process.bio_utils import valid_coral
 import numpy as np
 import pytest
 
-from src.core.bio_process.calcification import Calcification
 from src.coral.model.coral_model import Coral
+from src.core.bio_process.calcification import Calcification
 
 
 class TestCalcification:

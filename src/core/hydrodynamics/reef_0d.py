@@ -3,8 +3,8 @@ from typing import Optional
 
 import numpy as np
 
-from src.core.base_model import BaseModel
 from src.coral.model.coral_model import Coral
+from src.core.base_model import BaseModel
 
 
 class Reef0D(BaseModel):
