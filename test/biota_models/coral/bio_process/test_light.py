@@ -9,9 +9,9 @@ from test.biota_models.coral.bio_process.bio_utils import (
 import numpy as np
 import pytest
 
+from src.biota_models.coral.bio_process.light import Light
 from src.biota_models.coral.model.coral_constants import CoralConstants
 from src.biota_models.coral.model.coral_model import Coral
-from src.biota_models.coral.bio_process.light import Light
 from src.core.common.space_time import DataReshape
 
 tolerance = 0.0000001

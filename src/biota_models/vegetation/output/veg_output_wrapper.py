@@ -1,11 +1,11 @@
 from typing import Optional
 
-from src.core.output.base_output_wrapper import BaseOutputWrapper
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.output.veg_output_model import (
     VegetationHisOutput,
     VegetationMapOutput,
 )
+from src.core.output.base_output_wrapper import BaseOutputWrapper
 
 
 class VegOutputWrapper(BaseOutputWrapper):

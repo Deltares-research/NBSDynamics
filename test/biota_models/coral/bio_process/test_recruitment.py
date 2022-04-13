@@ -7,9 +7,9 @@ from test.biota_models.coral.bio_process.bio_utils import (
 import numpy as np
 import pytest
 
+from src.biota_models.coral.bio_process.recruitment import Recruitment
 from src.biota_models.coral.model.coral_constants import CoralConstants
 from src.biota_models.coral.model.coral_model import Coral
-from src.biota_models.coral.bio_process.recruitment import Recruitment
 from src.core.common.base_constants import BaseConstants
 from src.core.common.space_time import DataReshape
 

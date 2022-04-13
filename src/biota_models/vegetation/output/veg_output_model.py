@@ -5,8 +5,8 @@ import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
 
-from src.core.output.base_output_model import BaseOutput, BaseOutputParameters
 from src.biota_models.vegetation.model.veg_model import Vegetation
+from src.core.output.base_output_model import BaseOutput, BaseOutputParameters
 
 
 class VegetationOutputParameters(BaseOutputParameters):

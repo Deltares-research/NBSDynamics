@@ -2,8 +2,8 @@ from test.biota_models.coral.bio_process.bio_utils import matrix_1x1, matrix_2x2
 
 import pytest
 
-from src.biota_models.coral.model.coral_constants import CoralConstants
 from src.biota_models.coral.bio_process.flow import Flow
+from src.biota_models.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 
 

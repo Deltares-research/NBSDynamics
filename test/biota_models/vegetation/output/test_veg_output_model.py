@@ -3,14 +3,14 @@ from test.utils import TestUtils
 
 import numpy as np
 
-from src.core.output.base_output_model import BaseOutput
-from src.core.output.output_protocol import OutputProtocol
 from src.biota_models.vegetation.output.veg_output_model import (
     VegetationHisOutput,
     VegetationMapOutput,
     VegetationOutputParameters,
     _VegetationOutput,
 )
+from src.core.output.base_output_model import BaseOutput
+from src.core.output.output_protocol import OutputProtocol
 
 
 class TestVegetationOutputParameters:

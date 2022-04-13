@@ -2,9 +2,9 @@ from abc import ABC
 
 import pandas as pd
 
-from src.core.hydrodynamics.delft3d import Delft3D
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
 from src.biota_models.vegetation.simulation.veg_base_simulation import BaseSimulation
+from src.core.hydrodynamics.delft3d import Delft3D
 
 
 class _VegDelft3DSimulation(BaseSimulation, ABC):
