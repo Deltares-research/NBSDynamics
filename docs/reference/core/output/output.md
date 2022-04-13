@@ -4,7 +4,7 @@
 ::: src.core.output.output_protocol
 
 ### Wrapper
-::: src.core.output.output_wrapper
+::: src.core.output.base_output_wrapper
 
 ### Output models
 ::: src.core.output.base_output_model
