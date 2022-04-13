@@ -297,7 +297,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.veg, constants=self.constants)
+                        col.update(self.veg)
 
                     # update lifestages, initial to juvenile and juvenile to mature
                     self.veg.update_lifestages()
