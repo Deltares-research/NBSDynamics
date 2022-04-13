@@ -2,9 +2,9 @@ from test.biota_models.coral.bio_process.bio_utils import coral_2x2, valid_coral
 
 import pytest
 
+from src.biota_models.coral.bio_process.dislodgment import Dislodgement
 from src.biota_models.coral.model.coral_model import Coral
 from src.core import RESHAPE
-from src.biota_models.coral.bio_process.dislodgment import Dislodgement
 from src.core.common.space_time import DataReshape
 
 

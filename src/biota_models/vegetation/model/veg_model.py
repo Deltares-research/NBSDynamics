@@ -6,13 +6,13 @@ import pandas as pd
 from pydantic import validator
 
 import src
+from src.biota_models.vegetation.model.veg_constants import VegetationConstants
+from src.biota_models.vegetation.model.veg_lifestages import LifeStages
+from src.biota_models.vegetation.model.veg_only import VegOnly
 from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
-from src.biota_models.vegetation.model.veg_constants import VegetationConstants
-from src.biota_models.vegetation.model.veg_lifestages import LifeStages
-from src.biota_models.vegetation.model.veg_only import VegOnly
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 

@@ -1,10 +1,10 @@
 import pytest
 
-from src.core.common.base_constants import BaseConstants
 from src.biota_models.vegetation.model.veg_constants import (
     VegetationConstants,
     default_veg_constants_json,
 )
+from src.core.common.base_constants import BaseConstants
 
 
 class TestVegetationConstants:

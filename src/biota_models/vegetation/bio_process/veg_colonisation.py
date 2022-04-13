@@ -2,9 +2,9 @@ from typing import Optional
 
 import numpy as np
 
-from src.core.base_model import ExtraModel
 from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_model import Vegetation
+from src.core.base_model import ExtraModel
 
 
 class Colonization(ExtraModel):
