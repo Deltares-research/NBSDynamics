@@ -1,8 +1,11 @@
 from pathlib import Path
+from test.utils import TestUtils
+from typing import Union
 
 import numpy as np
 import pytest
 
+from src.core.common.coral_constants import CoralConstants
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
@@ -91,3 +94,26 @@ class TestCoralDelft3dSimulation:
         assert isinstance(test_sim.output, CoralOutputWrapper)
         assert test_sim.output.map_output is not None
         assert test_sim.output.his_output is not None
+
+    constants_file_case: Path = (
+        TestUtils.get_local_test_data_dir("transect_case") / "input" / "coral_input.txt"
+    )
+
+    @pytest.mark.parametrize(
+        "valid_value",
+        [
+            pytest.param(CoralConstants(), id="As object"),
+            pytest.param(constants_file_case, id="As Path"),
+            pytest.param(constants_file_case.as_posix(), id="As String"),
+        ],
+    )
+    def test_validate_coral_constants_with_valid_values(
+        self, valid_value: Union[CoralConstants, str, Path]
+    ):
+        return_value = _CoralDelft3DSimulation.validate_constants(valid_value)
+        assert isinstance(return_value, CoralConstants)
+
+    def test_validate_coralconstants_with_not_valid_value(self):
+        with pytest.raises(NotImplementedError) as e_err:
+            _CoralDelft3DSimulation.validate_constants(42)
+        assert str(e_err.value) == f"Validator not available for {type(42)}"

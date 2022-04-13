@@ -1,26 +1,14 @@
-from typing import Optional
-
-from src.core.common.coral_constants import CoralConstants
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.coral_output_wrapper import CoralOutputWrapper
-from src.core.simulation.base_simulation import BaseSimulation
+from src.core.simulation.coral_simulation import _CoralSimulation
 
 
-class CoralTransectSimulation(BaseSimulation):
+class CoralTransectSimulation(_CoralSimulation):
     """
     Implements the `SimulationProtocol`
     Coral Transect Simulation. Contains the specific logic and parameters required for the case.
     """
 
     mode = "Transect"
-    constants: CoralConstants = CoralConstants()
-    output: Optional[CoralOutputWrapper]
-
-    def configure_hydrodynamics(self):
-        """
-        Initializes the `HydrodynamicsProtocol` model.
-        """
-        self.hydrodynamics.initiate()
 
     def configure_output(self):
         """
