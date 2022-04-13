@@ -59,7 +59,11 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm"/ "dflowfm",
+                dll_path=kernels_dir
+                / "dflowfm_with_shared"
+                / "bin"
+                / "dflowfm"
+                / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
