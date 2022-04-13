@@ -115,5 +115,5 @@ class TestHydrodynamicProtocol:
         ]
         list(map(verify_prop_raises, props_to_test))
         verify_method_raises("initiate")
-        verify_method_raises("update", coral=None, stormcat=None)
+        verify_method_raises("update", biota=None, stormcat=None)
         verify_method_raises("finalise")

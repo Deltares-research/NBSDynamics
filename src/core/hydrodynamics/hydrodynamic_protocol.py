@@ -3,7 +3,7 @@ from typing import Protocol, runtime_checkable
 
 import numpy as np
 
-from src.core.coral.coral_model import Coral
+from src.core.biota.biota_model import Biota
 
 
 @runtime_checkable
@@ -126,12 +126,12 @@ class HydrodynamicProtocol(Protocol):
         """
         raise NotImplementedError
 
-    def update(self, coral: Coral, stormcat: int):
+    def update(self, biota: Biota, stormcat: int):
         """
         Updates the model with the given parameters.
 
         Args:
-            coral (Coral): Coral model to be used.
+            biota (Biota): Model representing a living entity.
             stormcat (int): Category of storm to apply.
 
         Raises:

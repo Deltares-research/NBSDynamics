@@ -7,14 +7,18 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.core.common.constants_veg import Constants as VegConstants
-from src.core.simulation.coral_delft3d_simulation import (
+from src.biota_models.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
 )
-from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
-from src.core.simulation.veg_delft3d_simulation import VegFlowFmSimulation
-from src.core.vegetation.veg_model import Vegetation
+from src.biota_models.coral.simulation.coral_transect_simulation import (
+    CoralTransectSimulation,
+)
+from src.biota_models.vegetation.model.veg_constants import VegetationConstants
+from src.biota_models.vegetation.model.veg_model import Vegetation
+from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
+    VegFlowFmSimulation,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -53,7 +57,7 @@ class TestAcceptance:
 
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
-            constants=VegConstants(species=species),
+            constants=VegetationConstants(species=species),
             # constants=input_dir/ "MinFiles" / "fm" / "veg.ext",
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
