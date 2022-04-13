@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from src.core.bio_process.calcification import Calcification
-from src.core.biota.coral.coral_model import Coral
+from src.coral.model.coral_model import Coral
 
 
 class TestCalcification:

@@ -1,23 +1,24 @@
-from abc import ABC
-
-from src.core.hydrodynamics.delft3d import Delft3D
 from src.core.output.coral_output_wrapper import CoralOutputWrapper
-from src.core.simulation.coral_simulation import _CoralSimulation
+from src.coral.simulation.coral_simulation import _CoralSimulation
 
 
-class _CoralDelft3DSimulation(_CoralSimulation, ABC):
+class CoralTransectSimulation(_CoralSimulation):
     """
     Implements the `SimulationProtocol`
-    Coral Delft3D Simulation. Contains the specific logic and parameters required for the case.
+    Coral Transect Simulation. Contains the specific logic and parameters required for the case.
     """
 
+    mode = "Transect"
+
     def configure_output(self):
+        """
+        Sets the Coral `Transect` specific values to the `OutputWrapper`.
+        Should be run after `configure_hydrodynamics`.
+        """
+        # Initialize the OutputWrapper
         first_date = self.environment.get_dates()[0]
-        hydromodel: Delft3D = self.hydrodynamics
-        xy_coordinates = hydromodel.xy_coordinates
-        # TODO: There should be an output definition for this model.
-        # TODO: For now just output all the points.
-        outpoint = hydromodel.x_coordinates[:] >= 0
+        xy_coordinates = self.hydrodynamics.xy_coordinates
+        outpoint = self.hydrodynamics.outpoint
 
         def get_output_wrapper_dict() -> dict:
             return dict(
@@ -65,23 +66,3 @@ class _CoralDelft3DSimulation(_CoralSimulation, ABC):
         update_output(self.output, extended_output)
         update_output(self.output.map_output, map_dict)
         update_output(self.output.his_output, his_dict)
-
-
-class CoralDimrSimulation(_CoralDelft3DSimulation):
-    """
-    Coral Dimr Simulation representation. Implements the specific
-    logic needed to run a Coral Simulation with a DIMR kernel through
-    `BMIWrapper`
-    """
-
-    mode = "DimrModel"
-
-
-class CoralFlowFmSimulation(_CoralDelft3DSimulation):
-    """
-    Coral FlowFM Simulation representation. Implements the specific
-    logic needed to run a Coral Simulation with a FlowFM kernel through
-    `BMIWrapper`
-    """
-
-    mode = "FlowFMModel"

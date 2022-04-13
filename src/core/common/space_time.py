@@ -12,7 +12,7 @@ from typing import Optional, Tuple, Union
 import numpy as np
 from pandas import DataFrame
 
-from src.core.biota.coral.coral_only import CoralOnly
+from src.coral.model.coral_only import CoralOnly
 from src.vegetation.model.veg_only import VegOnly
 
 

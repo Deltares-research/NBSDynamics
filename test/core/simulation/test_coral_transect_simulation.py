@@ -6,7 +6,7 @@ import pytest
 
 from src.core.common.coral_constants import CoralConstants
 from src.core.simulation.base_simulation import BaseSimulation
-from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.coral.simulation.coral_transect_simulation import CoralTransectSimulation
 
 
 class TestCoralTransectSimulation:

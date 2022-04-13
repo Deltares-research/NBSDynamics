@@ -3,17 +3,17 @@ from typing import Callable, Optional, Union
 
 import pytest
 
-from src.core.biota.coral.coral_model import Coral
+from src.coral.model.coral_model import Coral
 from src.core.common.coral_constants import CoralConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.transect import Transect
-from src.core.simulation.coral_delft3d_simulation import (
+from src.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
 )
-from src.core.simulation.coral_simulation import _CoralSimulation
-from src.core.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.coral.simulation.coral_simulation import _CoralSimulation
+from src.coral.simulation.coral_transect_simulation import CoralTransectSimulation
 from src.core.simulation.simulation_protocol import SimulationProtocol
 
 simulation_cases = [

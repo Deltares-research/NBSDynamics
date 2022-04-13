@@ -9,7 +9,7 @@ from src.core.common.coral_constants import CoralConstants
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
-from src.core.simulation.coral_delft3d_simulation import (
+from src.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
     _CoralDelft3DSimulation,

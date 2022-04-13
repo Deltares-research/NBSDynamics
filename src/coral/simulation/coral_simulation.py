@@ -17,7 +17,7 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.core.biota.coral.coral_model import Coral
+from src.coral.model.coral_model import Coral
 from src.core.common.coral_constants import CoralConstants
 from src.core.common.space_time import time_series_year
 from src.core.simulation.base_simulation import BaseSimulation

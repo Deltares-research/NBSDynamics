@@ -6,7 +6,7 @@ from pydantic import validator
 from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.core.biota.biota_model import Biota
-from src.core.biota.coral.coral_only import CoralOnly
+from src.coral.model.coral_only import CoralOnly
 from src.core.common.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 

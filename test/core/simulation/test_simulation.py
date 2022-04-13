@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Union
 
 import pytest
 
-from src.core.biota.coral.coral_model import Coral
+from src.coral.model.coral_model import Coral
 from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel

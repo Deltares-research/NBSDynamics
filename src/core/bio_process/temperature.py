@@ -1,5 +1,5 @@
 from src.core import RESHAPE
-from src.core.biota.coral.coral_model import Coral
+from src.coral.model.coral_model import Coral
 from src.core.common.coral_constants import CoralConstants
 
 

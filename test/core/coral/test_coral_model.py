@@ -3,8 +3,8 @@ from typing import Tuple
 import numpy as np
 import pytest
 
-from src.core.biota.coral.coral_model import Coral
-from src.core.biota.coral.coral_protocol import CoralProtocol
+from src.coral.model.coral_model import Coral
+from src.coral.model.coral_protocol import CoralProtocol
 from src.core.common.singletons import RESHAPE
 from src.core.common.space_time import DataReshape
 
