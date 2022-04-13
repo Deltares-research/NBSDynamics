@@ -8,50 +8,25 @@ from netCDF4 import Dataset
 from pandas import DataFrame
 
 from src.core.base_model import BaseModel
-from src.core.common.space_time import DataReshape
+from src.core.output.base_output_model import BaseOutputParameters
 from src.vegetation.model.veg_model import Vegetation
 
 
-class ModelParameters(BaseModel):
+class VegetationOutputParameters(BaseOutputParameters):
     hydro_mor: bool = True  # hydro_morph micro-environment
     veg_characteristics: bool = True  # vegetation characteristics
 
-    def valid_output(self) -> bool:
-        return any(self.dict().values())
 
-
-class VegBaseOutput(BaseModel):
+class _VegetationOutput(BaseModel):
     """
     Base class containing the generic definition of a 'Vegetation' output model.
     """
 
-    output_dir: Path
-    output_filename: str
-
     # Output model attributes.
-    output_params: ModelParameters = ModelParameters()
-
-    def valid_output(self) -> bool:
-        """
-        Verifies whether this model can generate valid output.
-
-        Returns:
-            bool: Output is valid.
-        """
-        return self.output_params.valid_output()
-
-    @property
-    def output_filepath(self) -> Path:
-        """
-        Gets the full path to the output netcdf file.
-
-        Returns:
-            Path: Output .nc file.
-        """
-        return self.output_dir / self.output_filename
+    output_params: VegetationOutputParameters = VegetationOutputParameters()
 
 
-class MapOutput(VegBaseOutput):
+class MapOutput(_VegetationOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
@@ -231,7 +206,7 @@ class MapOutput(VegBaseOutput):
                     v_func()
 
 
-class HisOutput(VegBaseOutput):
+class HisOutput(_VegetationOutput):
     """
     Object representing a His output. Implements the 'OutputProtocol'.
     """

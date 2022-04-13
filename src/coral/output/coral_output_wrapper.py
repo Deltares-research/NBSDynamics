@@ -2,14 +2,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple, Union
 
-import numpy as np
-from pydantic.class_validators import root_validator
-
-from src.core.base_model import BaseModel
 from src.coral.model.coral_model import Coral
+from src.coral.output.coral_output_model import HisOutput, MapOutput
 from src.core.output.base_output_wrapper import BaseOutputWrapper
-from src.core.output.output_model import HisOutput, MapOutput
-from src.core.output.output_protocol import OutputProtocol
 
 
 class CoralOutputWrapper(BaseOutputWrapper):

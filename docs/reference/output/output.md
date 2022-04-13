@@ -7,4 +7,4 @@
 ::: src.core.output.output_wrapper
 
 ### Output models
-::: src.core.output.output_model
+::: src.core.output.base_output_model

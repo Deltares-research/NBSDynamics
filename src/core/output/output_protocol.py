@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from src.core.biota.biota_model import Biota
-from src.core.output.output_model import ModelParameters
+from src.core.output.base_output_model import BaseOutputParameters
 
 
 @runtime_checkable
@@ -12,7 +12,7 @@ class OutputProtocol(Protocol):
     """
 
     @property
-    def output_params(self) -> ModelParameters:
+    def output_params(self) -> BaseOutputParameters:
         """
         The output parameters needed to interact with the netcdf dataset.
 
@@ -20,7 +20,7 @@ class OutputProtocol(Protocol):
             NotImplementedError: When the model does not implement its own definition.
 
         Returns:
-            ModelParameters: Object with netcdf parameters as attrs..
+            BaseOutputParameters: Object with netcdf parameters as attrs..
         """
         raise NotImplementedError
 
@@ -67,7 +67,7 @@ class OutputProtocol(Protocol):
         Updates the output model with the given biota and year.
 
         Args:
-            biota (Biota): Coral input model.
+            biota (Biota): Biota input model.
             year (int): Current calculation year.
 
         Raises:

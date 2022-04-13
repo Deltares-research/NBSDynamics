@@ -6,12 +6,12 @@ import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
 
-from src.core.base_model import BaseModel
-from src.core.common.space_time import DataReshape
 from src.coral.model.coral_model import Coral
+from src.core.common.space_time import DataReshape
+from src.core.output.base_output_model import BaseOutput, BaseOutputParameters
 
 
-class ModelParameters(BaseModel):
+class CoralOutputParameters(BaseOutputParameters):
     lme: bool = True  # light micro-environment
     fme: bool = True  # flow micro-environment
     tme: bool = True  # thermal micro-environment
@@ -20,42 +20,12 @@ class ModelParameters(BaseModel):
     calc: bool = True  # calcification rates
     md: bool = True  # morphological development
 
-    def valid_output(self) -> bool:
-        return any(self.dict().values())
+
+class _CoralOutput(BaseOutput):
+    output_params: CoralOutputParameters = CoralOutputParameters()
 
 
-class BaseOutput(BaseModel):
-    """
-    Base class containing the generic definition of a 'Coral' output model.
-    """
-
-    output_dir: Path
-    output_filename: str
-
-    # Output model attributes.
-    output_params: ModelParameters = ModelParameters()
-
-    def valid_output(self) -> bool:
-        """
-        Verifies whether this model can generate valid output.
-
-        Returns:
-            bool: Output is valid.
-        """
-        return self.output_params.valid_output()
-
-    @property
-    def output_filepath(self) -> Path:
-        """
-        Gets the full path to the output netcdf file.
-
-        Returns:
-            Path: Output .nc file.
-        """
-        return self.output_dir / self.output_filename
-
-
-class MapOutput(BaseOutput):
+class MapOutput(_CoralOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
@@ -302,7 +272,7 @@ class MapOutput(BaseOutput):
                     v_func()
 
 
-class HisOutput(BaseOutput):
+class HisOutput(_CoralOutput):
     """
     Object representing a His output. Implements the 'OutputProtocol'.
     """
