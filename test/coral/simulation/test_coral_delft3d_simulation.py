@@ -6,13 +6,13 @@ import numpy as np
 import pytest
 
 from src.coral.model.coral_constants import CoralConstants
+from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
     _CoralDelft3DSimulation,
 )
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.core.simulation.base_simulation import BaseSimulation
 
 

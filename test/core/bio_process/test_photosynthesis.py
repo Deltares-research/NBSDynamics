@@ -8,9 +8,9 @@ from test.core.bio_process.bio_utils import (
 import numpy as np
 import pytest
 
-from src.core.bio_process.photosynthesis import Photosynthesis
-from src.coral.model.coral_model import Coral
 from src.coral.model.coral_constants import CoralConstants
+from src.coral.model.coral_model import Coral
+from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.common.space_time import DataReshape
 
 

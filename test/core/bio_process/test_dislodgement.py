@@ -2,9 +2,9 @@ from test.core.bio_process.bio_utils import coral_2x2, valid_coral
 
 import pytest
 
+from src.coral.model.coral_model import Coral
 from src.core import RESHAPE
 from src.core.bio_process.dislodgment import Dislodgement
-from src.coral.model.coral_model import Coral
 from src.core.common.space_time import DataReshape
 
 

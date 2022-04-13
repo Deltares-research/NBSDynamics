@@ -1,5 +1,5 @@
-from src.core import RESHAPE
 from src.coral.model.coral_constants import CoralConstants
+from src.core import RESHAPE
 
 
 class Calcification:
