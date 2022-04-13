@@ -38,9 +38,9 @@ class Veg_Mortality(ExtraModel):
 
     def update(self, veg: Vegetation, constants, ets, begin_date, end_date, period):
         """Update vegetation characteristics after mortality"""
-        self.drowning_hydroperiod(self, veg, constants, ets)
-        self.uprooting(self, veg, constants)
-        self.erosion_sedimentation(self, veg, ets)
+        Veg_Mortality.drowning_hydroperiod(self, veg, constants, ets)
+        Veg_Mortality.uprooting(self, veg, constants)
+        Veg_Mortality.erosion_sedimentation(self, veg, ets)
 
         veg.juvenile.veg_frac = (
             veg.juvenile.veg_frac
@@ -188,7 +188,7 @@ class Veg_Mortality(ExtraModel):
         the fraction is set to 0. We assume that the plants adapt to the deposition and erosion rates within one
         ETS by resetting them each ETS.
         """
-        self.BedLevel_Dif(self, veg, ets)
+        Veg_Mortality.BedLevel_Dif(self, veg, ets)
         fract_scour_j = np.zeros(veg.juvenile.root_len.shape)
         fract_burial_j = np.zeros(veg.juvenile.veg_height.shape)
         fract_scour_j[
