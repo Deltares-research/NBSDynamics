@@ -14,6 +14,7 @@ from pandas import DataFrame
 
 from src.coral.model.coral_only import CoralOnly
 from src.vegetation.model.veg_only import VegOnly
+from src.core.vegetation.veg_only import VegOnly
 
 
 class SpaceTime:
