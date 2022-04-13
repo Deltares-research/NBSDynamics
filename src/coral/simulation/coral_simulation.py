@@ -7,6 +7,9 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
+from src.coral.model.coral_constants import CoralConstants
+from src.coral.model.coral_model import Coral
+from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.core import RESHAPE
 from src.core.bio_process.calcification import Calcification
 from src.core.bio_process.dislodgment import Dislodgement
@@ -17,15 +20,18 @@ from src.core.bio_process.photosynthesis import Photosynthesis
 from src.core.bio_process.population_states import PopulationStates
 from src.core.bio_process.recruitment import Recruitment
 from src.core.bio_process.temperature import Temperature
-from src.coral.model.coral_model import Coral
-from src.core.common.coral_constants import CoralConstants
 from src.core.common.space_time import time_series_year
 from src.core.simulation.base_simulation import BaseSimulation
 
 
 class _CoralSimulation(BaseSimulation, ABC):
-    constants: CoralConstants = CoralConstants()
+    """
+    Base Simulation class for coral models. This class defines the shared required properties for Coral simulations.
+    Such as CoralConstants, CoralOutputWrapper or the biota field Coral.
+    """
 
+    constants: CoralConstants = CoralConstants()
+    output: Optional[CoralOutputWrapper]
     coral: Optional[Coral]
 
     @validator("coral", pre=True)

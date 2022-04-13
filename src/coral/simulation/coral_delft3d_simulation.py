@@ -1,7 +1,7 @@
 from abc import ABC
 
 from src.core.hydrodynamics.delft3d import Delft3D
-from src.core.output.coral_output_wrapper import CoralOutputWrapper
+from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 from src.coral.simulation.coral_simulation import _CoralSimulation
 
 

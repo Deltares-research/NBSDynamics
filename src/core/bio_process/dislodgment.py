@@ -4,7 +4,7 @@ import numpy as np
 
 from src.core.base_model import ExtraModel
 from src.coral.model.coral_model import Coral
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import CoralOnly
 
 

@@ -5,15 +5,15 @@ from typing import Union
 import numpy as np
 import pytest
 
-from src.core.common.coral_constants import CoralConstants
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.coral_output_wrapper import CoralOutputWrapper
-from src.core.simulation.base_simulation import BaseSimulation
+from src.coral.model.coral_constants import CoralConstants
 from src.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
     _CoralDelft3DSimulation,
 )
+from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.coral.output.coral_output_wrapper import CoralOutputWrapper
+from src.core.simulation.base_simulation import BaseSimulation
 
 
 class TestCoralDelft3dSimulation:

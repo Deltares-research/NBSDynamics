@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 
 
 class TestCoralConstants:

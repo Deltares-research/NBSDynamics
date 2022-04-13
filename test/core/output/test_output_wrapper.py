@@ -6,7 +6,7 @@ import numpy as np
 from src.core.output.base_output_wrapper import BaseOutputWrapper
 
 
-class TestOutputWrapper:
+class TestBaseOutputWrapper:
     def test_output_init(self):
         test_output = BaseOutputWrapper()
         assert isinstance(test_output.output_dir, Path)

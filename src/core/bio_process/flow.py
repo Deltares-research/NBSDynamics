@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import newton
 
 from src.core import RESHAPE
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import CoralOnly, DataReshape
 
 

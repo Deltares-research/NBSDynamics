@@ -2,7 +2,7 @@ from src.core import RESHAPE
 from src.core.base_model import ExtraModel
 from src.coral.model.coral_model import Coral
 from src.coral.model.coral_only import CoralOnly
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 
 
 class Recruitment(ExtraModel):

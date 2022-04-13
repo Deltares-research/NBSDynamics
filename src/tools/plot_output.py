@@ -14,7 +14,7 @@ import matplotlib
 import numpy as np
 from netCDF4 import Dataset
 
-from src.core.output.coral_output_wrapper import CoralOutputWrapper
+from src.coral.output.coral_output_wrapper import CoralOutputWrapper
 
 platform_sys = platform.system().lower()
 if platform_sys in ["windows"]:

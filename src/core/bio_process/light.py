@@ -4,7 +4,7 @@ import numpy as np
 
 from src.core import RESHAPE
 from src.coral.model.coral_only import CoralOnly
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 
 LightVariable = Union[float, list, tuple, np.ndarray]

@@ -6,7 +6,7 @@ import pytest
 from src.core.bio_process.recruitment import Recruitment
 from src.coral.model.coral_model import Coral
 from src.core.common.base_constants import BaseConstants
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 
 

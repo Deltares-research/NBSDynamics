@@ -3,7 +3,7 @@ from test.core.bio_process.bio_utils import matrix_1x1, matrix_2x2
 import pytest
 
 from src.core.bio_process.flow import Flow
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 
 

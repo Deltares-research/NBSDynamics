@@ -4,7 +4,7 @@ from typing import Union
 
 import pytest
 
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.simulation.base_simulation import BaseSimulation
 from src.coral.simulation.coral_transect_simulation import CoralTransectSimulation
 

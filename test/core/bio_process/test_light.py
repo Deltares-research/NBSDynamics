@@ -11,7 +11,7 @@ import pytest
 
 from src.core.bio_process.light import Light
 from src.coral.model.coral_model import Coral
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.space_time import DataReshape
 
 tolerance = 0.0000001

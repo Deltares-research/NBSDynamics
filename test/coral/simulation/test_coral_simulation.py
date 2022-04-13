@@ -4,7 +4,7 @@ from typing import Callable, Optional, Union
 import pytest
 
 from src.coral.model.coral_model import Coral
-from src.core.common.coral_constants import CoralConstants
+from src.coral.model.coral_constants import CoralConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.delft3d import DimrModel, FlowFmModel
 from src.core.hydrodynamics.transect import Transect
