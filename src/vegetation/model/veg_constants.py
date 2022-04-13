@@ -1,19 +1,21 @@
 import json
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
 import pandas as pd
-from pydantic import root_validator, validator
+from pydantic import root_validator
 
 from src.core.common.base_constants import BaseConstants
 
-veg_constants_default_json = Path(__file__).parent / "veg_constants.json"
+default_veg_constants_json = Path(__file__).parent / "veg_constants.json"
 
 
 class VegetationConstants(BaseConstants):
     """Object containing all constants used in marsh_model simulations."""
+
+    species: str
+
+    input_file: Optional[Path] = default_veg_constants_json
 
     # Processes
     warn_proc: bool = False
@@ -27,13 +29,6 @@ class VegetationConstants(BaseConstants):
 
     # Colonization
     ColMethod: int = 1  # Colonisation method (1 = on bare substrate between max and min water levels, 2 = on bare substrate with mud content)
-    species: Optional[str]
-    # Species Specific Constants
-    def __init__(self, species):
-        super().__init__()
-        self.species = species
-        self.get_constants(self.species)
-
     ColStart: str = None
     ColEnd: str = None
     random: int = None
@@ -62,37 +57,88 @@ class VegetationConstants(BaseConstants):
     vel_slope: float = None
     maxH_winter: float = None
 
-    def get_constants(self, species):
-        # if species_1 is not None and species_2 is None:
-        with open(veg_constants_default_json) as f:
-            constants_dict = json.load(f)
-            self.ColStart = constants_dict[species]["ColStart"]
-            self.ColEnd = constants_dict[species]["ColEnd"]
-            self.random = constants_dict[species]["random"]
-            self.mud_col = constants_dict[species]["mud_colonization"]
-            self.fl_dr = constants_dict[species]["fl_dr"]
-            self.maxAge = constants_dict[species]["Maximum age"]
-            self.num_ls = constants_dict[species]["Number LifeStages"]
-            self.iniRoot = constants_dict[species]["initial root length"]
-            self.iniShoot = constants_dict[species]["initial shoot length"]
-            self.iniDia = constants_dict[species]["initial diameter"]
-            self.growth_start = constants_dict[species]["start growth period"]
-            self.growth_end = constants_dict[species]["end growth period"]
-            self.winter_start = constants_dict[species]["start winter period"]
-            self.maxGrowth_H = constants_dict[species]["maximum plant height"]
-            self.maxDia = constants_dict[species]["maximum diameter"]
-            self.maxRoot = constants_dict[species]["maximum root length"]
-            self.maxYears_LS = constants_dict[species]["maximum years in LifeStage"]
-            self.num_stem = constants_dict[species]["numStem"]
-            self.iniCol_frac = constants_dict[species]["iniCol_frac"]
-            self.Cd = constants_dict[species]["Cd"]
-            self.desMort_thres = constants_dict[species]["desMort_thres"]
-            self.desMort_slope = constants_dict[species]["desMort_slope"]
-            self.floMort_thres = constants_dict[species]["floMort_thres"]
-            self.floMort_slope = constants_dict[species]["floMort_slope"]
-            self.vel_thres = constants_dict[species]["vel_thres"]
-            self.vel_slope = constants_dict[species]["vel_slope"]
-            self.maxH_winter = constants_dict[species]["maxH_winter"]
+    @root_validator
+    @classmethod
+    def post_checks(cls, values: dict) -> dict:
+        """
+        Class method to validate and check all the fields from the VegetationConstants class.
+
+        Args:
+            values (dict): Values already formatted during initialization.
+
+        Returns:
+            dict: Dictionary of properties to be set for the VegetationConstants object.
+        """
+        cls.set_constants_from_default_json(values)
+        return values
+
+    @staticmethod
+    def set_constants_from_default_json(vegetation_constants: dict):
+        """
+        Loads all the constants from a given species (inside the 'vegetation_constants' dict), from
+        a json file which should be saved in the 'vegetation_constants' dict as 'input_file'.
+
+        Args:
+            vegetation_constants (dict): Dictionary to fill with the found values.
+        """
+        species: str = vegetation_constants["species"]
+        with open(vegetation_constants["input_file"]) as f:
+            json_data_dict: dict = json.load(f)
+            vegetation_constants["ColStart"] = json_data_dict[species]["ColStart"]
+            vegetation_constants["ColEnd"] = json_data_dict[species]["ColEnd"]
+            vegetation_constants["random"] = json_data_dict[species]["random"]
+            vegetation_constants["mud_col"] = json_data_dict[species][
+                "mud_colonization"
+            ]
+            vegetation_constants["fl_dr"] = json_data_dict[species]["fl_dr"]
+            vegetation_constants["maxAge"] = json_data_dict[species]["Maximum age"]
+            vegetation_constants["num_ls"] = json_data_dict[species][
+                "Number LifeStages"
+            ]
+            vegetation_constants["iniRoot"] = json_data_dict[species][
+                "initial root length"
+            ]
+            vegetation_constants["iniShoot"] = json_data_dict[species][
+                "initial shoot length"
+            ]
+            vegetation_constants["iniDia"] = json_data_dict[species]["initial diameter"]
+            vegetation_constants["growth_start"] = json_data_dict[species][
+                "start growth period"
+            ]
+            vegetation_constants["growth_end"] = json_data_dict[species][
+                "end growth period"
+            ]
+            vegetation_constants["winter_start"] = json_data_dict[species][
+                "start winter period"
+            ]
+            vegetation_constants["maxGrowth_H"] = json_data_dict[species][
+                "maximum plant height"
+            ]
+            vegetation_constants["maxDia"] = json_data_dict[species]["maximum diameter"]
+            vegetation_constants["maxRoot"] = json_data_dict[species][
+                "maximum root length"
+            ]
+            vegetation_constants["maxYears_LS"] = json_data_dict[species][
+                "maximum years in LifeStage"
+            ]
+            vegetation_constants["num_stem"] = json_data_dict[species]["numStem"]
+            vegetation_constants["iniCol_frac"] = json_data_dict[species]["iniCol_frac"]
+            vegetation_constants["Cd"] = json_data_dict[species]["Cd"]
+            vegetation_constants["desMort_thres"] = json_data_dict[species][
+                "desMort_thres"
+            ]
+            vegetation_constants["desMort_slope"] = json_data_dict[species][
+                "desMort_slope"
+            ]
+            vegetation_constants["floMort_thres"] = json_data_dict[species][
+                "floMort_thres"
+            ]
+            vegetation_constants["floMort_slope"] = json_data_dict[species][
+                "floMort_slope"
+            ]
+            vegetation_constants["vel_thres"] = json_data_dict[species]["vel_thres"]
+            vegetation_constants["vel_slope"] = json_data_dict[species]["vel_slope"]
+            vegetation_constants["maxH_winter"] = json_data_dict[species]["maxH_winter"]
 
     @staticmethod
     def get_duration(start_date, end_date):
