@@ -6,7 +6,7 @@ The current package offers the user the possibility to run a simulation with the
 A simulation is based on the [SimulationProtocol](../../reference/core/simulation/simulation/#simulation-protocol). Thus its required attributes are as follows:
 
 * [Constants](../../reference/core/common/common/#constants). Definition of constants to be used during the simulation.
-* [Coral](../../reference/coral/coral/#coral-model). Required to represent a morphological model of a coral.
+* [Biota](../../reference/core/biota/#biota-model). Required to represent a biota entity in the simulation.
 * [Environment](../../reference/core/common/common/#environment).
 * [Hydrodynamics](../../reference/core/hydrodynamics/hydromodels/). Defines the type of simulation that will be run. As per version v0.8.0 the following types are available:
     * [Reef0D](../../reference/core/hydrodynamics/hydromodels/#reef-0d)
