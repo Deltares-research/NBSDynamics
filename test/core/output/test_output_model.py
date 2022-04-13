@@ -12,4 +12,5 @@ class TestBaseOutput:
         assert not isinstance(test_baseoutput, OutputProtocol)
         assert isinstance(test_baseoutput.output_params, BaseOutputParameters)
         assert test_baseoutput.output_filepath == test_dir / file_name
-        assert test_baseoutput.valid_output() is True
+        # This should be false as long as BaseOutputParameters remains 'without parameters'.
+        assert not test_baseoutput.valid_output()

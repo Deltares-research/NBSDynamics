@@ -23,7 +23,7 @@ class TestModelParameters:
         assert test_params.ps is True
         assert test_params.calc is True
         assert test_params.md is True
-        assert test_params.valid_output() is True
+        assert test_params.valid_output()
 
 
 class TestCoralMapOutput:
