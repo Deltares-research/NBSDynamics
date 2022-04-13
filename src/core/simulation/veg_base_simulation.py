@@ -312,7 +312,6 @@ class BaseSimulation(BaseModel, ABC):
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
-                    ## TODO check this when finishing the output files!
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
                     self.output.map_output.update(
@@ -331,5 +330,4 @@ class BaseSimulation(BaseModel, ABC):
 
     def finalise(self):
         """Finalise simulation."""
-        ## TODO what does this do? Does is need modification?
         self.hydrodynamics.finalise()
