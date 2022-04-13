@@ -7,7 +7,7 @@
 ::: src.core.simulation.base_simulation
 
 ### Coral Delft3D (FlowFM / DIMR)
-::: src.coral.simulation.coral_delft3d_simulation
+::: src.biota_models.coral.simulation.coral_delft3d_simulation
 
 ### Coral Transect
-::: src.coral.simulation.coral_transect_simulation
+::: src.biota_models.coral.simulation.coral_transect_simulation

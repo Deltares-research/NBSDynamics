@@ -4,7 +4,7 @@ from typing import Any, Optional
 import numpy as np
 from scipy.optimize import fsolve
 
-from src.coral.model.coral_model import Coral
+from src.biota_models.coral.model.coral_model import Coral
 from src.core.base_model import BaseModel
 
 

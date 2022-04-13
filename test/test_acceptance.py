@@ -7,15 +7,19 @@ import pytest
 from netCDF4 import Dataset
 from numpy import loadtxt, savetxt
 
-from src.coral.simulation.coral_delft3d_simulation import (
+from src.biota_models.coral.simulation.coral_delft3d_simulation import (
     CoralDimrSimulation,
     CoralFlowFmSimulation,
 )
-from src.coral.simulation.coral_transect_simulation import CoralTransectSimulation
+from src.biota_models.coral.simulation.coral_transect_simulation import (
+    CoralTransectSimulation,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
-from src.vegetation.model.veg_constants import VegetationConstants
-from src.vegetation.model.veg_model import Vegetation
-from src.vegetation.simulation.veg_delft3d_simulation import VegFlowFmSimulation
+from src.biota_models.vegetation.model.veg_constants import VegetationConstants
+from src.biota_models.vegetation.model.veg_model import Vegetation
+from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
+    VegFlowFmSimulation,
+)
 
 
 class TestAcceptance:

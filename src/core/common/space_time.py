@@ -12,8 +12,8 @@ from typing import Optional, Tuple, Union
 import numpy as np
 from pandas import DataFrame
 
-from src.coral.model.coral_only import CoralOnly
-from src.vegetation.model.veg_only import VegOnly
+from src.biota_models.coral.model.coral_only import CoralOnly
+from src.biota_models.vegetation.model.veg_only import VegOnly
 
 
 class SpaceTime:

@@ -77,9 +77,9 @@ The following simulations are defined, however their status is not yet final and
 #### Coral FlowFm Simulation
 Open issue: [#68 Fix Delft3D - FlowFMModel run.](https://github.com/Deltares/NBSDynamics/issues/68)
 
-A simulation using the [CoralFlowFmSimulation](reference/simulation/simulation/#src.coral.simulation.coral_delft3d_simulation.CoralFlowFmSimulation) object. Which will build the simulation around a `FlowFMModel` hydrodynamic model.
+A simulation using the [CoralFlowFmSimulation](reference/simulation/simulation/#src.biota_models.coral.simulation.coral_delft3d_simulation.CoralFlowFmSimulation) object. Which will build the simulation around a `FlowFMModel` hydrodynamic model.
 
 #### Coral Dimr Simulation
 Open issue: [#69 Fix / Implement Delft3D - DIMR run.](https://github.com/Deltares/NBSDynamics/issues/69)
 
-A simulation using the [CoralDimrSimulation](../../reference/simulation/simulation/#src.coral.simulation.coral_delft3d_simulation.CoralDimrSimulation) object. Which will build the simulation around a `DimrModel` hydrodynamic model.
+A simulation using the [CoralDimrSimulation](../../reference/simulation/simulation/#src.biota_models.coral.simulation.coral_delft3d_simulation.CoralDimrSimulation) object. Which will build the simulation around a `DimrModel` hydrodynamic model.

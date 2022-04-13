@@ -1,6 +1,6 @@
 __version__ = "0.8.0"
 __all__ = [
-    "coral",
+    "biota",
     "hydrodynamics",
     "simulation",
     "output",

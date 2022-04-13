@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 
-from src.coral.model.coral_model import Coral
+from src.biota_models.coral.model.coral_model import Coral
 from src.core.base_model import BaseModel
 
 
