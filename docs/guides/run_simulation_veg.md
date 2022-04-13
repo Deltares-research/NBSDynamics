@@ -1,5 +1,6 @@
 # How to run a Vegetation simulation in NBSDynamics
 
+An example of how a simulation is run can be found in the [acceptance tests](../../test/test_acceptance.py#TestAcceptance::test_given_veg_case_runs)
 
 ## Simulation structure.
 
