@@ -36,7 +36,15 @@ class Veg_Mortality(ExtraModel):
     # fraction_dead_des: Optional[np.array] = None
     # fraction_dead_upr: Optional[np.array] = None
 
-    def update(self, veg: Vegetation, constants, ets, begin_date, end_date, period):
+    def update(
+        self,
+        veg: Vegetation,
+        constants: VegetationConstants,
+        ets,
+        begin_date,
+        end_date,
+        period,
+    ):
         """Update vegetation characteristics after mortality"""
         Veg_Mortality.drowning_hydroperiod(self, veg, constants, ets)
         Veg_Mortality.uprooting(self, veg, constants)
@@ -66,7 +74,9 @@ class Veg_Mortality(ExtraModel):
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
         veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)
 
-    def drowning_hydroperiod(self, veg: Vegetation, constants, ets):
+    def drowning_hydroperiod(
+        self, veg: Vegetation, constants: VegetationConstants, ets
+    ):
         flooding_current, drying_current = self.compute_hydroperiod(
             veg.wl_ts, constants
         )
@@ -131,7 +141,7 @@ class Veg_Mortality(ExtraModel):
         self.fraction_dead_des_m = dry_m * mort_des_m
 
     @staticmethod
-    def compute_hydroperiod(wl_time, constants):
+    def compute_hydroperiod(wl_time, constants: VegetationConstants):
         # determiine cells with water depth > flooding/drying threshold
         fl = np.where(wl_time > constants.fl_dr)
         flood = np.zeros(wl_time.shape)
@@ -168,7 +178,7 @@ class Veg_Mortality(ExtraModel):
         out_fl[C] = fct[C]
         return out_fl.reshape(len(out_fl), 1)
 
-    def uprooting(self, veg: Vegetation, constants):
+    def uprooting(self, veg: Vegetation, constants: VegetationConstants):
         """
         Mortality through velocity is determined by lin. Function and multiplied with current fraction.
         """
