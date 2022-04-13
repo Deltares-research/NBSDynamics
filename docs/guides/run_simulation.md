@@ -1,4 +1,4 @@
-# How to run a simulation in NBSDynamics
+# How to create and run a simulation in NBSDynamics
 
 The current package offers the user the possibility to run a simulation with the built-in simulation types, or to create their own simulation with their custom attributes.
 
