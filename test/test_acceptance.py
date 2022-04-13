@@ -59,7 +59,7 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm.dll",
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm"/ "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
@@ -69,7 +69,7 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            biota=Vegetation(species=species, constants=veg_constants),
+            veg=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.
