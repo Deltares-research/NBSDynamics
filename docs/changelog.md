@@ -1,3 +1,10 @@
+## v0.8.2 (2022-04-13)
+
+### Refactor
+
+- **veg_base_simulation.py;veg_delft3d_simulation.py**: Changed vegetation simulation naming and reduced code duplicity
+- **src/core/simulation/simulation_protocol.py**: Removed coral from being a simulation protocol parameter
+
 ## v0.8.1 (2022-04-13)
 
 ### Fix
