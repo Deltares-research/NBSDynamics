@@ -22,28 +22,20 @@ from src.core.common.environment import Environment
 from src.core.common.space_time import time_series_year
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
+from src.core.simulation.base_simulation import BaseSimulation
 
 
-class BaseSimulation(BaseModel, ABC):
+class _VegetationSimulation(BaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
     VegetationModel simulation.
     """
 
-    mode: str
-
-    # Directories related to working dir
-    working_dir: Optional[Path] = Path.cwd()
-    figures_dir: Path = working_dir / "figures"
-    output_dir: Path = working_dir / "output"
-    input_dir: Path = working_dir / "input"
-
     # Other fields.
-    hydrodynamics: Optional[HydrodynamicProtocol]
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
-    veg: Optional[Vegetation]
+    biota: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -70,9 +62,9 @@ class BaseSimulation(BaseModel, ABC):
             return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-    @validator("veg", pre=True)
+    @validator("biota", pre=True)
     @classmethod
-    def validate_veg(
+    def validate_vegetation(
         cls, field_value: Union[dict, Vegetation], values: dict
     ) -> Vegetation:
         """
@@ -202,16 +194,16 @@ class BaseSimulation(BaseModel, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.veg.initial.initiate_vegetation_characteristics()
-        self.veg.juvenile.initiate_vegetation_characteristics()
-        self.veg.mature.initiate_vegetation_characteristics()
+        self.biota.initial.initiate_vegetation_characteristics()
+        self.biota.juvenile.initiate_vegetation_characteristics()
+        self.biota.mature.initiate_vegetation_characteristics()
 
         if self.output.defined:
-            self.output.initialize(self.veg)
+            self.output.initialize(self.biota)
         else:
             print("WARNING: No output defined, so none exported.")
 
-        self.output.initialize(self.veg)
+        self.output.initialize(self.biota)
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
@@ -266,7 +258,7 @@ class BaseSimulation(BaseModel, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=10800  # every timestep
+                            self.biota, time_step=10800  # every timestep
                         )
 
                         # # environment
@@ -278,9 +270,9 @@ class BaseSimulation(BaseModel, ABC):
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
                             ts=ts,
-                            veg=self.veg,
+                            veg=self.biota,
                         )
-                    hydro_mor.get_hydromorph_values(self.veg)
+                    hydro_mor.get_hydromorph_values(self.biota)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -288,7 +280,7 @@ class BaseSimulation(BaseModel, ABC):
                     mort = Veg_Mortality
                     mort.update(
                         mort,
-                        self.veg,
+                        self.biota,
                         self.constants,
                         ets,
                         begin_date,
@@ -309,17 +301,17 @@ class BaseSimulation(BaseModel, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.veg, constants=self.constants)
+                        col.update(self.biota, constants=self.constants)
 
                     # update lifestages, initial to juvenile and juvenile to mature
-                    self.veg.update_lifestages()
+                    self.biota.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
                     # map-file
-                    # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
+                    # self.output.map_output.update(self.biota, years[i]) #change to period we are in current ets
                     self.output.map_output.update(
-                        self.veg,
+                        self.biota,
                         int(period[-1].strftime("%Y%m%d")),
                         ets,
                         i,
@@ -327,10 +319,10 @@ class BaseSimulation(BaseModel, ABC):
                     )  # change to period we are in current ets
                     # his-file
                     self.output.his_output.update(
-                        self.veg,
+                        self.biota,
                         pd.DataFrame(period),
                     )
-                    hydro_mor.store_hydromorph_values(self.veg)
+                    hydro_mor.store_hydromorph_values(self.biota)
 
     def finalise(self):
         """Finalise simulation."""
