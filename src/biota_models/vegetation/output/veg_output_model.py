@@ -27,6 +27,7 @@ class VegetationMapOutput(_VegetationOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
+
     output_filename = "VegModel_map.nc"
     xy_coordinates: Optional[np.ndarray]
     first_year: Optional[int]
@@ -42,7 +43,7 @@ class VegetationMapOutput(_VegetationOutput):
         return len(self.xy_coordinates)
 
     def initialize(self, vegetation: Optional[Vegetation]):
-        self.output_filename = "VegModel_"+ vegetation.species +"_map.nc"
+        self.output_filename = "VegModel_" + vegetation.species + "_map.nc"
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return
@@ -147,7 +148,6 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_frac_j.units = "-"
                 veg_frac_j[:, :, :] = 0
 
-
                 veg_frac_m = _map_data.createVariable(
                     "veg_frac_m", "f8", ("nmesh2d_face", "age", "time")
                 )
@@ -160,18 +160,14 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_den_j = _map_data.createVariable(
                     "veg_den_j", "f8", ("nmesh2d_face", "age", "time")
                 )
-                veg_den_j.long_name = (
-                    "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
-                )
+                veg_den_j.long_name = "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_j.units = "-"
                 veg_den_j[:, :, :] = 0
 
                 veg_den_m = _map_data.createVariable(
                     "veg_den_m", "f8", ("nmesh2d_face", "age", "time")
                 )
-                veg_den_m.long_name = (
-                    "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
-                )
+                veg_den_m.long_name = "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_m.units = "-"
                 veg_den_m[:, :, :] = 0
 
@@ -211,7 +207,6 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_height_m.units = "m"
                 veg_height_m[:, :, :] = 0
 
-
             conditions_funct = dict(
                 hydro_mor=init_hydro_mor,
                 veg_characteristics=init_veg_characteristics,
@@ -250,14 +245,16 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["rnveg"][-1, :] = veg.veg_den.transpose()
                 _map_data["veg_frac_j"][:, :, -1] = veg.juvenile.veg_frac[:, :]
                 _map_data["veg_frac_m"][:, :, -1] = veg.mature.veg_frac[:, :]
-                _map_data["veg_den_j"][:, :, -1] = veg.juvenile.stem_num[:, :]*veg.juvenile.veg_frac[:, :]
-                _map_data["veg_den_m"][:, :, -1] = veg.mature.stem_num[:, :]*veg.mature.veg_frac[:, :]
+                _map_data["veg_den_j"][:, :, -1] = (
+                    veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
+                )
+                _map_data["veg_den_m"][:, :, -1] = (
+                    veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]
+                )
                 _map_data["veg_stemdia_j"][:, :, -1] = veg.juvenile.stemdia[:, :]
                 _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stemdia[:, :]
                 _map_data["veg_height_j"][:, :, -1] = veg.juvenile.veg_height[:, :]
                 _map_data["veg_height_m"][:, :, -1] = veg.mature.veg_height[:, :]
-
-
 
             conditions_funct = dict(
                 hydro_mor=update_hydro_mor,
@@ -370,18 +367,14 @@ class VegetationHisOutput(_VegetationOutput):
                 veg_den_j = _his_data.createVariable(
                     "veg_den_j", "f8", ("time", "stations")
                 )
-                veg_den_j.long_name = (
-                    "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
-                )
+                veg_den_j.long_name = "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_j.units = "-"
                 veg_den_j[:, :] = 0
 
                 veg_den_m = _his_data.createVariable(
                     "veg_den_m", "f8", ("time", "stations")
                 )
-                veg_den_m.long_name = (
-                    "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
-                )
+                veg_den_m.long_name = "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_m.units = "-"
                 veg_den_m[:, :] = 0
 
@@ -420,8 +413,6 @@ class VegetationHisOutput(_VegetationOutput):
                 )
                 veg_height_m.units = "m"
                 veg_height_m[:, :] = 0
-
-
 
             conditions_funct = dict(
                 hydro_mor=init_hydro_mor,
@@ -484,10 +475,14 @@ class VegetationHisOutput(_VegetationOutput):
                     veg.mature.cover.transpose(), (len(y_dates), 1)
                 )[:, self.idx_stations]
                 _his_data["veg_den_j"][ti, :] = np.tile(
-                    (veg.juvenile.stem_num[:, :]*veg.juvenile.veg_frac[:, :]).transpose(), (len(y_dates), 1)
+                    (
+                        veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
+                    ).transpose(),
+                    (len(y_dates), 1),
                 )[:, self.idx_stations]
                 _his_data["veg_den_m"][ti, :] = np.tile(
-                    (veg.mature.stem_num[:, :]*veg.mature.veg_frac[:, :]).transpose(), (len(y_dates), 1)
+                    (veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]).transpose(),
+                    (len(y_dates), 1),
                 )[:, self.idx_stations]
                 _his_data["veg_stemdia_j"][ti, :] = np.tile(
                     veg.juvenile.stemdia.transpose(), (len(y_dates), 1)
