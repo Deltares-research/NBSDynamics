@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-# hisfile = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase6\output\VegModel_his.nc', 'r')
+# hisfile_Spartina = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase6\output\VegModel_his.nc', 'r')
 # hisfile.close
 #
 # diaveg = hisfile.variables['diaveg'][:]

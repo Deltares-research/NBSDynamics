@@ -21,7 +21,7 @@ from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.simulation.base_simulation import BaseSimulation
 
 
-class _VegetationSimulation(BaseSimulation, ABC):
+class _VegetationSimulation_2species(BaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
@@ -35,7 +35,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     veg: Optional[Vegetation]
     veg2: Optional[Vegetation]
 
-    @validator("constants", pre=True)
+    @validator("constants", pre=True, allow_reuse=True)
     @classmethod
     def validate_constants(
         cls, field_value: Union[str, Path, VegetationConstants]
@@ -60,7 +60,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
             return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-    @validator("veg", pre=True)
+    @validator("veg", pre=True, allow_reuse=True)
     @classmethod
     def validate_vegetation(
         cls, field_value: Union[dict, Vegetation], values: dict
@@ -92,7 +92,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-    @validator("veg2", pre=True)
+    @validator("veg2", pre=True, allow_reuse=True)
     @classmethod
     def validate_vegetation(
         cls, field_value: Union[dict, Vegetation], values: dict
@@ -300,7 +300,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            veg=self.veg, time_step=10800, veg2=self.veg2  # every timestep
+                            veg=self.veg, time_step=1000, veg2=self.veg2  # every timestep
                         )
 
 

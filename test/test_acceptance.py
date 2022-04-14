@@ -19,6 +19,7 @@ from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
     VegFlowFmSimulation,
 )
+from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import VegFlowFmSimulation_2species
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -90,6 +91,58 @@ class TestAcceptance:
 
         # 5. Verify plotting can be done.
         plot_output(sim_run.output)
+
+    @only_local
+    def test_given_veg_case_runs_2species(self):
+        # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+        kernels_dir = dll_repo / "kernels"
+
+        assert test_dir.is_dir()
+        assert kernels_dir.is_dir()
+
+        test_case = test_dir / "input" / "MinFiles"
+        species1 = "Salicornia"
+        species2 = "Spartina"
+        veg_constants1 = VegetationConstants(species=species1)
+        veg_constants2 = VegetationConstants(species=species2)
+        sim_run = VegFlowFmSimulation_2species(
+            working_dir=test_dir,
+            constants=veg_constants1,
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                dll_path=kernels_dir
+                         / "dflowfm_with_shared"
+                         / "bin"
+                         / "dflowfm",
+                definition_file=test_case / "fm" / "test_case6.mdu",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict()),
+                his_output=dict(
+                    output_params=dict(),
+                ),
+                species=species1
+            ),
+            output2=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict()),
+                his_output=dict(
+                    output_params=dict(),
+                ),
+            ),
+            veg=Vegetation(species=species1, constants=veg_constants1),
+            veg2=Vegetation(species=species2, constants=veg_constants2),
+
+            )
+
+        # Run simulation.
+        sim_run.initiate()
+        sim_run.run(2)
+        sim_run.finalise()
 
     def test_given_transect_case_runs(self):
         # 1. Define test data.

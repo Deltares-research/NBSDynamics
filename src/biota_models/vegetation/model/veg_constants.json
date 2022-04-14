@@ -1,5 +1,5 @@
 {
-    "Spartina anglica": {
+    "Spartina": {
         "ColStart": "2000-04-01",
         "ColEnd": "2000-05-31",
         "random": 7,
@@ -107,7 +107,7 @@
             190,
             0
         ],
-        "iniCol_frac": 0.6,
+        "iniCol_frac": 0.2,
         "Cd": [
             0.7,
             0

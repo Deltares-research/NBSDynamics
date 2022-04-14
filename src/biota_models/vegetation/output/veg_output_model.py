@@ -27,8 +27,8 @@ class VegetationMapOutput(_VegetationOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
-    veg: Vegetation
-    output_filename = "VegModel_"+ veg.species +"_map.nc"
+
+    output_filename = "VegModel_map.nc"
     xy_coordinates: Optional[np.ndarray]
     first_year: Optional[int]
 
@@ -43,7 +43,7 @@ class VegetationMapOutput(_VegetationOutput):
         return len(self.xy_coordinates)
 
     def initialize(self, vegetation: Optional[Vegetation]):
-        output_filename = "VegModel_"+ vegetation.species +"_map.nc"
+        self.output_filename = "VegModel_"+ vegetation.species +"_map.nc"
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return
@@ -216,6 +216,7 @@ class VegetationHisOutput(_VegetationOutput):
 
     def initialize(self, veg: Vegetation):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
+        self.output_filename = "VegModel_" + veg.species + "_his.nc"
         if not self.valid_output():
             return
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
