@@ -124,7 +124,6 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-
     @validator("hydrodynamics", pre=True, always=True)
     @classmethod
     def validate_hydrodynamics_present(
@@ -239,7 +238,7 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
             print("WARNING: No output defined, so none exported.")
 
         self.output.initialize(self.veg)
- ## TODO make output in a way that this will not overwrite each other!
+        ## TODO make output in a way that this will not overwrite each other!
         if self.output2.defined:
             self.output.initialize(self.veg2)
         else:
@@ -300,9 +299,10 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            veg=self.veg, time_step=1000, veg2=self.veg2  # every timestep
+                            veg=self.veg,
+                            time_step=1000,
+                            veg2=self.veg2,  # every timestep
                         )
-
 
                         # # environment
                         progress.set_postfix(inner_loop="hydromorpho environment")
@@ -314,7 +314,7 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                             bl_cur=bed_level,
                             ts=ts,
                             veg=self.veg,
-                        )  #TODO do this also twice? How to incooperate second species?
+                        )  # TODO do this also twice? How to incooperate second species?
 
                         hydro_mor2 = Hydro_Morphodynamics(
                             tau_cur=cur_tau,
@@ -404,7 +404,6 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                     hydro_mor.store_hydromorph_values(self.veg)
                     hydro_mor2.store_hydromorph_values(self.veg2)
                     ## TODO change this for the two species! one output for both together or their own output?
-
 
     def finalise(self):
         """Finalise simulation."""

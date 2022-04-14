@@ -19,7 +19,9 @@ from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
     VegFlowFmSimulation,
 )
-from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import VegFlowFmSimulation_2species
+from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import (
+    VegFlowFmSimulation_2species,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -113,10 +115,7 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir
-                         / "dflowfm_with_shared"
-                         / "bin"
-                         / "dflowfm",
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
@@ -125,7 +124,7 @@ class TestAcceptance:
                 his_output=dict(
                     output_params=dict(),
                 ),
-                species=species1
+                species=species1,
             ),
             output2=dict(
                 output_dir=test_dir / "output",
@@ -136,8 +135,7 @@ class TestAcceptance:
             ),
             veg=Vegetation(species=species1, constants=veg_constants1),
             veg2=Vegetation(species=species2, constants=veg_constants2),
-
-            )
+        )
 
         # Run simulation.
         sim_run.initiate()

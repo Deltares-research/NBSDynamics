@@ -43,7 +43,7 @@ class VegetationMapOutput(_VegetationOutput):
         return len(self.xy_coordinates)
 
     def initialize(self, vegetation: Optional[Vegetation]):
-        self.output_filename = "VegModel_"+ vegetation.species +"_map.nc"
+        self.output_filename = "VegModel_" + vegetation.species + "_map.nc"
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return

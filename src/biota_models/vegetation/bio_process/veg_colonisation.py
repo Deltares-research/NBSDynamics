@@ -68,10 +68,14 @@ class Colonization(ExtraModel):
             veg2.initial.root_len[self.seed_loc2] = loc2 * veg2.constants.iniRoot
             veg2.initial.stem_num[self.seed_loc2] = loc2 * veg2.constants.num_stem[0]
 
-            #comp = np.where(loc1 == 1 and loc2 == 1)
+            # comp = np.where(loc1 == 1 and loc2 == 1)
             if veg.constants.iniCol_frac + veg2.constants.iniCol_frac > 1:
-                loc1[np.in1d(self.seed_loc1, self.seed_loc2) == True] = 1 / (veg.constants.iniCol_frac + veg2.constants.iniCol_frac)
-                loc2[np.in1d(self.seed_loc2, self.seed_loc1) == True] = 1 / (veg.constants.iniCol_frac + veg2.constants.iniCol_frac)
+                loc1[np.in1d(self.seed_loc1, self.seed_loc2) == True] = 1 / (
+                    veg.constants.iniCol_frac + veg2.constants.iniCol_frac
+                )
+                loc2[np.in1d(self.seed_loc2, self.seed_loc1) == True] = 1 / (
+                    veg.constants.iniCol_frac + veg2.constants.iniCol_frac
+                )
 
             veg.initial.veg_frac[self.seed_loc1] = loc1 * veg.constants.iniCol_frac
             veg2.initial.veg_frac[self.seed_loc2] = loc2 * veg2.constants.iniCol_frac
