@@ -27,8 +27,7 @@ class VegetationMapOutput(_VegetationOutput):
     """
     Object representing a Map output. Implements the 'OutputProtocol'.
     """
-    veg: Vegetation
-    output_filename = "VegModel_"+ veg.species +"_map.nc"
+    output_filename = "VegModel_map.nc"
     xy_coordinates: Optional[np.ndarray]
     first_year: Optional[int]
 
@@ -43,7 +42,7 @@ class VegetationMapOutput(_VegetationOutput):
         return len(self.xy_coordinates)
 
     def initialize(self, vegetation: Optional[Vegetation]):
-        output_filename = "VegModel_"+ vegetation.species +"_map.nc"
+        self.output_filename = "VegModel_"+ vegetation.species +"_map.nc"
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return
@@ -147,46 +146,65 @@ class VegetationMapOutput(_VegetationOutput):
                 )
                 veg_frac_j.units = "-"
                 veg_frac_j[:, :, :] = 0
+
+
                 veg_frac_m = _map_data.createVariable(
                     "veg_frac_m", "f8", ("nmesh2d_face", "age", "time")
                 )
-
                 veg_frac_m.long_name = (
                     "Vegetation fraction in each growth day for mature"
                 )
                 veg_frac_m.units = "-"
                 veg_frac_m[:, :, :] = 0
 
+                veg_den_j = _map_data.createVariable(
+                    "veg_den_j", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_den_j.long_name = (
                     "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
                 )
                 veg_den_j.units = "-"
                 veg_den_j[:, :, :] = 0
 
+                veg_den_m = _map_data.createVariable(
+                    "veg_den_m", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_den_m.long_name = (
                     "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
                 )
                 veg_den_m.units = "-"
                 veg_den_m[:, :, :] = 0
 
+                veg_stemdia_j = _map_data.createVariable(
+                    "veg_stemdia_j", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_stemdia_j.long_name = (
                     "Stem diameter of juvenile vegetation in each cell"
                 )
                 veg_stemdia_j.units = "m"
                 veg_stemdia_j[:, :, :] = 0
 
+                veg_stemdia_m = _map_data.createVariable(
+                    "veg_stemdia_m", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_stemdia_m.long_name = (
                     "Stem diameter of mature vegetation in each cell"
                 )
                 veg_stemdia_m.units = "m"
                 veg_stemdia_m[:, :, :] = 0
 
+                veg_height_j = _map_data.createVariable(
+                    "veg_height_j", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_height_j.long_name = (
                     "Vegetation height of juvenile vegetation in each cell"
                 )
                 veg_height_j.units = "m"
                 veg_height_j[:, :, :] = 0
 
+                veg_height_m = _map_data.createVariable(
+                    "veg_height_m", "f8", ("nmesh2d_face", "age", "time")
+                )
                 veg_height_m.long_name = (
                     "Vegetation height of mature vegetation in each cell"
                 )
@@ -262,6 +280,7 @@ class VegetationHisOutput(_VegetationOutput):
 
     def initialize(self, veg: Vegetation):
         """Initiate history output file in which daily output at predefined locations within the model is stored."""
+        self.output_filename = "VegModel_" + veg.species + "_his.nc"
         if not self.valid_output():
             return
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
