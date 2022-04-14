@@ -90,5 +90,5 @@ schema = {
     },
 }
 
-with open("constants_veg.json", "w") as write_file:
+with open("veg_constants.json", "w") as write_file:
     json.dump(schema, write_file, indent=4)

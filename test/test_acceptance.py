@@ -54,7 +54,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Salicornia"
+        species = "Puccinellia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -65,7 +65,6 @@ class TestAcceptance:
                 dll_path=kernels_dir
                 / "dflowfm_with_shared"
                 / "bin"
-                / "dflowfm"
                 / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
@@ -80,8 +79,8 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        sim_run.initiate()
-        sim_run.run(1)
+        sim_run.initiate(cover=r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Puccinellia_map.nc") #add path to nc file of initial cover (map_file) if initial cover present
+        sim_run.run(2)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -92,7 +91,7 @@ class TestAcceptance:
         # compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        plot_output(sim_run.output)
+        #plot_output(sim_run.output)
 
     @only_local
     def test_given_veg_case_runs_2species(self):
@@ -224,7 +223,7 @@ class TestAcceptance:
         compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        plot_output(run_trans.output)
+        #plot_output(run_trans.output)
 
     # TODO: Delft3D dlls not yet available at the repo level.
     @only_local

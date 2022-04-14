@@ -151,6 +151,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
     def initiate(
         self,
+        cover: Optional[Path] = None,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
     ) -> Vegetation:
@@ -191,8 +192,8 @@ class _VegetationSimulation(BaseSimulation, ABC):
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
         self.veg.initial.initiate_vegetation_characteristics()
-        self.veg.juvenile.initiate_vegetation_characteristics()
-        self.veg.mature.initiate_vegetation_characteristics()
+        self.veg.juvenile.initiate_vegetation_characteristics(cover)
+        self.veg.mature.initiate_vegetation_characteristics(cover)
 
         if self.output.defined:
             self.output.initialize(self.veg)
@@ -254,7 +255,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=10800  # every timestep
+                            self.veg, time_step=1000  # every timestep
                         )
 
                         # # environment
