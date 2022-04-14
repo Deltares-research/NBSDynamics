@@ -251,8 +251,8 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["veg_den_m"][:, :, -1] = (
                     veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]
                 )
-                _map_data["veg_stemdia_j"][:, :, -1] = veg.juvenile.stem_dia[:, :]
-                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stem_dia[:, :]
+                _map_data["veg_stem_dia_j"][:, :, -1] = veg.juvenile.stem_dia[:, :]
+                _map_data["veg_stem_dia_m"][:, :, -1] = veg.mature.stem_dia[:, :]
                 _map_data["veg_height_j"][:, :, -1] = veg.juvenile.veg_height[:, :]
                 _map_data["veg_height_m"][:, :, -1] = veg.mature.veg_height[:, :]
 
@@ -484,10 +484,10 @@ class VegetationHisOutput(_VegetationOutput):
                     (veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]).transpose(),
                     (len(y_dates), 1),
                 )[:, self.idx_stations]
-                _his_data["veg_stemdia_j"][ti, :] = np.tile(
+                _his_data["veg_stem_dia_j"][ti, :] = np.tile(
                     veg.juvenile.stem_dia.transpose(), (len(y_dates), 1)
                 )[:, self.idx_stations]
-                _his_data["veg_stemdia_m"][ti, :] = np.tile(
+                _his_data["veg_stem_dia_m"][ti, :] = np.tile(
                     veg.mature.stem_dia.transpose(), (len(y_dates), 1)
                 )[:, self.idx_stations]
                 _his_data["veg_height_j"][ti, :] = np.tile(
