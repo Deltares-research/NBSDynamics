@@ -147,6 +147,7 @@ class VegetationMapOutput(_VegetationOutput):
                 )
                 veg_frac_j.units = "-"
                 veg_frac_j[:, :, :] = 0
+
                 veg_frac_m = _map_data.createVariable(
                     "veg_frac_m", "f8", ("nmesh2d_face", "age", "time")
                 )
@@ -155,6 +156,56 @@ class VegetationMapOutput(_VegetationOutput):
                 )
                 veg_frac_m.units = "-"
                 veg_frac_m[:, :, :] = 0
+
+                veg_den_j = _map_data.createVariable(
+                    "veg_den_j", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_den_j.long_name = "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
+                veg_den_j.units = "-"
+                veg_den_j[:, :, :] = 0
+
+                veg_den_m = _map_data.createVariable(
+                    "veg_den_m", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_den_m.long_name = "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
+                veg_den_m.units = "-"
+                veg_den_m[:, :, :] = 0
+
+                veg_stemdia_j = _map_data.createVariable(
+                    "veg_stemdia_j", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_stemdia_j.long_name = (
+                    "Stem diameter of juvenile vegetation in each cell"
+                )
+                veg_stemdia_j.units = "m"
+                veg_stemdia_j[:, :, :] = 0
+
+                veg_stemdia_m = _map_data.createVariable(
+                    "veg_stemdia_m", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_stemdia_m.long_name = (
+                    "Stem diameter of mature vegetation in each cell"
+                )
+                veg_stemdia_m.units = "m"
+                veg_stemdia_m[:, :, :] = 0
+
+                veg_height_j = _map_data.createVariable(
+                    "veg_height_j", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_height_j.long_name = (
+                    "Vegetation height of juvenile vegetation in each cell"
+                )
+                veg_height_j.units = "m"
+                veg_height_j[:, :, :] = 0
+
+                veg_height_m = _map_data.createVariable(
+                    "veg_height_m", "f8", ("nmesh2d_face", "age", "time")
+                )
+                veg_height_m.long_name = (
+                    "Vegetation height of mature vegetation in each cell"
+                )
+                veg_height_m.units = "m"
+                veg_height_m[:, :, :] = 0
 
             conditions_funct = dict(
                 hydro_mor=init_hydro_mor,
@@ -194,6 +245,16 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["rnveg"][-1, :] = veg.veg_den.transpose()
                 _map_data["veg_frac_j"][:, :, -1] = veg.juvenile.veg_frac[:, :]
                 _map_data["veg_frac_m"][:, :, -1] = veg.mature.veg_frac[:, :]
+                _map_data["veg_den_j"][:, :, -1] = (
+                    veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
+                )
+                _map_data["veg_den_m"][:, :, -1] = (
+                    veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]
+                )
+                _map_data["veg_stemdia_j"][:, :, -1] = veg.juvenile.stemdia[:, :]
+                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stemdia[:, :]
+                _map_data["veg_height_j"][:, :, -1] = veg.juvenile.veg_height[:, :]
+                _map_data["veg_height_m"][:, :, -1] = veg.mature.veg_height[:, :]
 
             conditions_funct = dict(
                 hydro_mor=update_hydro_mor,
@@ -220,7 +281,7 @@ class VegetationHisOutput(_VegetationOutput):
         if not self.valid_output():
             return
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
-            _his_data.description = "Historic simulation data of the VegetaionModel"
+            _his_data.description = "Historic simulation data of the VegetationModel"
 
             # dimensions
             _his_data.createDimension("time", None)
@@ -293,6 +354,7 @@ class VegetationHisOutput(_VegetationOutput):
                 )
                 veg_frac_j.units = "-"
                 veg_frac_j[:, :] = 0
+
                 veg_frac_m = _his_data.createVariable(
                     "veg_frac_m", "f8", ("time", "stations")
                 )
@@ -301,6 +363,56 @@ class VegetationHisOutput(_VegetationOutput):
                 )
                 veg_frac_m.units = "-"
                 veg_frac_m[:, :] = 0
+
+                veg_den_j = _his_data.createVariable(
+                    "veg_den_j", "f8", ("time", "stations")
+                )
+                veg_den_j.long_name = "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
+                veg_den_j.units = "-"
+                veg_den_j[:, :] = 0
+
+                veg_den_m = _his_data.createVariable(
+                    "veg_den_m", "f8", ("time", "stations")
+                )
+                veg_den_m.long_name = "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
+                veg_den_m.units = "-"
+                veg_den_m[:, :] = 0
+
+                veg_stemdia_j = _his_data.createVariable(
+                    "veg_stemdia_j", "f8", ("time", "stations")
+                )
+                veg_stemdia_j.long_name = (
+                    "Stem diameter of juvenile vegetation in each growth day"
+                )
+                veg_stemdia_j.units = "m"
+                veg_stemdia_j[:, :] = 0
+
+                veg_stemdia_m = _his_data.createVariable(
+                    "veg_stemdia_m", "f8", ("time", "stations")
+                )
+                veg_stemdia_m.long_name = (
+                    "Stem diameter of mature vegetation in each growth day"
+                )
+                veg_stemdia_m.units = "m"
+                veg_stemdia_m[:, :] = 0
+
+                veg_height_j = _his_data.createVariable(
+                    "veg_height_j", "f8", ("time", "stations")
+                )
+                veg_height_j.long_name = (
+                    "Vegetation height of juvenile vegetation in each growth day"
+                )
+                veg_height_j.units = "m"
+                veg_height_j[:, :] = 0
+
+                veg_height_m = _his_data.createVariable(
+                    "veg_height_m", "f8", ("time", "stations")
+                )
+                veg_height_m.long_name = (
+                    "Vegetation height of mature vegetation in each growth day"
+                )
+                veg_height_m.units = "m"
+                veg_height_m[:, :] = 0
 
             conditions_funct = dict(
                 hydro_mor=init_hydro_mor,
@@ -361,6 +473,28 @@ class VegetationHisOutput(_VegetationOutput):
                 )[:, self.idx_stations]
                 _his_data["veg_frac_m"][ti, :] = np.tile(
                     veg.mature.cover.transpose(), (len(y_dates), 1)
+                )[:, self.idx_stations]
+                _his_data["veg_den_j"][ti, :] = np.tile(
+                    (
+                        veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
+                    ).transpose(),
+                    (len(y_dates), 1),
+                )[:, self.idx_stations]
+                _his_data["veg_den_m"][ti, :] = np.tile(
+                    (veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]).transpose(),
+                    (len(y_dates), 1),
+                )[:, self.idx_stations]
+                _his_data["veg_stemdia_j"][ti, :] = np.tile(
+                    veg.juvenile.stemdia.transpose(), (len(y_dates), 1)
+                )[:, self.idx_stations]
+                _his_data["veg_stemdia_m"][ti, :] = np.tile(
+                    veg.mature.stemdia.transpose(), (len(y_dates), 1)
+                )[:, self.idx_stations]
+                _his_data["veg_height_j"][ti, :] = np.tile(
+                    veg.juvenile.height.transpose(), (len(y_dates), 1)
+                )[:, self.idx_stations]
+                _his_data["veg_height_m"][ti, :] = np.tile(
+                    veg.mature.height.transpose(), (len(y_dates), 1)
                 )[:, self.idx_stations]
 
             conditions_funct = dict(
