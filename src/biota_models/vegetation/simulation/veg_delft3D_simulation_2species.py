@@ -11,7 +11,7 @@ from src.core.hydrodynamics.delft3d import Delft3D
 
 class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
     """
-    Implements the `SimulationProtocol`
+    Implements the `MultipleBiotaSimulationProtocol`
     Vegetation Delft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 
