@@ -1,4 +1,6 @@
 from pathlib import Path
+
+from src.core.simulation.multiplebiota_simulation_protocol import MultipleBiotaSimulationProtocol
 from test.utils import TestUtils
 from typing import Callable
 
@@ -75,7 +77,7 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            veg=Vegetation(species=species, constants=veg_constants),
+            biota=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.
@@ -108,6 +110,7 @@ class TestAcceptance:
         species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
+
         sim_run = VegFlowFmSimulation_2species(
             working_dir=test_dir,
             constants=veg_constants1,
@@ -132,14 +135,15 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            veg=Vegetation(species=species1, constants=veg_constants1),
-            veg2=Vegetation(species=species2, constants=veg_constants2),
+            biota=Vegetation(species=species1, constants=veg_constants1),
+            biota2=Vegetation(species=species2, constants=veg_constants2),
         )
 
         # Run simulation.
         sim_run.initiate()
         sim_run.run(2)
         sim_run.finalise()
+
 
     def test_given_transect_case_runs(self):
         # 1. Define test data.
