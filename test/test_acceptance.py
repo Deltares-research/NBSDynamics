@@ -81,7 +81,7 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        sim_run.initiate(cover=r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Puccinellia_map.nc") #add path to nc file of initial cover (map_file) if initial cover present
+        sim_run.initiate(cover=r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\input\MinFiles\fm\cover\VegModel_Puccinellia_map.nc") #add path to nc file of initial cover (map_file) if initial cover present
         sim_run.run(2)
         sim_run.finalise()
 

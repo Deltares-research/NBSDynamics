@@ -80,7 +80,7 @@ class LifeStages(ExtraModel):
         elif self.ls ==2:
             apprev = "m"
 
-        if cover == None  or self.ls == 0:
+        if not cover or self.ls == 0:
             self.veg_frac = np.zeros(_reshape.space)
             self.veg_frac = self.veg_frac.reshape(len(self.veg_frac), 1)
             self.veg_height = np.zeros(self.veg_frac.shape)
@@ -104,6 +104,7 @@ class LifeStages(ExtraModel):
             self.stem_num = np.zeros(self.veg_frac.shape)
             self.stem_num[self.veg_frac > 0] = self.constants.num_stem[self.ls - 1]
             self.cover = self.veg_frac.sum(axis=1).reshape(-1, 1)
+            # input_cover.close
 
         i = self.ls - 1
         self.dt_height = np.zeros((2, 1))

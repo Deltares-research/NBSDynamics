@@ -123,7 +123,7 @@ Boundary name                                :          Boundary01
 ** INFO   : nogauss , nocg :            125            85
 ** INFO   : ** Model initialization was successful **
 ** INFO   : * Active Model definition:
-# Generated on 13:24:35, 12-04-2022
+# Generated on 12:47:10, 19-04-2022
 # Deltares, D-Flow FM Version 1.2.130.69672M, Sep 01 2021, 16:24:40
 # Source:https://svn.oss.deltares.nl/repos/delft3d/branches/releases/69668/
 
@@ -590,7 +590,7 @@ Wriwaqbot3Doutput                         = 0                   # Write 3D water
 VolumeDryThreshold                        = 1.d-3
 DepthDryThreshold                         = 1.d-3
 ** INFO   : **
-** INFO   : Modelinit finished   at: 13:24:35, 12-04-2022
+** INFO   : Modelinit finished   at: 12:47:10, 19-04-2022
 ** INFO   : 
 ** INFO   : 
 ** INFO   : nr of netnodes               ( )  :                      231
@@ -626,3 +626,75 @@ DepthDryThreshold                         = 1.d-3
 ** INFO   : successfully defined s1 with deflate_level and chunksizes =              5           200           100
 ** INFO   : successfully defined hs with deflate_level and chunksizes =              5           200           100
 ** INFO   : Done writing initial output to file(s).
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : extra timer:Flow geometry                                        0.0189998150
+** INFO   : extra timer:Flow init                                            0.0999999046
+** INFO   : extra timer:MDU file pointer                                     0.0210001469
+** INFO   : extra timer:Set boundaries                                       8.0260093212
+** INFO   : extra timer:Sethuau                                              9.8299977779
+** INFO   : extra timer:setdt                                               10.9269988537
+** INFO   : extra timer:Compute advection term                              17.4279971123
+** INFO   : extra timer:u0u1                                                 1.3659999371
+** INFO   : extra timer:Setumod                                             27.9660024643
+** INFO   : extra timer:Set conveyance                                       6.0110023022
+** INFO   : extra timer:Set structures actual parameters                     1.0880012512
+** INFO   : extra timer:step_reduce                                        426.8319804668
+** INFO   : extra timer:Transport                                           82.4979624748
+** INFO   : extra timer:Output                                               1.6629984379
+** INFO   : Simulation did not reach stop time
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : nr of timesteps        ( )  :        359999.0000000000
+** INFO   : average timestep       (s)  :             2.0000000000
+** INFO   : nr of setbacks         ( )  :             0.0000000000
+** INFO   : 
+** INFO   : 
+** INFO   : simulation period      (d)  :             8.3333333333
+** INFO   : total computation time (d)  :             0.0071426273
+** INFO   : time modelinit         (d)  :             0.0000025694
+** INFO   : time steps (+ plots)   (d)  :             0.0071400579
+** INFO   : 
+** INFO   : simulation period      (h)  :           200.0000000000
+** INFO   : total computation time (h)  :             0.1714230555
+** INFO   : time modelinit         (h)  :             0.0000616666
+** INFO   : time steps (+ plots)   (h)  :             0.1713613889
+** INFO   : 
+** INFO   : simulation period      (s)  :        720000.0000000000
+** INFO   : total computation time (s)  :           617.1229999065
+** INFO   : time modelinit         (s)  :             0.2219998837
+** INFO   : time steps (+ plots)   (s)  :           616.9010000229
+** INFO   : 
+** INFO   : 
+** INFO   : time iniexternalforc.  (s)  :             0.0099999905
+** INFO   : 
+** INFO   : time inistep           (s)  :            93.5780165195
+** INFO   : time setumod           (s)  :            26.0130047798
+** INFO   : time furu              (s)  :             4.6650002003
+** INFO   : time solve             (s)  :            41.5499985218
+** INFO   : time setexternalforc.  (s)  :             1.4409978390
+** INFO   : time setexternalfbnd.  (s)  :             6.1650066376
+** INFO   : time steps             (s)  :           547.3269979954
+** INFO   : fraction solve/steps   ( )  :             0.0759143961
+** INFO   : total/(dnt*ndx)        (s)  :             0.0000081630
+** INFO   : av nr of cont. it s1it ( )  :             0.0000000000
+** INFO   : time transport [s]         :            84.8719999996
+** INFO   : time debug     [s]         :             5.2220000000
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : Computation started  at: 12:47:10, 19-04-2022
+** INFO   : Computation finished at: 12:57:27, 19-04-2022
+** INFO   : 
+** INFO   : simulation period      (h)  :           200.0000000000
+** INFO   : total time in timeloop (h)  :             0.1713613889
+** INFO   : MPI    : no.
+** INFO   : OpenMP : yes.         #threads max : 4
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : Opened file : output\test_case6_numlimdt.xyz
+** INFO   : Closed file : output\test_case6_numlimdt.xyz
+** INFO   : 
