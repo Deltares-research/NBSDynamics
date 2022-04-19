@@ -15,16 +15,20 @@ class Colonization(ExtraModel):
     2. mud fraction in top layer: mud_frac>mud_colonization (NOT YET FULLY IMPLEMENTED!)
     """
 
-    cir: Optional[np.ndarray] = None
-    ma: Optional[np.ndarray] = None
+    cir: Optional[np.ndarray]
+    ma: Optional[np.ndarray]
+    seed_loc: Optional[np.ndarray]
+    seed_loc1: Optional[np.ndarray]
+    seed_loc2: Optional[np.ndarray]
 
-    def __init__(self):
-        super().__init__()
-        self.seed_loc = None
-        self.seed_loc1 = None
-        self.seed_loc2 = None
 
-    def update(self, veg: Vegetation, veg2: Optional[Vegetation] = None):
+    # def __init__(self):
+    #     super().__init__()
+    #     self.seed_loc = None
+    #     self.seed_loc1 = None
+    #     self.seed_loc2 = None
+
+    def update(self, veg: Vegetation, veg2: Optional[Vegetation]):
         """Update marsh cover after colonization (settlement)
         if two vegetation objects are given (different species),
         they will compete for space when they colonize
@@ -33,7 +37,7 @@ class Colonization(ExtraModel):
 
         :type vegetation: Vegetation
         """
-        if veg2 == None:
+        if not veg2:
             # # available locations for settlement
             Colonization.col_location(self, veg)
             loc = veg.initial.veg_frac[self.seed_loc]

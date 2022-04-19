@@ -76,7 +76,7 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            veg=Vegetation(species=species, constants=veg_constants),
+            biota=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.

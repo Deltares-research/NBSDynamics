@@ -262,7 +262,7 @@ class Delft3D(ExtraModel, abc.ABC):
 
     ## TODO input timestep is in days! what is the unit here?
     def update_hydromorphodynamics(
-        self, veg: Vegetation, time_step: int, veg2: Optional[Vegetation] = None
+        self, veg: Vegetation, time_step: int, veg2: Optional[Vegetation]
     ):
         """Update the Delft3D-model."""
         self.time_step = time_step

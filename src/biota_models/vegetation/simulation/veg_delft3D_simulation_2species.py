@@ -17,7 +17,7 @@ class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
 
     def configure_hydrodynamics(self):
         """
-        Configures the hydrodynamics model for a `CoralDelft3DSimulation`.
+        Configures the hydrodynamics model for a `VegDelft3DSimulation`.
         """
         self.hydrodynamics.initiate()
 
