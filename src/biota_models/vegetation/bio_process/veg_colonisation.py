@@ -21,7 +21,6 @@ class Colonization(ExtraModel):
     seed_loc1: Optional[np.ndarray]
     seed_loc2: Optional[np.ndarray]
 
-
     # def __init__(self):
     #     super().__init__()
     #     self.seed_loc = None

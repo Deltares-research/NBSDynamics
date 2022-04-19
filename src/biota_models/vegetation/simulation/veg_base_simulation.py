@@ -31,7 +31,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     # Other fields.
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
-    biota: Optional [Vegetation]
+    biota: Optional[Vegetation]
     # veg: Optional[Vegetation]
 
     @validator("constants", pre=True)
