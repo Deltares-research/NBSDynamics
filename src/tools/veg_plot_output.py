@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # hisfile_Spartina = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Spartina_his.nc', 'r')
 # hisfile_Spartina.close
 #
-# hisfile_Salicornia = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Salicornia_his.nc', 'r')
+# hisfile_Salicornia = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\input\MinFiles\fm\cover\VegModel_Salicornia_his.nc', 'r')
 # hisfile_Salicornia.close
 #
 # diaveg = hisfile_Spartina.variables['diaveg'][:]
@@ -39,7 +39,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #
 mapfile = nc.Dataset(
-    r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Puccinellia_map.nc","r")
+    r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Spartina_map.nc","r")
 mapfile.close
 
 # veg_frac = mapfile.variables['veg_frac_j'][:]
@@ -57,11 +57,17 @@ y = mapfile.variables["nmesh2d_y"][:]
 y = pd.DataFrame(data=y)
 bl = mapfile.variables["bl"][-1, :].reshape(-1, 1)
 height_j = mapfile.variables["veg_height_j"][:]
-height_j = pd.DataFrame(data=height_j[:, :, -1])
-veg_frac = mapfile.variables["veg_frac_j"][:]
-veg_frac = pd.DataFrame(data=veg_frac[:, :, -1])
+height_j = pd.DataFrame(data=height_j[:, :, 0])
+veg_frac_m = mapfile.variables["veg_frac_m"][:]
+veg_frac_m = pd.DataFrame(data=veg_frac_m[:, :, -1])
 height_m = mapfile.variables["veg_height_m"][:]
 height_m = pd.DataFrame(data=height_m[:, :, -1])
+dia_m = mapfile.variables["veg_stemdia_m"][:]
+dia_m = pd.DataFrame(data=dia_m[:, :, 0])
+
+age_m = mapfile.variables["veg_age_m"][:]
+age_m = pd.DataFrame(data=age_m[:, :, 0])
+
 # plt.scatter(x,y, c=veg_den)
 # cbar= plt.colorbar()
 # plt.show()

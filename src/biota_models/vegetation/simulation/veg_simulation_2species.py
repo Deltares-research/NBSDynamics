@@ -154,6 +154,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
 
     def initiate(
         self,
+        cover: Optional[Path] = None,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
     ) -> Vegetation:
@@ -192,13 +193,13 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.biota.initial.initiate_vegetation_characteristics()
-        self.biota.juvenile.initiate_vegetation_characteristics()
-        self.biota.mature.initiate_vegetation_characteristics()
+        self.biota.initial.initiate_vegetation_characteristics(cover)
+        self.biota.juvenile.initiate_vegetation_characteristics(cover)
+        self.biota.mature.initiate_vegetation_characteristics(cover)
 
-        self.biota2.initial.initiate_vegetation_characteristics()
-        self.biota2.juvenile.initiate_vegetation_characteristics()
-        self.biota2.mature.initiate_vegetation_characteristics()
+        self.biota2.initial.initiate_vegetation_characteristics(cover)
+        self.biota2.juvenile.initiate_vegetation_characteristics(cover)
+        self.biota2.mature.initiate_vegetation_characteristics(cover)
 
         if self.output.defined:
             self.output.initialize(self.biota)

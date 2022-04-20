@@ -217,6 +217,7 @@ class Vegetation(Biota):
             self.juvenile.stem_num = np.zeros(self.juvenile.veg_frac.shape)
             self.juvenile.cover = np.zeros(self.juvenile.veg_frac.shape)
             self.juvenile.veg_age = np.zeros(self.juvenile.veg_frac.shape)
+
         elif np.any(self.juvenile.veg_age > (self.constants.maxYears_LS[0] * 365)):
             self.mature.veg_frac = np.column_stack(
                 (self.juvenile.veg_frac[:, -1], self.mature.veg_frac)

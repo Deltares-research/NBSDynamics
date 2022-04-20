@@ -288,7 +288,7 @@ class VegetationMapOutput(_VegetationOutput):
                     veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]
                 )
                 _map_data["veg_stemdia_j"][:, :, -1] = veg.juvenile.stem_dia[:, :]
-                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stem_dia[:, :]
+                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stem_dia
                 _map_data["veg_height_j"][:, :, -1] = veg.juvenile.veg_height[:, :]
                 _map_data["veg_height_m"][:, :, -1] = veg.mature.veg_height[:, :]
                 _map_data["root_len_j"][:, :, -1] = veg.juvenile.root_len[:, :]
