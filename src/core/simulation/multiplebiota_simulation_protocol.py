@@ -4,7 +4,6 @@ from src.core.biota.biota_model import Biota
 from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.base_output_wrapper import BaseOutputWrapper
 from src.core.simulation.biota_wrapper import BiotaWrapper
 
 
@@ -62,7 +61,7 @@ class MultipleBiotaSimulationProtocol(Protocol):
         """
 
     @property
-    def biota_data_list(self) -> List[BiotaWrapper]:
+    def biota_wrapper_list(self) -> List[BiotaWrapper]:
         """
         List of `BiotaWrapper` model object containing a `Biota` and `BaseOutputWrapper` each.
 

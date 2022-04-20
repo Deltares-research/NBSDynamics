@@ -32,7 +32,7 @@ class MultipleBiotaBaseSimulation(BaseModel, ABC):
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
     constants: Optional[BaseConstants]
-    biota_data_list: List[BiotaWrapper]
+    biota_wrapper_list: List[BiotaWrapper]
 
     @validator("hydrodynamics", pre=True, always=True)
     @classmethod
@@ -132,24 +132,4 @@ class MultipleBiotaBaseSimulation(BaseModel, ABC):
 
     def finalise(self):
         """Finalise simulation."""
-        pass
-
-
-class Simulation(MultipleBiotaBaseSimulation):
-    """
-    Vanilla definition of the `BaseSimulation` that allows any user
-    to create their flat simulation without pre-defined values.
-    In other words, everything should be built manually.
-    """
-
-    def configure_hydrodynamics(self):
-        """
-        This flat Simulation type does not configure anything automatically.
-        """
-        pass
-
-    def configure_output(self):
-        """
-        This flat Simulation type does not configure anything automatically.
-        """
         pass
