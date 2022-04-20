@@ -39,7 +39,9 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #
 mapfile = nc.Dataset(
-    r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Puccinellia_map.nc","r")
+    r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\output\VegModel_Puccinellia_map.nc",
+    "r",
+)
 mapfile.close
 
 # veg_frac = mapfile.variables['veg_frac_j'][:]
