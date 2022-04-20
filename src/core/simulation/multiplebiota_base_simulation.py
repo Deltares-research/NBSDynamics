@@ -125,9 +125,26 @@ class MultipleBiotaBaseSimulation(BaseModel, ABC):
         y_range: Optional[tuple] = None,
         value: Optional[float] = None,
     ) -> Biota:
+        """
+        Initiates a MultipleBiota Simulation.
+
+        Args:
+            x_range (Optional[tuple], optional): Spatial x-range. Defaults to None.
+            y_range (Optional[tuple], optional): Spatial y-range. Defaults to None.
+            value (Optional[float], optional): Biota cover value. Defaults to None.
+
+        Returns:
+            Biota: Initiated Biota.
+        """
         pass
 
     def run(self, duration: Optional[int] = None):
+        """
+        Runs the multiple biota simulation.
+
+        Args:
+            duration (Optional[int], optional): Duration of the simulation in years. Defaults to None.
+        """
         pass
 
     def finalise(self):

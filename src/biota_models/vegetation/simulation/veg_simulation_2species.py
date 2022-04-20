@@ -116,6 +116,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
         self,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
+        value: Optional[float] = None,
     ) -> Vegetation:
         """Initiate the vegetation distribution.
         The default vegetation distribution is no initial vegetation cover.
