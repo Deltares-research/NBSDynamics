@@ -7,7 +7,6 @@ from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.simulation.biota_wrapper import BiotaWrapper
 
 
-
 @runtime_checkable
 class MultipleBiotaSimulationProtocol(Protocol):
     @property
