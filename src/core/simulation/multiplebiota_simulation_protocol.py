@@ -1,10 +1,10 @@
-from typing import Protocol, runtime_checkable
+from typing import List, Protocol, runtime_checkable
 
 from src.core.biota.biota_model import Biota
 from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.base_output_wrapper import BaseOutputWrapper
+from src.core.simulation.biota_wrapper import BiotaWrapper
 
 
 @runtime_checkable
@@ -61,54 +61,15 @@ class MultipleBiotaSimulationProtocol(Protocol):
         """
 
     @property
-    def biota(self) -> Biota:
+    def biota_wrapper_list(self) -> List[BiotaWrapper]:
         """
-        Instance of a Biota model object.
+        List of `BiotaWrapper` model object containing a `Biota` and `BaseOutputWrapper` each.
 
         Raises:
             NotImplementedError: When the model does not implement its own definition.
 
         Returns:
-            Biota: Biota instance.
-        """
-        raise NotImplementedError
-
-    @property
-    def biota2(self) -> Biota:
-        """
-        Instance of a Biota model object.
-
-        Raises:
-            NotImplementedError: When the model does not implement its own definition.
-
-        Returns:
-            Biota: Biota instance.
-        """
-        raise NotImplementedError
-
-    @property
-    def output(self) -> BaseOutputWrapper:
-        """
-        Wrapper containing different output models.
-
-        Raises:
-            NotImplementedError: When the model does not implement its own definition.
-
-        Returns:
-            OutputWrapper: Instance of OutputWrapper.
-        """
-        raise NotImplementedError
-
-    @property
-    def output2(self) -> BaseOutputWrapper:
-        """
-        Wrapper containing different output models.
-
-        Raises:
-            NotImplementedError: When the model does not implement its own definition.
-
-        Returns:
-            OutputWrapper: Instance of OutputWrapper.
+            List[BiotaWrapper]: List of available `BiotaWrapper`.
         """
         raise NotImplementedError
 
