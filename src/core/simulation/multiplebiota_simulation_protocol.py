@@ -6,9 +6,9 @@ from src.core.common.environment import Environment
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.output.base_output_wrapper import BaseOutputWrapper
 
+
 @runtime_checkable
 class MultipleBiotaSimulationProtocol(Protocol):
-
     @property
     def mode(self) -> str:
         """

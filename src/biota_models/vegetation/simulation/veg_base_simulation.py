@@ -33,7 +33,6 @@ class _VegetationSimulation(BaseSimulation, ABC):
     output: Optional[VegOutputWrapper]
     biota: Optional[Vegetation]
 
-
     @validator("constants", pre=True)
     @classmethod
     def validate_constants(
