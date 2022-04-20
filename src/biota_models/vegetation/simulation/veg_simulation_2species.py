@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from pathlib import Path
+from tkinter.tix import Tree
 from typing import List, Optional, Union
 
 import pandas as pd
+from numpy import True_
 from pydantic import validator
 from tqdm import tqdm
 
@@ -94,6 +96,32 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
         if isinstance(field_value, Path):
             return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
+
+    @validator("biota_wrapper_list", pre=True, each_item=True, allow_reuse=True)
+    def validate_each_biota_wrapper(
+        cls, value: Union[dict, VegetationBiotaWrapper], values: Optional[dict]
+    ) -> VegetationBiotaWrapper:
+        """
+        Validate each provided biota is valid and in case no explicit constant is provided the one from this simulation will be used.
+
+        Args:
+            value (Union[dict, VegetationBiotaWrapper]): Value representing a BiotaWrapper
+            values (Optional[dict]): Values already defined in this simulation.
+
+        Returns:
+            VegetationBiotaWrapper: Generated BiotaWrapper from the input value.
+        """
+        if isinstance(value, VegetationBiotaWrapper):
+            return value
+        if isinstance(value, dict):
+            # Include the current constant values if they are missing
+            biota_dict: dict = value.get("biota", dict())
+            if not "constants" in biota_dict.keys() and "constants" in values.keys():
+                biota_dict["constants"] = values["constants"]
+                return VegetationBiotaWrapper(**dict(biota=biota_dict))
+            return VegetationBiotaWrapper(**value)
+        # If we get into this point it will fail with a default (expected) error.
+        return value
 
     @abstractmethod
     def configure_hydrodynamics(self):
