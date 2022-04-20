@@ -10,7 +10,7 @@ from src.core.common.base_constants import BaseConstants
 from src.core.common.environment import Environment
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.output.base_output_wrapper import BaseOutputWrapper
+from src.core.simulation.biota_wrapper import BiotaWrapper
 
 
 class MultipleBiotaBaseSimulation(BaseModel, ABC):
@@ -32,8 +32,7 @@ class MultipleBiotaBaseSimulation(BaseModel, ABC):
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
     constants: Optional[BaseConstants]
-    output: Optional[BaseOutputWrapper]
-    output2: Optional[BaseOutputWrapper]
+    biota_data_list: List[BiotaWrapper]
 
     @validator("hydrodynamics", pre=True, always=True)
     @classmethod
@@ -154,56 +153,3 @@ class Simulation(MultipleBiotaBaseSimulation):
         This flat Simulation type does not configure anything automatically.
         """
         pass
-
-
-# TODO: Define folder structure
-#  > working directory
-#  > figures directory
-#  > input directory
-#  > output directory
-#  > etc.
-
-# TODO: Model initiation IV: OutputFiles
-#  > specify output files (i.e. define file names and directories)
-#  > specify model data to be included in output files
-
-# TODO: Model initiation V: initial conditions
-#  > specify initial morphology
-#  > specify initial coral cover
-#  > specify carrying capacity
-
-# TODO: Model simulation I: specify SpaceTime
-
-# TODO: Model simulation II: hydrodynamic module
-#  > update hydrodynamics
-#  > extract variables
-
-# TODO: Model simulation III: coral environment
-#  > light micro-environment
-#  > flow micro-environment
-#  > temperature micro-environment
-
-# TODO: Model simulation IV: coral physiology
-#  > photosynthesis
-#  > population states
-#  > calcification
-
-# TODO: Model simulation V: coral morphology
-#  > morphological development
-
-# TODO: Model simulation VI: storm damage
-#  > set variables to hydrodynamic module
-#  > update hydrodynamics and extract variables
-#  > update coral storm survival
-
-# TODO: Model simulation VII: coral recruitment
-#  > update recruitment's contribution
-
-# TODO: Model simulation VIII: return morphology
-#  > set variables to hydrodynamic module
-
-# TODO: Model simulation IX: export output
-#  > write map-file
-#  > write his-file
-
-# TODO: Model finalisation
