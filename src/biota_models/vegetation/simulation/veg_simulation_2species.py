@@ -16,53 +16,15 @@ from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
 from src.core import RESHAPE
-from src.core.hydrodynamics.factory import HydrodynamicsFactory
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-<<<<<<< HEAD
 from src.core.simulation.biota_wrapper import BiotaWrapper
 from src.core.simulation.multiplebiota_base_simulation import (
     MultipleBiotaBaseSimulation,
 )
-=======
-from src.core.simulation.multiplebiota_base_simulation import (
-    MultipleBiotaBaseSimulation,
-)
-
->>>>>>> 078cf82517f292a68c4a5ba6fa33577b7058201d
 
 
 class VegetationBiotaWrapper(BiotaWrapper):
     biota: Optional[Vegetation]
-<<<<<<< HEAD
     output: Optional[VegOutputWrapper]
-=======
-    biota2: Optional[Vegetation]  # second vegetation species
-
-    @validator("constants", pre=True, allow_reuse=True)
-    @classmethod
-    def validate_constants(
-        cls, field_value: Union[str, Path, VegetationConstants]
-    ) -> VegetationConstants:
-        """
-        Validates the user-input constants value and transforms in case it's a filepath (str, Path).
-
-        Args:
-            field_value (Union[str, Path, Constants]): Value given by the user representing Constants.
-
-        Raises:
-            NotImplementedError: When the input value does not have any converter.
-
-        Returns:
-            Constants: Validated constants value.
-        """
-        if isinstance(field_value, VegetationConstants):
-            return field_value
-        if isinstance(field_value, str):
-            field_value = Path(field_value)
-        if isinstance(field_value, Path):
-            return VegetationConstants.from_input_file(field_value)
-        raise NotImplementedError(f"Validator not available for {type(field_value)}")
->>>>>>> 078cf82517f292a68c4a5ba6fa33577b7058201d
 
     @validator("biota", pre=True, allow_reuse=True)
     @classmethod
@@ -96,7 +58,6 @@ class VegetationBiotaWrapper(BiotaWrapper):
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-<<<<<<< HEAD
 
 class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     """
@@ -110,9 +71,6 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     biota_wrapper_list: List[VegetationBiotaWrapper] = []
 
     @validator("constants", pre=True, allow_reuse=True)
-=======
-    @validator("hydrodynamics", pre=True, always=True)
->>>>>>> 078cf82517f292a68c4a5ba6fa33577b7058201d
     @classmethod
     def validate_constants(
         cls, field_value: Union[str, Path, VegetationConstants]
@@ -356,8 +314,8 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             pd.DataFrame(period),
                         )
 
-                    update_biotawrapper_map_output(self.biota_wrapper_list[0])
-                    update_biotawrapper_map_output(self.biota_wrapper_list[1])
+                    for biota_wrapper in self.biota_wrapper_list:
+                        update_biotawrapper_map_output(biota_wrapper)
 
                     hydro_mor.store_hydromorph_values(first_biota)
                     hydro_mor2.store_hydromorph_values(second_biota)
