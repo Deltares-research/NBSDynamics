@@ -272,7 +272,7 @@ class Delft3D(ExtraModel, abc.ABC):
         self,
         veg_species1: Vegetation,
         time_step: int,
-        veg_species2: Optional[Vegetation],
+        veg_species2: Optional[Vegetation] = None,
     ):
         """Update the Delft3D-model.
 
