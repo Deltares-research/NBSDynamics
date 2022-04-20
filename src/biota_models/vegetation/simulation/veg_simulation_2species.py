@@ -18,7 +18,9 @@ from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapp
 from src.core import RESHAPE
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.simulation.multiplebiota_base_simulation import MultipleBiotaBaseSimulation
+from src.core.simulation.multiplebiota_base_simulation import (
+    MultipleBiotaBaseSimulation,
+)
 
 
 class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
@@ -33,7 +35,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     output: Optional[VegOutputWrapper]
     output2: Optional[VegOutputWrapper]
     biota: Optional[Vegetation]
-    biota2: Optional[Vegetation] #second vegetation species
+    biota2: Optional[Vegetation]  # second vegetation species
 
     @validator("constants", pre=True, allow_reuse=True)
     @classmethod
@@ -91,7 +93,6 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                 "Constants should be provided to initialize a Vegetation Model."
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
-
 
     @validator("hydrodynamics", pre=True, always=True)
     @classmethod

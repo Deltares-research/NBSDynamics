@@ -17,7 +17,6 @@ class BaseSimulation(BaseModel, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
-    CoralModel simulation.
     """
 
     mode: str
@@ -32,6 +31,8 @@ class BaseSimulation(BaseModel, ABC):
     hydrodynamics: Optional[HydrodynamicProtocol]
     environment: Environment = Environment()
     constants: Optional[BaseConstants]
+    # TODO: Replace usage and references (also in protocol) to BiotaWrapper.
+    biota: Optional[Biota]
     output: Optional[BaseOutputWrapper]
 
     @validator("hydrodynamics", pre=True, always=True)

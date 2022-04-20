@@ -1,6 +1,4 @@
 from pathlib import Path
-
-from src.core.simulation.multiplebiota_simulation_protocol import MultipleBiotaSimulationProtocol
 from test.utils import TestUtils
 from typing import Callable
 
@@ -23,6 +21,12 @@ from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
 )
 from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import (
     VegFlowFmSimulation_2species,
+)
+from src.biota_models.vegetation.simulation.veg_simulation_2species import (
+    VegetationBiotaWrapper,
+)
+from src.core.simulation.multiplebiota_simulation_protocol import (
+    MultipleBiotaSimulationProtocol,
 )
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
@@ -56,7 +60,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Puccinellia"
+        species = "Salicornia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -64,10 +68,7 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir
-                / "dflowfm_with_shared"
-                / "bin"
-                / "dflowfm",
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
@@ -93,7 +94,7 @@ class TestAcceptance:
         # compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        #plot_output(sim_run.output)
+        plot_output(sim_run.output)
 
     @only_local
     def test_given_veg_case_runs_2species(self):
@@ -120,30 +121,35 @@ class TestAcceptance:
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
-            output=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict()),
-                his_output=dict(
-                    output_params=dict(),
+            biota_wrapper_list=[
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species1, constants=veg_constants1),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                        species=species1,
+                    ),
                 ),
-                species=species1,
-            ),
-            output2=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict()),
-                his_output=dict(
-                    output_params=dict(),
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species2, constants=veg_constants2),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                    ),
                 ),
-            ),
-            biota=Vegetation(species=species1, constants=veg_constants1),
-            biota2=Vegetation(species=species2, constants=veg_constants2),
+            ],
         )
 
         # Run simulation.
         sim_run.initiate()
         sim_run.run(2)
         sim_run.finalise()
-
 
     def test_given_transect_case_runs(self):
         # 1. Define test data.
@@ -227,7 +233,7 @@ class TestAcceptance:
         compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        #plot_output(run_trans.output)
+        plot_output(run_trans.output)
 
     # TODO: Delft3D dlls not yet available at the repo level.
     @only_local

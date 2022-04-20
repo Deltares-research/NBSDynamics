@@ -105,7 +105,9 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", coral.dc_rep)
         self.set_variable("stemheight", coral.hc)
 
-    def set_vegetation(self, veg_species1: Vegetation, veg_species2: Optional[Vegetation]):
+    def set_vegetation(
+        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation]
+    ):
         """Set vegetation dimensions to Delft3D-model.
 
         :param veg_species1: vegetation of a specific species
@@ -121,7 +123,9 @@ class Delft3D(ExtraModel, abc.ABC):
             self.set_variable(
                 "diaveg", veg_species1.av_stemdia
             )  # [m] 3D plant diameter, 2D part is basis input (m)
-            self.set_variable("stemheight", veg_species1.av_height)  # [m] 2D plant heights (m)
+            self.set_variable(
+                "stemheight", veg_species1.av_height
+            )  # [m] 2D plant heights (m)
         else:  ## TODO TEST THIS!
             self.set_variable(
                 "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
@@ -265,7 +269,10 @@ class Delft3D(ExtraModel, abc.ABC):
 
     ## TODO input timestep is in days! what is the unit here?
     def update_hydromorphodynamics(
-        self, veg_species1: Vegetation, time_step: int, veg_species2: Optional[Vegetation] = None
+        self,
+        veg_species1: Vegetation,
+        time_step: int,
+        veg_species2: Optional[Vegetation] = None,
     ):
         """Update the Delft3D-model.
 

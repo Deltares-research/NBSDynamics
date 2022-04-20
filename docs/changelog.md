@@ -1,3 +1,15 @@
+## v0.9.0 (2022-04-20)
+
+### Feat
+
+- **veg_simulation2_species.py**: Now all the biotawrappers will get the simulation constants when not providing biota-constants
+- **biota_wrapper.py**: Added biota_wrapper concept to reduce code duplicity on multiple biota simulations
+
+### Refactor
+
+- **src/biota_models/vegetation/simulation/veg_simulation_2species.py**: changed vegetation simulutation to use the biota wrapper.
+- **multiplebiota**: Refactored all multiplebiota protocol and models to include the BiotaWrapper concept
+
 ## v0.8.3 (2022-04-13)
 
 ### Refactor

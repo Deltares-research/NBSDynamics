@@ -233,21 +233,20 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     else:
                         begin_date = end_date
                     end_date = begin_date + timedelta(
-                        days=round(365 / self.constants.t_eco_year)
+                        days=(365/self.constants.t_eco_year)
                     )
                     period = [
-                        begin_date + timedelta(n)
-                        for n in range(int((end_date - begin_date).days))
+                        begin_date + timedelta(seconds=n)
+                        for n in range(int((end_date - begin_date).days*24*3600+(end_date - begin_date).seconds))
                     ]
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
 
                     for ts in range(
-                        0, len(period)
-                    ):  # if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
-                        # if-statement that encompasses all for which the hydrodynamic should be used
-                        ## TODO what is the unit of the time_step?
+                        0, len(period), 11178
+                    ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
+
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         (
                             cur_tau,
@@ -255,7 +254,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=1000  # every timestep
+                            self.biota, time_step=11178  # every timestep
                         )
 
                         # # environment

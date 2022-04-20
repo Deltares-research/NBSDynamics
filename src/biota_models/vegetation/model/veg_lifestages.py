@@ -117,11 +117,13 @@ class LifeStages(ExtraModel):
         self.dt_height = np.zeros((2, 1))
 
         growth_duration = int(
-            (
-                self.constants.get_duration(
+            (self.constants.get_duration(
                     self.constants.growth_start, self.constants.growth_end
                 )
-            ).days
+            ).days * 24 * 3600 + (self.constants.get_duration(
+                    self.constants.growth_start, self.constants.growth_end
+                )
+            ).seconds
         )
 
         if self.ls == 0:
@@ -173,7 +175,7 @@ class LifeStages(ExtraModel):
             a = start_growth <= pd.to_datetime(period)
             b = pd.to_datetime(period) <= end_growth
             c = np.nonzero((a == True) & (b == True))
-            growth_days = len(c[0])
+            growth_sec = len(c[0])
 
             if begin_date <= winter_start <= end_date:
                 self.winter = True
@@ -187,22 +189,22 @@ class LifeStages(ExtraModel):
             else:
                 self.winter = False
                 self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (
-                    self.dt_height[0] * growth_days
+                    self.dt_height[0] * growth_sec
                 )
                 self.veg_height[veg_frac == 0] = 0
 
             self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (
-                self.dt_stemdia * growth_days
+                self.dt_stemdia * growth_sec
             )
             self.stem_dia[veg_frac == 0] = 0
             self.root_len[veg_frac > 0] = self.root_len[veg_frac > 0] + (
-                self.dt_root * growth_days
+                self.dt_root * growth_sec
             )
             self.root_len[veg_frac == 0] = 0
             self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls - 1]
             self.stem_num[veg_frac == 0] = 0
             self.veg_age[veg_frac > 0] = (
-                self.veg_age[veg_frac > 0] + self.constants.ets_duration
+                self.veg_age[veg_frac > 0] + (self.constants.ets_duration/(24*3600))
             )
             self.veg_age[veg_frac == 0] = 0
             self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
