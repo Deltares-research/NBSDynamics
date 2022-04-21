@@ -105,19 +105,37 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", coral.dc_rep)
         self.set_variable("stemheight", coral.hc)
 
-    def set_vegetation(self, veg: Vegetation):
+    def set_vegetation(
+        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation]
+    ):
         """Set vegetation dimensions to Delft3D-model.
 
-        :param veg: vegetation
-        :type veg: Vegetation
+        :param veg_species1: vegetation of a specific species
+        :param veg_species2: vegetation of an optional second species
+        :type veg_species1: Vegetation
+        :type veg_species2: Vegetation
         """
-        self.set_variable(
-            "rnveg", veg.veg_den
-        )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
-        self.set_variable(
-            "diaveg", veg.av_stemdia
-        )  # [m] 3D plant diameter, 2D part is basis input (m)
-        self.set_variable("stemheight", veg.av_height)  # [m] 2D plant heights (m)
+
+        if not veg_species2:
+            self.set_variable(
+                "rnveg", veg_species1.veg_den
+            )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+            self.set_variable(
+                "diaveg", veg_species1.av_stemdia
+            )  # [m] 3D plant diameter, 2D part is basis input (m)
+            self.set_variable(
+                "stemheight", veg_species1.av_height
+            )  # [m] 2D plant heights (m)
+        else:  ## TODO TEST THIS!
+            self.set_variable(
+                "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
+            )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+            self.set_variable(
+                "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia)
+            )  # [m] 3D plant diameter, 2D part is basis input (m)
+            self.set_variable(
+                "stemheight", (veg_species1.av_height + veg_species2.av_height)
+            )  # [m] 2D plant heights (m)
 
     def get_mean_hydrodynamics(self):
         """Get hydrodynamic results; mean values."""
@@ -250,12 +268,29 @@ class Delft3D(ExtraModel, abc.ABC):
         )
 
     ## TODO input timestep is in days! what is the unit here?
-    def update_hydromorphodynamics(self, veg, time_step):
-        """Update the Delft3D-model."""
-        self.time_step = time_step
+    def update_hydromorphodynamics(
+        self,
+        veg_species1: Vegetation,
+        time_step: int,
+        veg_species2: Optional[Vegetation],
+    ):
+        """Update the Delft3D-model.
 
+        :param veg_species1: vegetation of a specific species
+        :param time_step: time step of delft FM in seconds
+        :param veg_species2: vegetation of an optional second species
+        :type veg_species1: Vegetation
+        :type time_step: int
+        :type veg_species2: Vegetation
+
+        """
+        self.time_step = time_step
         self.reset_counters()
-        self.set_vegetation(veg)
+        self.set_vegetation(veg_species1, veg_species2)
+        # if not veg_species2:
+        #     self.set_vegetation(veg_species1)
+        # else:
+        #
         self.model_wrapper.update(self.time_step)
 
         return self.get_current_hydromorphodynamics(time_step=self.time_step)

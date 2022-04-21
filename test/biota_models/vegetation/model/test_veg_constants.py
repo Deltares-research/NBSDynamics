@@ -9,7 +9,7 @@ from src.core.common.base_constants import BaseConstants
 
 class TestVegetationConstants:
     constant_species_cases = [
-        pytest.param("Spartina anglica"),
+        pytest.param("Spartina"),
         pytest.param("Salicornia"),
         pytest.param("Puccinellia"),
     ]

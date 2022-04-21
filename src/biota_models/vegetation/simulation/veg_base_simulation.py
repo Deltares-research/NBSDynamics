@@ -297,7 +297,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.biota, constants=self.constants)
+                        col.update(self.biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
                     self.biota.update_lifestages()
@@ -305,7 +305,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     # # export results
                     progress.set_postfix(inner_loop="export results")
                     # map-file
-                    # self.output.map_output.update(self.biota, years[i]) #change to period we are in current ets
+                    # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
                     self.output.map_output.update(
                         self.biota,
                         int(period[-1].strftime("%Y%m%d")),
