@@ -254,7 +254,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=11178  # every timestep
+                            self.biota, time_step=1000  # every timestep
                         )
 
                         # # environment

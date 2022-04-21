@@ -60,7 +60,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Salicornia"
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -82,8 +82,9 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        sim_run.initiate(cover=r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase6\input\MinFiles\fm\cover\VegModel_Puccinellia_map.nc") #add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(2)
+        cover_path = test_case / "fm" / "cover"
+        sim_run.initiate() #add path to nc file of initial cover (map_file) if initial cover present
+        sim_run.run(3)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -147,6 +148,7 @@ class TestAcceptance:
         )
 
         # Run simulation.
+        cover_path = test_case / "fm" / "cover"
         sim_run.initiate()
         sim_run.run(2)
         sim_run.finalise()
