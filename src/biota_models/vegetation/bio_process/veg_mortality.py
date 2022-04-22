@@ -61,7 +61,7 @@ class Veg_Mortality(ExtraModel):
         )  # update fractions due to mortality
         veg.juvenile.veg_frac[
             veg.juvenile.veg_frac < 0
-        ] = 0  # replace negative values with 0
+        ] = 0.0  # replace negative values with 0
         veg.mature.veg_frac = (
             veg.mature.veg_frac
             - self.fraction_dead_flood_m
@@ -71,7 +71,7 @@ class Veg_Mortality(ExtraModel):
         )  # update fractions due to mortality
         veg.mature.veg_frac[
             veg.mature.veg_frac < 0
-        ] = 0  # replace negative values with 0
+        ] = 0.0  # replace negative values with 0
 
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
         veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)
@@ -144,7 +144,7 @@ class Veg_Mortality(ExtraModel):
 
     @staticmethod
     def compute_hydroperiod(wl_time, constants: VegetationConstants):
-        # determiine cells with water depth > flooding/drying threshold
+        # determine cells with water depth > flooding/drying threshold
         fl = np.where(wl_time > constants.fl_dr)
         flood = np.zeros(wl_time.shape)
         flood[fl] = 1

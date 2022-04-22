@@ -46,7 +46,7 @@ mapfile.close
 # veg_frac = pd.DataFrame(data = veg_frac)
 veg_den = mapfile.variables["rnveg"][-1, :].reshape(-1, 1)
 veg_den = pd.DataFrame(data=veg_den)
-veg_cover = mapfile.variables["cover"][20, :].reshape(-1, 1)
+veg_cover = mapfile.variables["cover"][1, :].reshape(-1, 1)
 veg_cover = pd.DataFrame(data=veg_cover)
 time = mapfile.variables["time"][:]
 veg_height = mapfile.variables["height"][9, :].reshape(-1, 1)
@@ -60,13 +60,17 @@ height_j = mapfile.variables["veg_height_j"][:]
 height_j = pd.DataFrame(data=height_j[:, :, 0])
 veg_frac_m = mapfile.variables["veg_frac_m"][:]
 veg_frac_m = pd.DataFrame(data=veg_frac_m[:, :, -1])
+veg_frac_j = mapfile.variables["veg_frac_j"][:]
+veg_frac_j = pd.DataFrame(data=veg_frac_j[:, :, -1])
 height_m = mapfile.variables["veg_height_m"][:]
 height_m = pd.DataFrame(data=height_m[:, :, -1])
+height_j = mapfile.variables["veg_height_j"][:]
+height_j = pd.DataFrame(data=height_j[:, :, -1])
 dia_m = mapfile.variables["veg_stemdia_m"][:]
 dia_m = pd.DataFrame(data=dia_m[:, :, 0])
 
 age_m = mapfile.variables["veg_age_m"][:]
-age_m = pd.DataFrame(data=age_m[:, :, 0])
+age_m = pd.DataFrame(data=age_m[:, :, -1])
 
 # plt.scatter(x,y, c=veg_den)
 # cbar= plt.colorbar()
@@ -82,7 +86,7 @@ age_m = pd.DataFrame(data=age_m[:, :, 0])
 #
 plt.scatter(y, x, c=veg_cover)
 cbar = plt.colorbar()
-plt.title("Vegetation cover (Puccinellia)")
+plt.title("Vegetation cover (Spartina)")
 plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()

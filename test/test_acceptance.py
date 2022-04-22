@@ -95,7 +95,7 @@ class TestAcceptance:
         # compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        plot_output(sim_run.output)
+        # plot_output(sim_run.output)
 
     @only_local
     def test_given_veg_case_runs_2species(self):

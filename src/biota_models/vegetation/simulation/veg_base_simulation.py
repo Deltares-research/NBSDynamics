@@ -254,7 +254,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=1000  # every timestep
+                            self.biota, time_step=100  # every timestep
                         )
 
                         # # environment
@@ -314,9 +314,13 @@ class _VegetationSimulation(BaseSimulation, ABC):
                         self.constants,
                     )  # change to period we are in current ets
                     # his-file
+                    period_days = [
+                        begin_date + timedelta(n)
+                        for n in range(int((end_date - begin_date).days))
+                    ]
                     self.output.his_output.update(
                         self.biota,
-                        pd.DataFrame(period),
+                        pd.DataFrame(period_days),
                     )
                     hydro_mor.store_hydromorph_values(self.biota)
 

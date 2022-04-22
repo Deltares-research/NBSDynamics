@@ -315,6 +315,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                     progress.set_postfix(inner_loop="export results")
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
+
                     def update_biotawrapper_map_output(
                         biota_wrapper: VegetationBiotaWrapper,
                     ):
@@ -326,9 +327,13 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             biota_wrapper.biota.constants,
                         )  # change to period we are in current ets
                         # his-file
+                        period_days = [
+                            begin_date + timedelta(n)
+                            for n in range(int((end_date - begin_date).days))
+                        ]
                         biota_wrapper.output.his_output.update(
                             biota_wrapper.biota,
-                            pd.DataFrame(period),
+                            pd.DataFrame(period_days),
                         )
 
                     for biota_wrapper in self.biota_wrapper_list:

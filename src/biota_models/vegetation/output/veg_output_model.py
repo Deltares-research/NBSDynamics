@@ -54,15 +54,20 @@ class VegetationMapOutput(_VegetationOutput):
             # dimensions
             _map_data.createDimension("time", None)
             _map_data.createDimension("nmesh2d_face", self.space)
-            _map_data.createDimension("age", None)
+            _map_data.createDimension("age_j", None)
+            _map_data.createDimension("age_m", None)
 
             # variables
             t = _map_data.createVariable("time", int, ("time",))
             t.long_name = "period"
             t.units = "period"
 
-            age = _map_data.createVariable("age", int, ("age"))
-            age.long_name = "vegetation age"
+            age = _map_data.createVariable("age_j", int, ("age_j"))
+            age.long_name = "vegetation age juvenile"
+            age.units = "days"
+
+            age = _map_data.createVariable("age_m", int, ("age_m"))
+            age.long_name = "vegetation age mature"
             age.units = "days"
 
             x = _map_data.createVariable("nmesh2d_x", "f8", ("nmesh2d_face",))
@@ -136,11 +141,11 @@ class VegetationMapOutput(_VegetationOutput):
                     "rnveg", "f8", ("time", "nmesh2d_face")
                 )
                 rnveg.long_name = "vegetation density"
-                diaveg.units = "1/m2"
-                diaveg[:, :] = 0
+                rnveg.units = "1/m2"
+                rnveg[:, :] = 0
 
                 veg_frac_j = _map_data.createVariable(
-                    "veg_frac_j", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_frac_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 veg_frac_j.long_name = (
                     "Vegetation fraction in each growth day for juvenile"
@@ -149,7 +154,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_frac_j[:, :, :] = 0
 
                 veg_frac_m = _map_data.createVariable(
-                    "veg_frac_m", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_frac_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_frac_m.long_name = (
                     "Vegetation fraction in each growth day for mature"
@@ -158,21 +163,21 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_frac_m[:, :, :] = 0
 
                 veg_den_j = _map_data.createVariable(
-                    "veg_den_j", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_den_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 veg_den_j.long_name = "Density of juvenile vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_j.units = "-"
                 veg_den_j[:, :, :] = 0
 
                 veg_den_m = _map_data.createVariable(
-                    "veg_den_m", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_den_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_den_m.long_name = "Density of mature vegetation in number of stems per m2, according to area fraction of veg age"
                 veg_den_m.units = "-"
                 veg_den_m[:, :, :] = 0
 
                 veg_stemdia_j = _map_data.createVariable(
-                    "veg_stemdia_j", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_stemdia_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 veg_stemdia_j.long_name = (
                     "Stem diameter of juvenile vegetation in each cell"
@@ -181,7 +186,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_stemdia_j[:, :, :] = 0
 
                 veg_stemdia_m = _map_data.createVariable(
-                    "veg_stemdia_m", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_stemdia_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_stemdia_m.long_name = (
                     "Stem diameter of mature vegetation in each cell"
@@ -190,7 +195,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_stemdia_m[:, :, :] = 0
 
                 veg_height_j = _map_data.createVariable(
-                    "veg_height_j", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_height_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 veg_height_j.long_name = (
                     "Vegetation height of juvenile vegetation in each cell"
@@ -199,7 +204,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_height_j[:, :, :] = 0
 
                 veg_height_m = _map_data.createVariable(
-                    "veg_height_m", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_height_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_height_m.long_name = (
                     "Vegetation height of mature vegetation in each cell"
@@ -208,7 +213,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_height_m[:, :, :] = 0
 
                 root_len_j = _map_data.createVariable(
-                    "root_len_j", "f8", ("nmesh2d_face", "age", "time")
+                    "root_len_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 root_len_j.long_name = (
                     "Root length of juvenile vegetation in each cell"
@@ -217,7 +222,7 @@ class VegetationMapOutput(_VegetationOutput):
                 root_len_j[:, :, :] = 0
 
                 root_len_m = _map_data.createVariable(
-                    "root_len_m", "f8", ("nmesh2d_face", "age", "time")
+                    "root_len_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 root_len_m.long_name = (
                     "Root length of mature vegetation in each cell"
@@ -226,7 +231,7 @@ class VegetationMapOutput(_VegetationOutput):
                 root_len_m[:, :, :] = 0
 
                 veg_age_j = _map_data.createVariable(
-                    "veg_age_j", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_age_j", "f8", ("nmesh2d_face", "age_j", "time")
                 )
                 veg_age_j.long_name = (
                     "Vegetation age of juvenile vegetation in each cell"
@@ -235,7 +240,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_age_j[:, :, :] = 0
 
                 veg_age_m = _map_data.createVariable(
-                    "veg_age_m", "f8", ("nmesh2d_face", "age", "time")
+                    "veg_age_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_age_m.long_name = (
                     "Vegetation age of mature vegetation in each cell"
@@ -288,7 +293,7 @@ class VegetationMapOutput(_VegetationOutput):
                     veg.mature.stem_num[:, :] * veg.mature.veg_frac[:, :]
                 )
                 _map_data["veg_stemdia_j"][:, :, -1] = veg.juvenile.stem_dia[:, :]
-                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stem_dia
+                _map_data["veg_stemdia_m"][:, :, -1] = veg.mature.stem_dia[:, :]
                 _map_data["veg_height_j"][:, :, -1] = veg.juvenile.veg_height[:, :]
                 _map_data["veg_height_m"][:, :, -1] = veg.mature.veg_height[:, :]
                 _map_data["root_len_j"][:, :, -1] = veg.juvenile.root_len[:, :]

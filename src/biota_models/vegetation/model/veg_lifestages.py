@@ -184,7 +184,7 @@ class LifeStages(ExtraModel):
                     self.constants.maxH_winter[self.ls - 1] < self.veg_height
                 ] = self.constants.maxH_winter[
                     self.ls - 1
-                ]  # change the height for all the vegetation which i biger than max_height_winter to max_height_winter
+                ]  # change the height for all the vegetation which is bigger than max_height_winter to max_height_winter
 
             else:
                 self.winter = False
@@ -193,6 +193,7 @@ class LifeStages(ExtraModel):
                 )
                 self.veg_height[veg_frac == 0] = 0
 
+            self.veg_frac = veg_frac
             self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (
                 self.dt_stemdia * growth_sec
             )
