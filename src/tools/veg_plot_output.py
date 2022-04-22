@@ -8,25 +8,26 @@ import pandas as pd
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-# hisfile_Spartina = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase6\output\VegModel_his.nc', 'r')
-# hisfile.close
+
+# hisfile_Salicornia = nc.Dataset(r'c:\Users\toledoal\NBSDynamicsD\test\test_data\sm_testcase6\output\VegModel_Spartina_his.nc', 'r')
+# hisfile_Salicornia.close
 #
-# diaveg = hisfile.variables['diaveg'][:]
+# diaveg = hisfile_Spartina.variables['diaveg'][:]
 # diaveg = pd.DataFrame(data = diaveg)
-# time = hisfile.variables['time'][:]
+# time = hisfile_Spartina.variables['time'][:]
 # time = pd.to_datetime(time)
 # #
-# veg_frac = hisfile.variables['veg_frac_j'][:]
+# veg_frac = hisfile_Spartina.variables['veg_frac_j'][:]
 # veg_frac = pd.DataFrame(data = veg_frac)
-# veg_den = hisfile.variables['rnveg'][:]
+# veg_den = hisfile_Spartina.variables['rnveg'][:]
 # veg_den = pd.DataFrame(data = veg_den)
-# veg_den = hisfile.variables['rnveg'][:]
+# veg_den = hisfile_Spartina.variables['rnveg'][:]
 # veg_den = pd.DataFrame(data = veg_den)
-# veg_height = hisfile.variables['height'][:]
+# veg_height = hisfile_Spartina.variables['height'][:]
 # veg_height = pd.DataFrame(data = veg_height)
 #
-# plt.plot(time, veg_height[103][:])
-# plt.title("Vegetation height (Salicornia)")
+# plt.plot(time, veg_height[93][:])
+# plt.title("Vegetation height (Spartina)")
 # plt.xlabel("time [years]")
 # plt.ylabel("height [m]")
 # plt.show()
@@ -34,9 +35,9 @@ from mpl_toolkits.mplot3d import Axes3D
 # plt.plot(time, veg_frac[125][:])
 # plt.show()
 
-
+#
 mapfile = nc.Dataset(
-    r"C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\sm_testcase6\output\VegModel_map.nc",
+    r"c:\Users\toledoal\NBSDynamicsD\test\test_data\sm_testcase6\output\VegModel_Spartina_map.nc",
     "r",
 )
 mapfile.close
@@ -45,7 +46,7 @@ mapfile.close
 # veg_frac = pd.DataFrame(data = veg_frac)
 veg_den = mapfile.variables["rnveg"][-1, :].reshape(-1, 1)
 veg_den = pd.DataFrame(data=veg_den)
-veg_cover = mapfile.variables["cover"][90, :].reshape(-1, 1)
+veg_cover = mapfile.variables["cover"][20, :].reshape(-1, 1)
 veg_cover = pd.DataFrame(data=veg_cover)
 time = mapfile.variables["time"][:]
 veg_height = mapfile.variables["height"][9, :].reshape(-1, 1)
@@ -55,8 +56,26 @@ x = pd.DataFrame(data=x)
 y = mapfile.variables["nmesh2d_y"][:]
 y = pd.DataFrame(data=y)
 bl = mapfile.variables["bl"][-1, :].reshape(-1, 1)
+height_j = mapfile.variables["veg_height_j"][:]
+height_j = pd.DataFrame(data=height_j[:, :, -1])
 
 
+age_j = mapfile.variables["age_j"][:]
+age_j = pd.DataFrame(data=age_j)
+
+age_m = mapfile.variables["age_m"][:]
+age_m = pd.DataFrame(data=age_m)
+
+veg_frac_j = mapfile.variables["veg_frac_j"][:]
+veg_frac_j = pd.DataFrame(data=veg_frac_j[:, :, -1])
+veg_frac_m = mapfile.variables["veg_frac_m"][:]
+veg_frac_m = pd.DataFrame(data=veg_frac_m[:, :, -1])
+
+veg_age_j = mapfile.variables["veg_age_j"][:]
+veg_age_j = pd.DataFrame(data=veg_age_j[:, :])
+
+height_m = mapfile.variables["veg_height_m"][:]
+height_m = pd.DataFrame(data=height_m[:, :, -1])
 # plt.scatter(x,y, c=veg_den)
 # cbar= plt.colorbar()
 # plt.show()
@@ -71,7 +90,7 @@ bl = mapfile.variables["bl"][-1, :].reshape(-1, 1)
 #
 plt.scatter(y, x, c=veg_cover)
 cbar = plt.colorbar()
-plt.title("Vegetation cover (Salicornia)")
+plt.title("Vegetation cover (Puccinellia)")
 plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()

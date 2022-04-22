@@ -4,6 +4,7 @@ import pandas as pd
 
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
 from src.biota_models.vegetation.simulation.veg_simulation_2species import (
+    VegetationBiotaWrapper,
     _VegetationSimulation_2species,
 )
 from src.core.hydrodynamics.delft3d import Delft3D
@@ -11,13 +12,13 @@ from src.core.hydrodynamics.delft3d import Delft3D
 
 class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
     """
-    Implements the `SimulationProtocol`
+    Implements the `MultipleBiotaSimulationProtocol`
     Vegetation Delft3D Simulation. Contains the specific logic and parameters required for the case.
     """
 
     def configure_hydrodynamics(self):
         """
-        Configures the hydrodynamics model for a `CoralDelft3DSimulation`.
+        Configures the hydrodynamics model for a `VegDelft3DSimulation`.
         """
         self.hydrodynamics.initiate()
 
@@ -58,17 +59,14 @@ class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
         extended_output = get_output_wrapper_dict()
         map_dict = get_map_output_dict(extended_output)
         his_dict = get_his_output_dict(extended_output)
-        if self.output is None:
-            extended_output["map_output"] = map_dict
-            extended_output["his_output"] = his_dict
-            self.output = VegOutputWrapper(**extended_output)
-            return
 
-        if self.output2 is None:
-            extended_output["map_output"] = map_dict
-            extended_output["his_output"] = his_dict
-            self.output2 = VegOutputWrapper(**extended_output)
-            return
+        def init_output_wrapper(biota_wrapper: VegetationBiotaWrapper) -> bool:
+            if biota_wrapper.output is None:
+                extended_output["map_output"] = map_dict
+                extended_output["his_output"] = his_dict
+                biota_wrapper.output = VegOutputWrapper(**extended_output)
+                return True
+            return False
 
         def update_output(out_model, new_values: dict):
             if out_model is None:
@@ -78,13 +76,21 @@ class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
                 if output_dict.get(k, None) is None:
                     setattr(out_model, k, v)
 
-        update_output(self.output, extended_output)
-        update_output(self.output.map_output, map_dict)
-        update_output(self.output.his_output, his_dict)
+        def update_output_wrapper(biota_wrapper: VegetationBiotaWrapper):
+            update_output(biota_wrapper.output, extended_output)
+            update_output(biota_wrapper.output.map_output, map_dict)
+            update_output(biota_wrapper.output.his_output, his_dict)
 
-        update_output(self.output2, extended_output)
-        update_output(self.output2.map_output, map_dict)
-        update_output(self.output2.his_output, his_dict)
+        if all(
+            init_output_wrapper(biota_wrapper)
+            for biota_wrapper in self.biota_wrapper_list
+        ):
+            # If we just initialized all models there's no need to update them already.
+            return
+        [
+            update_output_wrapper(biota_wrapper)
+            for biota_wrapper in self.biota_wrapper_list
+        ]
 
 
 class VegDimrSimulation(_VegDelft3DSimulation):

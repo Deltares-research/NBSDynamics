@@ -22,6 +22,12 @@ from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
 from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import (
     VegFlowFmSimulation_2species,
 )
+from src.biota_models.vegetation.simulation.veg_simulation_2species import (
+    VegetationBiotaWrapper,
+)
+from src.core.simulation.multiplebiota_simulation_protocol import (
+    MultipleBiotaSimulationProtocol,
+)
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -62,11 +68,7 @@ class TestAcceptance:
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir
-                / "dflowfm_with_shared"
-                / "bin"
-                / "dflowfm"
-                / "dflowfm",
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
@@ -76,12 +78,12 @@ class TestAcceptance:
                     output_params=dict(),
                 ),
             ),
-            veg=Vegetation(species=species, constants=veg_constants),
+            biota=Vegetation(species=species, constants=veg_constants),
         )
 
         # Run simulation.
         sim_run.initiate()
-        sim_run.run(1)
+        sim_run.run(2)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -109,6 +111,7 @@ class TestAcceptance:
         species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
+
         sim_run = VegFlowFmSimulation_2species(
             working_dir=test_dir,
             constants=veg_constants1,
@@ -118,23 +121,29 @@ class TestAcceptance:
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
-            output=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict()),
-                his_output=dict(
-                    output_params=dict(),
+            biota_wrapper_list=[
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species1, constants=veg_constants1),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                        species=species1,
+                    ),
                 ),
-                species=species1,
-            ),
-            output2=dict(
-                output_dir=test_dir / "output",
-                map_output=dict(output_params=dict()),
-                his_output=dict(
-                    output_params=dict(),
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species2, constants=veg_constants2),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                    ),
                 ),
-            ),
-            veg=Vegetation(species=species1, constants=veg_constants1),
-            veg2=Vegetation(species=species2, constants=veg_constants2),
+            ],
         )
 
         # Run simulation.

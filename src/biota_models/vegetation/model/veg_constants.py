@@ -148,7 +148,7 @@ class VegetationConstants(BaseConstants):
 
     @property
     def ets_duration(self):
-        return round(365 / self.t_eco_year)
+        return (365*24*3600 / self.t_eco_year)
 
     # @property
     # def growth_days(self):

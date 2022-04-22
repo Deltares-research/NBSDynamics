@@ -15,16 +15,13 @@ class Colonization(ExtraModel):
     2. mud fraction in top layer: mud_frac>mud_colonization (NOT YET FULLY IMPLEMENTED!)
     """
 
-    cir: Optional[np.ndarray] = None
-    ma: Optional[np.ndarray] = None
+    cir: Optional[np.ndarray]
+    ma: Optional[np.ndarray]
+    seed_loc: Optional[np.ndarray]
+    seed_loc1: Optional[np.ndarray]
+    seed_loc2: Optional[np.ndarray]
 
-    def __init__(self):
-        super().__init__()
-        self.seed_loc = None
-        self.seed_loc1 = None
-        self.seed_loc2 = None
-
-    def update(self, veg: Vegetation, veg2: Optional[Vegetation] = None):
+    def update(self, veg_species1: Vegetation, veg_species2: Optional[Vegetation] = None):
         """Update marsh cover after colonization (settlement)
         if two vegetation objects are given (different species),
         they will compete for space when they colonize
@@ -33,55 +30,98 @@ class Colonization(ExtraModel):
 
         :type vegetation: Vegetation
         """
-        if veg2 == None:
+        if not veg_species2:
             # # available locations for settlement
-            Colonization.col_location(self, veg)
-            loc = veg.initial.veg_frac[self.seed_loc]
-            loc[veg.total_cover[self.seed_loc] <= (1 - veg.constants.iniCol_frac)] = 1
-            veg.initial.veg_frac[self.seed_loc] = loc * veg.constants.iniCol_frac
-            veg.initial.veg_height[self.seed_loc] = loc * veg.constants.iniShoot
-            veg.initial.stem_dia[self.seed_loc] = loc * veg.constants.iniDia
-            veg.initial.root_len[self.seed_loc] = loc * veg.constants.iniRoot
-            veg.initial.stem_num[self.seed_loc] = loc * veg.constants.num_stem[0]
+            Colonization.col_location(self, veg_species1)
+            loc = veg_species1.initial.veg_frac[self.seed_loc]
+            loc[
+                veg_species1.total_cover[self.seed_loc]
+                <= (1 - veg_species1.constants.iniCol_frac)
+            ] = 1
+            veg_species1.initial.veg_frac[self.seed_loc] = (
+                loc * veg_species1.constants.iniCol_frac
+            )
+            veg_species1.initial.veg_height[self.seed_loc] = (
+                loc * veg_species1.constants.iniShoot
+            )
+            veg_species1.initial.stem_dia[self.seed_loc] = (
+                loc * veg_species1.constants.iniDia
+            )
+            veg_species1.initial.root_len[self.seed_loc] = (
+                loc * veg_species1.constants.iniRoot
+            )
+            veg_species1.initial.stem_num[self.seed_loc] = (
+                loc * veg_species1.constants.num_stem[0]
+            )
 
         # TODO test this!
         else:
-            total_cover = veg.total_cover + veg2.total_cover
+            total_cover = veg_species1.total_cover + veg_species2.total_cover
 
-            Colonization.col_location(self, veg)
+            Colonization.col_location(self, veg_species1)
             self.seed_loc1 = self.seed_loc
-            Colonization.col_location(self, veg2)
+            Colonization.col_location(self, veg_species2)
             self.seed_loc2 = self.seed_loc
 
-            loc1 = veg.initial.veg_frac[self.seed_loc1]
-            loc1[total_cover[self.seed_loc1] <= (1 - veg.constants.iniCol_frac)] = 1
-            loc2 = veg2.initial.veg_frac[self.seed_loc2]
-            loc2[total_cover[self.seed_loc2] <= (1 - veg2.constants.iniCol_frac)] = 1
+            loc1 = veg_species1.initial.veg_frac[self.seed_loc1]
+            loc1[
+                total_cover[self.seed_loc1] <= (1 - veg_species1.constants.iniCol_frac)
+            ] = 1
+            loc2 = veg_species2.initial.veg_frac[self.seed_loc2]
+            loc2[
+                total_cover[self.seed_loc2] <= (1 - veg_species2.constants.iniCol_frac)
+            ] = 1
 
-            veg.initial.veg_height[self.seed_loc1] = loc1 * veg.constants.iniShoot
-            veg.initial.stem_dia[self.seed_loc1] = loc1 * veg.constants.iniDia
-            veg.initial.root_len[self.seed_loc1] = loc1 * veg.constants.iniRoot
-            veg.initial.stem_num[self.seed_loc1] = loc1 * veg.constants.num_stem[0]
+            veg_species1.initial.veg_height[self.seed_loc1] = (
+                loc1 * veg_species1.constants.iniShoot
+            )
+            veg_species1.initial.stem_dia[self.seed_loc1] = (
+                loc1 * veg_species1.constants.iniDia
+            )
+            veg_species1.initial.root_len[self.seed_loc1] = (
+                loc1 * veg_species1.constants.iniRoot
+            )
+            veg_species1.initial.stem_num[self.seed_loc1] = (
+                loc1 * veg_species1.constants.num_stem[0]
+            )
 
-            veg2.initial.veg_height[self.seed_loc2] = loc2 * veg2.constants.iniShoot
-            veg2.initial.stem_dia[self.seed_loc2] = loc2 * veg2.constants.iniDia
-            veg2.initial.root_len[self.seed_loc2] = loc2 * veg2.constants.iniRoot
-            veg2.initial.stem_num[self.seed_loc2] = loc2 * veg2.constants.num_stem[0]
+            veg_species2.initial.veg_height[self.seed_loc2] = (
+                loc2 * veg_species2.constants.iniShoot
+            )
+            veg_species2.initial.stem_dia[self.seed_loc2] = (
+                loc2 * veg_species2.constants.iniDia
+            )
+            veg_species2.initial.root_len[self.seed_loc2] = (
+                loc2 * veg_species2.constants.iniRoot
+            )
+            veg_species2.initial.stem_num[self.seed_loc2] = (
+                loc2 * veg_species2.constants.num_stem[0]
+            )
 
             # comp = np.where(loc1 == 1 and loc2 == 1)
-            if veg.constants.iniCol_frac + veg2.constants.iniCol_frac > 1:
+            if (
+                veg_species1.constants.iniCol_frac + veg_species2.constants.iniCol_frac
+                > 1
+            ):
                 loc1[np.in1d(self.seed_loc1, self.seed_loc2) == True] = 1 / (
-                    veg.constants.iniCol_frac + veg2.constants.iniCol_frac
+                    veg_species1.constants.iniCol_frac
+                    + veg_species2.constants.iniCol_frac
                 )
                 loc2[np.in1d(self.seed_loc2, self.seed_loc1) == True] = 1 / (
-                    veg.constants.iniCol_frac + veg2.constants.iniCol_frac
+                    veg_species1.constants.iniCol_frac
+                    + veg_species2.constants.iniCol_frac
                 )
 
-            veg.initial.veg_frac[self.seed_loc1] = loc1 * veg.constants.iniCol_frac
-            veg2.initial.veg_frac[self.seed_loc2] = loc2 * veg2.constants.iniCol_frac
+            veg_species1.initial.veg_frac[self.seed_loc1] = (
+                loc1 * veg_species1.constants.iniCol_frac
+            )
+            veg_species2.initial.veg_frac[self.seed_loc2] = (
+                loc2 * veg_species2.constants.iniCol_frac
+            )
 
-    def col_location(self, veg):
-        """new vegetation settlement
+    def col_location(self, veg: Vegetation):
+        """
+        new vegetation settlement
 
         :param veg: vegetation
         :type vegetation: Vegetation

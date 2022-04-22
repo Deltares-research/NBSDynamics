@@ -31,7 +31,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     # Other fields.
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
-    veg: Optional[Vegetation]
+    biota: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -58,7 +58,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
             return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-    @validator("veg", pre=True)
+    @validator("biota", pre=True)
     @classmethod
     def validate_vegetation(
         cls, field_value: Union[dict, Vegetation], values: dict
@@ -190,16 +190,16 @@ class _VegetationSimulation(BaseSimulation, ABC):
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
-        self.veg.initial.initiate_vegetation_characteristics()
-        self.veg.juvenile.initiate_vegetation_characteristics()
-        self.veg.mature.initiate_vegetation_characteristics()
+        self.biota.initial.initiate_vegetation_characteristics()
+        self.biota.juvenile.initiate_vegetation_characteristics()
+        self.biota.mature.initiate_vegetation_characteristics()
 
         if self.output.defined:
-            self.output.initialize(self.veg)
+            self.output.initialize(self.biota)
         else:
             print("WARNING: No output defined, so none exported.")
 
-        self.output.initialize(self.veg)
+        self.output.initialize(self.biota)
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
@@ -232,21 +232,20 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     else:
                         begin_date = end_date
                     end_date = begin_date + timedelta(
-                        days=round(365 / self.constants.t_eco_year)
+                        days=(365/self.constants.t_eco_year)
                     )
                     period = [
-                        begin_date + timedelta(n)
-                        for n in range(int((end_date - begin_date).days))
+                        begin_date + timedelta(seconds=n)
+                        for n in range(int((end_date - begin_date).days*24*3600+(end_date - begin_date).seconds))
                     ]
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
 
                     for ts in range(
-                        0, len(period)
-                    ):  # if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
-                        # if-statement that encompasses all for which the hydrodynamic should be used
-                        ## TODO what is the unit of the time_step?
+                        0, len(period), 11178
+                    ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
+
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         (
                             cur_tau,
@@ -254,7 +253,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.veg, time_step=10800  # every timestep
+                            self.biota, time_step=100  # every timestep
                         )
 
                         # # environment
@@ -266,9 +265,9 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
                             ts=ts,
-                            veg=self.veg,
+                            veg=self.biota,
                         )
-                    hydro_mor.get_hydromorph_values(self.veg)
+                    hydro_mor.get_hydromorph_values(self.biota)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -276,7 +275,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     mort = Veg_Mortality
                     mort.update(
                         mort,
-                        self.veg,
+                        self.biota,
                         self.constants,
                         ets,
                         begin_date,
@@ -297,28 +296,32 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.veg)
+                        col.update(self.biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
-                    self.veg.update_lifestages()
+                    self.biota.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
                     self.output.map_output.update(
-                        self.veg,
+                        self.biota,
                         int(period[-1].strftime("%Y%m%d")),
                         ets,
                         i,
                         self.constants,
                     )  # change to period we are in current ets
                     # his-file
+                    period_days = [
+                        begin_date + timedelta(n)
+                        for n in range(int((end_date - begin_date).days))
+                    ]
                     self.output.his_output.update(
-                        self.veg,
-                        pd.DataFrame(period),
+                        self.biota,
+                        pd.DataFrame(period_days),
                     )
-                    hydro_mor.store_hydromorph_values(self.veg)
+                    hydro_mor.store_hydromorph_values(self.biota)
 
     def finalise(self):
         """Finalise simulation."""

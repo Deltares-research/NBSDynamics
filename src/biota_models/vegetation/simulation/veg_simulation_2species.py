@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from pathlib import Path
+from tkinter.tix import Tree
 from typing import List, Optional, Union
 
 import pandas as pd
+from numpy import True_
 from pydantic import validator
 from tqdm import tqdm
 
@@ -16,12 +18,50 @@ from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
 from src.core import RESHAPE
-from src.core.hydrodynamics.factory import HydrodynamicsFactory
-from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
-from src.core.simulation.base_simulation import BaseSimulation
+from src.core.simulation.biota_wrapper import BiotaWrapper
+from src.core.simulation.multiplebiota_base_simulation import (
+    MultipleBiotaBaseSimulation,
+)
 
 
-class _VegetationSimulation_2species(BaseSimulation, ABC):
+class VegetationBiotaWrapper(BiotaWrapper):
+    biota: Optional[Vegetation]
+    output: Optional[VegOutputWrapper]
+
+    @validator("biota", pre=True, allow_reuse=True)
+    @classmethod
+    def validate_vegetation(
+        cls, field_value: Union[dict, Vegetation], values: dict
+    ) -> Vegetation:
+        """
+        Initializes vegetation in case a dictionary is provided. Ensuring the constants are also
+        given to the object.
+
+        Args:
+            field_value (Union[dict, Vegetation]): Value given by the user for the Vegetation field.
+            values (dict): Dictionary of remaining user-given field values.
+
+        Returns:
+            Vegetation: Validated instance of 'Vegetation'.
+        """
+        if isinstance(field_value, Vegetation):
+            return field_value
+        if isinstance(field_value, dict):
+            # Check if constants present in the dictionary:
+            if "constants" in field_value.keys():
+                # It will be generated automatically.
+                # in case parameters are missing an error will also be displayed.
+                return Vegetation(**field_value)
+            if "constants" in values.keys():
+                field_value["constants"] = values["constants"]
+                return Vegetation(**field_value)
+            raise ValueError(
+                "Constants should be provided to initialize a Vegetation Model."
+            )
+        raise NotImplementedError(f"Validator not available for {type(field_value)}")
+
+
+class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
@@ -30,10 +70,7 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
 
     # Other fields.
     constants: Optional[VegetationConstants]
-    output: Optional[VegOutputWrapper]
-    output2: Optional[VegOutputWrapper]
-    veg: Optional[Vegetation]
-    veg2: Optional[Vegetation]
+    biota_wrapper_list: List[VegetationBiotaWrapper] = []
 
     @validator("constants", pre=True, allow_reuse=True)
     @classmethod
@@ -60,96 +97,31 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
             return VegetationConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
-    @validator("veg", pre=True, allow_reuse=True)
-    @classmethod
-    def validate_vegetation(
-        cls, field_value: Union[dict, Vegetation], values: dict
-    ) -> Vegetation:
+    @validator("biota_wrapper_list", pre=True, each_item=True, allow_reuse=True)
+    def validate_each_biota_wrapper(
+        cls, value: Union[dict, VegetationBiotaWrapper], values: Optional[dict]
+    ) -> VegetationBiotaWrapper:
         """
-        Initializes vegetation in case a dictionary is provided. Ensuring the constants are also
-        given to the object.
+        Validate each provided biota is valid and in case no explicit constant is provided the one from this simulation will be used.
 
         Args:
-            field_value (Union[dict, Vegetation]): Value given by the user for the Vegetation field.
-            values (dict): Dictionary of remaining user-given field values.
+            value (Union[dict, VegetationBiotaWrapper]): Value representing a BiotaWrapper
+            values (Optional[dict]): Values already defined in this simulation.
 
         Returns:
-            Vegetation: Validated instance of 'Vegetation'.
+            VegetationBiotaWrapper: Generated BiotaWrapper from the input value.
         """
-        if isinstance(field_value, Vegetation):
-            return field_value
-        if isinstance(field_value, dict):
-            # Check if constants present in the dictionary:
-            if "constants" in field_value.keys():
-                # It will be generated automatically.
-                # in case parameters are missing an error will also be displayed.
-                return Vegetation(**field_value)
-            if "constants" in values.keys():
-                field_value["constants"] = values["constants"]
-                return Vegetation(**field_value)
-            raise ValueError(
-                "Constants should be provided to initialize a Vegetation Model."
-            )
-        raise NotImplementedError(f"Validator not available for {type(field_value)}")
-
-    @validator("veg2", pre=True, allow_reuse=True)
-    @classmethod
-    def validate_vegetation(
-        cls, field_value: Union[dict, Vegetation], values: dict
-    ) -> Vegetation:
-        """
-        Initializes vegetation in case a dictionary is provided. Ensuring the constants are also
-        given to the object.
-
-        Args:
-            field_value (Union[dict, Vegetation]): Value given by the user for the Vegetation field.
-            values (dict): Dictionary of remaining user-given field values.
-
-        Returns:
-            Vegetation: Validated instance of 'Vegetation'.
-        """
-        if isinstance(field_value, Vegetation):
-            return field_value
-        if isinstance(field_value, dict):
-            # Check if constants present in the dictionary:
-            if "constants" in field_value.keys():
-                # It will be generated automatically.
-                # in case parameters are missing an error will also be displayed.
-                return Vegetation(**field_value)
-            if "constants" in values.keys():
-                field_value["constants"] = values["constants"]
-                return Vegetation(**field_value)
-            raise ValueError(
-                "Constants should be provided to initialize a Vegetation Model."
-            )
-        raise NotImplementedError(f"Validator not available for {type(field_value)}")
-
-    @validator("hydrodynamics", pre=True, always=True)
-    @classmethod
-    def validate_hydrodynamics_present(
-        cls, field_values: Union[dict, HydrodynamicProtocol], values: dict
-    ) -> HydrodynamicProtocol:
-        """
-        Validator to transform the given dictionary into the corresponding hydrodynamic model.
-
-        Args:
-            field_values (Union[dict, HydrodynamicProtocol]): Value assigned to `hydrodynamics`.
-            values (dict): Dictionary of values given by the user.
-
-        Raises:
-            ValueError: When no hydrodynamics model can be built with the given values.
-
-        Returns:
-            dict: Validated dictionary of values given by the user.
-        """
-        if field_values is None:
-            field_values = dict()
-        if isinstance(field_values, dict):
-            return HydrodynamicsFactory.create(
-                field_values.get("mode", values["mode"]), **field_values
-            )
-
-        return field_values
+        if isinstance(value, VegetationBiotaWrapper):
+            return value
+        if isinstance(value, dict):
+            # Include the current constant values if they are missing
+            biota_dict: dict = value.get("biota", dict())
+            if not "constants" in biota_dict.keys() and "constants" in values.keys():
+                biota_dict["constants"] = values["constants"]
+                return VegetationBiotaWrapper(**dict(biota=biota_dict))
+            return VegetationBiotaWrapper(**value)
+        # If we get into this point it will fail with a default (expected) error.
+        return value
 
     @abstractmethod
     def configure_hydrodynamics(self):
@@ -168,25 +140,11 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
         """
         raise NotImplementedError
 
-    def validate_simulation_directories(self):
-        """
-        Generates the required directories if they do not exist already.
-        """
-        loop_dirs: List[Path] = [
-            "working_dir",
-            "output_dir",
-            "input_dir",
-            "figures_dir",
-        ]
-        for loop_dir in loop_dirs:
-            value_dir: Path = getattr(self, loop_dir)
-            if not value_dir.is_dir():
-                value_dir.mkdir(parents=True)
-
     def initiate(
         self,
         x_range: Optional[tuple] = None,
         y_range: Optional[tuple] = None,
+        value: Optional[float] = None,
     ) -> Vegetation:
         """Initiate the vegetation distribution.
         The default vegetation distribution is no initial vegetation cover.
@@ -203,7 +161,7 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
         :return: vegetation characteristics initiated
         :rtype: Vegetation
         """
-        ## TODO check those and see if they need change
+
         self.configure_hydrodynamics()
         self.configure_output()
         # Load constants and validate environment.
@@ -212,7 +170,6 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
         RESHAPE().space = self.hydrodynamics.space
         xy = self.hydrodynamics.xy_coordinates
 
-        ##TODO define cover as a possible input variable!
         # cover = np.zeros(RESHAPE().space)
         # if x_range is not None:
         #     x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
@@ -223,36 +180,29 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
         #     y_min = y_range[0] if y_range[0] is not None else min(xy[:][1])
         #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
         #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
+        def initiate_biotas(biota_wrapper: VegetationBiotaWrapper):
+            # Initiate input
+            biota_wrapper.biota.initial.initiate_vegetation_characteristics()
+            biota_wrapper.biota.juvenile.initiate_vegetation_characteristics()
+            biota_wrapper.biota.mature.initiate_vegetation_characteristics()
+            # Initiate output
+            if biota_wrapper.output.defined:
+                biota_wrapper.output.initialize(biota_wrapper.biota)
+            else:
+                print("WARNING: No output defined, so none exported.")
+            # TODO: Is it really needed to re-initialize the output wrapper?
+            biota_wrapper.output.initialize(biota_wrapper.biota)
 
-        self.veg.initial.initiate_vegetation_characteristics()
-        self.veg.juvenile.initiate_vegetation_characteristics()
-        self.veg.mature.initiate_vegetation_characteristics()
-
-        self.veg2.initial.initiate_vegetation_characteristics()
-        self.veg2.juvenile.initiate_vegetation_characteristics()
-        self.veg2.mature.initiate_vegetation_characteristics()
-
-        if self.output.defined:
-            self.output.initialize(self.veg)
-        else:
-            print("WARNING: No output defined, so none exported.")
-
-        self.output.initialize(self.veg)
-        ## TODO make output in a way that this will not overwrite each other!
-        if self.output2.defined:
-            self.output.initialize(self.veg2)
-        else:
-            print("WARNING: No output defined, so none exported.")
-
-        self.output2.initialize(self.veg2)
+        for biota_wrapper in self.biota_wrapper_list:
+            initiate_biotas(biota_wrapper)
 
     def run(self, duration: Optional[int] = None):
         """Run simulation.
 
-        :param veg: vegetation
+        :param biota: vegetation
         :param duration: simulation duration [yrs], defaults to None
 
-        :type veg: Vegetation
+        :type biota: Vegetation
         :type duration: int, optional
         """
         # auto-set duration based on constants value (provided or default)
@@ -264,6 +214,8 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
             int(start_date.year + duration),
         )  # takes the starting year from the start date defined in the Constants class.
 
+        first_biota: Vegetation = self.biota_wrapper_list[0].biota
+        second_biota: Vegetation = self.biota_wrapper_list[1].biota
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
                 current_year = years[i]
@@ -277,21 +229,21 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                     else:
                         begin_date = end_date
                     end_date = begin_date + timedelta(
-                        days=round(365 / self.constants.t_eco_year)
+                        days=(365 / self.constants.t_eco_year)
                     )
                     period = [
-                        begin_date + timedelta(n)
-                        for n in range(int((end_date - begin_date).days))
+                        begin_date + timedelta(seconds=n)
+                        for n in range(int((end_date - begin_date).days*24*3600+(end_date - begin_date).seconds))
                     ]
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
 
                     for ts in range(
-                        0, len(period)
+                        0, len(period),11178
                     ):  # if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
-                        ## TODO what is the unit of the time_step?
+
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
                         (
                             cur_tau,
@@ -299,9 +251,9 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            veg=self.veg,
-                            time_step=1000,
-                            veg2=self.veg2,  # every timestep
+                            veg_species1=first_biota,
+                            time_step=11178,
+                            veg_species2=second_biota,  # every timestep
                         )
 
                         # # environment
@@ -313,8 +265,8 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
                             ts=ts,
-                            veg=self.veg,
-                        )  # TODO do this also twice? How to incooperate second species?
+                            veg=first_biota,
+                        )
 
                         hydro_mor2 = Hydro_Morphodynamics(
                             tau_cur=cur_tau,
@@ -322,11 +274,11 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
                             ts=ts,
-                            veg=self.veg2,
+                            veg=second_biota,
                         )
 
-                    hydro_mor.get_hydromorph_values(self.veg)
-                    hydro_mor2.get_hydromorph_values(self.veg2)
+                    hydro_mor.get_hydromorph_values(first_biota)
+                    hydro_mor2.get_hydromorph_values(second_biota)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -334,8 +286,8 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                     mort = Veg_Mortality
                     mort.update(
                         mort,
-                        self.veg,
-                        self.veg.constants,
+                        first_biota,
+                        first_biota.constants,
                         ets,
                         begin_date,
                         end_date,
@@ -344,8 +296,8 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                     mort2 = Veg_Mortality
                     mort2.update(
                         mort,
-                        self.veg2,
-                        self.veg2.constants,
+                        second_biota,
+                        second_biota.constants,
                         ets,
                         begin_date,
                         end_date,
@@ -365,45 +317,41 @@ class _VegetationSimulation_2species(BaseSimulation, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.veg, self.veg2)
+                        col.update(first_biota, second_biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
-                    self.veg.update_lifestages()
-                    self.veg2.update_lifestages()
+                    first_biota.update_lifestages()
+                    second_biota.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
                     # map-file
                     # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
-                    self.output.map_output.update(
-                        self.veg,
-                        int(period[-1].strftime("%Y%m%d")),
-                        ets,
-                        i,
-                        self.veg.constants,
-                    )  # change to period we are in current ets
-                    # his-file
-                    self.output.his_output.update(
-                        self.veg,
-                        pd.DataFrame(period),
-                    )
+                    def update_biotawrapper_map_output(
+                        biota_wrapper: VegetationBiotaWrapper,
+                    ):
+                        biota_wrapper.output.map_output.update(
+                            biota_wrapper.biota,
+                            int(period[-1].strftime("%Y%m%d")),
+                            ets,
+                            i,
+                            biota_wrapper.biota.constants,
+                        )  # change to period we are in current ets
+                        # his-file
+                        period_days = [
+                            begin_date + timedelta(n)
+                            for n in range(int((end_date - begin_date).days))
+                        ]
+                        biota_wrapper.output.his_output.update(
+                            biota_wrapper.biota,
+                            pd.DataFrame(period),
+                        )
 
-                    self.output2.map_output.update(
-                        self.veg2,
-                        int(period[-1].strftime("%Y%m%d")),
-                        ets,
-                        i,
-                        self.veg2.constants,
-                    )  # change to period we are in current ets
-                    # his-file
-                    self.output2.his_output.update(
-                        self.veg2,
-                        pd.DataFrame(period),
-                    )
+                    for biota_wrapper in self.biota_wrapper_list:
+                        update_biotawrapper_map_output(biota_wrapper)
 
-                    hydro_mor.store_hydromorph_values(self.veg)
-                    hydro_mor2.store_hydromorph_values(self.veg2)
-                    ## TODO change this for the two species! one output for both together or their own output?
+                    hydro_mor.store_hydromorph_values(first_biota)
+                    hydro_mor2.store_hydromorph_values(second_biota)
 
     def finalise(self):
         """Finalise simulation."""
