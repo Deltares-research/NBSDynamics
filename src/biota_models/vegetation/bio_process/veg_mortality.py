@@ -59,9 +59,12 @@ class Veg_Mortality(ExtraModel):
             - self.fraction_dead_upr_j
             - self.burial_scour_j
         )  # update fractions due to mortality
+        # veg.juvenile.veg_frac[
+        #     veg.juvenile.veg_frac < 0
+        # ] = 0.0  # replace negative values with 0
         veg.juvenile.veg_frac[
-            veg.juvenile.veg_frac < 0
-        ] = 0.0  # replace negative values with 0
+            veg.juvenile.veg_frac < 0.01
+        ] = 0.0  # replace negative values and values below 1% coverage with 0
         veg.mature.veg_frac = (
             veg.mature.veg_frac
             - self.fraction_dead_flood_m
@@ -69,9 +72,12 @@ class Veg_Mortality(ExtraModel):
             - self.fraction_dead_upr_m
             - self.burial_scour_m
         )  # update fractions due to mortality
+        # veg.mature.veg_frac[
+        #     veg.mature.veg_frac < 0
+        # ] = 0.0  # replace negative values with 0
         veg.mature.veg_frac[
-            veg.mature.veg_frac < 0
-        ] = 0.0  # replace negative values with 0
+            veg.mature.veg_frac < 0.01
+        ] = 0.0  # replace negative values and values below 1% coverage with 0
 
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
         veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)

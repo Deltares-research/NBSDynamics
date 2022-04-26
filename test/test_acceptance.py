@@ -60,7 +60,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Spartina"
+        species = "Salicornia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -72,7 +72,7 @@ class TestAcceptance:
                 definition_file=test_case / "fm" / "test_case6.mdu",
             ),
             output=dict(
-                output_dir=test_dir / "output",
+                output_dir=test_dir / "output01",
                 map_output=dict(output_params=dict()),
                 his_output=dict(
                     output_params=dict(),
@@ -109,7 +109,7 @@ class TestAcceptance:
 
         test_case = test_dir / "input" / "MinFiles"
         species1 = "Salicornia"
-        species2 = "Spartina"
+        species2 = "Puccinellia"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
 
@@ -149,7 +149,7 @@ class TestAcceptance:
 
         # Run simulation.
         cover_path = test_case / "fm" / "cover"
-        sim_run.initiate()
+        sim_run.initiate(cover_path)
         sim_run.run(2)
         sim_run.finalise()
 
