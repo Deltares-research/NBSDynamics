@@ -83,7 +83,7 @@ class TestAcceptance:
 
         # Run simulation.
         cover_path = test_case / "fm" / "cover"
-        sim_run.initiate() #add path to nc file of initial cover (map_file) if initial cover present
+        sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
         sim_run.run(3)
         sim_run.finalise()
 

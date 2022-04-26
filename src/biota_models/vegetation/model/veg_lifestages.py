@@ -1,13 +1,14 @@
 import datetime
+from pathlib import Path
 from typing import Dict, Optional, Union
 
-import numpy as np
-import pandas as pd
-from pathlib import Path
 import netCDF4 as nc
+import numpy as np
+import numpy.ma as ma
+import pandas as pd
+
 from src.core.base_model import ExtraModel
 from src.core.common.singletons import RESHAPE
-import numpy.ma as ma
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -95,19 +96,29 @@ class LifeStages(ExtraModel):
             cover = cover / species
             input_cover: dict = nc.Dataset(cover, "r")
 
-            self.veg_frac = ma.MaskedArray.filled((input_cover.variables["veg_frac_" + apprev][:, :, -1]), 0.0)
+            self.veg_frac = ma.MaskedArray.filled(
+                (input_cover.variables["veg_frac_" + apprev][:, :, -1]), 0.0
+            )
             # self.veg_frac = np.nan_to_num(self.veg_frac, nan=0)
             # self.veg_frac[self.veg_frac > 1000000] = 0
-            self.veg_height =  ma.MaskedArray.filled((input_cover.variables["veg_height_" + apprev][:, :, -1]), 0.0)
+            self.veg_height = ma.MaskedArray.filled(
+                (input_cover.variables["veg_height_" + apprev][:, :, -1]), 0.0
+            )
             # self.veg_height = np.nan_to_num(self.veg_height, nan=0)
             # self.veg_height[self.veg_height > 1000000] = 0
-            self.stem_dia =  ma.MaskedArray.filled((input_cover.variables["veg_stemdia_" + apprev][:, :, -1]), 0.0)
+            self.stem_dia = ma.MaskedArray.filled(
+                (input_cover.variables["veg_stemdia_" + apprev][:, :, -1]), 0.0
+            )
             # self.stem_dia = np.nan_to_num(self.stem_dia, nan=0)
             # self.stem_dia[self.stem_dia > 1000000] = 0
-            self.root_len =  ma.MaskedArray.filled((input_cover.variables["root_len_" + apprev][:, :, -1]), 0.0)
+            self.root_len = ma.MaskedArray.filled(
+                (input_cover.variables["root_len_" + apprev][:, :, -1]), 0.0
+            )
             # self.root_len = np.nan_to_num(self.root_len, nan=0)
             # self.root_len[self.root_len > 1000000] = 0
-            self.veg_age =  ma.MaskedArray.filled((input_cover.variables["veg_age_" + apprev][:, :, -1]), 0.0)
+            self.veg_age = ma.MaskedArray.filled(
+                (input_cover.variables["veg_age_" + apprev][:, :, -1]), 0.0
+            )
             # self.veg_age = np.nan_to_num(self.veg_age, nan=0)
             # self.veg_age[self.veg_age > 1000000] = 0
             self.stem_num = np.zeros(self.veg_frac.shape)
@@ -119,10 +130,15 @@ class LifeStages(ExtraModel):
         self.dt_height = np.zeros((2, 1))
 
         growth_duration = int(
-            (self.constants.get_duration(
+            (
+                self.constants.get_duration(
                     self.constants.growth_start, self.constants.growth_end
                 )
-            ).days * 24 * 3600 + (self.constants.get_duration(
+            ).days
+            * 24
+            * 3600
+            + (
+                self.constants.get_duration(
                     self.constants.growth_start, self.constants.growth_end
                 )
             ).seconds
@@ -207,8 +223,8 @@ class LifeStages(ExtraModel):
             self.root_len[veg_frac == 0] = 0
             self.stem_num[veg_frac > 0] = self.constants.num_stem[self.ls - 1]
             self.stem_num[veg_frac == 0] = 0
-            self.veg_age[veg_frac > 0] = (
-                self.veg_age[veg_frac > 0] + (self.constants.ets_duration/(24*3600))
+            self.veg_age[veg_frac > 0] = self.veg_age[veg_frac > 0] + (
+                self.constants.ets_duration / (24 * 3600)
             )
             self.veg_age[veg_frac == 0] = 0
             self.cover = veg_frac.sum(axis=1).reshape(-1, 1)
