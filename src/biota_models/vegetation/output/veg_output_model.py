@@ -145,7 +145,7 @@ class VegetationMapOutput(_VegetationOutput):
                 rnveg[:, :] = 0
 
                 veg_frac_j = _map_data.createVariable(
-                    "veg_frac_j", "f8", ("age_j", "nmesh2d_face", "time")
+                    "veg_frac_j", "f8", ( "nmesh2d_face","age_j", "time")
                 )
                 veg_frac_j.long_name = (
                     "Vegetation fraction in each growth day for juvenile"
@@ -154,7 +154,7 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_frac_j[:, :, :] = 0
 
                 veg_frac_m = _map_data.createVariable(
-                    "veg_frac_m", "f8", ("age_m", "nmesh2d_face", "time")
+                    "veg_frac_m", "f8", ( "nmesh2d_face","age_m", "time")
                 )
                 veg_frac_m.long_name = (
                     "Vegetation fraction in each growth day for mature"
@@ -284,8 +284,8 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["height"][-1, :] = veg.av_height.transpose()
                 _map_data["diaveg"][-1, :] = veg.av_stemdia.transpose()
                 _map_data["rnveg"][-1, :] = veg.veg_den.transpose()
-                _map_data["veg_frac_j"][:, :, -1] = veg.juvenile.veg_frac[:, :].transpose()
-                _map_data["veg_frac_m"][:, :, -1] = veg.mature.veg_frac[:, :].transpose()
+                _map_data["veg_frac_j"][:, :, -1] = veg.juvenile.veg_frac[:, :]
+                _map_data["veg_frac_m"][:, :, -1] = veg.mature.veg_frac[:, :]
                 _map_data["veg_den_j"][:, :, -1] = (
                     veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
                 )

@@ -146,6 +146,7 @@ class LifeStages(ExtraModel):
             c = np.nonzero((a == True) & (b == True))
             growth_sec = len(c[0])
 
+
             if begin_date <= winter_start <= end_date:
                 self.winter = True
                 self.veg_height[veg_frac == 0] = 0  # delete vegetation which died
@@ -156,11 +157,14 @@ class LifeStages(ExtraModel):
                 ]  # change the height for all the vegetation which i biger than max_height_winter to max_height_winter
 
             else:
-                self.winter = False
+                if growth_sec > 0:
+                    self.winter = False
                 self.veg_height[veg_frac > 0] = self.veg_height[veg_frac > 0] + (
                     self.dt_height[0] * growth_sec
                 )
                 self.veg_height[veg_frac == 0] = 0
+
+
 
             self.stem_dia[veg_frac > 0] = self.stem_dia[veg_frac > 0] + (
                 self.dt_stemdia * growth_sec

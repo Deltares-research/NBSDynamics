@@ -321,6 +321,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                         self.biota,
                         pd.DataFrame(period_days),
                     )
+
                     hydro_mor.store_hydromorph_values(self.biota)
 
     def finalise(self):

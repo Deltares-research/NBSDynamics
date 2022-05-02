@@ -52,27 +52,32 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+        test_dir = TestUtils.get_local_test_data_dir("sm_testcase_mud")
+        # test_dir = r'c:\Users\toledoal\sm_testcase_Pdrive\MinFiles\fm\test_case2'
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"
+        kernels_dir = dll_repo / "kernels"/"x64"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Salicornia"
+        # test_case = test_dir+ r'\fm\test_case2'
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
             constants=veg_constants,
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
+                # working_dir=test_dir+r'\d3d_work',
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case6.mdu",
+                definition_file=test_case / "fm" / "test_case2.mdu",
+                # definition_file=test_dir+r'\test_case2.mdu'
             ),
             output=dict(
-                output_dir=test_dir / "output",
+                output_dir=test_dir / "outputmfac30",
+                # output_dir = test_dir +r'\output',
                 map_output=dict(output_params=dict()),
                 his_output=dict(
                     output_params=dict(),
@@ -83,7 +88,7 @@ class TestAcceptance:
 
         # Run simulation.
         sim_run.initiate()
-        sim_run.run(2)
+        sim_run.run(4)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -94,14 +99,14 @@ class TestAcceptance:
         # compare_files(run_trans.output.map_output.output_filepath)
 
         # 5. Verify plotting can be done.
-        plot_output(sim_run.output)
+        # plot_output(sim_run.output)
 
     @only_local
     def test_given_veg_case_runs_2species(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"
+        kernels_dir = dll_repo / "kernels"/ "x64"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
