@@ -21,7 +21,9 @@ class Colonization(ExtraModel):
     seed_loc1: Optional[np.ndarray]
     seed_loc2: Optional[np.ndarray]
 
-    def update(self, veg_species1: Vegetation, veg_species2: Optional[Vegetation] = None):
+    def update(
+        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation] = None
+    ):
         """Update marsh cover after colonization (settlement)
         if two vegetation objects are given (different species),
         they will compete for space when they colonize

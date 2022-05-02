@@ -234,11 +234,16 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     else:
                         begin_date = end_date
                     end_date = begin_date + timedelta(
-                        days=(365/self.constants.t_eco_year)
+                        days=(365 / self.constants.t_eco_year)
                     )
                     period = [
                         begin_date + timedelta(seconds=n)
-                        for n in range(int((end_date - begin_date).days*24*3600+(end_date - begin_date).seconds))
+                        for n in range(
+                            int(
+                                (end_date - begin_date).days * 24 * 3600
+                                + (end_date - begin_date).seconds
+                            )
+                        )
                     ]
 
                     # # set dimensions (i.e. update time-dimension)

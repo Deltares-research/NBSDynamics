@@ -89,7 +89,8 @@ class SimulationProtocol(Protocol):
             OutputWrapper: Instance of OutputWrapper.
         """
         raise NotImplementedError
- ## TODO remove value here? In the vegetation it will be a path to the input cover (cover: Path)
+
+    ## TODO remove value here? In the vegetation it will be a path to the input cover (cover: Path)
     def initiate(self, x_range: tuple, y_range: tuple, value: float) -> Biota:
         """
         Initiates the simulation attributes with the given parameters.

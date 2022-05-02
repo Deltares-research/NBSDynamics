@@ -222,7 +222,12 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                     )
                     period = [
                         begin_date + timedelta(seconds=n)
-                        for n in range(int((end_date - begin_date).days*24*3600+(end_date - begin_date).seconds))
+                        for n in range(
+                            int(
+                                (end_date - begin_date).days * 24 * 3600
+                                + (end_date - begin_date).seconds
+                            )
+                        )
                     ]
 
                     # # set dimensions (i.e. update time-dimension)
