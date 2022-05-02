@@ -346,53 +346,53 @@ class VegetationHisOutput(_VegetationOutput):
 
             def init_hydro_mor():
                 max_tau = _his_data.createVariable(
-                    "max_tau", "f8", ("time", "stations")
+                    "max_tau", "f8", ("stations", "time")
                 )
                 max_tau.long_name = "maximum bed shear stress"
                 max_tau.units = "N/m^2"
                 max_tau[:, :] = 0
-                max_u = _his_data.createVariable("max_u", "f8", ("time", "stations"))
+                max_u = _his_data.createVariable("max_u", "f8", ("stations", "time"))
                 max_u.long_name = "maximum flow velocity"
                 max_u.units = "m/s"
                 max_u[:, :] = 0
-                max_wl = _his_data.createVariable("max_wl", "f8", ("time", "stations"))
+                max_wl = _his_data.createVariable("max_wl", "f8", ("stations", "time"))
                 max_wl.long_name = "maximum water level"
                 max_wl.units = "m"
                 max_wl[:, :] = 0
-                min_wl = _his_data.createVariable("min_wl", "f8", ("time", "stations"))
+                min_wl = _his_data.createVariable("min_wl", "f8", ("stations", "time"))
                 min_wl.long_name = "minimum water level"
                 min_wl.units = "m"
                 min_wl[:, :] = 0
-                bl = _his_data.createVariable("bl", "f8", ("time", "stations"))
+                bl = _his_data.createVariable("bl", "f8", ("stations", "time"))
                 bl.long_name = "bedlevel"
                 bl.units = "m"
                 bl[:, :] = 0
 
             def init_veg_characteristics():
-                cover = _his_data.createVariable("cover", "f8", ("time", "stations"))
+                cover = _his_data.createVariable("cover", "f8", ("stations", "time"))
                 cover.long_name = "sum of fraction coverage in each cell (for all ages)"
                 cover.units = "-"
                 cover[
                     :, :
                 ] = veg.total_cover  # could be =veg.cover if there is an initial one
 
-                height = _his_data.createVariable("height", "f8", ("time", "stations"))
+                height = _his_data.createVariable("height", "f8", ("stations", "time"))
                 height.long_name = "vegetation height"
                 height.units = "m"
                 height[:, :] = 0
 
-                diaveg = _his_data.createVariable("diaveg", "f8", ("time", "stations"))
+                diaveg = _his_data.createVariable("diaveg", "f8", ("stations", "time"))
                 diaveg.long_name = "stem diameter"
                 diaveg.units = "m"
                 diaveg[:, :] = 0
 
-                rnveg = _his_data.createVariable("rnveg", "f8", ("time", "stations"))
+                rnveg = _his_data.createVariable("rnveg", "f8", ("stations", "time"))
                 rnveg.long_name = "vegetation density"
                 diaveg.units = "1/m2"
                 diaveg[:, :] = 0
 
                 veg_frac_j = _his_data.createVariable(
-                    "veg_frac_j", "f8", ("time", "stations")
+                    "veg_frac_j", "f8", ("stations", "time")
                 )
                 veg_frac_j.long_name = (
                     "Vegetation fraction in each growth day for juvenile"
@@ -401,7 +401,7 @@ class VegetationHisOutput(_VegetationOutput):
                 veg_frac_j[:, :] = 0
 
                 veg_frac_m = _his_data.createVariable(
-                    "veg_frac_m", "f8", ("time", "stations")
+                    "veg_frac_m", "f8", ("stations", "time")
                 )
                 veg_frac_m.long_name = (
                     "Vegetation fraction in each growth day for mature"
@@ -484,41 +484,41 @@ class VegetationHisOutput(_VegetationOutput):
             _his_data["time"][ti[:]] = y_dates.values
 
             def update_hydro_mor():
-                _his_data["max_tau"][ti, :] = np.tile(veg.max_tau, (len(y_dates), 1))[
-                    :, self.idx_stations
+                _his_data["max_tau"][:, ti] = np.tile(veg.max_tau.reshape(-1, 1), (1, len(y_dates)))[
+                    self.idx_stations, :
                 ]
-                _his_data["max_u"][ti, :] = np.tile(veg.max_u, (len(y_dates), 1))[
-                    :, self.idx_stations
+                _his_data["max_u"][:, ti] = np.tile(veg.max_u.reshape(-1, 1), (1, len(y_dates)))[
+                    self.idx_stations, :
                 ]
-                _his_data["max_wl"][ti, :] = np.tile(veg.max_wl, (len(y_dates), 1))[
-                    :, self.idx_stations
+                _his_data["max_wl"][:, ti] = np.tile(veg.max_wl.reshape(-1, 1), (1, len(y_dates)))[
+                    self.idx_stations, :
                 ]
-                _his_data["min_wl"][ti, :] = np.tile(veg.min_wl, (len(y_dates), 1))[
-                    :, self.idx_stations
+                _his_data["min_wl"][:, ti] = np.tile(veg.min_wl.reshape(-1, 1), (1, len(y_dates)))[
+                    self.idx_stations, :
                 ]
-                _his_data["bl"][ti, :] = np.tile(veg.bl, (len(y_dates), 1))[
-                    :, self.idx_stations
+                _his_data["bl"][:, ti] = np.tile(veg.bl.reshape(-1, 1), (1, len(y_dates)))[
+                    self.idx_stations, :
                 ]
 
             def update_veg_characteristics():
-                _his_data["cover"][ti, :] = np.tile(
-                    veg.total_cover.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
-                _his_data["height"][ti, :] = np.tile(
-                    veg.av_height.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
-                _his_data["diaveg"][ti, :] = np.tile(
-                    veg.av_stemdia.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
-                _his_data["rnveg"][ti, :] = np.tile(
-                    veg.veg_den.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
-                _his_data["veg_frac_j"][ti, :] = np.tile(
-                    veg.juvenile.cover.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
-                _his_data["veg_frac_m"][ti, :] = np.tile(
-                    veg.mature.cover.transpose(), (len(y_dates), 1)
-                )[:, self.idx_stations]
+                _his_data["cover"][:, ti] = np.tile(
+                    veg.total_cover, (1, len(y_dates))
+                )[self.idx_stations, :]
+                _his_data["height"][:, ti] = np.tile(
+                    veg.av_height, (1, len(y_dates))
+                )[self.idx_stations, :]
+                _his_data["diaveg"][:, ti] = np.tile(
+                    veg.av_stemdia, (1, len(y_dates))
+                )[self.idx_stations, :]
+                _his_data["rnveg"][:, ti] = np.tile(
+                    veg.veg_den.reshape(-1,1), (1, len(y_dates))
+                )[self.idx_stations, :]
+                _his_data["veg_frac_j"][:, ti] = np.tile(
+                    veg.juvenile.cover, (1, len(y_dates))
+                )[self.idx_stations, :]
+                _his_data["veg_frac_m"][:, ti] = np.tile(
+                    veg.mature.cover, (1, len(y_dates))
+                )[self.idx_stations, :]
                 # _his_data["veg_den_j"][ti, :] = np.tile(
                 #     (veg.juvenile.stem_num[:, :] * veg.juvenile.veg_frac[:, :]
                 #     ).transpose(),
