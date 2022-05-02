@@ -69,6 +69,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     # Other fields.
     constants: Optional[VegetationConstants]
     biota_wrapper_list: List[VegetationBiotaWrapper] = []
+    morfac: Optional[Vegetation]
 
     @validator("constants", pre=True, allow_reuse=True)
     @classmethod
@@ -233,6 +234,10 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                         # if-statement that encompasses all for which the hydrodynamic should be used
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
+                        time_step = 100
+                        if not _VegetationSimulation_2species.morfac == None:
+                            time_step = time_step / _VegetationSimulation_2species.morfac
+
                         (
                             cur_tau,
                             cur_vel,
@@ -240,7 +245,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
                             veg_species1=first_biota,
-                            time_step=1000,
+                            time_step=time_step,
                             veg_species2=second_biota,  # every timestep
                         )
 

@@ -32,6 +32,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
     biota: Optional[Vegetation]
+    morfac: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -248,13 +249,17 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
+                        time_step = 100
+                        if not _VegetationSimulation.morfac == None:
+                            time_step = time_step/_VegetationSimulation.morfac
+
                         (
                             cur_tau,
                             cur_vel,
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=100  # every timestep
+                            self.biota, time_step=time_step  # every timestep ## TODO divide here the time step by the MorFac?
                         )
 
                         # # environment
