@@ -254,9 +254,9 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        time_step = 10
-                        # if not _VegetationSimulation.morfac == None:
-                        #     time_step = time_step/_VegetationSimulation.morfac
+                        time_step = 11178/100
+                        if self.morfac != None:
+                            time_step = time_step/self.morfac
 
                         (
                             cur_tau,
