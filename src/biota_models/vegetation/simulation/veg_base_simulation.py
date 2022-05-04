@@ -254,9 +254,9 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        time_step = 100
-                        if not _VegetationSimulation.morfac == None:
-                            time_step = time_step/_VegetationSimulation.morfac
+                        time_step = 10
+                        # if not _VegetationSimulation.morfac == None:
+                        #     time_step = time_step/_VegetationSimulation.morfac
 
                         (
                             cur_tau,
@@ -298,7 +298,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                         year=begin_date.year
                     )
                     colend = pd.to_datetime(self.constants.ColEnd).replace(
-                        year=end_date.year
+                        year=begin_date.year
                     )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:

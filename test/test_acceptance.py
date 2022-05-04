@@ -52,7 +52,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+        test_dir = TestUtils.get_local_test_data_dir("sm_testcase_mud")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
         kernels_dir = dll_repo / "kernels"
 
@@ -60,7 +60,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Salicornia"
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -69,22 +69,23 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case6.mdu",
+                definition_file=test_case / "fm" / "test_case2.mdu",
             ),
             output=dict(
-                output_dir=test_dir / "output01",
+                output_dir=test_dir / "output",
                 map_output=dict(output_params=dict()),
                 his_output=dict(
                     output_params=dict(),
                 ),
             ),
             biota=Vegetation(species=species, constants=veg_constants),
+            # morfac=100
         )
 
         # Run simulation.
-        cover_path = test_case / "fm" / "cover"
+        # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(3)
+        sim_run.run(2)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -145,10 +146,11 @@ class TestAcceptance:
                     ),
                 ),
             ],
+            morfac=100 #Optional input
         )
 
         # Run simulation.
-        cover_path = test_case / "fm" / "cover"
+        # cover_path = test_case / "fm" / "cover"
         sim_run.initiate(cover_path)
         sim_run.run(2)
         sim_run.finalise()
