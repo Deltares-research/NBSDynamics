@@ -32,7 +32,6 @@ class _VegetationSimulation(BaseSimulation, ABC):
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
     biota: Optional[Vegetation]
-    morfac: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -203,14 +202,16 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
         self.output.initialize(self.biota)
 
-    def run(self, duration: Optional[int] = None):
+    def run(self, duration: Optional[int] = None, morfac: Optional[int] = None):
         """Run simulation.
 
         :param veg: vegetation
         :param duration: simulation duration [yrs], defaults to None
+        :param morfac: Morphological scale factor of the DFM simulation [-]
 
         :type veg: Vegetation
         :type duration: int, optional
+        :type morfac: int, optional
         """
         # auto-set duration based on constants value (provided or default)
         if duration is None:
@@ -248,15 +249,12 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
-
+                    time_step = 11178
                     for ts in range(
-                        0, len(period), 11178
+                        0, len(period), time_step
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        time_step = 11178/100
-                        if self.morfac != None:
-                            time_step = time_step/self.morfac
 
                         (
                             cur_tau,
@@ -264,7 +262,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=time_step  # every timestep ## TODO divide here the time step by the MorFac?
+                            self.biota, time_step=time_step  # 4 times every tidal cycle (M2 tide)
                         )
 
                         # # environment

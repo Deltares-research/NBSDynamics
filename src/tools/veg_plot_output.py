@@ -41,7 +41,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # # #
 mapfile = nc.Dataset(
-    r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase_mud\output\VegModel_Spartina_map.nc",
+    r"C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\zuidgors_test\output\VegModel_Spartina_map.nc",
     "r",
 )
 mapfile.close
