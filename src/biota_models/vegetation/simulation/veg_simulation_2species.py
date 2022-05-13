@@ -69,7 +69,6 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
     # Other fields.
     constants: Optional[VegetationConstants]
     biota_wrapper_list: List[VegetationBiotaWrapper] = []
-    morfac: Optional[Vegetation]
 
     @validator("constants", pre=True, allow_reuse=True)
     @classmethod
@@ -232,16 +231,14 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
 
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
-
+                    time_step = 11178
                     for ts in range(
-                        0, len(period), 11178
+                        0, len(period), time_step
                     ):  # if time_step is input in s! #call hydromorphodynamics every time step and store values to get min
                         # if-statement that encompasses all for which the hydrodynamic should be used
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        time_step = 100
-                        if not _VegetationSimulation_2species.morfac == None:
-                            time_step = time_step / _VegetationSimulation_2species.morfac
+
 
                         (
                             cur_tau,

@@ -202,7 +202,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
         self.output.initialize(self.biota)
 
-    def run(self, duration: Optional[int] = None, morfac: Optional[int] = None):
+    def run(self, duration: Optional[int] = None):
         """Run simulation.
 
         :param veg: vegetation
