@@ -8,6 +8,7 @@ from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_lifestages import LifeStages
 from src.core.biota.biota_model import Biota
 from src.core.common.singletons import RESHAPE
+from src.biota_models.vegetation.bio_process.veg_mortality import Veg_Mortality
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -68,6 +69,7 @@ class Vegetation(Biota):
     u_ts: Optional[VegAttribute] = None
     wl_ts: Optional[VegAttribute] = None
     bl_ts: Optional[VegAttribute] = None
+    inund: Optional[VegAttribute] = None
 
     # @validator("_cover")
     # @classmethod
@@ -144,6 +146,7 @@ class Vegetation(Biota):
     # def duration_winter(self, constants):
     #     """duration of the colonization period from start, end growth from Constants"""
     #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
+
 
     def update_lifestages(self):
         _reshape = RESHAPE()
@@ -296,3 +299,17 @@ class Vegetation(Biota):
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
 
             # what if only 1 life stage (e.g. salicornia?)
+
+# Adding up the juvenile and mature fractions of mortality causes
+
+    def total_mort_flood(self, mort: Veg_Mortality):
+        return mort.fraction_dead_flood_j + mort.fraction_dead_flood_m
+
+    def total_mort_des(self, mort: Veg_Mortality):
+        return mort.fraction_dead_des_j + mort.fraction_dead_des_m
+
+    def total_mort_upr(self, mort: Veg_Mortality):
+        return mort.fraction_dead_upr_j + mort.fraction_dead_upr_m
+
+    def total_mort_bursco(self, mort: Veg_Mortality):
+        return mort.burial_scour_j + mort.burial_scour_m

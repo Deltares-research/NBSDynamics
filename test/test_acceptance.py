@@ -52,15 +52,15 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
+        test_dir = TestUtils.get_local_test_data_dir("fm_10x30_sand2")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"
+        kernels_dir = dll_repo / "kernels"/"x64"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
-        species = "Salicornia"
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -69,10 +69,12 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case6.mdu",
+                definition_file=test_case / "fm" / "test_case_sand4.mdu",
+                # definition_file=test_dir+r'\test_case2.mdu'
             ),
             output=dict(
-                output_dir=test_dir / "output01",
+                output_dir=test_dir / "output",
+                # output_dir = test_dir +r'\output',
                 map_output=dict(output_params=dict()),
                 his_output=dict(
                     output_params=dict(),
@@ -82,9 +84,9 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        cover_path = test_case / "fm" / "cover"
+        # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(3)
+        sim_run.run(duration=1)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -102,14 +104,14 @@ class TestAcceptance:
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"
+        kernels_dir = dll_repo / "kernels"/ "x64"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input" / "MinFiles"
         species1 = "Salicornia"
-        species2 = "Puccinellia"
+        species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
 

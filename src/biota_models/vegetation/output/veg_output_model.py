@@ -92,28 +92,37 @@ class VegetationMapOutput(_VegetationOutput):
                 max_tau.long_name = "maximum bed shear stress"
                 max_tau.units = "N/m^2"
                 max_tau[:, :] = 0
+
                 max_u = _map_data.createVariable(
                     "max_u", "f8", ("time", "nmesh2d_face")
                 )
                 max_u.long_name = "maximum flow velocity"
                 max_u.units = "m/s"
                 max_u[:, :] = 0
+
                 max_wl = _map_data.createVariable(
                     "max_wl", "f8", ("time", "nmesh2d_face")
                 )
                 max_wl.long_name = "maximum water level"
                 max_wl.units = "m"
                 max_wl[:, :] = 0
+
                 min_wl = _map_data.createVariable(
                     "min_wl", "f8", ("time", "nmesh2d_face")
                 )
                 min_wl.long_name = "minimum water level"
                 min_wl.units = "m"
                 min_wl[:, :] = 0
+
                 bl = _map_data.createVariable("bl", "f8", ("time", "nmesh2d_face"))
                 bl.long_name = "bedlevel"
                 bl.units = "m"
                 bl[:, :] = 0
+
+                inund = _map_data.createVariable("inund", "f8", ("time", "nmesh2d_face"))
+                inund.long_name = "Inundation days"
+                inund.units = "days"
+                inund[:, :] = 0
 
             def init_veg_characteristics():
                 cover = _map_data.createVariable(
@@ -242,6 +251,27 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_age_m.units = "m"
                 veg_age_m[:, :, :] = 0
 
+                mort_flood = _map_data.createVariable("mort_flood", "f8", ("time","nmesh2d_face"))
+                mort_flood.long_name = "Fraction of mortality of juvenile and mature vegetation due to flooding"
+                mort_flood.units = "-"
+                mort_flood[:, :] = 0
+
+                mort_des = _map_data.createVariable("mort_des", "f8", ("time","nmesh2d_face"))
+                mort_des.long_name = "Fraction of mortality of juvenile and mature vegetation due to desiccation"
+                mort_des.units = "-"
+                mort_des[:, :] = 0
+
+                mort_upr = _map_data.createVariable("mort_upr", "f8", ("time","nmesh2d_face"))
+                mort_upr.long_name = "Fraction of mortality of juvenile and mature vegetation due to uprooting"
+                mort_upr.units = "-"
+                mort_upr[:, :] = 0
+
+                mort_bursco = _map_data.createVariable("mort_bursco", "f8", ("time", "nmesh2d_face"))
+                mort_bursco.long_name = "Fraction of mortality of juvenile and mature vegetation due to burial or scour"
+                mort_bursco.units = "-"
+                mort_bursco[:, :] = 0
+
+
             conditions_funct = dict(
                 hydro_mor=init_hydro_mor,
                 veg_characteristics=init_veg_characteristics,
@@ -272,6 +302,7 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["max_wl"][-1, :] = veg.max_wl
                 _map_data["min_wl"][-1, :] = veg.min_wl
                 _map_data["bl"][-1, :] = veg.bl
+                _map_data["inund"][-1, :] = veg.inund
 
             def update_veg_characteristics():
                 _map_data["cover"][-1, :] = veg.total_cover.transpose()
@@ -294,6 +325,10 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["root_len_m"][:, :, -1] = veg.mature.root_len[:, :]
                 _map_data["veg_age_j"][:, :, -1] = veg.juvenile.veg_age[:, :]
                 _map_data["veg_age_m"][:, :, -1] = veg.mature.veg_age[:, :]
+                _map_data["mort_flood"][-1, :]= veg.total_mort_flood.transpose()
+                _map_data["mort_des"][-1, :]= veg.total_mort_des.transpose()
+                _map_data["mort_upr"][-1, :]= veg.total_mort_upr.transpose()
+                _map_data["mort_bursco"][-1, :]= veg.total_mort_bursco.transpose()
 
             conditions_funct = dict(
                 hydro_mor=update_hydro_mor,

@@ -32,7 +32,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     constants: Optional[VegetationConstants]
     output: Optional[VegOutputWrapper]
     biota: Optional[Vegetation]
-    morfac: Optional[Vegetation]
+    # morfac: Optional[Vegetation]
 
     @validator("constants", pre=True)
     @classmethod
@@ -211,6 +211,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
         :type veg: Vegetation
         :type duration: int, optional
+
         """
         # auto-set duration based on constants value (provided or default)
         if duration is None:
@@ -249,14 +250,15 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     # # set dimensions (i.e. update time-dimension)
                     RESHAPE().time = len(pd.DataFrame(period))
 
+                    time_step = 11178
+                    # if morfac != None:
+                    #     time_step = time_step / morfac
+
                     for ts in range(
-                        0, len(period), 11178
+                        0, len(period), time_step
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
                         progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
-                        time_step = 100
-                        if not _VegetationSimulation.morfac == None:
-                            time_step = time_step/_VegetationSimulation.morfac
 
                         (
                             cur_tau,
@@ -298,7 +300,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                         year=begin_date.year
                     )
                     colend = pd.to_datetime(self.constants.ColEnd).replace(
-                        year=end_date.year
+                        year=begin_date.year
                     )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:

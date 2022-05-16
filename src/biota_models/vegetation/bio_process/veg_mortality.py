@@ -88,6 +88,7 @@ class Veg_Mortality(ExtraModel):
         flooding_current, drying_current = self.compute_hydroperiod(
             veg.wl_ts, constants
         )
+        veg.inund = flooding_current
 
         wet = np.zeros(flooding_current.shape)
         dry = np.zeros(drying_current.shape)
