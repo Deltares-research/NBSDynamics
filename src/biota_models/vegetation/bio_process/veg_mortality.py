@@ -82,6 +82,20 @@ class Veg_Mortality(ExtraModel):
         veg.juvenile.update_growth(veg.juvenile.veg_frac, period, begin_date, end_date)
         veg.mature.update_growth(veg.mature.veg_frac, period, begin_date, end_date)
 
+        veg.fraction_dead_flood_j = self.fraction_dead_flood_j
+        veg.fraction_dead_flood_m = self.fraction_dead_flood_m
+        veg.fraction_dead_des_j = self.fraction_dead_des_j
+        veg.fraction_dead_des_m = self.fraction_dead_des_m
+        veg.fraction_dead_upr_j = self.fraction_dead_upr_j
+        veg.fraction_dead_upr_m = self.fraction_dead_upr_m
+        veg.burial_scour_j = self.burial_scour_j
+        veg.burial_scour_m = self.burial_scour_m
+
+        # veg.total_mort_flood = self.fraction_dead_flood_j + self.fraction_dead_flood_m
+        # veg.total_mort_des = self.fraction_dead_des_j + self.fraction_dead_des_m
+        # veg.total_mort_upr = self.fraction_dead_upr_j + self.fraction_dead_upr_m
+        # veg.total_mort_bursco = self.burial_scour_j + self.burial_scour_m
+
     def drowning_hydroperiod(
         self, veg: Vegetation, constants: VegetationConstants, ets
     ):

@@ -251,6 +251,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     RESHAPE().time = len(pd.DataFrame(period))
 
                     time_step = 11178
+
                     # if morfac != None:
                     #     time_step = time_step / morfac
 

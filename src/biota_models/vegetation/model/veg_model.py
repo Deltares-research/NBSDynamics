@@ -8,7 +8,7 @@ from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_lifestages import LifeStages
 from src.core.biota.biota_model import Biota
 from src.core.common.singletons import RESHAPE
-from src.biota_models.vegetation.bio_process.veg_mortality import Veg_Mortality
+
 
 VegAttribute = Union[float, list, tuple, np.ndarray]
 
@@ -70,6 +70,18 @@ class Vegetation(Biota):
     wl_ts: Optional[VegAttribute] = None
     bl_ts: Optional[VegAttribute] = None
     inund: Optional[VegAttribute] = None
+    fraction_dead_flood_j: Optional[VegAttribute] = None
+    fraction_dead_flood_m: Optional[VegAttribute] = None
+    fraction_dead_des_j: Optional[VegAttribute] = None
+    fraction_dead_des_m: Optional[VegAttribute] = None
+    fraction_dead_upr_j: Optional[VegAttribute] = None
+    fraction_dead_upr_m: Optional[VegAttribute] = None
+    burial_scour_j: Optional[VegAttribute] = None
+    burial_scour_m: Optional[VegAttribute] = None
+    # total_mort_flood: Optional[VegAttribute] = None
+    # total_mort_des: Optional[VegAttribute] = None
+    # total_mort_upr: Optional[VegAttribute] = None
+    # total_mort_bursco: Optional[VegAttribute] = None
 
     # @validator("_cover")
     # @classmethod
@@ -300,16 +312,3 @@ class Vegetation(Biota):
 
             # what if only 1 life stage (e.g. salicornia?)
 
-# Adding up the juvenile and mature fractions of mortality causes
-
-    def total_mort_flood(self, mort: Veg_Mortality):
-        return mort.fraction_dead_flood_j + mort.fraction_dead_flood_m
-
-    def total_mort_des(self, mort: Veg_Mortality):
-        return mort.fraction_dead_des_j + mort.fraction_dead_des_m
-
-    def total_mort_upr(self, mort: Veg_Mortality):
-        return mort.fraction_dead_upr_j + mort.fraction_dead_upr_m
-
-    def total_mort_bursco(self, mort: Veg_Mortality):
-        return mort.burial_scour_j + mort.burial_scour_m

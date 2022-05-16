@@ -52,9 +52,9 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("fm_10x30_sand2")
+        test_dir = TestUtils.get_local_test_data_dir("fm_10x30_sand")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"/"x64"
+        kernels_dir = dll_repo / "kernels"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
@@ -69,8 +69,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case_sand4.mdu",
-                # definition_file=test_dir+r'\test_case2.mdu'
+                definition_file=test_case / "fm" / "test_case_sand2.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -86,7 +85,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(duration=1)
+        sim_run.run(duration=2)
         sim_run.finalise()
 
         # 4. Verify expectations.
