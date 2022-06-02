@@ -52,15 +52,18 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("fm_10x30_sand")
-        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"
+        test_dir = TestUtils.get_local_test_data_dir("FlowFM2")
+        # dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
+        # kernels_dir = dll_repo / 'kernels'/ 'x64'
+        dll_repo = TestUtils.get_external_repo("code_23062020")
+        kernels_dir = dll_repo / "x64"
+
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
-        test_case = test_dir / "input" / "MinFiles"
-        species = "Spartina"
+        test_case = test_dir / "input"
+        species = "Puccinellia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -69,7 +72,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case_sand2.mdu",
+                definition_file=test_case / "fm" / "FlowFM.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -85,7 +88,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(duration=2)
+        sim_run.run(duration=1)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -101,15 +104,15 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs_2species(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("sm_testcase6")
-        dll_repo = TestUtils.get_external_repo("DimrDllDependencies")
-        kernels_dir = dll_repo / "kernels"/ "x64"
+        test_dir = TestUtils.get_local_test_data_dir("FlowFM2")
+        dll_repo = TestUtils.get_external_repo("code_23062020")
+        kernels_dir = dll_repo / "x64"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
-        test_case = test_dir / "input" / "MinFiles"
-        species1 = "Salicornia"
+        test_case = test_dir / "input"
+        species1 = "Puccinellia"
         species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
@@ -121,13 +124,13 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "fm" / "test_case6.mdu",
+                definition_file=test_case / "fm" / "FlowFM.mdu",
             ),
             biota_wrapper_list=[
                 VegetationBiotaWrapper(
                     biota=Vegetation(species=species1, constants=veg_constants1),
                     output=dict(
-                        output_dir=test_dir / "output",
+                        output_dir=test_dir / "output_2species",
                         map_output=dict(output_params=dict()),
                         his_output=dict(
                             output_params=dict(),
@@ -138,7 +141,7 @@ class TestAcceptance:
                 VegetationBiotaWrapper(
                     biota=Vegetation(species=species2, constants=veg_constants2),
                     output=dict(
-                        output_dir=test_dir / "output",
+                        output_dir=test_dir / "output_2species",
                         map_output=dict(output_params=dict()),
                         his_output=dict(
                             output_params=dict(),
@@ -149,9 +152,9 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        cover_path = test_case / "fm" / "cover"
-        sim_run.initiate(cover_path)
-        sim_run.run(2)
+        # cover_path = test_case / "fm" / "cover"
+        sim_run.initiate()
+        sim_run.run(1)
         sim_run.finalise()
 
     def test_given_transect_case_runs(self):

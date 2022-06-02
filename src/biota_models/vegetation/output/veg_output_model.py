@@ -241,14 +241,14 @@ class VegetationMapOutput(_VegetationOutput):
                 veg_age_j.long_name = (
                     "Vegetation age of juvenile vegetation in each cell"
                 )
-                veg_age_j.units = "m"
+                veg_age_j.units = "-"
                 veg_age_j[:, :, :] = 0
 
                 veg_age_m = _map_data.createVariable(
                     "veg_age_m", "f8", ("nmesh2d_face", "age_m", "time")
                 )
                 veg_age_m.long_name = "Vegetation age of mature vegetation in each cell"
-                veg_age_m.units = "m"
+                veg_age_m.units = "-"
                 veg_age_m[:, :, :] = 0
 
                 mort_flood_j = _map_data.createVariable("mort_flood_j", "f8", ("nmesh2d_face", "age_j", "time"))
