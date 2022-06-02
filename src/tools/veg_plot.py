@@ -37,6 +37,7 @@ bl_dif = bl_last-bl_first
 
 veg_cover = mapfile.variables["cover"][ets, :]
 veg_cover[veg_cover==0]=['nan']
+aaa = pd.DataFrame(data = veg_cover)
 
 veg_den = mapfile.variables["rnveg"][ets, :]
 
@@ -73,7 +74,7 @@ figname = ( path+ r"\{}_bl_cover".format(sp))
 plt.savefig(figname, dpi=300, bbox_inches='tight')
 # plt.close()
 
-## Time series plots
+## Time series plots of height and vegetation cover
 
 time = mapfile.variables["time"][:]
 time = time.tolist()
@@ -81,7 +82,7 @@ time = time.tolist()
 veg_cover = mapfile.variables["cover"][ets, :]
 veg_cover = pd.DataFrame(data=veg_cover)
 
-cell = 217
+cell = 222
 veg_cover = mapfile.variables["cover"][:, cell]
 veg_height = mapfile.variables["height"][:, cell]
 
