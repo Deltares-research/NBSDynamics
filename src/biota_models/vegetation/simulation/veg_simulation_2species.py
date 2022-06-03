@@ -306,7 +306,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                         year=begin_date.year
                     )
                     colend = pd.to_datetime(self.constants.ColEnd).replace(
-                        year=end_date.year
+                        year=begin_date.year
                     )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:
