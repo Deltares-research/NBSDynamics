@@ -21,7 +21,6 @@ class VegetationConstants(BaseConstants):
     warn_proc: bool = False
     # User - Define time - scales
     t_eco_year: int = 24  # number ecological time - steps per year(meaning couplings)
-    ## TODO check with MorFac, what years is this then?
     sim_duration: float = 30  # number of morphological years of entire simulation
     start_date: str = "2022-01-01"  # Start date of the simulation
 

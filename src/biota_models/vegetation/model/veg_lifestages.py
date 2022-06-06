@@ -76,7 +76,6 @@ class LifeStages(ExtraModel):
     def initiate_vegetation_characteristics(self, cover: Optional[Path]):
         _reshape = RESHAPE()
         # intialization of the vegetation with initial values
-        ## TODO change this for other input cases with initial cover!
         if self.ls == 1:
             apprev = "j"
         elif self.ls == 2:

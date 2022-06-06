@@ -13,9 +13,9 @@ import os
 ## MAP VEG
 
 sim = 'FlowFM2'
-sp = 'Puccinellia'
-ets = -1
-path =r"c:\Users\toledoal\NBSDynamicsD\test\test_data\{}\output".format(sim)
+sp = 'Salicornia'
+ets = -30
+path =r"c:\Users\toledoal\NBSDynamicsD\test\test_data\{}\output2y".format(sim)
 mapfile = nc.Dataset(path+r"\VegModel_{}_map.nc".format(sp))
 
 # Coordinates
@@ -82,14 +82,14 @@ time = time.tolist()
 veg_cover = mapfile.variables["cover"][ets, :]
 veg_cover = pd.DataFrame(data=veg_cover)
 
-cell = 222
+cell = 272
 veg_cover = mapfile.variables["cover"][:, cell]
 veg_height = mapfile.variables["height"][:, cell]
 
 plt.figure()
 plt.plot(veg_cover, label = 'Cover (-)')
 plt.plot(veg_height, label = 'Height (m)')
-plt.xticks(np.arange(0,24,2),time[::2], rotation =45)
+plt.xticks(np.arange(0,48,2),time[::2], rotation =45)
 plt.legend(loc='best', shadow=True)
 plt.title("Height and cover of {} in one cell".format(sp))
 plt.xlabel("Time (Date)")

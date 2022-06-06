@@ -114,7 +114,7 @@ data = f.get('data/variable1')
 data = np.array(data) # For converting to a NumPy array
 
 ############################################# FLOW MAP
-sim = 'FlowFM'
+sim = 'bdv9'
 # sed= 'sand'
 mapflow = nc.Dataset(r"c:\Users\toledoal\NBSDynamicsD\test\test_data\{}\input\fm\output\{}_map.nc".format(sim,sim))
 # mapflow = nc.Dataset(r"c:\Users\toledoal\NBSDynamicsD\test\test_data\tst4\30yearsrun-20yearswcf\output\FlowFMnowav_map.nc")

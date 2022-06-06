@@ -147,19 +147,6 @@ class Vegetation(Biota):
             -1, 1
         ) / cover_m
 
-    # def duration_growth(self, constants):
-    #     """duration of the growth period from start, end growth from Constants"""
-    #     return (constants.get_duration(constants.growth_start, constants.growth_end) / np.timedelta64(1, 'D'))
-    #
-    # def duration_col(self, constants):
-    #     """duration of the colonization period from start, end growth from Constants"""
-    #     return (constants.get_duration(constants.ColStart, constants.ColEnd) / np.timedelta64(1, 'D'))
-    #
-    # def duration_winter(self, constants):
-    #     """duration of the colonization period from start, end growth from Constants"""
-    #     return (constants.get_duration(constants.winter_start, constants.growth_start) / np.timedelta64(1, 'D'))
-
-
     def update_lifestages(self):
         _reshape = RESHAPE()
         # take last colum of previous lifestage and append it in the beginning of new lifestage, delete it from the old lifestage
@@ -310,5 +297,4 @@ class Vegetation(Biota):
             self.mature.veg_age = np.delete(self.mature.veg_age, -1, 1)
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
 
-            # what if only 1 life stage (e.g. salicornia?)
 

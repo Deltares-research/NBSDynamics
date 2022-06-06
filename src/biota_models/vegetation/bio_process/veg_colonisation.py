@@ -114,6 +114,9 @@ class Colonization(ExtraModel):
                     + veg_species2.constants.iniCol_frac
                 )
 
+            loc1[loc1 > 1] = 1
+            loc2[loc2 > 1] = 1
+
             veg_species1.initial.veg_frac[self.seed_loc1] = (
                 loc1 * veg_species1.constants.iniCol_frac
             )

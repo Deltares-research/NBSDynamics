@@ -171,7 +171,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
         :return: vegetation characteristics initiated
         :rtype: Vegetation
         """
-        ## TODO check those and see if they need change
+
         self.configure_hydrodynamics()
         self.configure_output()
         # Load constants and validate environment.
@@ -179,18 +179,6 @@ class _VegetationSimulation(BaseSimulation, ABC):
 
         RESHAPE().space = self.hydrodynamics.space
         xy = self.hydrodynamics.xy_coordinates
-
-        ##TODO define cover as a possible input variable!
-        # cover = np.zeros(RESHAPE().space)
-        # if x_range is not None:
-        #     x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
-        #     x_max = x_range[1] if x_range[1] is not None else max(xy[:][0])
-        #     cover[np.logical_or(xy[:][0] <= x_min, xy[:][0] >= x_max)] = 0
-        #
-        # if y_range is not None:
-        #     y_min = y_range[0] if y_range[0] is not None else min(xy[:][1])
-        #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
-        #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
 
         self.biota.initial.initiate_vegetation_characteristics(cover)
         self.biota.juvenile.initiate_vegetation_characteristics(cover)
@@ -267,7 +255,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                         ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=time_step  # every timestep ## TODO divide here the time step by the MorFac?
+                            self.biota, time_step=time_step  # every timestep ##
                         )
 
                         # # environment
@@ -281,7 +269,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             ts=ts,
                             veg=self.biota,
                         )
-                    hydro_mor.get_hydromorph_values(self.biota)
+                    hydro_mor.get_hydromorph_values(self.biota) # stores minimum/maximum values to use in the vegetation processes
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")

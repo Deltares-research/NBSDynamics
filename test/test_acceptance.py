@@ -63,7 +63,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species = "Puccinellia"
+        species = "Salicornia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -75,7 +75,7 @@ class TestAcceptance:
                 definition_file=test_case / "fm" / "FlowFM.mdu",
             ),
             output=dict(
-                output_dir=test_dir / "output",
+                output_dir=test_dir / "output30y",
                 # output_dir = test_dir +r'\output',
                 map_output=dict(output_params=dict()),
                 his_output=dict(
@@ -88,7 +88,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(duration=1)
+        sim_run.run(duration=30)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -130,7 +130,7 @@ class TestAcceptance:
                 VegetationBiotaWrapper(
                     biota=Vegetation(species=species1, constants=veg_constants1),
                     output=dict(
-                        output_dir=test_dir / "output_2species",
+                        output_dir=test_dir / "output_2speciesnew",
                         map_output=dict(output_params=dict()),
                         his_output=dict(
                             output_params=dict(),
@@ -141,7 +141,7 @@ class TestAcceptance:
                 VegetationBiotaWrapper(
                     biota=Vegetation(species=species2, constants=veg_constants2),
                     output=dict(
-                        output_dir=test_dir / "output_2species",
+                        output_dir=test_dir / "output_2speciesnew",
                         map_output=dict(output_params=dict()),
                         his_output=dict(
                             output_params=dict(),

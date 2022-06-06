@@ -211,5 +211,76 @@
             0.2,
             0.2
         ]
+    },
+        "Fakenellia": {
+        "ColStart": "2000-01-01",
+        "ColEnd": "2000-03-15",
+        "random": 7,
+        "mud_colonization": [
+            0.0,
+            0.0
+        ],
+        "fl_dr": 0.05,
+        "Maximum age": 20,
+        "Number LifeStages": 2,
+        "initial root length": 0.02,
+        "initial shoot length": 0.1,
+        "initial diameter": 0.004,
+        "start growth period": "2000-02-01",
+        "end growth period": "2000-04-15",
+        "start winter period": "2000-07-30",
+        "maximum plant height": [
+            1.0,
+            1.5
+        ],
+        "maximum diameter": [
+            0.004,
+            0.005
+        ],
+        "maximum root length": [
+            0.15,
+            0.15
+        ],
+        "maximum years in LifeStage": [
+            1,
+            19
+        ],
+        "numStem": [
+            6500,
+            6500
+        ],
+        "iniCol_frac": 0.7,
+        "Cd": [
+            0.7,
+            0.7
+        ],
+        "desMort_thres": [
+            400,
+            400
+        ],
+        "desMort_slope": [
+            0.75,
+            0.75
+        ],
+        "floMort_thres": [
+            0.35,
+            0.35
+        ],
+        "floMort_slope": [
+            0.4,
+            0.4
+        ],
+        "vel_thres": [
+            0.25,
+            0.5
+        ],
+        "vel_slope": [
+            3,
+            3
+        ],
+        "maxH_winter": [
+            0.2,
+            0.2
+        ]
     }
 }

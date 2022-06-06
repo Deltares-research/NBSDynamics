@@ -302,20 +302,40 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                         period,
                     )
 
-                    colstart = pd.to_datetime(self.constants.ColStart).replace(
+                    colstart_species1 = pd.to_datetime(first_biota.constants.ColStart).replace(
                         year=begin_date.year
                     )
-                    colend = pd.to_datetime(self.constants.ColEnd).replace(
+                    colend_species1 = pd.to_datetime(first_biota.constants.ColEnd).replace(
+                        year=begin_date.year
+                    )
+                    colstart_species2 = pd.to_datetime(second_biota.constants.ColStart).replace(
+                        year=begin_date.year
+                    )
+                    colend_species2 = pd.to_datetime(second_biota.constants.ColEnd).replace(
                         year=begin_date.year
                     )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:
-                    if any(colstart <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend
+                    if any(colstart_species1 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species1
+                    ) and any(colstart_species2 <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend_species2
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
                         col.update(first_biota, second_biota)
+
+                    elif any(colstart_species1 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species1):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(first_biota)
+
+                    elif any(colstart_species2 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species2):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(second_biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
                     first_biota.update_lifestages()
