@@ -59,7 +59,7 @@ class VegetationBiotaWrapper(BiotaWrapper):
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
 
-class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
+class _VegetationSimulation_3species(MultipleBiotaBaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
@@ -203,6 +203,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
 
         first_biota: Vegetation = self.biota_wrapper_list[0].biota
         second_biota: Vegetation = self.biota_wrapper_list[1].biota
+        third_biota: Vegetation = self.biota_wrapper_list[2].biota
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
@@ -249,6 +250,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             veg_species1=first_biota,
                             time_step=time_step,
                             veg_species2=second_biota,  # every timestep
+                            veg_species3=third_biota
                         )
 
                         # # environment
@@ -272,8 +274,18 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             veg=second_biota,
                         )
 
+                        hydro_mor3 = Hydro_Morphodynamics(
+                            tau_cur=cur_tau,
+                            u_cur=cur_vel,
+                            wl_cur=cur_wl,
+                            bl_cur=bed_level,
+                            ts=ts,
+                            veg=third_biota,
+                        )
+
                     hydro_mor.get_hydromorph_values(first_biota)
                     hydro_mor2.get_hydromorph_values(second_biota)
+                    hydro_mor3.get_hydromorph_values(third_biota)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
@@ -298,6 +310,16 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                         end_date,
                         period,
                     )
+                    mort3 = Veg_Mortality
+                    mort3.update(
+                        mort,
+                        third_biota,
+                        third_biota.constants,
+                        ets,
+                        begin_date,
+                        end_date,
+                        period,
+                    )
 
                     colstart_species1 = pd.to_datetime(first_biota.constants.ColStart).replace(
                         year=begin_date.year
@@ -311,9 +333,26 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                     colend_species2 = pd.to_datetime(second_biota.constants.ColEnd).replace(
                         year=begin_date.year
                     )
+                    colstart_species3 = pd.to_datetime(third_biota.constants.ColStart).replace(
+                        year=begin_date.year
+                    )
+                    colend_species3 = pd.to_datetime(third_biota.constants.ColEnd).replace(
+                        year=begin_date.year
+                    )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:
                     if any(colstart_species1 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species1
+                    ) and any(colstart_species2 <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend_species2
+                    ) and any(colstart_species3 <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend_species3):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(first_biota, second_biota, third_biota)
+
+                    #first and second
+                    elif any(colstart_species1 <= pd.to_datetime(period)) and any(
                         pd.to_datetime(period) <= colend_species1
                     ) and any(colstart_species2 <= pd.to_datetime(period)) and any(
                         pd.to_datetime(period) <= colend_species2
@@ -322,22 +361,48 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                         col = Colonization()
                         col.update(first_biota, second_biota)
 
+                    #first and third
                     elif any(colstart_species1 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species1):
+                            pd.to_datetime(period) <= colend_species1
+                    ) and any(colstart_species3 <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend_species3
+                    ):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(first_biota, third_biota)
+
+                    #second and third
+                    elif any(colstart_species3 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species3
+                    ) and any(colstart_species2 <= pd.to_datetime(period)) and any(
+                        pd.to_datetime(period) <= colend_species2
+                    ):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(third_biota, second_biota)
+
+                    elif any(colstart_species1 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species1):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
                         col.update(first_biota)
 
                     elif any(colstart_species2 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species2):
+                            pd.to_datetime(period) <= colend_species2):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
                         col.update(second_biota)
 
+                    elif any(colstart_species3 <= pd.to_datetime(period)) and any(
+                            pd.to_datetime(period) <= colend_species3):
+                        progress.set_postfix(inner_loop="vegetation colonization")
+                        col = Colonization()
+                        col.update(third_biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
                     first_biota.update_lifestages()
                     second_biota.update_lifestages()
+                    third_biota.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
@@ -369,6 +434,7 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
 
                     hydro_mor.store_hydromorph_values(first_biota)
                     hydro_mor2.store_hydromorph_values(second_biota)
+                    hydro_mor3.store_hydromorph_values(third_biota)
 
     def finalise(self):
         """Finalise simulation."""

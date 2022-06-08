@@ -106,7 +106,7 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("stemheight", coral.hc)
 
     def set_vegetation(
-        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation]
+        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation], veg_species3: Optional[Vegetation]
     ):
         """Set vegetation dimensions to Delft3D-model.
 
@@ -116,7 +116,7 @@ class Delft3D(ExtraModel, abc.ABC):
         :type veg_species2: Vegetation
         """
 
-        if not veg_species2:
+        if not veg_species2 and not veg_species3:
             self.set_variable(
                 "rnveg", veg_species1.veg_den
             )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
@@ -126,7 +126,7 @@ class Delft3D(ExtraModel, abc.ABC):
             self.set_variable(
                 "stemheight", veg_species1.av_height
             )  # [m] 2D plant heights (m)
-        else:  ## TODO TEST THIS!
+        elif not veg_species3:  ## TODO TEST THIS!
             self.set_variable(
                 "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
             )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
@@ -136,6 +136,17 @@ class Delft3D(ExtraModel, abc.ABC):
             self.set_variable(
                 "stemheight", (veg_species1.av_height + veg_species2.av_height)
             )  # [m] 2D plant heights (m)
+        else:
+            self.set_variable(
+                "rnveg", (veg_species1.veg_den + veg_species2.veg_den + veg_species3.veg_den)
+            )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+            self.set_variable(
+                "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia + veg_species3.av_stemdia)
+            )  # [m] 3D plant diameter, 2D part is basis input (m)
+            self.set_variable(
+                "stemheight", (veg_species1.av_height + veg_species2.av_height + veg_species3.av_height)
+            )  # [m] 2D plant heights (m)
+
 
     def get_mean_hydrodynamics(self):
         """Get hydrodynamic results; mean values."""
@@ -273,6 +284,7 @@ class Delft3D(ExtraModel, abc.ABC):
         veg_species1: Vegetation,
         time_step: int,
         veg_species2: Optional[Vegetation] = None,
+        veg_species3: Optional[Vegetation] = None,
     ):
         """Update the Delft3D-model.
 
@@ -286,7 +298,7 @@ class Delft3D(ExtraModel, abc.ABC):
         """
         self.time_step = time_step
         self.reset_counters()
-        self.set_vegetation(veg_species1, veg_species2)
+        self.set_vegetation(veg_species1, veg_species2, veg_species3)
         # if not veg_species2:
         #     self.set_vegetation(veg_species1)
         # else:
