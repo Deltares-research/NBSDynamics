@@ -294,5 +294,3 @@ class Vegetation(Biota):
             self.mature.stem_num = np.delete(self.mature.stem_num, -1, 1)
             self.mature.veg_age = np.delete(self.mature.veg_age, -1, 1)
             self.mature.cover = self.mature.veg_frac.sum(axis=1).reshape(-1, 1)
-
-            # what if only 1 life stage (e.g. salicornia?)

@@ -7,37 +7,35 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
-from src.biota_models.vegetation.bio_process.veg_colonisation import Colonization
-from src.biota_models.vegetation.bio_process.veg_hydro_morphodynamics import (
+from src.biota_models.mangroves.bio_process.mangrove_colonisation import Colonization
+from src.biota_models.mangroves.bio_process.mangrove_hydro_morphodynamics import (
     Hydro_Morphodynamics,
 )
-from src.biota_models.vegetation.bio_process.veg_mortality import Veg_Mortality
-from src.biota_models.vegetation.model.veg_constants import VegetationConstants
-from src.biota_models.vegetation.model.veg_model import Vegetation
-from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
+from src.biota_models.mangroves.bio_process.mangrove_mortality import Mangrove_Mortality
+from src.biota_models.mangroves.model.mangrove_constants import MangroveConstants
+from src.biota_models.mangroves.model.mangrove_model import Mangrove
+from src.biota_models.mangroves.output.mangrove_output_wrapper import MangroveOutputWrapper
 from src.core import RESHAPE
 from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.simulation.base_simulation import BaseSimulation
 
-
-class _VegetationSimulation(BaseSimulation, ABC):
+class _MangroveSimulatio(BaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
-    VegetationModel simulation.
+    MangroveModel simulation.
     """
 
-    # Other fields.
-    constants: Optional[VegetationConstants]
-    output: Optional[VegOutputWrapper]
-    biota: Optional[Vegetation]
+    constants: Optional[MangroveConstants]
+    output: Optional[MangroveOutputWrapper]
+    biota: Optional[Mangrove]
 
     @validator("constants", pre=True)
     @classmethod
     def validate_constants(
-        cls, field_value: Union[str, Path, VegetationConstants]
-    ) -> VegetationConstants:
+            cls, field_value: Union[str, Path, MangroveConstants]
+    ) -> MangroveConstants:
         """
         Validates the user-input constants value and transforms in case it's a filepath (str, Path).
 
@@ -50,43 +48,43 @@ class _VegetationSimulation(BaseSimulation, ABC):
         Returns:
             Constants: Validated constants value.
         """
-        if isinstance(field_value, VegetationConstants):
+        if isinstance(field_value, MangroveConstants):
             return field_value
         if isinstance(field_value, str):
             field_value = Path(field_value)
         if isinstance(field_value, Path):
-            return VegetationConstants.from_input_file(field_value)
+            return MangroveConstants.from_input_file(field_value)
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
     @validator("biota", pre=True)
     @classmethod
-    def validate_vegetation(
-        cls, field_value: Union[dict, Vegetation], values: dict
-    ) -> Vegetation:
+    def validate_mangrove(
+        cls, field_value: Union[dict, Mangrove], values: dict
+    ) -> Mangrove:
         """
         Initializes vegetation in case a dictionary is provided. Ensuring the constants are also
         given to the object.
 
         Args:
-            field_value (Union[dict, Vegetation]): Value given by the user for the Vegetation field.
+            field_value (Union[dict, Vegetation]): Value given by the user for the Mangrove field.
             values (dict): Dictionary of remaining user-given field values.
 
         Returns:
-            Vegetation: Validated instance of 'Vegetation'.
+            Mangrove: Validated instance of 'Mangrove'.
         """
-        if isinstance(field_value, Vegetation):
+        if isinstance(field_value, Mangrove):
             return field_value
         if isinstance(field_value, dict):
             # Check if constants present in the dictionary:
             if "constants" in field_value.keys():
                 # It will be generated automatically.
                 # in case parameters are missing an error will also be displayed.
-                return Vegetation(**field_value)
+                return Mangrove(**field_value)
             if "constants" in values.keys():
                 field_value["constants"] = values["constants"]
-                return Vegetation(**field_value)
+                return Mangrove(**field_value)
             raise ValueError(
-                "Constants should be provided to initialize a Vegetation Model."
+                "Constants should be provided to initialize a Mangrove Model."
             )
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
@@ -149,51 +147,32 @@ class _VegetationSimulation(BaseSimulation, ABC):
             if not value_dir.is_dir():
                 value_dir.mkdir(parents=True)
 
-    def initiate(
-        self,
-        cover: Optional[Path] = None,
-        x_range: Optional[tuple] = None,
-        y_range: Optional[tuple] = None,
-    ) -> Vegetation:
-        """Initiate the vegetation distribution.
-        The default vegetation distribution is no initial vegetation cover.
+    def initiate(self, cover: Optional [Path] = None) -> Mangrove:
+        """Initiate the mangrove distribution.
+        The default mangrove distribution is no initial vegetation cover.
 
+        :param cover: initial mangrove cover, defaults to None
         :param x_range: minimum and maximum x-coordinate, defaults to None
         :param y_range: minimum and maximum y-coordinate, defaults to None
 
 
         :type veg: Vegetation
+        :type cover: Path, optional
         :type x_range: tuple, optional
         :type y_range: tuple, optional
 
 
-        :return: vegetation characteristics initiated
-        :rtype: Vegetation
+        :return: mangrove characteristics initiated
+        :rtype: Mangrove
         """
-        ## TODO check those and see if they need change
         self.configure_hydrodynamics()
         self.configure_output()
         # Load constants and validate environment.
         self.validate_simulation_directories()
 
         RESHAPE().space = self.hydrodynamics.space
-        xy = self.hydrodynamics.xy_coordinates
 
-        ##TODO define cover as a possible input variable!
-        # cover = np.zeros(RESHAPE().space)
-        # if x_range is not None:
-        #     x_min = x_range[0] if x_range[0] is not None else min(xy[:][0])
-        #     x_max = x_range[1] if x_range[1] is not None else max(xy[:][0])
-        #     cover[np.logical_or(xy[:][0] <= x_min, xy[:][0] >= x_max)] = 0
-        #
-        # if y_range is not None:
-        #     y_min = y_range[0] if y_range[0] is not None else min(xy[:][1])
-        #     y_max = y_range[1] if y_range[1] is not None else max(xy[:][1])
-        #     cover[np.logical_or(xy[:][1] <= y_min, xy[:][1] >= y_max)] = 0
-
-        self.biota.initial.initiate_vegetation_characteristics(cover)
-        self.biota.juvenile.initiate_vegetation_characteristics(cover)
-        self.biota.mature.initiate_vegetation_characteristics(cover)
+        self.biota.initiate_vegetation_characteristics(cover)
 
         if self.output.defined:
             self.output.initialize(self.biota)
@@ -205,7 +184,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
     def run(self, duration: Optional[int] = None):
         """Run simulation.
 
-        :param veg: vegetation
+        :param mang: mangrove
         :param duration: simulation duration [yrs], defaults to None
 
 
@@ -213,6 +192,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
         :type duration: int, optional
 
         """
+
         # auto-set duration based on constants value (provided or default)
         if duration is None:
             duration = int(self.constants.sim_duration)
@@ -279,59 +259,23 @@ class _VegetationSimulation(BaseSimulation, ABC):
                         )
                     hydro_mor.get_hydromorph_values(self.biota)
 
-                    # # vegetation dynamics
+                    # # mangrove dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
-                    # vegetation mortality and growth update
-                    mort = Veg_Mortality
-                    mort.update(
-                        mort,
-                        self.biota,
-                        self.constants,
-                        ets,
-                        begin_date,
-                        end_date,
-                        period,
-                    )
 
-                    colstart = pd.to_datetime(self.constants.ColStart).replace(
-                        year=begin_date.year
-                    )
-                    colend = pd.to_datetime(self.constants.ColEnd).replace(
-                        year=begin_date.year
-                    )
-                    # # colonization (only in colonization period)
-                    # if self.constants.col_days[ets] > 0:
-                    if any(colstart <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend
-                    ):
-                        progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization()
-                        col.update(self.biota)
+                    # Mortality
+                    mort = Mangrove_Mortality
+                    mort.update(mort, )
 
-                    # update lifestages, initial to juvenile and juvenile to mature
-                    self.biota.update_lifestages()
+                    # Growth
 
-                    # # export results
-                    progress.set_postfix(inner_loop="export results")
-                    # map-file
-                    # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
-                    self.output.map_output.update(
-                        self.biota,
-                        int(period[-1].strftime("%Y%m%d")),
-                        ets,
-                        i,
-                        self.constants,
-                    )  # change to period we are in current ets
-                    # his-file
-                    period_days = [
-                        begin_date + timedelta(n)
-                        for n in range(int((end_date - begin_date).days))
-                    ]
-                    self.output.his_output.update(
-                        self.biota,
-                        pd.DataFrame(period_days),
-                    )
 
+                    # Colonization
+                    col = Colonization()
+                    col.update(self.biota)
+
+                    # export results
+
+                    # store hydrdynamics
                     hydro_mor.store_hydromorph_values(self.biota)
 
     def finalise(self):
