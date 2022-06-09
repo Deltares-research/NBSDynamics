@@ -32,6 +32,8 @@ class MangroveConstants(BaseConstants):
     S_cell: int = 2500 # Cell size area
     Mort_plant: float = 10 # Number of plants need to be removed at one time
     Grow_plant: float = 10 # Number of plants need to be grown at one time
+    ini_dia: float = 1 #initial stem diameter [cm]
+
 
     #Inundation stress factors
     a: float = -8
@@ -45,3 +47,14 @@ class MangroveConstants(BaseConstants):
 
     ## TODO B0.5 is dependent on grid cell size! Create formula!
     B_05 = 2.589410**4 # [kg]
+
+    # growth parameter
+    G: float = 254 # Growth constant [cm]
+    b2: float = 80 # Growth constant [-]
+    b3: float = 1  # Growth constant [-]
+    MaxH: float = 1600 # maximum tree height [cm]
+    MaxD: float = 40 # maximum stem diameter [cm]
+
+    # root information
+    m: float = 1000 # maximum number of roots per tree
+    f: float = 0.3 #constant describing rate of increase of roots

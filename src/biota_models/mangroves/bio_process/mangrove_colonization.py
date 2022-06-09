@@ -26,7 +26,17 @@ class Colonization(ExtraModel):
 
         # Check if mangroves already present in the cells and if its "full"
         ## TODO
-        mangrove.density
+        mangrove.stem_num
+        # 3000 individuals per hectare initially!
+        ## TODO calculate stem_num depending on grid cell size!
+        # determine if already present and full?
+        # if no full new can settle but I*C cannot get below 0.5
+        # APPEND existing arrays of characteristics!
+
+        ## TODO Columnstack
+
+        mangrove.stem_dia[0, :][self.seed_loc] = mangrove.constants.ini_dia
+        mangrove.update_mangrove_characteristics(stem_dia=mangrove.stem_dia)
 
 
 

@@ -17,6 +17,7 @@ class Mangrove_Mortality(ExtraModel):
 
 
     def update(self, mangrove: Mangrove):
+        # mortality only happens once a year!
         mort_mark = Mangrove_Mortality.determine_stress(mangrove)
         mangrove.mort = mangrove.mort + mort_mark # cells with suppressed growth
 
@@ -25,17 +26,36 @@ class Mangrove_Mortality(ExtraModel):
         # die if I*C <= 0.5
         # average I and C over time
 
-        # Step 0: Adjust the num to 0 if Inundation <=0.5 & Mort_mark == 5
-        mangrove.stem_num[mangrove.mort == 5 and self.I[:, -1] <= 0.5] = 0
+        ## Step 0: Adjust the num to 0 if Inundation <=0.5 & Mort_mark == 5
 
-        # Step1: Target the death coordinate (rows and columns)
-        mort_temp = np.zeros(mangrove.stem_num.shape)
-        mort_temp[mangrove.mort == 5 and mangrove.stem_num != 0]
+        while (any(mangrove.mort) == 5):
 
-        # Step 2: Kill the mangroves cell by cell, find the slow motion below
-        #TODO continue here!
+            mort_temp = np.zeros(mangrove.stem_num.shape)
+            mort_temp[mangrove.mort == 5] = 1 #set to one, where mortality status is 5
+            mangrove.stem_num[mangrove.mort == 5 and self.I[:, -1] <= 0.5] = 0
+            mort_temp[mangrove.stem_num == 0] = 0 #set back to zeros is no vegetation present in cell
+            mangrove.mort[mort_temp == 0] = 0
 
-        Mangrove.update_mangrove_characteristics(Mangrove_Mortality.I, Mangrove_Mortality.C)
+             # Step 2: Kill the mangroves cell by cell
+
+            k = np.where(np.sum(mort_temp, axis=1) > 1)
+            in_s = np.zeros(mangrove.stem_num.shape)
+            in_s[k] = self.I # inundation stress
+            in_s_inverse = 1/in_s
+            remove = np.zeros(mangrove.stem_num.shape)
+            remove = round(mangrove.constants.Mort_plant/(in_s*sum(in_s_inverse)))
+            remove[remove > mangrove.stem_num] = mangrove.stem_num
+            mangrove.stem_num = mangrove.stem_num - remove
+            self.bio_total_cell = Mangrove_Mortality.competition_stress(mangrove) # recalculate total biomass
+            mangrove.mort[(self.C*self.I)>0.5] = 4
+
+            k2 = np.where(np.sum(mort_temp, axis=1) == 1)
+            mangrove.stem_num[k2] = mangrove.stem_num[k2] - mangrove.constants.Mort_plant
+            self.bio_total_cell = Mangrove_Mortality.competition_stress(mangrove)  # recalculate total biomass
+            mangrove.mort[(self.C * self.I) > 0.5] = 4
+            mangrove.C = self.C
+            mangrove.I = self.I
+        # Mangrove.update_mangrove_characteristics(Mangrove_Mortality.I, Mangrove_Mortality.C)
 
 
     def determine_stress(self, mangrove: Mangrove):
@@ -69,3 +89,4 @@ class Mangrove_Mortality(ExtraModel):
 
         self.C = 1/(1+ np.exp(mangrove.constants.d*(mangrove.constants.B_05 - B)))
 
+        return B

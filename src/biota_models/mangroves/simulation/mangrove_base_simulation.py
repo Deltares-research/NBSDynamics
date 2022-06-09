@@ -262,12 +262,13 @@ class _MangroveSimulatio(BaseSimulation, ABC):
                     # # mangrove dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
 
-                    # Mortality
-                    mort = Mangrove_Mortality
-                    mort.update(mort, )
+                    # Mortality only once a year
+                    if ets == (self.constants.t_eco_year -1):
+                        mort = Mangrove_Mortality
+                        mort.update(mort, self.biota)
 
                     # Growth
-
+                    self.biota.update_mangrove_characteristics(mort)
 
                     # Colonization
                     col = Colonization()

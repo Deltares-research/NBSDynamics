@@ -61,6 +61,9 @@ class Mangrove(Biota):
     wl_ts: Optional[MangroveAttribute] = None
     bl_ts: Optional[MangroveAttribute] = None
     inun_rel: Optional[MangroveAttribute] = None
+    bio_total_cell: Optional[MangroveAttribute] = None
+    I: Optional[MangroveAttribute] = None
+    C: Optional[MangroveAttribute] = None
 
     def __repr__(self):
         """Development representation."""
@@ -73,60 +76,28 @@ class Mangrove(Biota):
             f"density = {self.density}"
         )
 
-    @property
-    def total_cover(self):  # as input for DFM
-        # take cover as sum of all the ages and life stages
-        # self.total_cover = self.juvenile.cover + self.mature.cover
-        return self.juvenile.cover + self.mature.cover
+    # @property
+    # def total_cover(self):  # as input for DFM
+    #     # take cover as sum of all the ages and life stages
+    #     # self.total_cover = self.juvenile.cover + self.mature.cover
+    #     return self.juvenile.cover + self.mature.cover
 
     @property
     def veg_den(self):  # as input for DFM
         """stem density in number of stems per m2, according to area fraction of veg age"""
-        return (self.juvenile.stem_num * self.juvenile.veg_frac).sum(axis=1) + (
-                self.mature.stem_num * self.mature.veg_frac
-        ).sum(axis=1)
+        return self.stem_num/ ## TODO Grid cell size!
 
     @property
     def av_stemdia(self):  # as input for DFM
-        """average stem diameter of the different vegetation in one grid cell"""
-        cover_j = self.juvenile.cover.copy()
-        cover_m = self.mature.cover.copy()
-        cover_j[cover_j == 0] = 1
-        cover_m[cover_m == 0] = 1
-        # if self.juvenile.cover.all() == 0 and self.mature.cover.all() == 0:
-        #     return np.zeros(self.cover.shape)
-        # elif self.mature.cover.all() == 0:
-        #     return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1) / self.juvenile.cover
-        # elif self.juvenile.cover.all() == 0:
-        #     return (self.mature.stem_dia * self.mature.veg_frac).sum(axis=1) / self.mature.cover
-        # else:
-        return (self.juvenile.stem_dia * self.juvenile.veg_frac).sum(axis=1).reshape(
-            -1, 1
-        ) / cover_j + (self.mature.stem_dia * self.mature.veg_frac).sum(axis=1).reshape(
-            -1, 1
-        ) / cover_m
+        """average stem diameter of mangroves in one grid cell"""
+
+        return np.mean(self.stem_dia, axis=1)
 
     @property
     def av_height(self):  # as input for DFM
-        """average shoot height of the different vegetation in one grid cell"""
-        cover_j = self.juvenile.cover.copy()
-        cover_m = self.mature.cover.copy()
-        cover_j[cover_j == 0] = 1
-        cover_m[cover_m == 0] = 1
-        # if np.all(self.juvenile.cover == 0) and np.all(self.mature.cover == 0):
-        #     return np.zeros(self.cover.shape)
-        # elif np.all(self.mature.cover == 0):
-        #     return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1) / (self.juvenile.cover[self.juvenile.cover == 0]=1)
-        # elif self.juvenile.cover.all() == 0:
-        #     return (self.mature.veg_height * self.mature.veg_frac).sum(axis=1) / self.mature.cover
-        # else:
-        return (self.juvenile.veg_height * self.juvenile.veg_frac).sum(axis=1).reshape(
-            -1, 1
-        ) / cover_j + (self.mature.veg_height * self.mature.veg_frac).sum(
-            axis=1
-        ).reshape(
-            -1, 1
-        ) / cover_m
+        """average shoot height of mangroves in one grid cell"""
+
+        return np.mean(self.height, axis=1)
 
     def initiate_mangrove_characteristics(self, cover: Optional[Path]):
 
@@ -137,11 +108,8 @@ class Mangrove(Biota):
             self.stem_dia = self.stem_dia.reshape(len(self.stem_dia), 1)
             self.stem_num = np.zeros(self.stem_dia.shape)
             self.height = np.zeros(self.stem_dia.shape)
-            self.age = np.zeros(self.stem_dia.shape)
-            self.density = np.zeros(self.stem_dia.shape)
-            self.root_height = np.zeros(self.stem_dia.shape)
-            self.root_dia = np.zeros(self.stem_dia.shape)
-            self.root_density = np.zeros(self.stem_dia.shape)
+            self.root_num = np.zeros(self.stem_dia.shape)
+            self.bio_total_cell = np.sum((self.stem_num * (self.constants.bio_a*self.stem_dia**self.constants.ind_a + self.constants.bio_b*self.stem_dia**self.constants.ind_b), axis=1))
 
         else:
             input_cover: dict = nc.Dataset(cover, "r")
@@ -151,14 +119,28 @@ class Mangrove(Biota):
             self.height =ma.MaskedArray.filled(
                 (input_cover.variables["height"][:, :, -1]), 0.0
             )
-            self.age =ma.MaskedArray.filled(
-                (input_cover.variables["age"][:, :, -1]), 0.0
+            self.stem_num =ma.MaskedArray.filled(
+                (input_cover.variables["stem_num"][:, :, -1]), 0.0
             )
-            self.cover = ma.MaskedArray.filled(
-                (input_cover.variables["cover"][:, :, -1]), 0.0
+            self.root_num = ma.MaskedArray.filled(
+                (input_cover.variables["root_num"][:, :, -1]), 0.0
+            )
+            self.bio_total_cell = ma.MaskedArray.filled(
+                (input_cover.variables["bio_total_cell"][:, :, -1]), 0.0
             )
 
 
-    def update_mangrove_characteristics(self):
+    def update_mangrove_characteristics(self, stem_dia: [Optional] = None):
+        if not stem_dia:
+            self.stem_dia[self.stem_num == 0] = 0
+            self.stem_dia = self.stem_dia + (self.constants.G*self.stem_dia*(1-self.stem_dia*(self.height*100)/(self.constants.MaxD*self.constants.MaxH))*(self.I[:, -1]*self.C[:, -1])/(274+3*self.constants.b2*self.stem_dia-4*self.constants.b3*self.stem_dia**2)*12)
+            self.height = (137+self.constants.b2*self.stem_dia-self.constants.b3*self.stem_dia**2)/100
+            self.root_num = self.constants.m*(1/(1+ np.exp(self.constants.f*(self.constants.MaxD/2 - self.stem_dia))))
+        else:
+            self.height[0, :] = (137 + self.constants.b2 * stem_dia[0, :] - self.constants.b3 * stem_dia[0, :] ** 2) / 100
+            self.root_num[0, :] = self.constants.m * (
+                        1 / (1 + np.exp(self.constants.f * (self.constants.MaxD / 2 - stem_dia[0, :]))))
+
+
 
 
