@@ -88,38 +88,38 @@ def plot_cover_bath(x,y,bl,veg_cover):
 
     veg_cover[veg_cover==0] = np.nan
     FIG2  = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Greens', edgecolors='k', lw = 0.2)
-    cbar = plt.colorbar(FIG2,label="Fraction cover Puccinellia [-]")
-    plt.title("Vegetation cover (Puccinellia) and Bed Level [m]")
+    cbar = plt.colorbar(FIG2,label="Fraction cover Elytrigia [-]")
+    plt.title("Vegetation cover (Elytrigia) and Bed Level [m]")
     plt.xlabel("Grid cell x-direction")
     plt.ylabel("Grid cell y-direction")
     plt.show()
 
-    mapfile = nc.Dataset(
-        r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\new_test\output\VegModel_Salicornia_map.nc",
-        "r",
-    )
-    veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
-    veg_cover[veg_cover == 0] = np.nan
-    FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Blues', edgecolors='k', lw=0.2)
-    cbar = plt.colorbar(FIG2, label="Fraction cover Salicornia [-]")
-    plt.title("Vegetation cover (Spartina and Salicornia) and Bed Level")
-    plt.xlabel("Grid cell x-direction")
-    plt.ylabel("Grid cell y-direction")
-    plt.show()
+    # mapfile = nc.Dataset(
+    #     r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Salicornia_map.nc",
+    #     "r",
+    # )
+    # veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
+    # veg_cover[veg_cover == 0] = np.nan
+    # FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Blues', edgecolors='k', lw=0.2)
+    # cbar = plt.colorbar(FIG2, label="Fraction cover Salicornia [-]")
+    # plt.title("Vegetation cover (Salicornia) and Bed Level")
+    # plt.xlabel("Grid cell x-direction")
+    # plt.ylabel("Grid cell y-direction")
+    # plt.show()
 
-
-    mapfile = nc.Dataset(
-        r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\new_test\output\VegModel_Spartina_map.nc",
-        "r",
-    )
-    veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
-    veg_cover[veg_cover == 0] = np.nan
-    FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Reds', edgecolors='k', lw=0.2)
-    cbar = plt.colorbar(FIG2, label="Fraction cover Spartina [-]")
-    plt.title("Vegetation cover (Puccinellia, Spartina and Salicornia) and Bed Level")
-    plt.xlabel("Grid cell x-direction")
-    plt.ylabel("Grid cell y-direction")
-    plt.show()
+    #
+    # mapfile = nc.Dataset(
+    #     r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Spartina_map.nc",
+    #     "r",
+    # )
+    # veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
+    # veg_cover[veg_cover == 0] = np.nan
+    # FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Reds', edgecolors='k', lw=0.2)
+    # cbar = plt.colorbar(FIG2, label="Fraction cover Spartina [-]")
+    # plt.title("Vegetation cover (Spartina) and Bed Level")
+    # plt.xlabel("Grid cell x-direction")
+    # plt.ylabel("Grid cell y-direction")
+    # plt.show()
 
 def plot_bl_diff(x,y,bl, veg_cover):
 # # BED LEVEL DIFFERENCE (sedimentation/ erosion)
@@ -177,7 +177,7 @@ def make_gif():
 
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\new_test\output\VegModel_Puccinellia_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Elytrigia_map.nc",
     "r",
 )
 bl, max_u, veg_den, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m = get_variables_mapfile(mapfile)
