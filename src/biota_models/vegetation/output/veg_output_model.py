@@ -1,9 +1,14 @@
+import os.path
 from datetime import datetime
 from typing import Optional, Union
 
 import numpy as np
 from netCDF4 import Dataset
 from pandas import DataFrame
+from tkinter import messagebox
+import os.path
+from os import path
+import sys
 
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.core.output.base_output_model import BaseOutput, BaseOutputParameters
@@ -47,6 +52,10 @@ class VegetationMapOutput(_VegetationOutput):
         """Initiate mapping output file in which output covering the whole model domain is stored every period of running."""
         if not self.valid_output():
             return
+        if os.path.exists(self.output_filepath):
+            askokcancel = messagebox.askokcancel("File overwrite", 'Do you want to overwrite existing output files?')
+            if askokcancel == False:
+                sys.exit()
         # Open netcdf data and initialize needed variables.
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _map_data:
             _map_data.description = "Mapped simulation data of the VegetationModel."
@@ -319,6 +328,10 @@ class VegetationHisOutput(_VegetationOutput):
         self.output_filename = "VegModel_" + veg.species + "_his.nc"
         if not self.valid_output():
             return
+        if os.path.exists(self.output_filepath):
+            askokcancel = messagebox.askokcancel("File overwrite", 'Do you want to overwrite existing output files?')
+            if askokcancel == False:
+                sys.exit()
         with Dataset(self.output_filepath, "w", format="NETCDF4") as _his_data:
             _his_data.description = "Historic simulation data of the VegetationModel"
 
