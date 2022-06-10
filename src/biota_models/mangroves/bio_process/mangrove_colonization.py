@@ -75,4 +75,3 @@ class Colonization(ExtraModel):
 
         return np.where(mangrove.max_tau < mangrove.constants.TauThres)
 
-
