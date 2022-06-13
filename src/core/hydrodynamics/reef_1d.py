@@ -118,7 +118,7 @@ class Reef1D(BaseModel):
         """Dispersion relation to determine the wave length based on the
         wave period.
         """
-        func = wave_length - ((grav_acc * wave_period ** 2) / (2 * np.pi)) * np.tanh(
+        func = wave_length - ((grav_acc * wave_period**2) / (2 * np.pi)) * np.tanh(
             2 * np.pi * depth / wave_length
         )
         return func
@@ -126,7 +126,7 @@ class Reef1D(BaseModel):
     @property
     def wave_length(self):
         """Solve the dispersion relation to retrieve the wave length."""
-        L0 = 9.81 * self.per_wav ** 2
+        L0 = 9.81 * self.per_wav**2
         L = np.zeros(len(self.depth))
         for i, h in enumerate(self.depth):
             if h > 0:

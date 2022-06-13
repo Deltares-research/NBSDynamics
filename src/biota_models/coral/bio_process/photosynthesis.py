@@ -169,7 +169,7 @@ class Photosynthesis:
                 return 4e-4 * np.exp(-0.33 * (delta_temp - 10))
 
             response = -(coral.temp - coral.Tlo) * (
-                (coral.temp - coral.Tlo) ** 2 - delta_temp ** 2
+                (coral.temp - coral.Tlo) ** 2 - delta_temp**2
             )
             temp_cr = coral.Tlo - (1 / np.sqrt(3)) * delta_temp
             try:
@@ -179,11 +179,11 @@ class Photosynthesis:
                     )
                 else:
                     response[coral.temp <= temp_cr] = -(
-                        (2 / (3 * np.sqrt(3))) * delta_temp ** 3
+                        (2 / (3 * np.sqrt(3))) * delta_temp**3
                     )
             except TypeError:
                 if coral.temp <= temp_cr:
-                    response = (2 / (3 * np.sqrt(3))) * delta_temp ** 3
+                    response = (2 / (3 * np.sqrt(3))) * delta_temp**3
 
             return response * spec()
 

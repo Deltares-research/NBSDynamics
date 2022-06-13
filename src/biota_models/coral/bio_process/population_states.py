@@ -95,7 +95,7 @@ class PopulationStates:
             * coral.Csp
             * p[ps > 0.0, 1]
         )
-        p[ps > 0.0, 0] = (-b + np.sqrt(b ** 2 - 4.0 * a * c)) / (2.0 * a)
+        p[ps > 0.0, 0] = (-b + np.sqrt(b**2 - 4.0 * a * c)) / (2.0 * a)
 
         # bleaching conditions
         # > healthy pop.

@@ -40,7 +40,7 @@ class Recruitment(ExtraModel):
         potential = (
             self.constants.prob_settle
             * self.constants.no_larvae
-            * self.constants.d_larvae ** power
+            * self.constants.d_larvae**power
         )
         # recruitment
         averaged_healthy_pop = coral.pop_states[:, -1, 0].mean()
