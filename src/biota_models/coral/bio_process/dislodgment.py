@@ -93,7 +93,7 @@ class Dislodgement(ExtraModel):
         :param flow_velocity: depth-averaged flow velocity
         :type flow_velocity: float, numpy.ndarray
         """
-        return constants.sigma_t / (constants.rho_w * constants.Cd * flow_velocity ** 2)
+        return constants.sigma_t / (constants.rho_w * constants.Cd * flow_velocity**2)
 
     def colony_shape_factor(self, coral: Coral):
         """
@@ -134,4 +134,4 @@ class Dislodgement(ExtraModel):
         # integral
         integral = arm_top * area_top + arm_bottom * area_bottom
         # colony shape factor
-        return 16.0 / (np.pi * bc ** 3) * integral
+        return 16.0 / (np.pi * bc**3) * integral

@@ -168,7 +168,7 @@ class Morphology:
         """
         self.vol_increase = (
             0.5
-            * coral.ac ** 2
+            * coral.ac**2
             * self.calc_sum
             * self.dt_year
             / self.constants.rho_c

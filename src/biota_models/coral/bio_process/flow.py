@@ -159,7 +159,7 @@ class Flow:
             shear = (
                 (1.0 - beta) ** 2 / abs(1.0 - beta) - abs(1.0 - beta)
             ) / shear_length
-            drag = (beta ** 2 / abs(beta) + beta) / drag_length
+            drag = (beta**2 / abs(beta) + beta) / drag_length
             inertia = 1j * (constants.Cm * lambda_planar) / (1.0 - lambda_planar)
             # combined
             df = 1j + (8.0 * above_motion) / (3.0 * np.pi) * (-shear + drag) + inertia
@@ -188,12 +188,12 @@ class Flow:
 
         # # parameter definitions
         # geometric parameters
-        planar_area = 0.25 * np.pi * diameter ** 2
+        planar_area = 0.25 * np.pi * diameter**2
         frontal_area = diameter * height
-        total_area = 0.5 * distance ** 2
+        total_area = 0.5 * distance**2
         lambda_planar = planar_area / total_area
         lambda_frontal = frontal_area / total_area
-        shear_length = height / (constants.Cs ** 2)
+        shear_length = height / (constants.Cs**2)
         # # calculations
         wac = 1.0
         if depth <= height:
