@@ -26,6 +26,18 @@ After installation, make sure it's available on your `PATH` and run it in the HY
 To install the package (by default in editable mode) run `poetry install`. We advise using `virtualenv`s, Poetry will create one for you.
 If you need to use an already existing Python installation, you can activate it and run `poetry env use system` before `poetry install`.
 
+#### Pip
+Latest versions of `pip` support installing packages from a .toml file. This streamlines the process so that you do not need to use poetry (although we highly recommend it in order to add packages that are compliant with the rest of the repository).
+
+You can easily develop your own features using the pip edit mode from the root of the NBSDynamics checked out repository:
+
+```
+pip install -e .
+```
+
+#### Known issues 
+We found out that packages such as `netcdf4` or `pypiwin32` / `pywin32` might give problems. In case you run against said problems while installing the package we recommend installing them beforehand.
+
 ### 1.2. Code convention / Linters
 This project uses both black and isort as an autoformatter. It is recommended following the rules defined in pyproject.toml to avoid conflicts before a merge.
 
