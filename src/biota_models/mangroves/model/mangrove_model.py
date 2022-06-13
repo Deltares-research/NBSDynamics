@@ -35,12 +35,8 @@ class Mangrove(Biota):
     stem_num: Optional[MangroveAttribute] = None
     stem_dia: Optional[MangroveAttribute] = None
     height: Optional[MangroveAttribute] = None
-    density: Optional[MangroveAttribute] = None
-    age: Optional[MangroveAttribute] = None
-    density: Optional[MangroveAttribute] = None
-    root_dia: Optional[MangroveAttribute] = None
-    root_height: Optional[MangroveAttribute] = None
-    root_density: Optional[MangroveAttribute] = None
+    root_num: Optional[MangroveAttribute] = None
+
 
 
 
@@ -50,6 +46,7 @@ class Mangrove(Biota):
     max_wl: Optional[MangroveAttribute] = None
     min_wl: Optional[MangroveAttribute] = None
     bl: Optional[MangroveAttribute] = None
+    ba: Optional[MangroveAttribute] = None
     max_tau_prev: Optional[MangroveAttribute] = None
     max_u_prev: Optional[MangroveAttribute] = None
     max_wl_prev: Optional[MangroveAttribute] = None
@@ -60,6 +57,7 @@ class Mangrove(Biota):
     u_ts: Optional[MangroveAttribute] = None
     wl_ts: Optional[MangroveAttribute] = None
     bl_ts: Optional[MangroveAttribute] = None
+    ba_ts: Optional[MangroveAttribute] = None
     inun_rel: Optional[MangroveAttribute] = None
     bio_total_cell: Optional[MangroveAttribute] = None
     I: Optional[MangroveAttribute] = None
@@ -85,7 +83,7 @@ class Mangrove(Biota):
     @property
     def veg_den(self):  # as input for DFM
         """stem density in number of stems per m2, according to area fraction of veg age"""
-        return self.stem_num/ ## TODO Grid cell size!
+        return self.stem_num/ self.ba ## stem number divided by grid cell size [N/m2]
 
     @property
     def av_stemdia(self):  # as input for DFM
@@ -99,8 +97,19 @@ class Mangrove(Biota):
 
         return np.mean(self.height, axis=1)
 
-    def initiate_mangrove_characteristics(self, cover: Optional[Path]):
+    @property
+    def bio_total_cell(self):
+        return np.sum((self.stem_num * (self.constants.bio_a*self.stem_dia**self.constants.ind_a + self.constants.bio_b*self.stem_dia**self.constants.ind_b)), axis=1)
 
+    @property
+    ## TODO B0.5 is dependent on grid cell size! Create formula!
+    def B_05(self):
+        W_mature = self.constants.bio_a*self.constants.MaxD**self.constants.ind_a + self.constants.bio_b*self.constants.MaxD**self.constants.ind_b
+        R = 10*np.sqrt(self.constants.MaxD/(2*100))
+        return self.ba/((2*R)**2)*W_mature
+
+    def initiate_mangrove_characteristics(self, cover: Optional[Path]):
+        _reshape = RESHAPE()
         self.mort = np.zeros(_reshape.space)
 
         if not cover:
@@ -109,8 +118,7 @@ class Mangrove(Biota):
             self.stem_num = np.zeros(self.stem_dia.shape)
             self.height = np.zeros(self.stem_dia.shape)
             self.root_num = np.zeros(self.stem_dia.shape)
-            self.bio_total_cell = np.sum((self.stem_num * (self.constants.bio_a*self.stem_dia**self.constants.ind_a + self.constants.bio_b*self.stem_dia**self.constants.ind_b), axis=1))
-
+            self.ba =  np.zeros(self.stem_dia.shape)
         else:
             input_cover: dict = nc.Dataset(cover, "r")
             self.stem_dia = ma.MaskedArray.filled(
@@ -132,9 +140,11 @@ class Mangrove(Biota):
 
     def update_mangrove_characteristics(self, stem_dia: [Optional] = None):
         if not stem_dia:
-            self.stem_dia[self.stem_num == 0] = 0
+            self.stem_dia[self.stem_num == 0] = 0 #account for dieback
             self.stem_dia = self.stem_dia + (self.constants.G*self.stem_dia*(1-self.stem_dia*(self.height*100)/(self.constants.MaxD*self.constants.MaxH))*(self.I[:, -1]*self.C[:, -1])/(274+3*self.constants.b2*self.stem_dia-4*self.constants.b3*self.stem_dia**2)*12)
+            self.height[self.stem_num == 0] = 0
             self.height = (137+self.constants.b2*self.stem_dia-self.constants.b3*self.stem_dia**2)/100
+            self.root_num[self.stem_num == 0] = 0
             self.root_num = self.constants.m*(1/(1+ np.exp(self.constants.f*(self.constants.MaxD/2 - self.stem_dia))))
         else:
             self.height[0, :] = (137 + self.constants.b2 * stem_dia[0, :] - self.constants.b3 * stem_dia[0, :] ** 2) / 100

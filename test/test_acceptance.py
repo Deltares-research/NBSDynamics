@@ -31,6 +31,11 @@ from src.biota_models.vegetation.simulation.veg_simulation_2species import (
 from src.core.simulation.multiplebiota_simulation_protocol import (
     MultipleBiotaSimulationProtocol,
 )
+from src.biota_models.mangroves.model.mangrove_constants import MangroveConstants
+from src.biota_models.mangroves.model.mangrove_model import Mangrove
+from src.biota_models.mangroves.simulation.mangrove_delft3d_simulation import MangroveFlowFmSimulation
+
+
 from src.tools.plot_output import OutputHis, OutputMap, plot_output
 
 
@@ -53,9 +58,9 @@ class TestAcceptance:
     )
 
     @only_local
-    def test_given_veg_case_runs(self):
+    def test_given_mangrove_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger")
+        test_dir = TestUtils.get_local_test_data_dir("new_test")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -63,7 +68,42 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species = "Puccinellia"
+        sim_run = MangroveFlowFmSimulation(
+            working_dir=test_dir,
+            constants=MangroveConstants(),
+            hydrodynamics=dict(
+                working_dir=test_dir / "d3d_work",
+                d3d_home=kernels_dir,
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
+                definition_file=test_case / "FlowFM.mdu",
+            ),
+            output=dict(
+                output_dir=test_dir / "output",
+                map_output=dict(output_params=dict()),
+                his_output=dict(
+                    output_params=dict(),
+                ),
+            ),
+            biota=Mangrove(constants=MangroveConstants()),
+        )
+        # Run simulation.
+        # cover_path = test_case / "fm" / "cover"
+        sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
+        sim_run.run(2)
+        sim_run.finalise()
+
+    @only_local
+    def test_given_veg_case_runs(self):
+        # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
+        dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
+        kernels_dir = dll_repo / "kernels"
+
+        assert test_dir.is_dir()
+        assert kernels_dir.is_dir()
+
+        test_case = test_dir / "input"
+        species = "Elytrigia"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -72,7 +112,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_bigger.mdu",
+                definition_file=test_case / "Zuidgors_ref.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",

@@ -12,6 +12,7 @@ from pydantic.class_validators import root_validator
 
 from src.biota_models.coral.model.coral_model import Coral
 from src.biota_models.vegetation.model.veg_model import Vegetation
+from src.biota_models.mangroves.model.mangrove_model import Mangrove
 from src.core.base_model import ExtraModel
 
 faulthandler.enable()
@@ -105,6 +106,18 @@ class Delft3D(ExtraModel, abc.ABC):
         self.set_variable("diaveg", coral.dc_rep)
         self.set_variable("stemheight", coral.hc)
 
+    def set_mangroves(
+        self, mangrove: Mangrove):
+        self.set_variable(
+            "rnveg", mangrove.veg_den
+        )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+        self.set_variable(
+            "diaveg", mangrove.av_stemdia
+        )  # [m] 3D plant diameter, 2D part is basis input (m)
+        self.set_variable(
+            "stemheight", mangrove.av_height
+        )  # [m] 2D plant heights (m)
+
     def set_vegetation(
         self, veg_species1: Vegetation, veg_species2: Optional[Vegetation], veg_species3: Optional[Vegetation]
     ):
@@ -173,8 +186,9 @@ class Delft3D(ExtraModel, abc.ABC):
         max_vel = self.get_variable("is_maxvalsnd")[range(self.space), 1]
         max_wl = self.get_variable("is_maxvalsnd")[range(self.space), 2]
         bed_level = self.get_variable("bl")
+        ba = self.get_variable("ba") # surface area of the boxes
 
-        return max_tau, max_wl, max_vel, bed_level
+        return max_tau, max_wl, max_vel, bed_level, ba
 
     def get_current_hydromorphodynamics(
         self, time_step
@@ -198,8 +212,9 @@ class Delft3D(ExtraModel, abc.ABC):
         cur_wl = (
             self.get_variable("is_sumvalsnd")[range(self.space), 2] / self.time_step
         )
+        ba = self.get_variable("ba")[range(self.space)]
 
-        return cur_tau, cur_wl, cur_vel, bed_level
+        return cur_tau, cur_wl, cur_vel, bed_level, ba
 
     @abstractmethod
     def configure_model_wrapper(self):
@@ -278,7 +293,6 @@ class Delft3D(ExtraModel, abc.ABC):
             else self.get_mean_hydrodynamics()
         )
 
-    ## TODO input timestep is in days! what is the unit here?
     def update_hydromorphodynamics(
         self,
         veg_species1: Vegetation,
@@ -306,6 +320,31 @@ class Delft3D(ExtraModel, abc.ABC):
         self.model_wrapper.update(self.time_step)
 
         return self.get_current_hydromorphodynamics(time_step=self.time_step)
+
+
+    def update_hydromorphodynamics_mangroves(
+        self,
+        mangrove: Mangrove,
+        time_step: int,
+    ):
+        """Update the Delft3D-model.
+
+        :param mangrove: mangrove vegetation of a specific species
+        :param time_step: time step of delft FM in seconds
+        :type time_step: int
+
+        """
+        self.time_step = time_step
+        self.reset_counters()
+        self.set_mangroves(mangrove)
+        # if not veg_species2:
+        #     self.set_vegetation(veg_species1)
+        # else:
+        #
+        self.model_wrapper.update(self.time_step)
+
+        return self.get_current_hydromorphodynamics(time_step=self.time_step)
+
 
     def finalise(self):
         """Finalize the working model."""

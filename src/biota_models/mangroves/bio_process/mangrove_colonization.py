@@ -24,18 +24,35 @@ class Colonization(ExtraModel):
         loc = np.where(mangrove.mort[self.seed_loc] >= 1)
         np.delete(self.seed_loc, np.where(np.in1d(self.seed_loc, loc) == True))
 
-        # Check if mangroves already present in the cells and if its "full"
-        ## TODO
-        mangrove.stem_num
-        # 3000 individuals per hectare initially!
-        ## TODO calculate stem_num depending on grid cell size!
+        stem_num_ini = np.zeros(mangrove.ba.shape)  #mangrove.ba surface area [m2]
+        stem_num_ini = mangrove.constants.ini_dens * mangrove.ba # initial stem number for each grid cell
+
+        # create new empty arrays for the colonization
+        mangrove.stem_num = np.columnstack(np.zeros(mangrove.ba.shape), mangrove.stem_num)
+        mangrove.height = np.columnstack(np.zeros(mangrove.ba.shape), mangrove.height)
+        mangrove.stem_dia = np.columnstack(np.zeros(mangrove.ba.shape), mangrove.stem_dia)
+        mangrove.root_num = np.columnstack(np.zeros(mangrove.ba.shape), mangrove.root_num)
+
         # determine if already present and full?
-        # if no full new can settle but I*C cannot get below 0.5
-        # APPEND existing arrays of characteristics!
+        # 1. full --> nothing can settle: delete seed_loc
+        full = np.where(np.sum(mangrove.stem_num, axis=1) >= stem_num_ini)
+        np.delete(self.seed_loc, np.where(np.in1d(self.seed_loc, full) == True))
 
-        ## TODO Columnstack
+        # 2. empty --> all can settle
+        empty = np.where(np.in1d(self.seed_loc, np.where(np.sum(mangrove.stem_num, axis=1) ==0)))
+        mangrove.stem_num[0, :][empty] = stem_num_ini[empty]
 
-        mangrove.stem_dia[0, :][self.seed_loc] = mangrove.constants.ini_dia
+        # 3. still space --> some can settle until I * C < 0.5
+        space = np.where(np.sum(mangrove.stem_num, axis=1) < stem_num_ini)
+        #solve I*C formular for missing density
+        tot_possible_B = mangrove.B_05 - np.log(2*mangrove.I - 1)/mangrove.constants.d
+        delta_B = tot_possible_B - mangrove.bio_total_cell
+        W_tot = mangrove.constants.bio_a*mangrove.constants.ini_dia**mangrove.constants.ind_a + mangrove.constants.bio_b*mangrove.constants.ini_dia**mangrove.constants.ind_b
+        possible_stem_num = delta_B/W_tot
+        mangrove.stem_num[0, :][space] = possible_stem_num[space]
+
+
+        mangrove.stem_dia[0, :][mangrove.stem_num[0, :]>1] = mangrove.constants.ini_dia
         mangrove.update_mangrove_characteristics(stem_dia=mangrove.stem_dia)
 
 

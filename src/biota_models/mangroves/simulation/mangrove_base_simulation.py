@@ -7,7 +7,7 @@ import pandas as pd
 from pydantic import validator
 from tqdm import tqdm
 
-from src.biota_models.mangroves.bio_process.mangrove_colonisation import Colonization
+from src.biota_models.mangroves.bio_process.mangrove_colonization import Colonization
 from src.biota_models.mangroves.bio_process.mangrove_hydro_morphodynamics import (
     Hydro_Morphodynamics,
 )
@@ -20,7 +20,7 @@ from src.core.hydrodynamics.factory import HydrodynamicsFactory
 from src.core.hydrodynamics.hydrodynamic_protocol import HydrodynamicProtocol
 from src.core.simulation.base_simulation import BaseSimulation
 
-class _MangroveSimulatio(BaseSimulation, ABC):
+class _MangroveSimulation(BaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
@@ -172,7 +172,7 @@ class _MangroveSimulatio(BaseSimulation, ABC):
 
         RESHAPE().space = self.hydrodynamics.space
 
-        self.biota.initiate_vegetation_characteristics(cover)
+        self.biota.initiate_mangrove_characteristics(cover)
 
         if self.output.defined:
             self.output.initialize(self.biota)
@@ -235,15 +235,16 @@ class _MangroveSimulatio(BaseSimulation, ABC):
                         0, len(period), time_step
                     ):  # every quarter of a M2 tidal cycle (12.42 hours) the hydro-morphodynamic information are taken from DFM
 
-                        progress.set_postfix(inner_loop=f"update {self.hydrodynamics}")
+                        progress.set_postfix(inner_loop="update hydrodynamics BMI-Wrapper", ets=str(ets))
 
                         (
                             cur_tau,
                             cur_vel,
                             cur_wl,
                             bed_level,
-                        ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=time_step  # 4 times every tidal cycle (M2 tide)
+                            ba
+                        ) = self.hydrodynamics.update_hydromorphodynamics_mangroves(
+                            self.biota, time_step=1  # 4 times every tidal cycle (M2 tide)
                         )
 
                         # # environment
@@ -254,27 +255,47 @@ class _MangroveSimulatio(BaseSimulation, ABC):
                             u_cur=cur_vel,
                             wl_cur=cur_wl,
                             bl_cur=bed_level,
+                            ba = ba,
                             ts=ts,
-                            veg=self.biota,
+                            mangrove=self.biota,
                         )
                     hydro_mor.get_hydromorph_values(self.biota)
 
                     # # mangrove dynamics
-                    progress.set_postfix(inner_loop="vegetation dynamics")
+                    progress.set_postfix(inner_loop="mangrove dynamics")
 
                     # Mortality only once a year
-                    if ets == (self.constants.t_eco_year -1):
-                        mort = Mangrove_Mortality
-                        mort.update(mort, self.biota)
+
+                    mort = Mangrove_Mortality
+                    mort.update(mort, self.biota, ets)
 
                     # Growth
-                    self.biota.update_mangrove_characteristics(mort)
+                    self.biota.update_mangrove_characteristics()
 
                     # Colonization
                     col = Colonization()
                     col.update(self.biota)
 
                     # export results
+                    progress.set_postfix(inner_loop="export results")
+                    # map-file
+                    # self.output.map_output.update(self.veg, years[i]) #change to period we are in current ets
+                    self.output.map_output.update(
+                        self.biota,
+                        int(period[-1].strftime("%Y%m%d")),
+                        ets,
+                        i,
+                        self.constants,
+                    )  # change to period we are in current ets
+                    # his-file
+                    period_days = [
+                        begin_date + timedelta(n)
+                        for n in range(int((end_date - begin_date).days))
+                    ]
+                    self.output.his_output.update(
+                        self.biota,
+                        pd.DataFrame(period_days),
+                    )
 
                     # store hydrdynamics
                     hydro_mor.store_hydromorph_values(self.biota)

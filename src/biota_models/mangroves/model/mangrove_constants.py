@@ -10,13 +10,13 @@ from src.core.common.base_constants import BaseConstants
 class MangroveConstants(BaseConstants):
     """Object containing all constants used in marsh_model simulations."""
 
-    species: str
+    species: Optional[str]
 
     input_file: Optional[Path]
 
     warn_proc: bool = False
     # User - Define time - scales
-    t_eco_year: int = 24  # number ecological time - steps per year(meaning couplings)
+    t_eco_year: int = 12  # number ecological time - steps per year(meaning couplings)
 
     sim_duration: float = 30  # number of morphological years of entire simulation
     start_date: str = "2022-01-01"  # Start date of the simulation
@@ -26,13 +26,17 @@ class MangroveConstants(BaseConstants):
     TauThres: float = 0.2 # Bed shear stress Threshold for mangrove colonization
     SedThres: float =  0.01 # sedimentation threshold for ColonisationStrategy 2B ( in m) - defined in veg.txt-file
     fl_dr: float = 0.1 # Boundary for water flooding / drying(m)
-    t_eco_year: float = 12 # number of ecological time - steps(ets) per year
     num0: float = 750 # initial individuals of plants in one cell
     num_all: float = 2e6 # The max number of columns in one cell incl.plants and roots
     S_cell: int = 2500 # Cell size area
     Mort_plant: float = 10 # Number of plants need to be removed at one time
     Grow_plant: float = 10 # Number of plants need to be grown at one time
     ini_dia: float = 1 #initial stem diameter [cm]
+
+    # 3000 individuals per hectare initially!
+    # 1 ha =  20 000 m2
+    # 3000 stems/ha = 0.15 stems/m2
+    ini_dens: float = 0.15 # [stems/m2]
 
 
     #Inundation stress factors
@@ -45,9 +49,6 @@ class MangroveConstants(BaseConstants):
     ind_b: float = 1.17 # Biomass below-ground constant
     bio_b: float = 1.28 # Biomass below-ground constant
 
-    ## TODO B0.5 is dependent on grid cell size! Create formula!
-    B_05 = 2.589410**4 # [kg]
-
     # growth parameter
     G: float = 254 # Growth constant [cm]
     b2: float = 80 # Growth constant [-]
@@ -57,4 +58,5 @@ class MangroveConstants(BaseConstants):
 
     # root information
     m: float = 1000 # maximum number of roots per tree
-    f: float = 0.3 #constant describing rate of increase of roots
+
+
