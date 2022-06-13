@@ -95,7 +95,7 @@ class Coral(Biota):
     def volume(self):
         """Coral volume."""
         coral_volume = (
-            0.25 * np.pi * ((self.hc - self.tc) * self.bc ** 2 + self.tc * self.dc ** 2)
+            0.25 * np.pi * ((self.hc - self.tc) * self.bc**2 + self.tc * self.dc**2)
         )
         return coral_volume
 
@@ -134,7 +134,7 @@ class Coral(Biota):
         """Translation from coral morphology to (vegetation) density."""
 
         def function(dc_rep, ac):
-            return (2 * dc_rep) / (ac ** 2)
+            return (2 * dc_rep) / (ac**2)
 
         return CoralOnly().in_space(
             coral=self, function=function, args=(self.dc_rep, self.ac)
@@ -241,7 +241,7 @@ class Coral(Biota):
 
         def vc2dc(coral_volume, rf, rp):
             """Coral volume to coral plate diameter."""
-            dc = ((4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))) ** (
+            dc = ((4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp**2))) ** (
                 1.0 / 3.0
             )
             return dc
@@ -249,29 +249,29 @@ class Coral(Biota):
         def vc2hc(coral_volume, rf, rp):
             """Coral volume to coral height."""
             hc = (
-                (4.0 * coral_volume * rf ** 2) / (np.pi * rp * (1.0 + rp - rp ** 2))
+                (4.0 * coral_volume * rf**2) / (np.pi * rp * (1.0 + rp - rp**2))
             ) ** (1.0 / 3.0)
             return hc
 
         def vc2bc(coral_volume, rf, rp):
             """Coral volume > diameter of the base."""
             bc = (
-                (4.0 * coral_volume * rp ** 2) / (np.pi * rf * (1.0 + rp - rp ** 2))
+                (4.0 * coral_volume * rp**2) / (np.pi * rf * (1.0 + rp - rp**2))
             ) ** (1.0 / 3.0)
             return bc
 
         def vc2tc(coral_volume, rf, rp):
             """Coral volume > thickness of the plate."""
             tc = (
-                (4.0 * coral_volume * rf ** 2 * rp ** 2)
-                / (np.pi * (1.0 + rp - rp ** 2))
+                (4.0 * coral_volume * rf**2 * rp**2)
+                / (np.pi * (1.0 + rp - rp**2))
             ) ** (1.0 / 3.0)
             return tc
 
         def vc2ac(coral_volume, rf, rp, rs):
             """Coral volume > axial distance."""
             ac = (1.0 / rs) * (
-                (4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp ** 2))
+                (4.0 * coral_volume) / (np.pi * rf * rp * (1.0 + rp - rp**2))
             ) ** (1.0 / 3.0)
             return ac
 

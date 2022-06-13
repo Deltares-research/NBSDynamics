@@ -47,7 +47,7 @@ class Light:
         top = (
             0.25
             * np.pi
-            * coral.dc_matrix ** 2
+            * coral.dc_matrix**2
             * self.I0
             * np.exp(-self.Kd * (self.h - coral.hc_matrix))
         )
@@ -93,7 +93,7 @@ class Light:
         """
         base_section = self.base_light(coral)
         coral.light_bc = np.pi * (
-            0.25 * coral.dc_matrix ** 2
+            0.25 * coral.dc_matrix**2
             + coral.dc_matrix * coral.tc_matrix
             + coral.bc_matrix * base_section
         )
