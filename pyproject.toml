@@ -51,6 +51,7 @@ version_files = [
     "src/core/__init__.py",
     "pyproject.toml:version"
 ]
+update_changelog_on_bump = true
 
 [tool.commitizen.customize]
 bump_pattern = "^(break|new|fix|hotfix|refactor|docs)"
