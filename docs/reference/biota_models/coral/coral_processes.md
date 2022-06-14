@@ -26,4 +26,3 @@
 
 ### Temperature
 ::: src.biota_models.coral.bio_process.temperature
-
