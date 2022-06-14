@@ -43,7 +43,7 @@ class Hydro_Morphodynamics:
         mangrove.ba[:] = mangrove.ba_ts[:, -1]  # last values in grid area to get 'current' value
 
         flood = np.zeros(mangrove.wl_ts.shape)
-        flood[mangrove.wl_ts > 0] = 1
+        flood[mangrove.wl_ts > mangrove.constants.fl_dr] = 1
         flood_count = np.zeros(len(mangrove.wl_ts))
         for i in range(0, len(flood_count)):
             flood_count[i] = np.count_nonzero(flood[i, :])

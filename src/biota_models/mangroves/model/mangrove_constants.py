@@ -25,7 +25,7 @@ class MangroveConstants(BaseConstants):
     f: float = 0.3 # Constant of roots number increase % Barend: 0.3(40 cm stem); Danghan: 0.1(~1 m stem and 0.5(18 cm stem)
     TauThres: float = 0.2 # Bed shear stress Threshold for mangrove colonization
     SedThres: float =  0.01 # sedimentation threshold for ColonisationStrategy 2B ( in m) - defined in veg.txt-file
-    fl_dr: float = 0.1 # Boundary for water flooding / drying(m)
+    fl_dr: float = 0.01 # Boundary for water flooding / drying(m)
     num0: float = 750 # initial individuals of plants in one cell
     num_all: float = 2e6 # The max number of columns in one cell incl.plants and roots
     S_cell: int = 2500 # Cell size area

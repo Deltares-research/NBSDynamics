@@ -29,7 +29,7 @@ class Mangrove_Mortality(ExtraModel):
 
         ## Step 0: Adjust the num to 0 if Inundation <=0.5 & Mort_mark == 5
 
-            while (any(mangrove.mort) == 5):
+            while any(mangrove.mort == 5):
 
                 mort_temp = np.zeros(mangrove.stem_num.shape)
                 mort_temp[mangrove.mort == 5] = 1 #set to one, where mortality status is 5
