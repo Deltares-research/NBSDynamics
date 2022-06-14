@@ -44,7 +44,6 @@ commitizen = "^2.27.1"
 [tool.commitizen]
 name = "cz_conventional_commits"
 changelog_file = "docs/changelog.md"
-update_changelog_on_bump = true
 version = "0.9.0"
 tag_format = "v$major.$minor.$patch"
 version_files = [
