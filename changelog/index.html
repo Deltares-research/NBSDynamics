@@ -1,0 +1,2308 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.4">
+    
+    
+      
+        <title>Changelog - NBSDynamics documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#v092-2022-06-14" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NBSDynamics documentation" class="md-header__button md-logo" aria-label="NBSDynamics documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NBSDynamics documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="deltares" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Deltares/NBSDynamics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/nbsdynamics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      NBSDynamics documentation
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="./" class="md-tabs__link md-tabs__link--active">
+      Changelog
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../guides/contribute/" class="md-tabs__link">
+        Guides
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../reference/biota_models/coral/about/" class="md-tabs__link">
+        Reference
+      </a>
+    </li>
+  
+
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NBSDynamics documentation" class="md-nav__button md-logo" aria-label="NBSDynamics documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/></svg>
+
+    </a>
+    NBSDynamics documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Deltares/NBSDynamics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/nbsdynamics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        NBSDynamics documentation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Changelog
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Changelog
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v092-2022-06-14" class="md-nav__link">
+    v0.9.2 (2022-06-14)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v091-2022-06-14" class="md-nav__link">
+    v0.9.1 (2022-06-14)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.1 (2022-06-14)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v090-2022-04-20" class="md-nav__link">
+    v0.9.0 (2022-04-20)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0 (2022-04-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v083-2022-04-13" class="md-nav__link">
+    v0.8.3 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.3 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_1" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v082-2022-04-13" class="md-nav__link">
+    v0.8.2 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.2 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_2" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v081-2022-04-13" class="md-nav__link">
+    v0.8.1 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.1 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_1" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v080-nbsdynamics_as_package-2021-11-19" class="md-nav__link">
+    v0.8.0-NBSDynamics_as_package (2021-11-19)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v080-2021-11-18" class="md-nav__link">
+    v0.8.0 (2021-11-18)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.0 (2021-11-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_1" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v070-2021-11-18" class="md-nav__link">
+    v0.7.0 (2021-11-18)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.7.0 (2021-11-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_2" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v060-2021-11-17" class="md-nav__link">
+    v0.6.0 (2021-11-17)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.6.0 (2021-11-17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_3" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix_2" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor_3" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v051-2021-11-16" class="md-nav__link">
+    v0.5.1 (2021-11-16)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.5.1 (2021-11-16)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_3" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v050-2021-11-15" class="md-nav__link">
+    v0.5.0 (2021-11-15)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.5.0 (2021-11-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_4" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v040-2021-11-15" class="md-nav__link">
+    v0.4.0 (2021-11-15)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.4.0 (2021-11-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_4" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_5" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v030-2021-11-12" class="md-nav__link">
+    v0.3.0 (2021-11-12)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.3.0 (2021-11-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_6" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v020-2021-11-11" class="md-nav__link">
+    v0.2.0 (2021-11-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.2.0 (2021-11-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_5" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_7" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor_4" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v014-2021-11-11" class="md-nav__link">
+    v0.1.4 (2021-11-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.4 (2021-11-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_6" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_8" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v013-2021-11-08" class="md-nav__link">
+    v0.1.3 (2021-11-08)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.3 (2021-11-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_5" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v012-2021-11-05" class="md-nav__link">
+    v0.1.2 (2021-11-05)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v011-2021-11-05" class="md-nav__link">
+    v0.1.1 (2021-11-05)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.1 (2021-11-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_7" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v010-2021-11-04" class="md-nav__link">
+    v0.1.0 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.0 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_8" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_9" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v004-2021-11-04" class="md-nav__link">
+    v0.0.4 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.4 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_9" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v003-2021-11-04" class="md-nav__link">
+    v0.0.3 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.3 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_6" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v002-2021-10-29" class="md-nav__link">
+    v0.0.2 (2021-10-29)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.2 (2021-10-29)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_10" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Guides" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/contribute/" class="md-nav__link">
+        How to contribute to NBSDynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/run_simulation/" class="md-nav__link">
+        How to create and run a simulation in NBSDynamics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/run_simulation_coral/" class="md-nav__link">
+        How to run a Coral Simulation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/run_simulation_veg/" class="md-nav__link">
+        How to run a Vegetation simulation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_1" type="checkbox" id="__nav_4_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1">
+          Biota models
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Biota models" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_1">
+          <span class="md-nav__icon md-icon"></span>
+          Biota models
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_1_1" type="checkbox" id="__nav_4_1_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_1">
+          Coral
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Coral" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          Coral
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/coral/about/" class="md-nav__link">
+        CoralModel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/coral/coral_model/" class="md-nav__link">
+        Coral model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/coral/coral_output/" class="md-nav__link">
+        Coral output
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/coral/coral_processes/" class="md-nav__link">
+        Coral processes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/coral/coral_simulation/" class="md-nav__link">
+        Coral simulation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_1_2" type="checkbox" id="__nav_4_1_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_2">
+          Vegetation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vegetation" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Vegetation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/vegetation/vegetation_model/" class="md-nav__link">
+        Vegetation model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/vegetation/vegetation_output/" class="md-nav__link">
+        Vegetation output
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/vegetation/vegetation_processes/" class="md-nav__link">
+        Vegetation processes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/biota_models/vegetation/vegetation_simulation/" class="md-nav__link">
+        Vegetation simulation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Core" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Core
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/core/" class="md-nav__link">
+        Core
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2_2" type="checkbox" id="__nav_4_2_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2_2">
+          Biota
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Biota" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Biota
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/biota/biota/" class="md-nav__link">
+        Biota
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2_3" type="checkbox" id="__nav_4_2_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2_3">
+          Common
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Common" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/common/common/" class="md-nav__link">
+        Common
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2_4" type="checkbox" id="__nav_4_2_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2_4">
+          Hydrodynamics
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Hydrodynamics" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Hydrodynamics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/hydrodynamics/hydromodels/" class="md-nav__link">
+        Hydromodels
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2_5" type="checkbox" id="__nav_4_2_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2_5">
+          Output
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Output" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Output
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/output/output/" class="md-nav__link">
+        Output
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_4_2_6" type="checkbox" id="__nav_4_2_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2_6">
+          Simulation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Simulation" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_2_6">
+          <span class="md-nav__icon md-icon"></span>
+          Simulation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/simulation/simulation/" class="md-nav__link">
+        Simulation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v092-2022-06-14" class="md-nav__link">
+    v0.9.2 (2022-06-14)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v091-2022-06-14" class="md-nav__link">
+    v0.9.1 (2022-06-14)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.1 (2022-06-14)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v090-2022-04-20" class="md-nav__link">
+    v0.9.0 (2022-04-20)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0 (2022-04-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v083-2022-04-13" class="md-nav__link">
+    v0.8.3 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.3 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_1" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v082-2022-04-13" class="md-nav__link">
+    v0.8.2 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.2 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_2" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v081-2022-04-13" class="md-nav__link">
+    v0.8.1 (2022-04-13)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.1 (2022-04-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_1" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v080-nbsdynamics_as_package-2021-11-19" class="md-nav__link">
+    v0.8.0-NBSDynamics_as_package (2021-11-19)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v080-2021-11-18" class="md-nav__link">
+    v0.8.0 (2021-11-18)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.8.0 (2021-11-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_1" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v070-2021-11-18" class="md-nav__link">
+    v0.7.0 (2021-11-18)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.7.0 (2021-11-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_2" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v060-2021-11-17" class="md-nav__link">
+    v0.6.0 (2021-11-17)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.6.0 (2021-11-17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_3" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix_2" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor_3" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v051-2021-11-16" class="md-nav__link">
+    v0.5.1 (2021-11-16)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.5.1 (2021-11-16)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_3" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v050-2021-11-15" class="md-nav__link">
+    v0.5.0 (2021-11-15)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.5.0 (2021-11-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_4" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v040-2021-11-15" class="md-nav__link">
+    v0.4.0 (2021-11-15)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.4.0 (2021-11-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_4" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_5" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v030-2021-11-12" class="md-nav__link">
+    v0.3.0 (2021-11-12)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.3.0 (2021-11-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feat_6" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v020-2021-11-11" class="md-nav__link">
+    v0.2.0 (2021-11-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.2.0 (2021-11-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_5" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_7" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor_4" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v014-2021-11-11" class="md-nav__link">
+    v0.1.4 (2021-11-11)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.4 (2021-11-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_6" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_8" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v013-2021-11-08" class="md-nav__link">
+    v0.1.3 (2021-11-08)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.3 (2021-11-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_5" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v012-2021-11-05" class="md-nav__link">
+    v0.1.2 (2021-11-05)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v011-2021-11-05" class="md-nav__link">
+    v0.1.1 (2021-11-05)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.1 (2021-11-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_7" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v010-2021-11-04" class="md-nav__link">
+    v0.1.0 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.0 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_8" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feat_9" class="md-nav__link">
+    Feat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v004-2021-11-04" class="md-nav__link">
+    v0.0.4 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.4 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_9" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v003-2021-11-04" class="md-nav__link">
+    v0.0.3 (2021-11-04)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.3 (2021-11-04)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactor_6" class="md-nav__link">
+    Refactor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v002-2021-10-29" class="md-nav__link">
+    v0.0.2 (2021-10-29)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.2 (2021-10-29)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix_10" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/Deltares/NBSDynamics/edit/master/docs/changelog.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+  <h1>Changelog</h1>
+
+<h2 id="v092-2022-06-14">v0.9.2 (2022-06-14)<a class="headerlink" href="#v092-2022-06-14" title="Permanent link">&para;</a></h2>
+<ul>
+<li>docs: Manually updated documentation, restored commitizen configuration</li>
+</ul>
+<h2 id="v091-2022-06-14">v0.9.1 (2022-06-14)<a class="headerlink" href="#v091-2022-06-14" title="Permanent link">&para;</a></h2>
+<h3 id="fix">Fix<a class="headerlink" href="#fix" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>docs/reference</strong>: removed previous references (#84)</li>
+</ul>
+<h2 id="v090-2022-04-20">v0.9.0 (2022-04-20)<a class="headerlink" href="#v090-2022-04-20" title="Permanent link">&para;</a></h2>
+<h3 id="feat">Feat<a class="headerlink" href="#feat" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>veg_simulation2_species.py</strong>: Now all the biotawrappers will get the simulation constants when not providing biota-constants</li>
+<li><strong>biota_wrapper.py</strong>: Added biota_wrapper concept to reduce code duplicity on multiple biota simulations</li>
+</ul>
+<h3 id="refactor">Refactor<a class="headerlink" href="#refactor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/biota_models/vegetation/simulation/veg_simulation_2species.py</strong>: changed vegetation simulutation to use the biota wrapper.</li>
+<li><strong>multiplebiota</strong>: Refactored all multiplebiota protocol and models to include the BiotaWrapper concept</li>
+</ul>
+<h2 id="v083-2022-04-13">v0.8.3 (2022-04-13)<a class="headerlink" href="#v083-2022-04-13" title="Permanent link">&para;</a></h2>
+<h3 id="refactor_1">Refactor<a class="headerlink" href="#refactor_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>veg_model.py</strong>: Now we configure the fields using pydantic</li>
+</ul>
+<h2 id="v082-2022-04-13">v0.8.2 (2022-04-13)<a class="headerlink" href="#v082-2022-04-13" title="Permanent link">&para;</a></h2>
+<h3 id="refactor_2">Refactor<a class="headerlink" href="#refactor_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>veg_base_simulation.py;veg_delft3d_simulation.py</strong>: Changed vegetation simulation naming and reduced code duplicity</li>
+<li><strong>src/core/simulation/simulation_protocol.py</strong>: Removed coral from being a simulation protocol parameter</li>
+</ul>
+<h2 id="v081-2022-04-13">v0.8.1 (2022-04-13)<a class="headerlink" href="#v081-2022-04-13" title="Permanent link">&para;</a></h2>
+<h3 id="fix_1">Fix<a class="headerlink" href="#fix_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>docs/reference</strong>: removed previous references (#84)</li>
+</ul>
+<h2 id="v080-nbsdynamics_as_package-2021-11-19">v0.8.0-NBSDynamics_as_package (2021-11-19)<a class="headerlink" href="#v080-nbsdynamics_as_package-2021-11-19" title="Permanent link">&para;</a></h2>
+<h2 id="v080-2021-11-18">v0.8.0 (2021-11-18)<a class="headerlink" href="#v080-2021-11-18" title="Permanent link">&para;</a></h2>
+<h3 id="feat_1">Feat<a class="headerlink" href="#feat_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>RESHAPE as singleton (#73)</li>
+</ul>
+<h2 id="v070-2021-11-18">v0.7.0 (2021-11-18)<a class="headerlink" href="#v070-2021-11-18" title="Permanent link">&para;</a></h2>
+<h3 id="feat_2">Feat<a class="headerlink" href="#feat_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix bmi calls (#67)</li>
+</ul>
+<h2 id="v060-2021-11-17">v0.6.0 (2021-11-17)<a class="headerlink" href="#v060-2021-11-17" title="Permanent link">&para;</a></h2>
+<h3 id="feat_3">Feat<a class="headerlink" href="#feat_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/core/simulation/base_simulation.py</strong>: Added <code>vanilla</code> simulation, adapted reef models to be pydantic</li>
+<li><strong>src/core/hydrodynamics/transect.py</strong>: Transect initializes now as a pydantic model. Smaller related refactorings</li>
+<li><strong>src/core/hydrodynamics/delft3d.py</strong>: dll_path can be now manually set by the user</li>
+<li><strong>src/core/hydrodynamics/delft3d.py</strong>: Now the user can input their own path to the dll to be run</li>
+</ul>
+<h3 id="fix_2">Fix<a class="headerlink" href="#fix_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/core/simulation/coral_delft3d_simulation.py</strong>: Minor corrections to the outpoint definition</li>
+<li><strong>src/core/hydrodynamics/delft3d.py</strong>: Minor fix to xy_coordinates inital values</li>
+<li><strong>src/core/output/output_wrapper.py</strong>: Adapted output_wrapper to ensure an output_dir is given for all the output_model instances</li>
+<li><strong>src/core/hydrodynamics/delft3d.py</strong>: Renamed method, added explanation of what needs to be done</li>
+</ul>
+<h3 id="refactor_3">Refactor<a class="headerlink" href="#refactor_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>test/core/simulation</strong>: Removed unnecessary class method, adapted tests, fixed failing tests</li>
+<li><strong>src/core/simulation/base_simulation.py</strong>: Adapted simulation logic to initate hydrodynamics in a pydantic way</li>
+</ul>
+<h2 id="v051-2021-11-16">v0.5.1 (2021-11-16)<a class="headerlink" href="#v051-2021-11-16" title="Permanent link">&para;</a></h2>
+<h3 id="fix_3">Fix<a class="headerlink" href="#fix_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>bio_process/test_morphology.py</strong>: removed bug from test fixture</li>
+</ul>
+<h2 id="v050-2021-11-15">v0.5.0 (2021-11-15)<a class="headerlink" href="#v050-2021-11-15" title="Permanent link">&para;</a></h2>
+<h3 id="feat_4">Feat<a class="headerlink" href="#feat_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>coral model as protocol (#66)</li>
+<li>simulation as protocol (#65)</li>
+</ul>
+<h2 id="v040-2021-11-15">v0.4.0 (2021-11-15)<a class="headerlink" href="#v040-2021-11-15" title="Permanent link">&para;</a></h2>
+<h3 id="fix_4">Fix<a class="headerlink" href="#fix_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>test/test_acceptance.py</strong>: corrected numpy usage</li>
+<li><strong>src/core/output/output_wrapper.py</strong>: Output wrapper now creates the output dir if it was not there already</li>
+</ul>
+<h3 id="feat_5">Feat<a class="headerlink" href="#feat_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/core/simulation.py;test/test_acceptance.py</strong>: Now simulations can delegate the initial setup of a hydrodynamic model, adapted test for d3d case</li>
+<li><strong>src/core/output/output_model.py;src/core/output/output_wrapper.py;src/core/hydrodynamics/factory.py;src/core/simulation.py</strong>: Refactor output wrapper and simulation classes so they can be instantiated with less attributes</li>
+</ul>
+<h2 id="v030-2021-11-12">v0.3.0 (2021-11-12)<a class="headerlink" href="#v030-2021-11-12" title="Permanent link">&para;</a></h2>
+<h3 id="feat_6">Feat<a class="headerlink" href="#feat_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create test bmi coral (#63)</li>
+</ul>
+<h2 id="v020-2021-11-11">v0.2.0 (2021-11-11)<a class="headerlink" href="#v020-2021-11-11" title="Permanent link">&para;</a></h2>
+<h3 id="fix_5">Fix<a class="headerlink" href="#fix_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/core/environment.py;src/core/simulation.py;test/core/test_environment.py</strong>: Extended validation for dates so they can be added as string from the initialization</li>
+<li><strong>src/core/output/output_wrapper.py</strong>: Now we add the dict attributes from the wrapper to the output models</li>
+<li><strong>src/core/output/output_model.py;src/core/output/output_wrapper.py;src/core/simulation.py;test/core/output/test_wrapper.py</strong>: Now we correctly initialize the map_output model. Adapted test output wrapper</li>
+<li><strong>src;test</strong>: Output model generates again the netcdf files correctly.</li>
+<li><strong>src/tools/plot_output.py</strong>: Corrected call to plot tool</li>
+</ul>
+<h3 id="feat_7">Feat<a class="headerlink" href="#feat_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>src/core/environment.py;src/core/simulation.py</strong>: Adapted environment and related classes to pydantic approach</p>
+</li>
+<li>
+<p><strong>src/core/coral_model.py;src/core/simulation.py;test/test_acceptance.py</strong>: Coral integrated in simulation</p>
+</li>
+</ul>
+<h3 id="refactor_4">Refactor<a class="headerlink" href="#refactor_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>src/core/environment.py;src/core/simulation.py;test/core/test_simulation</strong>: Improved environment as class</p>
+</li>
+<li>
+<p><strong>src/core/environment.py;src/core/output_model.py;src/core/simulation.py;test/core/test_output</strong>: Applying pydantic to Output model.</p>
+</li>
+<li>
+<p><strong>src/core/simulation</strong>: Added validator to simulation constants property</p>
+</li>
+<li>
+<p><strong>src/core/simulation.py;test/test_acceptance</strong>: Adapted code for better pydantic usage</p>
+</li>
+<li>
+<p><strong>src/core/output_model</strong>: Fixed failing tests for TestOutput</p>
+</li>
+<li>
+<p><strong>src/core/output_model</strong>: Minor corrections to the model</p>
+</li>
+<li>
+<p><strong>src/core/output_model</strong>: Small fix, however model still not running.</p>
+</li>
+<li>
+<p><strong>src/core/output_model</strong>: fixed ini/update his/map</p>
+</li>
+<li>
+<p><strong>src/core/environment</strong>: Added extra logic to accept str as path.</p>
+</li>
+<li>
+<p><strong>src/core/output/output_model</strong>: Extracted two submodels from Output, moved into its own module.</p>
+</li>
+<li>
+<p><strong>src/core/output/output_protocol.py;src/core/output/output_wrapper</strong>: Separating concepts to avoid code duplication</p>
+</li>
+<li>
+<p><strong>src/core/output/output_model.py;src/core/output/output_protocol.py;src/core/output/output_wrapper</strong>: Refactor output module for better maintainability and reducing its complexity.</p>
+</li>
+<li>
+<p><strong>test/core/output/test_wrapper</strong>: Moved test to mirror src structure</p>
+</li>
+<li>
+<p><strong>src/core/output/</strong>: Extended docstrings for output_protocol; Generated coverage tests for output_model. Fixed simulation calls to output initialization.</p>
+</li>
+<li>
+<p><strong>test_output_wrapper</strong>: Renamed filename to match src tested file</p>
+</li>
+</ul>
+<h2 id="v014-2021-11-11">v0.1.4 (2021-11-11)<a class="headerlink" href="#v014-2021-11-11" title="Permanent link">&para;</a></h2>
+<h3 id="fix_6">Fix<a class="headerlink" href="#fix_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>quality gate fix (#62)</li>
+</ul>
+<h3 id="feat_8">Feat<a class="headerlink" href="#feat_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create model input</li>
+</ul>
+<h2 id="v013-2021-11-08">v0.1.3 (2021-11-08)<a class="headerlink" href="#v013-2021-11-08" title="Permanent link">&para;</a></h2>
+<h3 id="refactor_5">Refactor<a class="headerlink" href="#refactor_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>src/core/coral_only.py</strong>: Extracted coral only for better maintainability.</li>
+<li><strong>src/core/output_model.py;src/core/utils.py</strong>: further type hinting.</li>
+<li><strong>src/core/output_model.py</strong>: Fixed setting of xy_stations.</li>
+<li><strong>core/utils.py</strong>: Added more type hinting.</li>
+<li><strong>core/utils.py</strong>: Adding type hints.</li>
+<li><strong>core/loop.py;core/output_model.py;core/utils.py</strong>: Extracted output model logic into its own class. Introduced new libraries.</li>
+</ul>
+<h2 id="v012-2021-11-05">v0.1.2 (2021-11-05)<a class="headerlink" href="#v012-2021-11-05" title="Permanent link">&para;</a></h2>
+<h2 id="v011-2021-11-05">v0.1.1 (2021-11-05)<a class="headerlink" href="#v011-2021-11-05" title="Permanent link">&para;</a></h2>
+<h3 id="fix_7">Fix<a class="headerlink" href="#fix_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>.github/workflows/ci.yml</strong>: improve code coverage (#44)</li>
+</ul>
+<h2 id="v010-2021-11-04">v0.1.0 (2021-11-04)<a class="headerlink" href="#v010-2021-11-04" title="Permanent link">&para;</a></h2>
+<h3 id="fix_8">Fix<a class="headerlink" href="#fix_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix merged conflict</li>
+</ul>
+<h3 id="feat_9">Feat<a class="headerlink" href="#feat_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pull-request 31 normalize versioning (#42)</li>
+</ul>
+<h2 id="v004-2021-11-04">v0.0.4 (2021-11-04)<a class="headerlink" href="#v004-2021-11-04" title="Permanent link">&para;</a></h2>
+<h3 id="fix_9">Fix<a class="headerlink" href="#fix_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>pyproject.toml</strong>: Corrected version file for core directory.</li>
+<li><strong>pyproject.toml</strong>: Changed bump pattern and map to include refactor and docs.</li>
+</ul>
+<h2 id="v003-2021-11-04">v0.0.3 (2021-11-04)<a class="headerlink" href="#v003-2021-11-04" title="Permanent link">&para;</a></h2>
+<h3 id="refactor_6">Refactor<a class="headerlink" href="#refactor_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>hydrodynamics.py</strong>: Refactor the update method to use update_ (#30)</li>
+</ul>
+<h2 id="v002-2021-10-29">v0.0.2 (2021-10-29)<a class="headerlink" href="#v002-2021-10-29" title="Permanent link">&para;</a></h2>
+<h3 id="fix_10">Fix<a class="headerlink" href="#fix_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>environment.py-utils.py</strong>: Fixed bugs described in sonarcloud (#26)</li>
+<li><strong>Removed-unused-reference.</strong>: removed unused reference</li>
+</ul>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: NBSDynamics documentation" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              NBSDynamics documentation
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../guides/contribute/" class="md-footer__link md-footer__link--next" aria-label="Next: How to contribute to NBSDynamics" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              How to contribute to NBSDynamics
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2021 Deltares
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    <a href="https://github.com/Deltares/NBSDynamics" target="_blank" rel="noopener" title="Source code" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f758a944.min.js"></script>
+      
+    
+  </body>
+</html>
