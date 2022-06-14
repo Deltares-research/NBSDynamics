@@ -1,3 +1,13 @@
+## v0.9.2 (2022-06-14)
+
+
+- docs: Manually updated documentation, restored commitizen configuration
+
+## v0.9.1 (2022-06-14)
+### Fix
+
+- **docs/reference**: removed previous references (#84)
+
 ## v0.9.0 (2022-04-20)
 
 ### Feat

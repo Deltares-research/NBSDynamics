@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "NBSDynamics"
-version = "0.9.0"
+version = "0.9.2"
 description = "A biophysical model framework written in Python to make simulations on coral development based on four environmental factors: (1) light; (2) flow; (3) temperature; and (4) acidity. For the hydrodynamics, the model can be coupled to Delft3D Flexible Mesh; a hydrodynamic model developed at Deltares."
 authors = ["Jasper Dijkstra <jasper.dijkstra@deltares.nl>"]
 maintainers = ["Carles S. Soriano Perez <carles.sorianoperez@deltares.nl>"]
@@ -27,30 +27,31 @@ matplotlib = "^3.5.2"
 pytest = "^6.2"
 black = { version = "*", allow-prereleases = true }
 mkdocs = "^1.1"
-mkdocs-material = "^7.1"
-mkdocstrings = "^0.15"
-mkdocs-autorefs = "^0.1"
+mkdocs-material = "^8.3.4"
+mkdocstrings = "^0.19"
+mkdocs-autorefs = "^0.4.1"
 pytest-cov = "^2.11"
-pymdown-extensions = "^8.1"
+pymdown-extensions = "^9.5"
 flake8 = "^3.9.2"
 mypy = "^0.910"
 devtools = "^0.6.1"
-commitizen = "^2.20.0"
 pre-commit = "^2.15.0"
 click = "^8.1.3"
 isort = "^5.10.1"
+mkdocstrings-python = "^0.7.1"
+commitizen = "^2.27.1"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
 changelog_file = "docs/changelog.md"
-update_changelog_on_bump = true
-version = "0.9.0"
+version = "0.9.2"
 tag_format = "v$major.$minor.$patch"
 version_files = [
     "src/__init__.py",
     "src/core/__init__.py",
     "pyproject.toml:version"
 ]
+update_changelog_on_bump = true
 
 [tool.commitizen.customize]
 bump_pattern = "^(break|new|fix|hotfix|refactor|docs)"
