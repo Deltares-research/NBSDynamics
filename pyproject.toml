@@ -19,9 +19,9 @@ bmi-python = "^0.3.0"
 pydantic = "^1.8.2"
 pypiwin32 = {version = "^223", platform = "win32"}
 pywin32 = {version = "^302", platform = "'win32'"}
-matplotlib = "^3.5.2"
 h5py = "^3.7.0"
-netCDF4 = "^1.5.8"
+netCDF4 = "1.5.7"
+matplotlib = "^3.5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

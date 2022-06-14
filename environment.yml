@@ -1,9 +1,13 @@
 name: nbsdynamics_env
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - python=3.8
+  - h5py 
   - pip
+  - conda-forge::netcdf4=1.4.2
+  - conda-forge::matplotlib=2.2.5
   - pip:
     - pytest==5.0.1
     - pytest-cov
