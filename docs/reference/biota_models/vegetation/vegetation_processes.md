@@ -8,6 +8,3 @@
 
 ### Mortality and growth
 ::: src.biota_models.vegetation.bio_process.veg_mortality
-
-
-
