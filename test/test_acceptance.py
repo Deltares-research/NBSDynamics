@@ -60,7 +60,7 @@ class TestAcceptance:
     @only_local
     def test_given_mangrove_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("new_test")
+        test_dir = TestUtils.get_local_test_data_dir("sm_testcase_mud")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -75,7 +75,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "FlowFM.mdu",
+                definition_file=test_case / "test_case2.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -89,7 +89,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(2)
+        sim_run.run(7)
         sim_run.finalise()
 
     @only_local

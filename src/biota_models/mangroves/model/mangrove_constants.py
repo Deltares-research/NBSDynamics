@@ -58,5 +58,7 @@ class MangroveConstants(BaseConstants):
 
     # root information
     m: float = 1000 # maximum number of roots per tree
+    root_dia: float = 1 # [cm]
+    root_height: float = 0.15 #[m]
 
 

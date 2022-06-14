@@ -297,7 +297,7 @@ class _MangroveSimulation(BaseSimulation, ABC):
                         pd.DataFrame(period_days),
                     )
 
-                    # store hydrdynamics
+                    # store hydrodynamics
                     hydro_mor.store_hydromorph_values(self.biota)
 
     def finalise(self):

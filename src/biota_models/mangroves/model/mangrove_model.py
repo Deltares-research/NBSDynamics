@@ -83,19 +83,19 @@ class Mangrove(Biota):
     @property
     def veg_den(self):  # as input for DFM
         """stem density in number of stems per m2, according to area fraction of veg age"""
-        return self.stem_num/ self.ba ## stem number divided by grid cell size [N/m2]
+        return (self.stem_num + self.root_num) / self.ba[:, None] ## stem number divided by grid cell size [N/m2]
 
     @property
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of mangroves in one grid cell"""
 
-        return np.mean(self.stem_dia, axis=1)
+        return np.sum(self.stem_num * self.stem_dia, axis=1)/ np.sum(self.stem_dia, axis=1) + np.sum(self.root_num * self.constants.root_dia, axis=1)/np.sum(self.root_num, axis=1)
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of mangroves in one grid cell"""
 
-        return np.mean(self.height, axis=1)
+        return np.sum(self.stem_num * self.height, axis=1)/ np.sum(self.stem_dia, axis=1) + np.sum(self.root_num * self.constants.root_height, axis=1)/np.sum(self.root_num, axis=1)
 
     @property
     def bio_total_cell(self):
@@ -118,7 +118,7 @@ class Mangrove(Biota):
             self.stem_num = np.zeros(self.stem_dia.shape)
             self.height = np.zeros(self.stem_dia.shape)
             self.root_num = np.zeros(self.stem_dia.shape)
-            self.ba =  np.zeros(self.stem_dia.shape)
+            self.ba = np.zeros(self.stem_dia.shape)
         else:
             input_cover: dict = nc.Dataset(cover, "r")
             self.stem_dia = ma.MaskedArray.filled(
@@ -138,18 +138,20 @@ class Mangrove(Biota):
             )
 
 
-    def update_mangrove_characteristics(self, stem_dia: [Optional] = None):
-        if not stem_dia:
+    def update_mangrove_characteristics(self, col: [Optional] = None,  stem_dia: [Optional] = None):
+        if not col:
             self.stem_dia[self.stem_num == 0] = 0 #account for dieback
-            self.stem_dia = self.stem_dia + (self.constants.G*self.stem_dia*(1-self.stem_dia*(self.height*100)/(self.constants.MaxD*self.constants.MaxH))*(self.I[:, -1]*self.C[:, -1])/(274+3*self.constants.b2*self.stem_dia-4*self.constants.b3*self.stem_dia**2)*12)
-            self.height[self.stem_num == 0] = 0
+            self.stem_dia = self.stem_dia + ((self.constants.G*self.stem_dia*(1-self.stem_dia*(self.height*100)/(self.constants.MaxD*self.constants.MaxH))*(self.I[:, -1]*self.C[:]).reshape(-1, 1))/(274+3*self.constants.b2*self.stem_dia-4*self.constants.b3*self.stem_dia**2)*12)
+
             self.height = (137+self.constants.b2*self.stem_dia-self.constants.b3*self.stem_dia**2)/100
-            self.root_num[self.stem_num == 0] = 0
+            self.height[self.stem_num == 0] = 0
+
             self.root_num = self.constants.m*(1/(1+ np.exp(self.constants.f*(self.constants.MaxD/2 - self.stem_dia))))
+            self.root_num[self.stem_num == 0] = 0
         else:
-            self.height[0, :] = (137 + self.constants.b2 * stem_dia[0, :] - self.constants.b3 * stem_dia[0, :] ** 2) / 100
-            self.root_num[0, :] = self.constants.m * (
-                        1 / (1 + np.exp(self.constants.f * (self.constants.MaxD / 2 - stem_dia[0, :]))))
+            self.height[:, 0][stem_dia[:, 0]>0] = (137 + self.constants.b2 * stem_dia[:, 0][stem_dia[:, 0]>0] - self.constants.b3 * stem_dia[:, 0][stem_dia[:, 0]>0] ** 2) / 100
+            self.root_num[:, 0][stem_dia[:, 0]>0] = self.constants.m * (
+                        1 / (1 + np.exp(self.constants.f * (self.constants.MaxD / 2 - stem_dia[:, 0][stem_dia[:, 0]>0]))))
 
 
 

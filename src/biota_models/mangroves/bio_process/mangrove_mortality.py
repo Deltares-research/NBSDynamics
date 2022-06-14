@@ -19,7 +19,7 @@ class Mangrove_Mortality(ExtraModel):
     def update(self, mangrove: Mangrove, ets):
         mort_mark = Mangrove_Mortality.determine_stress(self, mangrove)
 
-        if ets == (self.constants.t_eco_year - 1):
+        if ets == (mangrove.constants.t_eco_year - 1):
             mangrove.mort = mangrove.mort + mort_mark # cells with suppressed growth
 
 
@@ -77,13 +77,15 @@ class Mangrove_Mortality(ExtraModel):
 
 
     def inundation_stress(self, mangrove: Mangrove):
-        P = mangrove.inun_rel#relative hydroperiod
-        I_current = mangrove.constants.a * P + mangrove.constants.b * P**2 + mangrove.constants.c
-        if not mangrove.I:
-            mangrove.I = I_current
+        P = mangrove.inun_rel #relative hydroperiod
+        I_current = mangrove.constants.a * P**2 + mangrove.constants.b * P + mangrove.constants.c
+        I_current[I_current<0] = 0
+        if mangrove.stem_num.shape[1] == 1:
+            mangrove.I = I_current.reshape(-1, 1)
         else:
             mangrove.I = np.column_stack((mangrove.I, I_current))
 
     def competition_stress(self, mangrove: Mangrove):
 
         mangrove.C = 1/(1+ np.exp(mangrove.constants.d*(mangrove.B_05 - mangrove.bio_total_cell)))
+

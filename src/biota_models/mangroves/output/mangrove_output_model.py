@@ -321,19 +321,19 @@ class MangroveHisOutput(_MangroveOutput):
 
             def update_mangrove_characteristics():
                 _his_data["stem_num"][:, ti] = np.tile(
-                    np.mean(mangrove.stem_num, axis=1), (1, len(y_dates))
+                    np.mean(mangrove.stem_num, axis=1).reshape(-1, 1), (1, len(y_dates))
                 )[self.idx_stations, :]
                 _his_data["height"][:, ti] = np.tile(
-                    np.mean(mangrove.height, axis=1), (1, len(y_dates))
+                    np.mean(mangrove.height, axis=1).reshape(-1, 1), (1, len(y_dates))
                 )[self.idx_stations, :]
                 _his_data["stem_dia"][:, ti] = np.tile(
-                    np.mean(mangrove.stem_dia, axis=1), (1, len(y_dates))
+                    np.mean(mangrove.stem_dia, axis=1).reshape(-1, 1), (1, len(y_dates))
                 )[self.idx_stations, :]
                 _his_data["root_num"][:, ti] = np.tile(
-                    np.mean(mangrove.root_num, axis=1), (1, len(y_dates))
+                    np.mean(mangrove.root_num, axis=1).reshape(-1, 1), (1, len(y_dates))
                 )[self.idx_stations, :]
                 _his_data["tot_biomass"][:, ti] = np.tile(
-                    np.mean(mangrove.bio_total_cell, axis=1), (1, len(y_dates))
+                    mangrove.bio_total_cell.reshape(-1, 1), (1, len(y_dates))
                 )[self.idx_stations, :]
 
             conditions_funct = dict(
