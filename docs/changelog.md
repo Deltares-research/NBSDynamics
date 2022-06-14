@@ -1,3 +1,8 @@
+## v0.9.2 (2022-06-14)
+
+
+- docs: Manually updated documentation, restored commitizen configuration
+
 ## v0.9.1 (2022-06-14)
 ### Fix
 
