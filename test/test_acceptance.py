@@ -60,7 +60,7 @@ class TestAcceptance:
     @only_local
     def test_given_mangrove_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
+        test_dir = TestUtils.get_local_test_data_dir("new_test")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -75,7 +75,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_ref.mdu",
+                definition_file=test_case / "FlowFM.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -144,7 +144,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs_2species(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_SSC0.02_2boundaries_refinedGrid_2species")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -152,7 +152,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species1 = "Salicornia"
+        species1 = "Elytrigia"
         species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)

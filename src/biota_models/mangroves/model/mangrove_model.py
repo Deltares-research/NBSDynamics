@@ -89,13 +89,13 @@ class Mangrove(Biota):
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of mangroves in one grid cell"""
 
-        return np.sum(self.stem_num * self.stem_dia, axis=1)/ np.sum(self.stem_dia, axis=1) + np.sum(self.root_num * self.constants.root_dia, axis=1)/np.sum(self.root_num, axis=1)
+        return np.sum(self.stem_num * self.stem_dia, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_dia, axis=1)/np.sum(self.root_num, axis=1)
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of mangroves in one grid cell"""
 
-        return np.sum(self.stem_num * self.height, axis=1)/ np.sum(self.stem_dia, axis=1) + np.sum(self.root_num * self.constants.root_height, axis=1)/np.sum(self.root_num, axis=1)
+        return np.sum(self.stem_num * self.height, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_height, axis=1)/np.sum(self.root_num, axis=1)
 
     @property
     def bio_total_cell(self):

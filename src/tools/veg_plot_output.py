@@ -79,7 +79,7 @@ def plot_veg_height(x,y,veg_height):
 
 def plot_cover_bath(x,y,bl,veg_cover):
     # PLOT vegetation cover over bed level
-    fig = plt.tricontourf(x, y, bl[-1, :] , cmap = "terrain", levels=np.linspace(-1,4,80))
+    fig = plt.tricontourf(x, y, bl[-1, :] , cmap = "terrain", levels=np.linspace(0,4,80))
     cbar = plt.colorbar(fig, label="Bed level [m]")
     # plt.title("Vegetation cover (Spartina) and Bed Level [m]")
     plt.xlabel("Grid cell x-direction")
@@ -177,7 +177,7 @@ def make_gif():
 
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Elytrigia_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Spartina_map.nc",
     "r",
 )
 bl, max_u, veg_den, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m = get_variables_mapfile(mapfile)

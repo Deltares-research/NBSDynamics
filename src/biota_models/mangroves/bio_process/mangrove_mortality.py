@@ -12,9 +12,6 @@ from src.core.base_model import ExtraModel
 class Mangrove_Mortality(ExtraModel):
     """Mortality"""
 
-    I: Optional[np.ndarray] = None
-    C: Optional[np.ndarray] = None
-
 
     def update(self, mangrove: Mangrove, ets):
         mort_mark = Mangrove_Mortality.determine_stress(self, mangrove)
@@ -33,29 +30,31 @@ class Mangrove_Mortality(ExtraModel):
 
                 mort_temp = np.zeros(mangrove.stem_num.shape)
                 mort_temp[mangrove.mort == 5] = 1 #set to one, where mortality status is 5
-                mangrove.stem_num[mangrove.mort == 5 and self.I[:, -1] <= 0.5] = 0
+                mort_temp[np.tile(mangrove.I[:, -1].reshape(-1, 1), (mort_temp.shape[1])) <= 0.5] = mort_temp[np.tile(mangrove.I[:, -1].reshape(-1, 1), (mort_temp.shape[1])) <= 0.5] + 0.5
+                mangrove.stem_num[mort_temp == 1.5] = 0
                 mort_temp[mangrove.stem_num == 0] = 0 #set back to zeros is no vegetation present in cell
-                mangrove.mort[mort_temp == 0] = 0
+                mort_temp[mort_temp == 0.5] == 0
+                mangrove.mort[np.sum(mort_temp, axis=1) == 0] = 0
 
                  # Step 2: Kill the mangroves cell by cell
 
                 k = np.where(np.sum(mort_temp, axis=1) > 1)
-                in_s = np.zeros(mangrove.stem_num.shape)
-                in_s[k] = np.mean(self.I, axis=1) # inundation stress
+                in_s = np.zeros(len(mangrove.stem_num))
+                in_s[k] = np.mean(mangrove.I, axis=1)[k] # inundation stress
                 in_s_inverse = 1/in_s
-                remove = np.zeros(mangrove.stem_num.shape)
-                remove = round(mangrove.constants.Mort_plant/(in_s*sum(in_s_inverse)))
-                remove[remove > mangrove.stem_num] = mangrove.stem_num
+
+                remove = np.tile(np.round_(mangrove.constants.Mort_plant/(in_s*sum(in_s_inverse))).reshape(-1, 1),  (mangrove.stem_num.shape[1]) )
+                remove[np.isnan(remove) == True] = 0
+                remove[remove > mangrove.stem_num] = mangrove.stem_num[remove > mangrove.stem_num]
                 mangrove.stem_num = mangrove.stem_num - remove
-                self.bio_total_cell = Mangrove_Mortality.competition_stress(mangrove) # recalculate total biomass
-                mangrove.mort[(self.C*np.mean(self.I, axis=1))>0.5] = 4
+                self.bio_total_cell = Mangrove_Mortality.competition_stress(self, mangrove) # recalculate total biomass
+                mangrove.mort[(mangrove.C*np.mean(mangrove.I, axis=1))>0.5] = 4
 
                 k2 = np.where(np.sum(mort_temp, axis=1) == 1)
                 mangrove.stem_num[k2] = mangrove.stem_num[k2] - mangrove.constants.Mort_plant
-                Mangrove_Mortality.competition_stress(mangrove)  # recalculate total biomass
-                mangrove.mort[(self.C * np.mean(self.I, axis=1)) > 0.5] = 4
-                mangrove.C = self.C
-                mangrove.I = self.I
+                Mangrove_Mortality.competition_stress(self, mangrove)  # recalculate total biomass
+                mangrove.mort[(mangrove.C * np.mean(mangrove.I, axis=1)) > 0.5] = 4
+
 
 
 
