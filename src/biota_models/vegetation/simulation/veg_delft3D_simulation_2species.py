@@ -3,14 +3,14 @@ from abc import ABC
 import pandas as pd
 
 from src.biota_models.vegetation.output.veg_output_wrapper import VegOutputWrapper
-from src.biota_models.vegetation.simulation.veg_simulation_2species import (
+from src.biota_models.vegetation.simulation.veg_simulation_MultipleSpecies import (
     VegetationBiotaWrapper,
-    _VegetationSimulation_2species,
+    _VegetationSimulation_MultipleSpecies,
 )
 from src.core.hydrodynamics.delft3d import Delft3D
 
 
-class _VegDelft3DSimulation(_VegetationSimulation_2species, ABC):
+class _VegDelft3DSimulation(_VegetationSimulation_MultipleSpecies, ABC):
     """
     Implements the `MultipleBiotaSimulationProtocol`
     Vegetation Delft3D Simulation. Contains the specific logic and parameters required for the case.

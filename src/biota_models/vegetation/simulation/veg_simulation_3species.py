@@ -246,6 +246,7 @@ class _VegetationSimulation_3species(MultipleBiotaBaseSimulation, ABC):
                             cur_vel,
                             cur_wl,
                             bed_level,
+                            ba
                         ) = self.hydrodynamics.update_hydromorphodynamics(
                             veg_species1=first_biota,
                             time_step=time_step,

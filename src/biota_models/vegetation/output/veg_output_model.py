@@ -119,10 +119,16 @@ class VegetationMapOutput(_VegetationOutput):
                 min_wl.long_name = "minimum water level"
                 min_wl.units = "m"
                 min_wl[:, :] = 0
+
                 bl = _map_data.createVariable("bl", "f8", ("time", "nmesh2d_face"))
                 bl.long_name = "bedlevel"
                 bl.units = "m"
                 bl[:, :] = 0
+
+                inund = _map_data.createVariable("inund", "f8", ("time", "nmesh2d_face"))
+                inund.long_name = "Daily inundation fraction"
+                inund.units = "-"
+                inund[:, :] = 0
 
             def init_veg_characteristics():
                 cover = _map_data.createVariable(
@@ -281,6 +287,7 @@ class VegetationMapOutput(_VegetationOutput):
                 _map_data["max_wl"][-1, :] = veg.max_wl
                 _map_data["min_wl"][-1, :] = veg.min_wl
                 _map_data["bl"][-1, :] = veg.bl
+                _map_data["inund"][-1, :] = veg.inund
 
             def update_veg_characteristics():
                 _map_data["cover"][-1, :] = veg.total_cover.transpose()

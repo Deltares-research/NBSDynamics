@@ -75,7 +75,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "FlowFM.mdu",
+                definition_file=test_case / "bdv9.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -95,7 +95,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger_ref")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -103,7 +103,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species = "Elytrigia"
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
         sim_run = VegFlowFmSimulation(
             working_dir=test_dir,
@@ -112,7 +112,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_ref.mdu",
+                definition_file=test_case / "Zuidgors_bigger_ref.mdu",
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -154,8 +154,12 @@ class TestAcceptance:
         test_case = test_dir / "input"
         species1 = "Elytrigia"
         species2 = "Spartina"
+        species3 = "Puccinellia"
+        species4 = "Salicornia"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
+        veg_constants3 = VegetationConstants(species=species3)
+        veg_constants4 = VegetationConstants(species=species4)
 
         sim_run = VegFlowFmSimulation_2species(
             working_dir=test_dir,
@@ -186,10 +190,33 @@ class TestAcceptance:
                         his_output=dict(
                             output_params=dict(),
                         ),
+                        species=species2,
+                    ),
+                ),
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species3, constants=veg_constants3),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                        species=species3,
+                    ),
+                ),
+                VegetationBiotaWrapper(
+                    biota=Vegetation(species=species4, constants=veg_constants4),
+                    output=dict(
+                        output_dir=test_dir / "output",
+                        map_output=dict(output_params=dict()),
+                        his_output=dict(
+                            output_params=dict(),
+                        ),
+                        species=species4,
                     ),
                 ),
             ],
-            #morfac=100 #Optional input
+
         )
 
         # Run simulation.
@@ -209,7 +236,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species1 = "Salicornia"
+        species1 = "Elytrigia"
         species2 = "Spartina"
         species3 = "Puccinellia"
         veg_constants1 = VegetationConstants(species=species1)

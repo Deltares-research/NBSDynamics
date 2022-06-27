@@ -7,6 +7,8 @@ from pydantic import root_validator
 
 from src.core.common.base_constants import BaseConstants
 
+## TODO make it possible to load those values from an input file
+
 class MangroveConstants(BaseConstants):
     """Object containing all constants used in marsh_model simulations."""
 

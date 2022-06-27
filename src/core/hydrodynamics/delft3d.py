@@ -14,6 +14,7 @@ from src.biota_models.coral.model.coral_model import Coral
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.mangroves.model.mangrove_model import Mangrove
 from src.core.base_model import ExtraModel
+# from src.biota_models.vegetation.simulation.veg_simulation_2species import VegetationBiotaWrapper
 
 faulthandler.enable()
 
@@ -119,7 +120,7 @@ class Delft3D(ExtraModel, abc.ABC):
         )  # [m] 2D plant heights (m)
 
     def set_vegetation(
-        self, veg_species1: Vegetation, veg_species2: Optional[Vegetation], veg_species3: Optional[Vegetation]
+        self, vegetation: [Optional] = None, veg_list: [Optional] = None
     ):
         """Set vegetation dimensions to Delft3D-model.
 
@@ -129,36 +130,56 @@ class Delft3D(ExtraModel, abc.ABC):
         :type veg_species2: Vegetation
         """
 
-        if not veg_species2 and not veg_species3:
+        if not veg_list:
             self.set_variable(
-                "rnveg", veg_species1.veg_den
+                "rnveg", vegetation.veg_den
             )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
             self.set_variable(
-                "diaveg", veg_species1.av_stemdia
+                "diaveg", vegetation.av_stemdia
             )  # [m] 3D plant diameter, 2D part is basis input (m)
             self.set_variable(
-                "stemheight", veg_species1.av_height
+                "stemheight", vegetation.av_height
             )  # [m] 2D plant heights (m)
-        elif not veg_species3:  ## TODO TEST THIS!
-            self.set_variable(
-                "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
-            )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
-            self.set_variable(
-                "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia)
-            )  # [m] 3D plant diameter, 2D part is basis input (m)
-            self.set_variable(
-                "stemheight", (veg_species1.av_height + veg_species2.av_height)
-            )  # [m] 2D plant heights (m)
+
         else:
+            veg_den = np.zeros(veg_list[0].biota.veg_den.shape)
+            av_stemdia = np.zeros(veg_list[0].biota.av_stemdia.shape)
+            av_height = np.zeros(veg_list[0].biota.av_height.shape)
+            for i in range(0, len(veg_list)):
+                veg_den +=  veg_list[i].biota.veg_den
+                av_stemdia += veg_list[i].biota.av_stemdia
+                av_height += veg_list[i].biota.av_height
+
             self.set_variable(
-                "rnveg", (veg_species1.veg_den + veg_species2.veg_den + veg_species3.veg_den)
+                "rnveg", (veg_den)
             )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
             self.set_variable(
-                "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia + veg_species3.av_stemdia)
+                "diaveg", (av_stemdia)
             )  # [m] 3D plant diameter, 2D part is basis input (m)
             self.set_variable(
-                "stemheight", (veg_species1.av_height + veg_species2.av_height + veg_species3.av_height)
+                "stemheight", (av_height)
             )  # [m] 2D plant heights (m)
+
+        # elif not veg_species3:  ## TODO TEST THIS!
+        #     self.set_variable(
+        #         "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
+        #     )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+        #     self.set_variable(
+        #         "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia)
+        #     )  # [m] 3D plant diameter, 2D part is basis input (m)
+        #     self.set_variable(
+        #         "stemheight", (veg_species1.av_height + veg_species2.av_height)
+        #     )  # [m] 2D plant heights (m)
+        # else:
+        #     self.set_variable(
+        #         "rnveg", (veg_species1.veg_den + veg_species2.veg_den + veg_species3.veg_den)
+        #     )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
+        #     self.set_variable(
+        #         "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia + veg_species3.av_stemdia)
+        #     )  # [m] 3D plant diameter, 2D part is basis input (m)
+        #     self.set_variable(
+        #         "stemheight", (veg_species1.av_height + veg_species2.av_height + veg_species3.av_height)
+        #     )  # [m] 2D plant heights (m)
 
 
     def get_mean_hydrodynamics(self):
@@ -294,11 +315,8 @@ class Delft3D(ExtraModel, abc.ABC):
         )
 
     def update_hydromorphodynamics(
-        self,
-        veg_species1: Vegetation,
-        time_step: int,
-        veg_species2: Optional[Vegetation] = None,
-        veg_species3: Optional[Vegetation] = None,
+        self, time_step: int, vegetation: [Optional] = None,
+        veg_list: [Optional] = None
     ):
         """Update the Delft3D-model.
 
@@ -312,7 +330,10 @@ class Delft3D(ExtraModel, abc.ABC):
         """
         self.time_step = time_step
         self.reset_counters()
-        self.set_vegetation(veg_species1, veg_species2, veg_species3)
+        if not vegetation:
+            self.set_vegetation(veg_list = veg_list)
+        else:
+            self.set_vegetation(vegetation = vegetation)
         # if not veg_species2:
         #     self.set_vegetation(veg_species1)
         # else:

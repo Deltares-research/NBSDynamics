@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.ticker as ticker
 from matplotlib.animation import FuncAnimation
 import matplotlib.animation as ani
-
+from datetime import datetime
 
 def get_variables_hisfile(hisfile):
     diaveg = hisfile.variables['diaveg'][:]
@@ -31,6 +31,7 @@ def get_variables_hisfile(hisfile):
     return diaveg, time, veg_frac, veg_den, veg_height, cover
 
 def plot_VegHeight_time(time, veg_height, cell):
+    fig = plt.figure(figsize=(12, 8))
     plt.plot(time, veg_height.iloc[cell, :])
     plt.title("Vegetation height and Cover")
     plt.xlabel("time [years]")
@@ -38,6 +39,7 @@ def plot_VegHeight_time(time, veg_height, cell):
     plt.show()
 
 def plot_cover_time(time, cover, cell):
+    fig = plt.figure(figsize=(12, 8))
     plt.plot(time, cover.iloc[cell, :])
     plt.show()
 
@@ -46,6 +48,7 @@ def get_variables_mapfile(mapfile):
     bl = ma.MaskedArray.filled((mapfile.variables["bl"][:, :]), 0.0) # Bed level
     max_u =  ma.MaskedArray.filled((mapfile.variables["max_u"][:, :]), 0.0)
     veg_den = ma.MaskedArray.filled((mapfile.variables["rnveg"][:, :]), 0.0) # average stem diameter each cell
+    veg_dia = ma.MaskedArray.filled((mapfile.variables["diaveg"][:, :]), 0.0)  # average stem diameter each cell
     veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0) # Vegetation Cover Fraction
     time = ma.MaskedArray.filled((mapfile.variables["time"][:]), 0.0) # Time
     veg_height = ma.MaskedArray.filled((mapfile.variables["height"][:, :]), 0.0) # average vegetation height
@@ -59,9 +62,10 @@ def get_variables_mapfile(mapfile):
     dia_m = ma.MaskedArray.filled((mapfile.variables["veg_stemdia_m"][:, :, :]), 0.0)
     age_j = ma.MaskedArray.filled((mapfile.variables["veg_age_j"][:, :, :]), 0.0)
     age_m = ma.MaskedArray.filled((mapfile.variables["veg_age_m"][:, :, :]), 0.0)
-    return bl, max_u, veg_den, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m
+    return bl, max_u, veg_den,veg_dia, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m
 
 def plot_veg_den(x,y,veg_den):
+    fig = plt.figure(figsize=(12, 8))
     fig = plt.tricontourf(x, y, veg_den[-1, :])
     cbar = plt.colorbar(fig, label="Density [stem/m2]")
     plt.title("Vegetation Density")
@@ -70,6 +74,7 @@ def plot_veg_den(x,y,veg_den):
     plt.show()
 
 def plot_veg_height(x,y,veg_height):
+    fig = plt.figure(figsize=(12, 8))
     fig = plt.scatter(x,y, c=veg_height[-1, :])
     plt.title("Average Vegetation Height")
     plt.xlabel("Grid cell x-direction")
@@ -79,44 +84,47 @@ def plot_veg_height(x,y,veg_height):
 
 def plot_cover_bath(x,y,bl,veg_cover):
     # PLOT vegetation cover over bed level
+    fig = plt.figure(figsize=(12, 8))
     fig = plt.tricontourf(x, y, bl[-1, :] , cmap = "terrain", levels=np.linspace(0,4,80))
     cbar = plt.colorbar(fig, label="Bed level [m]")
     # plt.title("Vegetation cover (Spartina) and Bed Level [m]")
     plt.xlabel("Grid cell x-direction")
     plt.ylabel("Grid cell y-direction")
 
-
-    veg_cover[veg_cover==0] = np.nan
-    FIG2  = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Greens', edgecolors='k', lw = 0.2)
-    cbar = plt.colorbar(FIG2,label="Fraction cover Elytrigia [-]")
-    plt.title("Vegetation cover (Elytrigia) and Bed Level [m]")
+    veg_cove = veg_cover.copy()
+    veg_cove[veg_cover==0] = np.nan
+    FIG2  = plt.scatter(x, y, c=veg_cove[-1, :], cmap='Greens', edgecolors='k', lw = 0.2)
+    cbar = plt.colorbar(FIG2,label="Fraction cover Spartina [-]")
+    plt.title("Vegetation cover (Spartina) and Bed Level [m]")
     plt.xlabel("Grid cell x-direction")
     plt.ylabel("Grid cell y-direction")
     plt.show()
 
-    # mapfile = nc.Dataset(
-    #     r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Salicornia_map.nc",
+    # mapfile2 = nc.Dataset(
+    #     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Elytrigia_map.nc",
     #     "r",
     # )
-    # veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
-    # veg_cover[veg_cover == 0] = np.nan
-    # FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Blues', edgecolors='k', lw=0.2)
-    # cbar = plt.colorbar(FIG2, label="Fraction cover Salicornia [-]")
-    # plt.title("Vegetation cover (Salicornia) and Bed Level")
+    # veg_cover2 = ma.MaskedArray.filled((mapfile2.variables["cover"][:, :]), 0.0)
+    # veg_cove2 = veg_cover2.copy()
+    # veg_cove2[veg_cover2 == 0] = np.nan
+    # FIG2 = plt.scatter(x, y, c=veg_cove2[-1, :], cmap='Blues', edgecolors='k', lw=0.2)
+    # cbar = plt.colorbar(FIG2, label="Fraction cover Elytrigia [-]")
+    # plt.title("Vegetation cover (Elytrigia) and Bed Level")
     # plt.xlabel("Grid cell x-direction")
     # plt.ylabel("Grid cell y-direction")
     # plt.show()
 
-    #
-    # mapfile = nc.Dataset(
-    #     r"C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Spartina_map.nc",
+    # #
+    # mapfile3 = nc.Dataset(
+    #     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Elytrigia_map.nc",
     #     "r",
     # )
-    # veg_cover = ma.MaskedArray.filled((mapfile.variables["cover"][:, :]), 0.0)
-    # veg_cover[veg_cover == 0] = np.nan
-    # FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Reds', edgecolors='k', lw=0.2)
-    # cbar = plt.colorbar(FIG2, label="Fraction cover Spartina [-]")
-    # plt.title("Vegetation cover (Spartina) and Bed Level")
+    # veg_cover3 = ma.MaskedArray.filled((mapfile3.variables["cover"][:, :]), 0.0)
+    # veg_cove3 = veg_cover3.copy()
+    # veg_cove3[veg_cover3 == 0] = np.nan
+    # FIG2 = plt.scatter(x, y, c=veg_cove3[-1, :], cmap='Reds', edgecolors='k', lw=0.2)
+    # cbar = plt.colorbar(FIG2, label="Fraction cover Elytrigia [-]")
+    # plt.title("Vegetation cover (Elytrigia) and Bed Level")
     # plt.xlabel("Grid cell x-direction")
     # plt.ylabel("Grid cell y-direction")
     # plt.show()
@@ -124,6 +132,7 @@ def plot_cover_bath(x,y,bl,veg_cover):
 def plot_bl_diff(x,y,bl, veg_cover):
 # # BED LEVEL DIFFERENCE (sedimentation/ erosion)
     bl_diff = bl[-1, :] - bl[0, :]
+    fig = plt.figure(figsize=(12, 8))
     fig2 = plt.tricontourf(x, y, bl_diff , cmap = "terrain", levels=np.linspace(-1, 1, 80))
     cbar2 = plt.colorbar(fig2, label="Bed level difference [m]")
     plt.title("Bed Level Difference [m]")
@@ -131,9 +140,9 @@ def plot_bl_diff(x,y,bl, veg_cover):
     plt.ylabel("Grid cell y-direction")
     plt.show()
 
-
-    veg_cover[veg_cover == 0] = np.nan
-    FIG2 = plt.scatter(x, y, c=veg_cover[-1, :], cmap='Greens', edgecolors='k', lw = 0.2)
+    veg_cove = np.zeros(veg_cover.shape)
+    veg_cove[veg_cover == 0] = np.nan
+    FIG2 = plt.scatter(x, y, c=veg_cove[-1, :], cmap='Greens', edgecolors='k', lw = 0.2)
     cbar = plt.colorbar(FIG2, label="Fraction cover [-]")
     plt.title("Vegetation cover (Spartina) and Bed Level Difference [m]")
     plt.xlabel("Grid cell x-direction")
@@ -142,6 +151,7 @@ def plot_bl_diff(x,y,bl, veg_cover):
 
 
 def plot_max_vel(x, y, max_u):
+    fig = plt.figure(figsize=(12, 8))
     fig2 = plt.tricontourf(x, y, max_u[-1, :] , cmap = "viridis")
     cbar2 = plt.colorbar(fig2, label="Velocity [m/s]")
     plt.title("Max Flow Velocity")
@@ -175,27 +185,69 @@ def make_gif():
         r'C:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_new\figures\animation_vel.gif',
         writer='PillowWriter', fps=2)
 
+def plot_cover_time(time, veg_cover, veg_dia):
+
+    # fig, ax = plt.subplots()
+    sum_cover = np.sum(veg_cover*((veg_dia/2)**2)*np.pi, axis = 1)
+    time = pd.to_datetime(time, format='%Y%m%d').strftime('%d/%m/%Y')
+    fig = plt.figure(figsize=(12, 8))
+    fig = plt.plot(time, sum_cover)
+    plt.title("Total Vegetation Cover")
+    plt.xlabel("Time")
+    plt.ylabel("Cover [m^2]")
+
+    # mapfile2 = nc.Dataset(
+    #     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Elytrigia_map.nc",
+    #     "r",
+    # )
+    # veg_cover2 = ma.MaskedArray.filled((mapfile2.variables["cover"][:, :]), 0.0)
+    # veg_dia2 = ma.MaskedArray.filled((mapfile2.variables["diaveg"][:, :]), 0.0)  # average stem diameter each cell
+    #
+    # sum_cover = np.sum(veg_cover2*((veg_dia2/2)**2)*np.pi, axis=1)
+    # fig = plt.plot(time, sum_cover)
+    # plt.title("Total Vegetation Cover")
+    # plt.xlabel("Time")
+    # plt.ylabel("Cover [m^2]")
+    # plt.xticks(rotation=45)
+    # # ax.legend(["Spartina", "Puccinellia"])
+    #
+    # mapfile3 = nc.Dataset(
+    #     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\\VegModel_Puccinellia_map.nc",
+    #     "r",
+    # )
+    # veg_cover3 = ma.MaskedArray.filled((mapfile3.variables["cover"][:, :]), 0.0)
+    # veg_dia3 = ma.MaskedArray.filled((mapfile3.variables["diaveg"][:, :]), 0.0)  # average stem diameter each cell
+    #
+    # sum_cover = np.sum(veg_cover3*((veg_dia3/2)**2)*np.pi, axis=1)
+    # fig = plt.plot(time, sum_cover)
+    # plt.title("Total Vegetation Cover")
+    # plt.xlabel("Time")
+    # plt.ylabel("Cover [m^2]")
+    # plt.xticks(rotation=45)
+    # plt.legend(["Spartina", "Elytrigia", "Puccinellia"])
+
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\output\VegModel_Spartina_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_bigger_ref\output\\VegModel_Spartina_map.nc",
     "r",
 )
-bl, max_u, veg_den, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m = get_variables_mapfile(mapfile)
+bl, max_u, veg_den, veg_dia, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m = get_variables_mapfile(mapfile)
 plot_cover_bath(x,y,bl,veg_cover)
-# plot_veg_den(x, y, veg_den)
-# plot_veg_height(x, y, veg_height)
-# plot_bl_diff(x, y, bl, veg_cover)
-# plot_max_vel(x, y, max_u)
+plot_veg_den(x, y, veg_den)
+plot_veg_height(x, y, veg_height)
+plot_bl_diff(x, y, bl, veg_cover)
+plot_max_vel(x, y, max_u)
+plot_cover_time(time, veg_cover, veg_dia)
 # make_gif()
 mapfile.close
 
 
-# hisfile_Puccinellia = nc.Dataset(r'C:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\zuidgors_test\output_5yrs\VegModel_Salicornia_his.nc', 'r')
-#
-# diaveg, time, veg_frac, veg_den, veg_height, cover = get_variables_hisfile(hisfile_Puccinellia)
-# plot_cover_time(time, cover, 641)
-#
-# hisfile_Puccinellia.close
+hisfile = nc.Dataset(r'c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_bigger_ref\output\VegModel_Spartina_his.nc', 'r')
+
+diaveg, time, veg_frac, veg_den, veg_height, cover = get_variables_hisfile(hisfile)
+plot_cover_time(time, cover, 641)
+
+hisfile.close
 
 
 

@@ -262,8 +262,9 @@ class _VegetationSimulation(BaseSimulation, ABC):
                             cur_vel,
                             cur_wl,
                             bed_level,
-                        ) = self.hydrodynamics.update_hydromorphodynamics(
-                            self.biota, time_step=time_step  # 4 times every tidal cycle (M2 tide)
+                            ba
+                        ) = self.hydrodynamics.update_hydromorphodynamics( time_step=time_step,
+                           vegetation=self.biota   # 4 times every tidal cycle (M2 tide)
                         )
 
                         # # environment
@@ -306,7 +307,7 @@ class _VegetationSimulation(BaseSimulation, ABC):
                     ):
                         progress.set_postfix(inner_loop="vegetation colonization")
                         col = Colonization()
-                        col.update(self.biota)
+                        col.update(vegetation = self.biota)
 
                     # update lifestages, initial to juvenile and juvenile to mature
                     self.biota.update_lifestages()

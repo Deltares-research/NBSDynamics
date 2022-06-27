@@ -244,7 +244,7 @@ class _MangroveSimulation(BaseSimulation, ABC):
                             bed_level,
                             ba
                         ) = self.hydrodynamics.update_hydromorphodynamics_mangroves(
-                            self.biota, time_step=100  # 4 times every tidal cycle (M2 tide)
+                            self.biota, time_step=time_step  # 4 times every tidal cycle (M2 tide)
                         )
 
                         # # environment

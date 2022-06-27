@@ -58,6 +58,7 @@ class Vegetation(Biota):
     max_wl: Optional[VegAttribute] = None
     min_wl: Optional[VegAttribute] = None
     bl: Optional[VegAttribute] = None
+    inund: Optional[VegAttribute] = None
     max_tau_prev: Optional[VegAttribute] = None
     max_u_prev: Optional[VegAttribute] = None
     max_wl_prev: Optional[VegAttribute] = None

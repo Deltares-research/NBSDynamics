@@ -8,6 +8,7 @@ import pandas as pd
 from numpy import True_
 from pydantic import validator
 from tqdm import tqdm
+import numpy as np
 
 from src.biota_models.vegetation.bio_process.veg_colonisation import Colonization
 from src.biota_models.vegetation.bio_process.veg_hydro_morphodynamics import (
@@ -59,7 +60,7 @@ class VegetationBiotaWrapper(BiotaWrapper):
         raise NotImplementedError(f"Validator not available for {type(field_value)}")
 
 
-class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
+class _VegetationSimulation_MultipleSpecies(MultipleBiotaBaseSimulation, ABC):
     """
     Implements the `SimulationProtocol`.
     Facade class that can be implemented through an Adapter pattern.
@@ -201,8 +202,8 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
             int(start_date.year + duration),
         )  # takes the starting year from the start date defined in the Constants class.
 
-        first_biota: Vegetation = self.biota_wrapper_list[0].biota
-        second_biota: Vegetation = self.biota_wrapper_list[1].biota
+        # first_biota: Vegetation = self.biota_wrapper_list[0].biota
+        # second_biota: Vegetation = self.biota_wrapper_list[1].biota
 
         with tqdm(range((int(duration)))) as progress:
             for i in progress:
@@ -246,99 +247,123 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                             cur_wl,
                             bed_level,
                             ba
-                        ) = self.hydrodynamics.update_hydromorphodynamics(
-                            veg_species1=first_biota,
-                            time_step=time_step,
-                            veg_species2=second_biota,  # every timestep
+                        ) = self.hydrodynamics.update_hydromorphodynamics( time_step=1000, # every timestep,
+                            veg_list=self.biota_wrapper_list
                         )
 
                         # # environment
                         progress.set_postfix(inner_loop="hydromorpho environment")
                         # hydromorpho environment
-                        hydro_mor = Hydro_Morphodynamics(
-                            tau_cur=cur_tau,
-                            u_cur=cur_vel,
-                            wl_cur=cur_wl,
-                            bl_cur=bed_level,
-                            ts=ts,
-                            veg=first_biota,
-                        )
+                        for i in range(0, len(self.biota_wrapper_list)):
+                            hydro_mor = Hydro_Morphodynamics(
+                                tau_cur=cur_tau,
+                                u_cur=cur_vel,
+                                wl_cur=cur_wl,
+                                bl_cur=bed_level,
+                                ts=ts,
+                                veg=self.biota_wrapper_list[i].biota,
+                            )
 
-                        hydro_mor2 = Hydro_Morphodynamics(
-                            tau_cur=cur_tau,
-                            u_cur=cur_vel,
-                            wl_cur=cur_wl,
-                            bl_cur=bed_level,
-                            ts=ts,
-                            veg=second_biota,
-                        )
-
-                    hydro_mor.get_hydromorph_values(first_biota)
-                    hydro_mor2.get_hydromorph_values(second_biota)
+                        # hydro_mor2 = Hydro_Morphodynamics(
+                        #     tau_cur=cur_tau,
+                        #     u_cur=cur_vel,
+                        #     wl_cur=cur_wl,
+                        #     bl_cur=bed_level,
+                        #     ts=ts,
+                        #     veg=second_biota,
+                        # )
+                    for i in range(0, len(self.biota_wrapper_list)):
+                        hydro_mor.get_hydromorph_values(self.biota_wrapper_list[i].biota)
+                    # hydro_mor2.get_hydromorph_values(second_biota)
 
                     # # vegetation dynamics
                     progress.set_postfix(inner_loop="vegetation dynamics")
                     # vegetation mortality and growth update
-                    mort = Veg_Mortality
-                    mort.update(
-                        mort,
-                        first_biota,
-                        first_biota.constants,
-                        ets,
-                        begin_date,
-                        end_date,
-                        period,
-                    )
-                    mort2 = Veg_Mortality
-                    mort2.update(
-                        mort,
-                        second_biota,
-                        second_biota.constants,
-                        ets,
-                        begin_date,
-                        end_date,
-                        period,
-                    )
+                    for j in range(0, len(self.biota_wrapper_list)):
+                        mort = Veg_Mortality
+                        mort.update(
+                            mort,
+                            self.biota_wrapper_list[j].biota,
+                            self.biota_wrapper_list[j].biota.constants,
+                            ets,
+                            begin_date,
+                            end_date,
+                            period,
+                        )
+                    # mort2 = Veg_Mortality
+                    # mort2.update(
+                    #     mort,
+                    #     second_biota,
+                    #     second_biota.constants,
+                    #     ets,
+                    #     begin_date,
+                    #     end_date,
+                    #     period,
+                    # )
 
-                    colstart_species1 = pd.to_datetime(first_biota.constants.ColStart).replace(
-                        year=begin_date.year
-                    )
-                    colend_species1 = pd.to_datetime(first_biota.constants.ColEnd).replace(
-                        year=begin_date.year
-                    )
-                    colstart_species2 = pd.to_datetime(second_biota.constants.ColStart).replace(
-                        year=begin_date.year
-                    )
-                    colend_species2 = pd.to_datetime(second_biota.constants.ColEnd).replace(
-                        year=begin_date.year
-                    )
+                    colstart_species = []
+                    colend_species = []
+                    col_pos = np.zeros(len(self.biota_wrapper_list))
+                    for m in range(0, len(self.biota_wrapper_list)):
+                        colstart_species.append(pd.to_datetime(self.biota_wrapper_list[m].biota.constants.ColStart).replace(
+                        year=begin_date.year))
+                        colend_species.append(pd.to_datetime(self.biota_wrapper_list[m].biota.constants.ColEnd).replace(
+                        year=begin_date.year))
+                        if any(colstart_species[m] <= pd.to_datetime(period)) and any(
+                                pd.to_datetime(period) <= colend_species[m]
+                        ):
+                            col_pos[m] = 1
+
+                    progress.set_postfix(inner_loop="vegetation colonization")
+                    col = Colonization()
+                    if any(col_pos > 0):
+                        if np.sum(col_pos) == 1:
+                            col.update(vegetation = self.biota_wrapper_list[list(col_pos==1)==True].biota)
+                        else:
+                            a = np.array(list(range(len(self.biota_wrapper_list))))
+                            col.update(veg_list=[self.biota_wrapper_list[pos] for pos in a[np.where(col_pos==1)]])
+
+
+                    # colstart_species1 = pd.to_datetime(first_biota.constants.ColStart).replace(
+                    #     year=begin_date.year
+                    # )
+                    # colend_species1 = pd.to_datetime(first_biota.constants.ColEnd).replace(
+                    #     year=begin_date.year
+                    # )
+                    # colstart_species2 = pd.to_datetime(second_biota.constants.ColStart).replace(
+                    #     year=begin_date.year
+                    # )
+                    # colend_species2 = pd.to_datetime(second_biota.constants.ColEnd).replace(
+                    #     year=begin_date.year
+                    # )
                     # # colonization (only in colonization period)
                     # if self.constants.col_days[ets] > 0:
-                    if any(colstart_species1 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species1
-                    ) and any(colstart_species2 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species2
-                    ):
-                        progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization()
-                        col.update(first_biota, second_biota)
-
-                    elif any(colstart_species1 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species1):
-                        progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization()
-                        col.update(first_biota)
-
-                    elif any(colstart_species2 <= pd.to_datetime(period)) and any(
-                        pd.to_datetime(period) <= colend_species2):
-                        progress.set_postfix(inner_loop="vegetation colonization")
-                        col = Colonization()
-                        col.update(second_biota)
+                    # if any(colstart_species <= pd.to_datetime(period)) and any(
+                    #     pd.to_datetime(period) <= colend_species
+                    # ) and any(colstart_species <= pd.to_datetime(period)) and any(
+                    #     pd.to_datetime(period) <= colend_species
+                    # ):
+                    #     progress.set_postfix(inner_loop="vegetation colonization")
+                    #     col = Colonization()
+                    #     col.update(first_biota, second_biota)
+                    #
+                    # elif any(colstart_species1 <= pd.to_datetime(period)) and any(
+                    #     pd.to_datetime(period) <= colend_species1):
+                    #     progress.set_postfix(inner_loop="vegetation colonization")
+                    #     col = Colonization()
+                    #     col.update(first_biota)
+                    #
+                    # elif any(colstart_species2 <= pd.to_datetime(period)) and any(
+                    #     pd.to_datetime(period) <= colend_species2):
+                    #     progress.set_postfix(inner_loop="vegetation colonization")
+                    #     col = Colonization()
+                    #     col.update(second_biota)
 
 
                     # update lifestages, initial to juvenile and juvenile to mature
-                    first_biota.update_lifestages()
-                    second_biota.update_lifestages()
+                    for k in range(0, len(self.biota_wrapper_list)):
+                        self.biota_wrapper_list[k].biota.update_lifestages()
+                    # second_biota.update_lifestages()
 
                     # # export results
                     progress.set_postfix(inner_loop="export results")
@@ -368,8 +393,9 @@ class _VegetationSimulation_2species(MultipleBiotaBaseSimulation, ABC):
                     for biota_wrapper in self.biota_wrapper_list:
                         update_biotawrapper_map_output(biota_wrapper)
 
-                    hydro_mor.store_hydromorph_values(first_biota)
-                    hydro_mor2.store_hydromorph_values(second_biota)
+                    for l in range(0, len(self.biota_wrapper_list)):
+                        hydro_mor.store_hydromorph_values(self.biota_wrapper_list[l].biota)
+                    # hydro_mor2.store_hydromorph_values(second_biota)
 
     def finalise(self):
         """Finalise simulation."""
