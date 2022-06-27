@@ -19,13 +19,13 @@ from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
     VegFlowFmSimulation,
 )
-from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import (
-    VegFlowFmSimulation_2species,
+from src.biota_models.vegetation.simulation.veg_delft3D_simulation_MultipleSpecies import (
+    VegFlowFmSimulation_MultipleSpecies,
 )
 from src.biota_models.vegetation.simulation.veg_delft3D_simulation_3species import (
     VegFlowFmSimulation_3species,
 )
-from src.biota_models.vegetation.simulation.veg_simulation_2species import (
+from src.biota_models.vegetation.simulation.veg_simulation_MultipleSpecies import (
     VegetationBiotaWrapper,
 )
 from src.core.simulation.multiplebiota_simulation_protocol import (
@@ -142,7 +142,7 @@ class TestAcceptance:
         # plot_output(sim_run.output)
 
     @only_local
-    def test_given_veg_case_runs_2species(self):
+    def test_given_veg_case_runs_MultipleSpecies(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
         test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
@@ -161,7 +161,7 @@ class TestAcceptance:
         veg_constants3 = VegetationConstants(species=species3)
         veg_constants4 = VegetationConstants(species=species4)
 
-        sim_run = VegFlowFmSimulation_2species(
+        sim_run = VegFlowFmSimulation_MultipleSpecies(
             working_dir=test_dir,
             constants=veg_constants1,
             hydrodynamics=dict(
