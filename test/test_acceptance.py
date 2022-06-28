@@ -222,7 +222,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "fm" / "cover"
         sim_run.initiate()
-        sim_run.run(2)
+        sim_run.run(1)
         sim_run.finalise()
 
     @only_local

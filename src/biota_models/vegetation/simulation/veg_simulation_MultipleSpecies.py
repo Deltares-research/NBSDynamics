@@ -254,14 +254,14 @@ class _VegetationSimulation_MultipleSpecies(MultipleBiotaBaseSimulation, ABC):
                         # # environment
                         progress.set_postfix(inner_loop="hydromorpho environment")
                         # hydromorpho environment
-                        for i in range(0, len(self.biota_wrapper_list)):
+                        for h in range(0, len(self.biota_wrapper_list)):
                             hydro_mor = Hydro_Morphodynamics(
                                 tau_cur=cur_tau,
                                 u_cur=cur_vel,
                                 wl_cur=cur_wl,
                                 bl_cur=bed_level,
                                 ts=ts,
-                                veg=self.biota_wrapper_list[i].biota,
+                                veg=self.biota_wrapper_list[h].biota,
                             )
 
                         # hydro_mor2 = Hydro_Morphodynamics(
@@ -272,8 +272,8 @@ class _VegetationSimulation_MultipleSpecies(MultipleBiotaBaseSimulation, ABC):
                         #     ts=ts,
                         #     veg=second_biota,
                         # )
-                    for i in range(0, len(self.biota_wrapper_list)):
-                        hydro_mor.get_hydromorph_values(self.biota_wrapper_list[i].biota)
+                    for num_spec in range(0, len(self.biota_wrapper_list)):
+                        hydro_mor.get_hydromorph_values(self.biota_wrapper_list[num_spec].biota)
                     # hydro_mor2.get_hydromorph_values(second_biota)
 
                     # # vegetation dynamics
