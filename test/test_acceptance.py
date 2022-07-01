@@ -17,7 +17,7 @@ from src.biota_models.coral.simulation.coral_transect_simulation import (
 from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
-    VegFlowFmSimulation,
+    VegFlowFmSimulation, VegDimrSimulation
 )
 from src.biota_models.vegetation.simulation.veg_delft3D_simulation_2species import (
     VegFlowFmSimulation_2species,
@@ -55,24 +55,25 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger")
+        test_dir = TestUtils.get_local_test_data_dir("Pims_test_waves")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
         assert test_dir.is_dir()
         assert kernels_dir.is_dir()
 
-        test_case = test_dir / "input"
-        species = "Puccinellia"
+        test_case = test_dir
+        species = "Spartina"
         veg_constants = VegetationConstants(species=species)
-        sim_run = VegFlowFmSimulation(
+        sim_run = VegDimrSimulation(
             working_dir=test_dir,
             constants=veg_constants,
             hydrodynamics=dict(
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
-                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_bigger.mdu",
+                dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dimr_dll",
+                definition_file=test_case / "dflowfm" / "FlowFM.mdu",
+                config_file= test_case/"dimr_config.xml"
             ),
             output=dict(
                 output_dir=test_dir / "output",
@@ -86,9 +87,9 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        # cover_path = test_case / "fm" / "cover"
+        # cover_path = test_case
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(2)
+        sim_run.run(duration=1)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -104,7 +105,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs_2species(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_SSC0.02_2boundaries_refinedGrid_2species")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -112,7 +113,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species1 = "Salicornia"
+        species1 = "Elytrigia"
         species2 = "Spartina"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
@@ -124,7 +125,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_ref.mdu",
+                definition_file=test_case / "Zuidgors_bigger.mdu",
             ),
             biota_wrapper_list=[
                 VegetationBiotaWrapper(
@@ -149,7 +150,6 @@ class TestAcceptance:
                     ),
                 ),
             ],
-            #morfac=100 #Optional input
         )
 
         # Run simulation.
@@ -161,7 +161,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs_3species(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_ref")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -169,7 +169,7 @@ class TestAcceptance:
         assert kernels_dir.is_dir()
 
         test_case = test_dir / "input"
-        species1 = "Salicornia"
+        species1 = "Elytrigia"
         species2 = "Spartina"
         species3 = "Puccinellia"
         veg_constants1 = VegetationConstants(species=species1)
@@ -183,7 +183,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dflowfm",
-                definition_file=test_case / "Zuidgors_ref.mdu",
+                definition_file=test_case / "Zuidgors_bigger.mdu",
             ),
             biota_wrapper_list=[
                 VegetationBiotaWrapper(
@@ -222,7 +222,7 @@ class TestAcceptance:
         )
 
         # Run simulation.
-        # cover_path = test_case / "fm" / "cover"
+        # cover_path = test_case / "VegModel_Puccinellia_map.nc"
         sim_run.initiate()
         sim_run.run(20)
         sim_run.finalise()

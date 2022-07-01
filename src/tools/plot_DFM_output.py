@@ -8,9 +8,16 @@ import matplotlib as mpl
 
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_ref\input\output\Zuidgors_ref_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\Zuidgors_bigger_waves\dflowfm\output\Zuidgors_bigger_waves_map.nc",
     "r",
 )
+
+wavefile = nc.Dataset(
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics\test\test_data\Zuidgors_bigger_waves\wave\wavh-Waves (1).nc",
+    "r",
+)
+
+Depth = wavefile.variables['Depth'][:]
 
 time = ma.MaskedArray.filled((mapfile.variables["time"][:]), 0.0)/3600/24
 timestep = ma.MaskedArray.filled((mapfile.variables["timestep"][:]), 0.0)
@@ -22,7 +29,17 @@ water_depth = ma.MaskedArray.filled((mapfile.variables["mesh2d_waterdepth"][:, :
 # bed_level = ma.MaskedArray.filled((mapfile.variables["mesh2d_flowelem_bl"][:]), 0.0)
 bed_level = mapfile.variables["mesh2d_mor_bl"][:, :]
 # taumax = mapfile.variables["mesh2d_tausmax"]
+hwav = mapfile.variables["mesh2d_hwav"][:, :]
+uorb = mapfile.variables["mesh2d_uorb"][:, :]
 
+
+fig = plt.figure(figsize=(12, 8))
+plt.plot(hwav[-1, :])
+plt.title("Wave Height")
+
+
+b = np.where(hwav > 0)
+fig = plt.figure(figsize=(12, 8))
 fig1 = plt.tricontourf(x, y, water_depth[-1, :])
 cbar = plt.colorbar(fig1, label="depth [m]")
 plt.title("Water Depth")
@@ -31,47 +48,50 @@ plt.ylabel("Grid cell m-direction")
 plt.show()
 
 
-fig2, ax = plt.subplots()
-fig = ax.tricontourf(x, y, vel_mag[-1, :])
+# fig2, ax = plt.subplots()
+fig = plt.figure(figsize=(12, 8))
+fig = plt.tricontourf(x, y, vel_mag[-1, :])
 cbar = plt.colorbar(fig, label="Flow velocity [m/s]")
 plt.title("Flow Velocity Magnitude")
 plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()
 
-fig3, ax = plt.subplots()
+# fig3, ax = plt.subplots()
 # # ax.plot(time, vel_mag[:, 324], label='Boundary1')
 # # ax.plot(time, vel_mag[:, 349], label='After Dam')
 # # ax.plot(time, vel_mag[:, 290], label='Mid Domain')
-ax.plot(time, vel_mag[:, 1225], label='Boundary1')
-ax.plot(time, vel_mag[:, 1276], label='After Dam1')
-ax.plot(time, vel_mag[:, 1300], label='Mid Domain')
-# # ax.plot(time, vel_mag[:, 151], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 169], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 187], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 188], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 208], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 228], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 229], label='High Erosion Cell')
-# # ax.plot(time, vel_mag[:, 250], label='High Erosion Cell')
-legend = ax.legend(loc='best', shadow=True)
-plt.title("Flow Velocity Magnitude Boundary1")
-plt.xlabel("Time [days]")
-plt.ylabel("Velocity [m/s]")
-plt.show()
+# fig = plt.figure(figsize=(12, 8))
+# plt.plot(time, vel_mag[:, 1225], label='Boundary1')
+# plt.plot(time, vel_mag[:, 1276], label='After Dam1')
+# plt.plot(time, vel_mag[:, 1300], label='Mid Domain')
+# # # ax.plot(time, vel_mag[:, 151], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 169], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 187], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 188], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 208], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 228], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 229], label='High Erosion Cell')
+# # # ax.plot(time, vel_mag[:, 250], label='High Erosion Cell')
+# legend = plt.legend(loc='best', shadow=True)
+# plt.title("Flow Velocity Magnitude Boundary1")
+# plt.xlabel("Time [days]")
+# plt.ylabel("Velocity [m/s]")
+# plt.show()
 
 discharge = vel_mag[0:360, 349]*3.14
 dt = 1*3600
 volume = discharge*dt
 
-fig7, ax = plt.subplots()
+# fig7, ax = plt.subplots()
 # ax.plot(time, vel_mag[:, 136], label='Boundary2')
 # # ax.plot(time, vel_mag[:, 154], label='After Dam2')
-ax.plot(time, vel_mag[:, 594], label='Boundary2')
-ax.plot(time, vel_mag[:, 628], label='After Dam2')
-# ax.plot(time, vel_mag[:, 3867], label='Inflow1 Excavated Area')
-# ax.plot(time, vel_mag[:, 4011], label='Inflow2 Excavated Area')
-legend = ax.legend(loc='best', shadow=True)
+fig = plt.figure(figsize=(12, 8))
+# plt.plot(time, vel_mag[:, 594], label='Boundary2')
+# plt.plot(time, vel_mag[:, 628], label='After Dam2')
+plt.plot(time, vel_mag[:, 3867], label='Inflow1 Excavated Area')
+plt.plot(time, vel_mag[:, 4011], label='Inflow2 Excavated Area')
+legend = plt.legend(loc='best', shadow=True)
 plt.title("Flow Velocity Magnitude")
 plt.xlabel("Time [days]")
 plt.ylabel("Velocity [m/s]")
@@ -80,7 +100,9 @@ plt.show()
 
 
 bl_diff = bed_level[-1, :] - bed_level[0, :]
-fig4, ax = plt.subplots()
+# fig4, ax = plt.subplots()
+
+fig = plt.figure(figsize=(12, 8))
 fig = plt.tricontourf(x, y, bl_diff, cmap="terrain", levels=np.linspace(-1, 1, 80))
 cbar2 = plt.colorbar(fig, label="Bed level difference [m]")
 plt.title("Bed Level Difference [m]")
@@ -88,7 +110,8 @@ plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()
 
-fig5, ax = plt.subplots()
+# fig5, ax = plt.subplots()
+fig = plt.figure(figsize=(12, 8))
 fig = plt.tricontourf(x, y, bed_level[-1, :], cmap="terrain", levels=np.linspace(0, 4, 100))
 cbar = plt.colorbar(fig, label="Bed level [m]")
 plt.title("Bed Level")
@@ -96,15 +119,17 @@ plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()
 
-fig6, ax = plt.subplots()
-ax.plot(time, bed_level[:, 1225], label='Boundary1')
-ax.plot(time, bed_level[:, 1276], label='After Dam1')
-ax.plot(time, bed_level[:, 1300], label='Mid Domain')
-ax.plot(time, bed_level[:, 594], label='Boundary2')
-ax.plot(time, bed_level[:, 628], label='After Dam2')
-# ax.plot(time, bed_level[:, 3867], label='Inflow1 Excavated Area')
-# ax.plot(time, bed_level[:, 4011], label='Inflow2 Excavated Area')
-legend = ax.legend(loc='best', shadow=True)
+# fig6, ax = plt.subplots()
+
+fig = plt.figure(figsize=(12, 8))
+# plt.plot(time, bed_level[:, 1225], label='Boundary1')
+# plt.plot(time, bed_level[:, 1276], label='After Dam1')
+# plt.plot(time, bed_level[:, 1300], label='Mid Domain')
+# plt.plot(time, bed_level[:, 594], label='Boundary2')
+# plt.plot(time, bed_level[:, 628], label='After Dam2')
+plt.plot(time, bed_level[:, 3867], label='Inflow1 Excavated Area')
+plt.plot(time, bed_level[:, 4011], label='Inflow2 Excavated Area')
+legend = plt.legend(loc='best', shadow=True)
 plt.title("Bed Level")
 plt.xlabel("Time [days]")
 plt.ylabel("Bed level [m]")
@@ -526,19 +551,20 @@ bl3 = np.zeros([len(c3), 3])
 bl4 = np.zeros([len(c4), 3])
 bl5 = np.zeros([len(c5), 3])
 for y in range(0, 3):
-    time = [0, 8800, 17600]
+    times = [0, 8800, 17600]
     for i in range(0, len(c1)):
-        bl1[i, y] = bed_level[time[y], int(c1[i])]
+        bl1[i, y] = bed_level[times[y], int(c1[i])]
     for i in range(0, len(c2)):
-        bl2[i, y] = bed_level[time[y], int(c2[i])]
+        bl2[i, y] = bed_level[times[y], int(c2[i])]
     for i in range(0, len(c3)):
-        bl3[i, y] = bed_level[time[y], int(c3[i])]
+        bl3[i, y] = bed_level[times[y], int(c3[i])]
     for i in range(0, len(c4)):
-        bl4[i, y] = bed_level[time[y], int(c4[i])]
+        bl4[i, y] = bed_level[times[y], int(c4[i])]
     for i in range(0, len(c5)):
-        bl5[i, y] = bed_level[time[y], int(c5[i])]
+        bl5[i, y] = bed_level[times[y], int(c5[i])]
 
 fig, axs = plt.subplots(5)
+fig = plt.figure(figsize=(12, 8))
 fig.suptitle('Bed level cross-sections')
 # plt.title("Bed Level")
 plt.xlabel("Distance")
