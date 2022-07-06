@@ -30,6 +30,7 @@ class Delft3D(ExtraModel, abc.ABC):
     # Define model attributes.
     time_step: Optional[np.datetime64] = None
     model_wrapper: Optional[BMIWrapper] = None
+    model_wrapper_dimr: Optional[BMIWrapper] = None
     d3d_home: Optional[Path] = None  # Delft3D binaries home directory.
     working_dir: Optional[Path] = None  # Model working directory.
     definition_file: Optional[Path] = None
@@ -298,8 +299,10 @@ class Delft3D(ExtraModel, abc.ABC):
         """
         self.set_environment_variables()
         self.configure_model_wrapper()
-        self.model_wrapper.initialize()
-
+        if not self.model_wrapper_dimr:
+            self.model_wrapper.initialize()
+        else:
+            self.model_wrapper_dimr.initialize()
     def update(self, coral, stormcat=0):
         """Update the Delft3D-model."""
         self.time_step = (
@@ -338,8 +341,10 @@ class Delft3D(ExtraModel, abc.ABC):
         #     self.set_vegetation(veg_species1)
         # else:
         #
-        self.model_wrapper.update(self.time_step)
-
+        if not self.model_wrapper_dimr:
+            self.model_wrapper.update(self.time_step)
+        else:
+            self.model_wrapper_dimr.update(self.time_step)
         return self.get_current_hydromorphodynamics(time_step=self.time_step)
 
 
@@ -503,6 +508,10 @@ class DimrModel(Delft3D):
     `BMIWrapper` to run its calculations.
     Based on a DIMR model configuration.
     """
+    _space: Optional[int] = None
+    _water_depth: Optional[np.ndarray] = None
+    _x_coordinates: Optional[np.array] = None
+    _y_coordinates: Optional[np.array] = None
 
     @root_validator
     @classmethod
@@ -549,25 +558,90 @@ class DimrModel(Delft3D):
             f"{files}"
         )
 
-    @property
-    def space(self) -> None:
-        return None
+    # @property
+    # def space(self) -> None:
+    #     return None
+    #
+    # @property
+    # def water_depth(self):
+    #     return None
+    #
+    # @property
+    # def x_coordinates(self):
+    #     return None
+    #
+    # @property
+    # def y_coordinates(self):
+    #     return None
+    #
+    # @property
+    # def xy_coordinates(self):
+    #     return None
 
     @property
-    def water_depth(self):
-        return None
+    def space(self) -> Optional[int]:
+        """Number of non-boundary boxes; i.e. within-domain boxes."""
+        if self.model_wrapper is None:
+            return None
+        self._space: Optional[np.ndarray] = (
+            self.get_variable("ndxi") if self._space is None else self._space
+        )
+        return self._space.item()
 
     @property
-    def x_coordinates(self):
-        return None
+    def water_depth(self) -> Optional[np.ndarray]:
+        """Water depth."""
+        if self.model_wrapper is None:
+            return None
+        if self.time_step is None:
+            self.time_step = self.get_variable("is_dtint")
+        if self._water_depth is None:
+            return (
+                self.get_variable("is_sumvalsnd")[range(self.space), 2] / self.time_step
+            )
+        else:
+            return self._water_depth
 
     @property
-    def y_coordinates(self):
-        return None
+    def x_coordinates(self) -> np.ndarray:
+        """Center of gravity's x-coordinates as part of `space`."""
+        if self.model_wrapper is None:
+            return None
+        self._x_coordinates = (
+            self.get_variable("xzw")[range(self.space)]
+            if self._x_coordinates is None
+            else self._x_coordinates
+        )
+        return self._x_coordinates
 
     @property
-    def xy_coordinates(self):
-        return None
+    def y_coordinates(self) -> np.ndarray:
+        """Center of gravity's y-coodinates as part of `space`."""
+        if self.model_wrapper is None:
+            return None
+        self._y_coordinates = (
+            self.get_variable("yzw")[range(self.space)]
+            if self._y_coordinates is None
+            else self._y_coordinates
+        )
+        return self._y_coordinates
+
+    @property
+    def xy_coordinates(self) -> np.ndarray:
+        """The (x,y)-coordinates of the model domain,
+        retrieved from hydrodynamic model; otherwise based on provided definition.
+
+        :rtype: numpy.ndarray
+        """
+        if self.model_wrapper is None:
+            return None
+        return np.array(
+            [
+                [self.x_coordinates[i], self.y_coordinates[i]]
+                for i in range(len(self.x_coordinates))
+            ]
+        )
+
 
     def configure_model_wrapper(self):
         """
@@ -576,6 +650,12 @@ class DimrModel(Delft3D):
         If the PATH variables does not work it is recommended copying all the contents from the share
         directory into the dimr bin dir.
         """
-        self.model_wrapper = BMIWrapper(
+        ## Add corrects locations to environment variable PATH
+
+        os.environ['PATH'] = os.path.join(self.d3d_home, 'dflowfm_with_shared', 'bin') \
+        + ";" + os.path.join(self.d3d_home, 'esmf', 'scripts') \
+        + ";" + os.path.join(self.d3d_home, 'swan', 'scripts')
+        self.model_wrapper = BMIWrapper(os.path.join(self.d3d_home, 'dflowfm_with_shared', 'bin', 'dflowfm.dll'), configfile=self.definition_file)
+        self.model_wrapper_dimr = BMIWrapper(
             engine=self.dll_path.as_posix(), configfile=self.config_file.as_posix()
         )

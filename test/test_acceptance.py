@@ -17,7 +17,7 @@ from src.biota_models.coral.simulation.coral_transect_simulation import (
 from src.biota_models.vegetation.model.veg_constants import VegetationConstants
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.vegetation.simulation.veg_delft3d_simulation import (
-    VegFlowFmSimulation,
+    VegFlowFmSimulation, VegDimrSimulation
 )
 from src.biota_models.vegetation.simulation.veg_delft3D_simulation_MultipleSpecies import (
     VegFlowFmSimulation_MultipleSpecies,
@@ -216,7 +216,7 @@ class TestAcceptance:
                     ),
                 ),
             ],
-
+            #morfac=100 #Optional input
         )
 
         # Run simulation.
