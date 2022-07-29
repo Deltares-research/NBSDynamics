@@ -382,9 +382,6 @@ exArea = [3779, 3780, 3781, 3857, 3858, 3859, 3860, 3861, 3936, 3937, 3938,
 # plot_bl_diff(x, y, bl, veg_cover)
 # plot_max_vel(x, y, max_u)
 # plot_cover_time(time, veg_cover, veg_dia)
-# plot_cover_time_EX(time, veg_cover, veg_dia)
-# plt_bl_time_EX(time, bl)
-# plot_maxU_time_EX(time, max_u)
 # make_gif()
 mapfile.close
 

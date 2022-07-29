@@ -74,11 +74,7 @@ class Mangrove(Biota):
             f"density = {self.density}"
         )
 
-    # @property
-    # def total_cover(self):  # as input for DFM
-    #     # take cover as sum of all the ages and life stages
-    #     # self.total_cover = self.juvenile.cover + self.mature.cover
-    #     return self.juvenile.cover + self.mature.cover
+
 
     @property
     def veg_den(self):  # as input for DFM
