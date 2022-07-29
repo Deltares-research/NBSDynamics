@@ -55,7 +55,7 @@ class TestAcceptance:
     @only_local
     def test_given_veg_case_runs(self):
         # test_dir = TestUtils.get_local_test_data_dir("delft3d_case")
-        test_dir = TestUtils.get_local_test_data_dir("Pims_test_waves")
+        test_dir = TestUtils.get_local_test_data_dir("Zuidgors_bigger_waves")
         dll_repo = TestUtils.get_external_repo("DimrDllDependencies_23062020")
         kernels_dir = dll_repo / "kernels"
 
@@ -72,7 +72,7 @@ class TestAcceptance:
                 working_dir=test_dir / "d3d_work",
                 d3d_home=kernels_dir,
                 dll_path=kernels_dir / "dflowfm_with_shared" / "bin" / "dimr_dll",
-                definition_file=test_case / "dflowfm" / "FlowFM.mdu",
+                definition_file=test_case / "dflowfm" / "Zuidgors_bigger_waves.mdu",
                 config_file= test_case/"dimr_config.xml"
             ),
             output=dict(
@@ -89,7 +89,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case
         sim_run.initiate()  # add path to nc file of initial cover (map_file) if initial cover present
-        sim_run.run(duration=1)
+        sim_run.run(duration=2)
         sim_run.finalise()
 
         # 4. Verify expectations.
@@ -101,6 +101,7 @@ class TestAcceptance:
 
         # 5. Verify plotting can be done.
         # plot_output(sim_run.output)
+
 
     @only_local
     def test_given_veg_case_runs_2species(self):
@@ -171,7 +172,7 @@ class TestAcceptance:
         test_case = test_dir / "input"
         species1 = "Elytrigia"
         species2 = "Spartina"
-        species3 = "Puccinellia"
+        species3 = "Salicornia"
         veg_constants1 = VegetationConstants(species=species1)
         veg_constants2 = VegetationConstants(species=species2)
         veg_constants3 = VegetationConstants(species=species3)
@@ -224,7 +225,7 @@ class TestAcceptance:
         # Run simulation.
         # cover_path = test_case / "VegModel_Puccinellia_map.nc"
         sim_run.initiate()
-        sim_run.run(20)
+        sim_run.run(2)
         sim_run.finalise()
 
     def test_given_transect_case_runs(self):
