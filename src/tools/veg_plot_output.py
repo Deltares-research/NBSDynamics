@@ -6,12 +6,6 @@ import numpy as np
 import pandas as pd
 import numpy.ma as ma
 import matplotlib as mpl
-from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.ticker as ticker
-from matplotlib.animation import FuncAnimation
-import matplotlib.animation as ani
-from datetime import datetime
 
 def get_variables_hisfile(hisfile):
     diaveg = hisfile.variables['diaveg'][:]
@@ -62,7 +56,7 @@ def get_variables_mapfile(mapfile):
     dia_m = ma.MaskedArray.filled((mapfile.variables["veg_stemdia_m"][:, :, :]), 0.0)
     age_j = ma.MaskedArray.filled((mapfile.variables["veg_age_j"][:, :, :]), 0.0)
     age_m = ma.MaskedArray.filled((mapfile.variables["veg_age_m"][:, :, :]), 0.0)
-    return bl, max_u, veg_den,veg_dia, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m
+    return bl, max_u, veg_den, veg_dia, veg_cover, time, veg_height, x, y, veg_frac_m, veg_frac_j, veg_frac_m, height_j, height_m, dia_m, dia_j, age_j, age_m
 
 def plot_veg_den(x,y,veg_den):
     fig = plt.figure(figsize=(12, 8))
@@ -124,21 +118,7 @@ def plot_cover_bath(x,y,bl,veg_cover):
     # veg_cove3[veg_cover3 == 0] = np.nan
     # FIG2 = plt.scatter(x, y, c=veg_cove3[-1, :], cmap='Reds', edgecolors='k', lw=0.2)
     # cbar = plt.colorbar(FIG2, label="Fraction cover Elytrigia [-]")
-    # plt.title("Vegetation cover (Elytrigia) and Bed Level")
-    # plt.xlabel("Grid cell x-direction")
-    # plt.ylabel("Grid cell y-direction")
-    # plt.show()
-    # #
-    # mapfile4 = nc.Dataset(
-    #     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Design_scenarios\no_waves\Zuidgors_exArea_front\output\VegModel_Salicornia_map.nc",
-    #     "r",
-    # )
-    # veg_cover4 = ma.MaskedArray.filled((mapfile4.variables["cover"][:, :]), 0.0)
-    # veg_cove4 = veg_cover4.copy()
-    # veg_cove4[veg_cover4 == 0] = np.nan
-    # FIG2 = plt.scatter(x, y, c=veg_cove4[-1, :], cmap='Purples', edgecolors='k', lw=0.2)
-    # cbar = plt.colorbar(FIG2, label="Fraction cover Salicornia [-]")
-    # plt.title("Vegetation cover and Bed Level")
+    # plt.title("Vegetation cover (Elytrigia, Spartina and Puccinellia) and Bed Level")
     # plt.xlabel("Grid cell x-direction")
     # plt.ylabel("Grid cell y-direction")
     # plt.show()

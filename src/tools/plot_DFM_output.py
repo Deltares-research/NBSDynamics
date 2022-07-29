@@ -5,12 +5,12 @@ import pandas as pd
 import numpy.ma as ma
 import matplotlib as mpl
 
-
-
+# #
 mapfile = nc.Dataset(
     r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Design_scenarios\no_waves\Zuidgors_exArea_front\input\output\\Zuidgors_bigger_map.nc",
     "r",
 )
+
 
 time = ma.MaskedArray.filled((mapfile.variables["time"][:]), 0.0)/3600/24
 timestep = ma.MaskedArray.filled((mapfile.variables["timestep"][:]), 0.0)
@@ -22,7 +22,20 @@ water_depth = ma.MaskedArray.filled((mapfile.variables["mesh2d_waterdepth"][:, :
 # bed_level = ma.MaskedArray.filled((mapfile.variables["mesh2d_flowelem_bl"][:]), 0.0)
 bed_level = mapfile.variables["mesh2d_mor_bl"][:, :]
 # taumax = mapfile.variables["mesh2d_tausmax"]
+hwav = mapfile.variables["mesh2d_hwav"][:, :]
+uorb = mapfile.variables["mesh2d_uorb"][:, :]
 
+
+fig = plt.figure(figsize=(12, 8))
+# plt.plot(hwav[-1, :])
+fig = plt.tricontourf(x, y, hwav[-1, :])
+cbar = plt.colorbar(fig, label="height [m]")
+plt.title("Wave Height")
+plt.xlabel("Grid cell n-direction")
+plt.ylabel("Grid cell m-direction")
+plt.show()
+
+b = np.where(hwav > 0)
 fig = plt.figure(figsize=(12, 8))
 fig1 = plt.tricontourf(x, y, water_depth[-1, :])
 cbar = plt.colorbar(fig1, label="depth [m]")
@@ -40,6 +53,7 @@ plt.title("Flow Velocity Magnitude")
 plt.xlabel("Grid cell n-direction")
 plt.ylabel("Grid cell m-direction")
 plt.show()
+
 
 bl_diff = bed_level[-1, :] - bed_level[0, :]
 # fig4, ax = plt.subplots()
@@ -78,4 +92,6 @@ plt.ylabel("Bed level [m]")
 plt.show()
 
 
-
+# mapfile.close()
+#
+#

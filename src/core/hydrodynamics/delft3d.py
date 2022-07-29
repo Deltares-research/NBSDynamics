@@ -14,7 +14,6 @@ from src.biota_models.coral.model.coral_model import Coral
 from src.biota_models.vegetation.model.veg_model import Vegetation
 from src.biota_models.mangroves.model.mangrove_model import Mangrove
 from src.core.base_model import ExtraModel
-# from src.biota_models.vegetation.simulation.veg_simulation_2species import VegetationBiotaWrapper
 
 faulthandler.enable()
 
@@ -160,27 +159,6 @@ class Delft3D(ExtraModel, abc.ABC):
             self.set_variable(
                 "stemheight", (av_height)
             )  # [m] 2D plant heights (m)
-
-        # elif not veg_species3:  ## TODO TEST THIS!
-        #     self.set_variable(
-        #         "rnveg", (veg_species1.veg_den + veg_species2.veg_den)
-        #     )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
-        #     self.set_variable(
-        #         "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia)
-        #     )  # [m] 3D plant diameter, 2D part is basis input (m)
-        #     self.set_variable(
-        #         "stemheight", (veg_species1.av_height + veg_species2.av_height)
-        #     )  # [m] 2D plant heights (m)
-        # else:
-        #     self.set_variable(
-        #         "rnveg", (veg_species1.veg_den + veg_species2.veg_den + veg_species3.veg_den)
-        #     )  # [1/m2] 3D plant density , 2D part is basis input (1/m2)
-        #     self.set_variable(
-        #         "diaveg", (veg_species1.av_stemdia + veg_species2.av_stemdia + veg_species3.av_stemdia)
-        #     )  # [m] 3D plant diameter, 2D part is basis input (m)
-        #     self.set_variable(
-        #         "stemheight", (veg_species1.av_height + veg_species2.av_height + veg_species3.av_height)
-        #     )  # [m] 2D plant heights (m)
 
 
     def get_mean_hydrodynamics(self):
