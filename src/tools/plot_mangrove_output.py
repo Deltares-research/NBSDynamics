@@ -16,7 +16,7 @@ import mpl_toolkits.mplot3d.art3d as art3d
 from scipy.interpolate import griddata
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\sm_testcase_mud\output_1stmangrovetest\MangroveModel_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_bigger_mangroves\output\MangroveModel_map.nc",
     "r",
 )
 bl = ma.MaskedArray.filled((mapfile.variables["bl"][:, :]), 0.0) # Bed level
@@ -31,44 +31,44 @@ cum_stem_dia = np.sum((stem_num * stem_dia), axis=1)
 # sum_stem_num = np.sum(stem_num, axis= 1)
 
 # PLOT vegetation cover over bed level
-# fig = plt.tricontourf(x, y, bl[-1, :], cmap="terrain", levels=np.linspace(-1, 4, 80))
-# cbar = plt.colorbar(fig, label="Bed level [m]")
-# plt.title("Mangrove biomass and Bed Level [m]")
-# plt.xlabel("Grid cell x-direction")
-# plt.ylabel("Grid cell y-direction")
+fig = plt.tricontourf(x, y, bl[-1, :], cmap="terrain", levels=np.linspace(-1, 4, 80))
+cbar = plt.colorbar(fig, label="Bed level [m]")
+plt.title("Mangrove biomass and Bed Level [m]")
+plt.xlabel("Grid cell x-direction")
+plt.ylabel("Grid cell y-direction")
 
-# biomass[biomass == 0] = np.nan
-# FIG2 = plt.scatter(x, y, c=biomass[-1, :], cmap='Greens', edgecolors='k', lw=0.2)
-# cbar = plt.colorbar(FIG2, label="Total biomass")
-# plt.xlabel("Grid cell x-direction")
-# plt.ylabel("Grid cell y-direction")
-# plt.show()
-
-X,Y = np.meshgrid(x, y)
-Z_Height = griddata((x, y), av_height, (X,Y), method='nearest')
-BL = griddata((x, y), bl[-1, :], (X,Y), method='nearest')
-CUM_stem = griddata((x, y), cum_stem_dia, (X,Y), method='nearest')
-x1, y1, z1, Bl, CUM_STEM = X.ravel(), Y.ravel(), Z_Height.ravel(), BL.ravel(), CUM_stem.ravel()
-
-fig = plt.figure(figsize=(4,4))
-ax = fig.add_subplot(111, projection='3d')
-# x1 = x[np.isnan(biomass[-1, :]) == False]
-# y1 = y[np.isnan(biomass[-1, :]) == False]
-ax.plot_trisurf(x, y, bl[-1, :], cmap = 'terrain')
-
-bottom = np.zeros(z1.shape)
-width = np.ones(z1.shape)
-depth = np.ones(z1.shape)
-ax.bar3d(x1[z1>0], y1[z1>0], Bl[z1>0], (CUM_STEM[z1>0]/100), (CUM_STEM[z1>0]/100), (z1[z1>0]+ Bl[z1>0]), color = 'g')
-
-
-ax.set_xlabel('x axis')
-ax.set_ylabel('y axis')
-ax.set_zlabel('height [m]')
-ax.elev = 23
-ax.azim = -11
-
+biomass[biomass == 0] = np.nan
+FIG2 = plt.scatter(x, y, c=biomass[-1, :], cmap='Greens', edgecolors='k', lw=0.2)
+cbar = plt.colorbar(FIG2, label="Total biomass")
+plt.xlabel("Grid cell x-direction")
+plt.ylabel("Grid cell y-direction")
 plt.show()
+
+# X,Y = np.meshgrid(x, y)
+# Z_Height = griddata((x, y), av_height, (X,Y), method='nearest')
+# BL = griddata((x, y), bl[-1, :], (X,Y), method='nearest')
+# CUM_stem = griddata((x, y), cum_stem_dia, (X,Y), method='nearest')
+# x1, y1, z1, Bl, CUM_STEM = X.ravel(), Y.ravel(), Z_Height.ravel(), BL.ravel(), CUM_stem.ravel()
+#
+# fig = plt.figure(figsize=(4,4))
+# ax = fig.add_subplot(111, projection='3d')
+# # x1 = x[np.isnan(biomass[-1, :]) == False]
+# # y1 = y[np.isnan(biomass[-1, :]) == False]
+# ax.plot_trisurf(x, y, bl[-1, :], cmap = 'terrain')
+#
+# bottom = np.zeros(z1.shape)
+# width = np.ones(z1.shape)
+# depth = np.ones(z1.shape)
+# ax.bar3d(x1[z1>0], y1[z1>0], Bl[z1>0], (CUM_STEM[z1>0]/100), (CUM_STEM[z1>0]/100), (z1[z1>0]+ Bl[z1>0]), color = 'g')
+#
+#
+# ax.set_xlabel('x axis')
+# ax.set_ylabel('y axis')
+# ax.set_zlabel('height [m]')
+# ax.elev = 23
+# ax.azim = -11
+#
+# plt.show()
 # ax.stem(x1, y1, bl[-1, :][np.isnan(biomass[-1, :]) == False])
 
 

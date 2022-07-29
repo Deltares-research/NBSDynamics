@@ -88,21 +88,22 @@ class Mangrove(Biota):
     @property
     def av_stemdia(self):  # as input for DFM
         """average stem diameter of mangroves in one grid cell"""
-
-        return np.sum(self.stem_num * self.stem_dia, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_dia, axis=1)/np.sum(self.root_num, axis=1)
+        av_dia = np.sum(self.stem_num * self.stem_dia, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_dia, axis=1)/np.sum(self.root_num, axis=1)
+        av_dia[np.isnan(av_dia)] = 0
+        return av_dia
 
     @property
     def av_height(self):  # as input for DFM
         """average shoot height of mangroves in one grid cell"""
-
-        return np.sum(self.stem_num * self.height, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_height, axis=1)/np.sum(self.root_num, axis=1)
+        av_h = np.sum(self.stem_num * self.height, axis=1)/ np.sum(self.stem_num, axis=1) + np.sum(self.root_num * self.constants.root_height, axis=1)/np.sum(self.root_num, axis=1)
+        av_h[np.isnan(av_h)] = 0
+        return av_h
 
     @property
     def bio_total_cell(self):
         return np.sum((self.stem_num * (self.constants.bio_a*self.stem_dia**self.constants.ind_a + self.constants.bio_b*self.stem_dia**self.constants.ind_b)), axis=1)
 
     @property
-    ## TODO B0.5 is dependent on grid cell size! Create formula!
     def B_05(self):
         W_mature = self.constants.bio_a*self.constants.MaxD**self.constants.ind_a + self.constants.bio_b*self.constants.MaxD**self.constants.ind_b
         R = 10*np.sqrt(self.constants.MaxD/(2*100))

@@ -8,7 +8,7 @@ import matplotlib as mpl
 
 
 mapfile = nc.Dataset(
-    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Zuidgors_bigger_ref\input\output\Zuidgors_bigger_ref_map.nc",
+    r"c:\Users\dzimball\PycharmProjects\NBSDynamics_Current\test\test_data\Design_scenarios\no_waves\Zuidgors_exArea_front\input\output\\Zuidgors_bigger_map.nc",
     "r",
 )
 
@@ -535,17 +535,17 @@ bl3 = np.zeros([len(c3), 3])
 bl4 = np.zeros([len(c4), 3])
 bl5 = np.zeros([len(c5), 3])
 for y in range(0, 3):
-    time = [0, 8800, 17600]
+    times = [0, 8800, 17600]
     for i in range(0, len(c1)):
-        bl1[i, y] = bed_level[time[y], int(c1[i])]
+        bl1[i, y] = bed_level[times[y], int(c1[i])]
     for i in range(0, len(c2)):
-        bl2[i, y] = bed_level[time[y], int(c2[i])]
+        bl2[i, y] = bed_level[times[y], int(c2[i])]
     for i in range(0, len(c3)):
-        bl3[i, y] = bed_level[time[y], int(c3[i])]
+        bl3[i, y] = bed_level[times[y], int(c3[i])]
     for i in range(0, len(c4)):
-        bl4[i, y] = bed_level[time[y], int(c4[i])]
+        bl4[i, y] = bed_level[times[y], int(c4[i])]
     for i in range(0, len(c5)):
-        bl5[i, y] = bed_level[time[y], int(c5[i])]
+        bl5[i, y] = bed_level[times[y], int(c5[i])]
 
 fig, axs = plt.subplots(5)
 fig = plt.figure(figsize=(12, 8))
