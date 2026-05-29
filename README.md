@@ -9,13 +9,13 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # Official Documentation.
-Check our official GitHub pages documentation at [https://deltares.github.io/NBSDynamics/](https://deltares.github.io/NBSDynamics/).
+Check our official GitHub pages documentation at [https://deltares-research.github.io/NBSDynamics/](https://deltares-research.github.io/NBSDynamics/).
 
 # Quickguide
 Thanks to the latest version of Pypi you can get all setup by just installing the package in the edit mode, so we offer the following options:
 
 * Contributing to the project:
-    * [Full guide](https://deltares.github.io/NBSDynamics/guides/contribute/)
+    * [Full guide](https://deltares-research.github.io/NBSDynamics/guides/contribute/)
     * Quick installation (without poetry) __for development__: 
         * Navigate to the checked-out directory.
         * Update your 'pip' to the latest version.
@@ -35,7 +35,7 @@ We found out that packages such as `netcdf4` or `pypiwin32` / `pywin32` might gi
 # Current supported models.
 Currently we support the Vegetation and Coral models. More details of how to run them can be found at their respective documentation pages.
 In addition, quick links on how to run models in this package:
-* [Basics: How to run 'any' model](https://deltares.github.io/NBSDynamics/guides/run_simulation/)
-* [How to run a Vegetation Model](https://deltares.github.io/NBSDynamics/guides/run_simulation_veg/)
-* [How to run a Coral Model](https://deltares.github.io/NBSDynamics/guides/run_simulation_coral/)
+* [Basics: How to run 'any' model](https://deltares-research.github.io/NBSDynamics/guides/run_simulation/)
+* [How to run a Vegetation Model](https://deltares-research.github.io/NBSDynamics/guides/run_simulation_veg/)
+* [How to run a Coral Model](https://deltares-research.github.io/NBSDynamics/guides/run_simulation_coral/)
 
